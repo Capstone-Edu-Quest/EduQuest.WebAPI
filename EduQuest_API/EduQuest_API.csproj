@@ -15,4 +15,8 @@
     <ProjectReference Include="..\EduQuest_Infrastructure\EduQuest_Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Template\" />
+  </ItemGroup>
+
 </Project>
