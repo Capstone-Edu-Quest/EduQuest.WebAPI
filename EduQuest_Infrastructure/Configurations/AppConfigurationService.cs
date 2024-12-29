@@ -1,28 +1,25 @@
 ﻿
-using EduQuest_Application.Behaviour;
+using EduQuest_Domain.Constants;
+using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
 using EduQuest_Infrastructure.ExternalServices.Oauth2.Setting;
 using EduQuest_Infrastructure.Persistence;
-using FluentValidation;
+using EduQuest_Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using StackExchange.Redis;
-using EduQuest_Domain.Repository.UnitOfWork;
-using EduQuest_Domain.Repository;
-using EduQuest_Infrastructure.Repository;
 using Microsoft.OpenApi.Models;
-using EduQuest_Domain.Constants;
-using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Events;
+using StackExchange.Redis;
+using System.Text;
+using System.Text.Json;
 
-namespace EduQuest_Infrastructure.Configurations
+namespace EduQuest_Infrastructure
 {
 	public static class AppConfigurationService
     {
@@ -31,18 +28,6 @@ namespace EduQuest_Infrastructure.Configurations
 			var test = services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 			services.Configure<GoogleSetting>(configuration.GetSection("GoogleToken"));
 
-			#region MediatR
-
-			services.AddMediatR(cfg =>
-			{
-				cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-				cfg.AddOpenBehavior(typeof(UnitOfWorkBehaviour<,>));
-				cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-			});
-			services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-			#endregion
 
 			#region DbContext
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
@@ -159,11 +144,11 @@ namespace EduQuest_Infrastructure.Configurations
 			#region HealthCheck
 			var connectionString = configuration.GetSection("Redis:HostName").Get<string>();
 			var sqlserver = configuration.GetSection("ConnectionStrings:production").Get<string>();
-			var elasticSearch = configuration.GetSection("ElasticSearch:Url").Get<string>();
+			//var elasticSearch = configuration.GetSection("ElasticSearch:Url").Get<string>();
 			services.AddHealthChecks()
 					.AddRedis(connectionString!)
-					.AddSqlServer(sqlserver!)
-					.AddElasticsearch(elasticSearch!);
+					.AddSqlServer(sqlserver!);
+					//.AddElasticsearch(elasticSearch!);
 			#endregion
 
 			#region CORS
@@ -212,7 +197,7 @@ namespace EduQuest_Infrastructure.Configurations
 			await using ApplicationDbContext dbContext =
 				scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			await dbContext.Database.MigrateAsync();
-			
+
 		}
 		public static async Task ManageDataAsync(IServiceProvider svcProvider)
 		{

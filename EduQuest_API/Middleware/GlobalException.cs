@@ -32,6 +32,7 @@ namespace EduQuest_API.Middleware
 			var methodError = ex.TargetSite?.DeclaringType?.FullName;
 			var errorResponse = new ErrorResponse()
 			{
+				StatusResponse = HttpStatusCode.InternalServerError,
 				StatusCode = statusCode,
 				Message = ex.GetType().ToString(),
 				Location = (methodError != null ? "Class: " + methodError + ", " : "") + "Method: " + ex.TargetSite?.Name,

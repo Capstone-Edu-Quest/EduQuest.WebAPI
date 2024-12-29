@@ -1,5 +1,8 @@
 using EduQuest_API.Middleware;
-using EduQuest_Infrastructure.Configurations;
+using EduQuest_Infrastructure;
+using EduQuest_Application;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -7,10 +10,13 @@ var services = builder.Services;
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<GlobalException>();
+builder.Services.AddHttpContextAccessor();
 
 
 #region Add configurations to Services
 {
+	services.AddApplication(builder.Configuration);
 	services.AddInfrastructure(builder.Configuration);
 	builder.UseSerilog(builder.Configuration);
 }
@@ -36,4 +42,9 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/h", new HealthCheckOptions
+{
+	Predicate = _ => true,
+	ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.Run();

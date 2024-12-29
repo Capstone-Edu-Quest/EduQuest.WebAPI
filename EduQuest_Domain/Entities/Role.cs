@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
 {
-	public class Role
+	public class Role : BaseEntity
 	{
-		public int RoleId { get; set; }
 		public string RoleName { get; set; } = null!;
 
 		[JsonIgnore]

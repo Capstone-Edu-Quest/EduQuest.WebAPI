@@ -3,15 +3,13 @@ using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository.Generic;
 using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.Extensions;
-using EduQuest_Infrastructure.Persistence.DbContext;
+using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EduQuest_Infrastructure.Repository.Generic
 {
-    public class GenericRepository<TDomain> : IGenericRepository<TDomain> where TDomain : BaseEntity
+	public class GenericRepository<TDomain> : IGenericRepository<TDomain> where TDomain : BaseEntity
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -25,14 +23,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 
 		public async Task Add(TDomain entity)
 		{
-			if (String.IsNullOrEmpty(entity.CreatedBy))
-			{
-				entity.CreatedBy = "system";
-			}
-			if (String.IsNullOrEmpty(entity.UpdatedBy))
-			{
-				entity.UpdatedBy = "system";
-			}
+			
 			entity.CreatedAt = DateTime.Now;
 			entity.UpdatedAt = DateTime.Now;
 			await _context.Set<TDomain>().AddAsync(entity);
@@ -48,14 +39,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 		{
 			foreach (var entity in entities)
 			{
-				if (String.IsNullOrEmpty(entity.CreatedBy))
-				{
-					entity.CreatedBy = "system";
-				}
-				if (String.IsNullOrEmpty(entity.UpdatedBy))
-				{
-					entity.UpdatedBy = "system";
-				}
+				
 				entity.CreatedAt = DateTime.Now;
 				entity.UpdatedAt = DateTime.Now;
 			}
@@ -90,10 +74,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			{
 				return null;
 			}
-			if (String.IsNullOrEmpty(_entity.DeletedBy))
-			{
-				_entity.DeletedBy = "system";
-			}
+			
 			_entity.DeletedAt = DateTime.Now;
 			await Update(_entity);
 			return _entity;
@@ -155,14 +136,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 
 		public Task Update(TDomain entity)
 		{
-			if (String.IsNullOrEmpty(entity.UpdatedBy))
-			{
-				entity.UpdatedBy = "system";
-			}
-			if (String.IsNullOrEmpty(entity.UpdatedBy))
-			{
-				entity.UpdatedBy = "system";
-			}
+			
 			entity.UpdatedAt = DateTime.Now;
 			var entry = _context.Entry(entity);
 			if (entry.State == EntityState.Detached)

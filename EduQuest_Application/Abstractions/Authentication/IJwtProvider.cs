@@ -1,14 +1,9 @@
-﻿using EduQuest_Domain.DTO.AuthenticationDTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using EduQuest_Application.DTO.Response;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.Abstractions.Authentication
 {
-    public interface IJwtProvider
+	public interface IJwtProvider
     {
         /// <summary>
         /// generate access token 

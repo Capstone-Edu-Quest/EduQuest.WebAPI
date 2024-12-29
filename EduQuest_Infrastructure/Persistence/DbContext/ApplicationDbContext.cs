@@ -1,19 +1,12 @@
 ﻿using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.UnitOfWork;
+using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence.EntityTypeConfigurations;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using EduQuest_Infrastructure.Extensions;
 
 namespace EduQuest_Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext, IUnitOfWork
+	public class ApplicationDbContext : DbContext, IUnitOfWork
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
