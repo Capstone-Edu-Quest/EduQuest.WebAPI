@@ -3,19 +3,24 @@
 namespace EduQuest_Domain.Entities
 {
 
-	[Table("Users")]
-	public class User : BaseEntity
+	[Table("User")]
+	public partial class User : BaseEntity
 	{
-		public string? FullName { get; set; }
-		public string? Email { get; set; }
-		public string? Phone { get; set; }
-		public DateTime? UpdatedAt { get; set; }
-		public DateTime? CreatedAt { get; set; }
-		public string Status { get; set; } = null!;
-		public string RoleId { get; set; }
-		public string? Avatar { get; set; }
-		public bool IsPremiumUser { get; set; } = false;
+		public string Username { get; set; } = string.Empty;
+		public string? AvatarUrl { get; set; }
+		public string Email { get; set; } = string.Empty;
+		public string Phone { get; set; } = string.Empty;
+		public string? PasswordHash { get; set; }
+		public string? PasswordSalt { get; set; }
+
+		public int RoleId { get; set; }
+		public int? PackagePrivilegeId { get; set; }
+		public int? AccountPackageId { get; set; }
 
 		public virtual Role Role { get; set; } = null!;
+		public virtual ICollection<SearchHistory> SearchHistories { get; set; }
+		public virtual ICollection<Achievement> Achievements { get; set; }
+		public virtual ICollection<Badge> Badges { get; set; }
+		public virtual ICollection<Course> CreatedCourses { get; set; }
 	}
 }

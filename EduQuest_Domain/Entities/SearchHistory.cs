@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
 {
-	[Table("Role")]
-	public partial class Role : BaseEntity
+	[Table("SearchHistory")]
+	public partial class SearchHistory : BaseEntity
 	{
-		public string RoleName { get; set; } = null!;
+		public string Keyword { get; set; } = string.Empty;
+		public string UserId { get; set; }
 
-		[JsonIgnore]
-		public virtual ICollection<User>? Users { get; set; }
+		public virtual User User { get; set; } = null!;
 	}
 }
