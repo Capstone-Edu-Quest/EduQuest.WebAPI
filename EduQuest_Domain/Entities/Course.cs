@@ -15,8 +15,10 @@ namespace EduQuest_Domain.Entities
 		public string? Color { get; set; }
 		public decimal Price { get; set; }
 		public bool IsRequired { get; set; }
-		public Guid CreatedBy { get; set; }
+		public string CreatedBy { get; set; }
 
 		public virtual ICollection<Certificate> Certificates { get; set; }
+		public virtual ICollection<Tag> Tags { get; set; }
+		public virtual ICollection<Item> Items { get; set; }
 	}
 }

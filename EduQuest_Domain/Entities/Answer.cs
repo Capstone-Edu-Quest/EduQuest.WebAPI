@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
 {
-	[Table("QuestionAnswer")]
-	public partial class QuestionAnswer : BaseEntity
+	[Table("Answer")]
+	public partial class Answer : BaseEntity
 	{
-		public string Title { get; set; } = string.Empty;
-		public bool IsCorrect { get; set; }
 		public string QuestionId { get; set; }
+		public string AnswerContent { get; set; }
+		public bool IsCorrect { get; set; }
 
-		public virtual Question Question { get; set; } = null!;
+		public virtual Question Question { get; set; }
 	}
 }

@@ -7,18 +7,16 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
 {
-	[Table("LearnerStatistic")]
-	public partial class LearnerStatistic 
+	[Table("Feedback")]
+	public partial class Feedback
 	{
-		public string CourseId { get; set; }
 		public string UserId { get; set; }
-		public int ProgressPercentage { get; set; }
-		public int Xp { get; set; }
-		public int Gold { get; set; }
+		public string CourseId { get; set; }
+		public int Rating { get; set; }
+		public string Comment { get; set; }
 		public DateTime? CreatedAt { get; set; }
 		public string? UpdatedBy { get; set; }
 		public DateTime? UpdatedAt { get; set; }
-
 		public DateTime? DeletedAt { get; set; }
 
 		public virtual User User { get; set; } = null;

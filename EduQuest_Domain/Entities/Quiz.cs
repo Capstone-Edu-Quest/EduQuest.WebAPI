@@ -10,10 +10,12 @@ namespace EduQuest_Domain.Entities
 	[Table("Quiz")]
 	public partial class Quiz : BaseEntity
 	{
-		public string Title { get; set; } = string.Empty;
-		public string? Description { get; set; }
-		public Guid CreatedBy { get; set; }
+		public string StageId { get; set; }
+		public string QuizData { get; set; }
+		public string CreatedBy { get; set; }
 
 		public virtual User Creator { get; set; } = null!;
+		public virtual Stage Stage { get; set; } = null!;
+		public virtual ICollection<Question> Questions { get; set; }
 	}
 }
