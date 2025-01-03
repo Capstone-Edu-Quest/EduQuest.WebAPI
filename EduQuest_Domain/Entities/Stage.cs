@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
@@ -16,7 +12,9 @@ namespace EduQuest_Domain.Entities
 		public int Level { get; set; }
 
 		public virtual Course Course { get; set; } = null;
-		public virtual ICollection<LearningMaterial> LearningMaterials { get; set; }
 		public virtual ICollection<Reward> Rewards { get; set; } = null;
+		[JsonIgnore]
+		public virtual ICollection<LearningMaterial> LearningMaterials { get; set; }
+		
 	}
 }

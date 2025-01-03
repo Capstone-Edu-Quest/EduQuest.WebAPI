@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
@@ -17,9 +18,17 @@ namespace EduQuest_Domain.Entities
 		public bool IsRequired { get; set; }
 		public string CreatedBy { get; set; }
 
+		public virtual User User { get; set; } = null!;
+
+		[JsonIgnore]
 		public virtual ICollection<Certificate> Certificates { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Tag> Tags { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Item> Items { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Cart> Carts { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
 	}
 }

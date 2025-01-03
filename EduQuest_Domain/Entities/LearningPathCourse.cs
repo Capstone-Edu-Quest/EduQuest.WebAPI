@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduQuest_Domain.Entities
 {
@@ -19,7 +14,7 @@ namespace EduQuest_Domain.Entities
 		public DateTime? UpdatedAt { get; set; }
 		public DateTime? DeletedAt { get; set; }
 
-		// Navigation properties
+		
 		public virtual LearningPath LearningPath { get; set; } = null;
 		public virtual Course Course { get; set; } = null;
 	}

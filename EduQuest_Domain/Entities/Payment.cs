@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
@@ -17,6 +13,7 @@ namespace EduQuest_Domain.Entities
 		public decimal TotalAmount { get; set; }
 
 		public virtual Cart Cart { get; set; } = null;
+		[JsonIgnore]
 		public virtual ICollection<Transaction> Transactions { get; set; }
 	}
 }

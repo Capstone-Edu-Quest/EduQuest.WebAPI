@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
@@ -15,6 +11,7 @@ namespace EduQuest_Domain.Entities
 		public bool MultipleAnswers { get; set; }
 
 		public virtual Quiz Quiz { get; set; } = null!;
+		[JsonIgnore]
 		public virtual ICollection<Answer> Answers { get; set; }
 	}
 }

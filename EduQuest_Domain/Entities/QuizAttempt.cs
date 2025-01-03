@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduQuest_Domain.Entities
 {
@@ -15,7 +10,7 @@ namespace EduQuest_Domain.Entities
 		public int CorrectAnswers { get; set; }
 		public int IncorrectAnswers { get; set; }
 
-		public Quiz Quiz { get; set; } = null!;
-		public User User { get; set; } = null!;
+		public virtual Quiz Quiz { get; set; } = null!;
+		public virtual User User { get; set; } = null!;
 	}
 }

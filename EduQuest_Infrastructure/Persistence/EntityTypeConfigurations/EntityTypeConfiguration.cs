@@ -32,6 +32,21 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.WithMany(p => p.Users)
 				.HasForeignKey(d => d.RoleId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			builder.HasMany(u => u.Courses)
+				.WithOne(c => c.User)
+				.HasForeignKey(c => c.CreatedBy)
+				.OnDelete(DeleteBehavior.ClientSetNull);
+
+			builder.HasMany(u => u.Carts)
+				.WithOne(c => c.User)
+				.HasForeignKey(c => c.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder.HasMany(u => u.FavoriteLists)
+				.WithOne(fl => fl.User)
+				.HasForeignKey(fl => fl.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 		#endregion
 
@@ -109,8 +124,21 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region Course
 		public void Configure(EntityTypeBuilder<Course> builder)
 		{
+			builder.HasOne(c => c.User)
+				.WithMany(u => u.Courses)
+				.HasForeignKey(c => c.CreatedBy)
+				.OnDelete(DeleteBehavior.ClientSetNull);
 
-			
+			builder.HasMany(c => c.Carts)
+				.WithOne(cart => cart.Course)
+				.HasForeignKey(cart => cart.CourseId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder.HasMany(c => c.FavoriteLists)
+				.WithOne(fl => fl.Course)
+				.HasForeignKey(fl => fl.CourseId)
+				.OnDelete(DeleteBehavior.Cascade);
+
 		}
 		#endregion
 
@@ -125,7 +153,19 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region FavoriteList
 		public void Configure(EntityTypeBuilder<FavoriteList> builder)
 		{
+			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
 
+			// Define the relationship with User
+			builder.HasOne(fl => fl.User)
+				.WithMany(u => u.FavoriteLists)
+				.HasForeignKey(fl => fl.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			// Define the relationship with Course
+			builder.HasOne(fl => fl.Course)
+				.WithMany(c => c.FavoriteLists)
+				.HasForeignKey(fl => fl.CourseId)
+				.OnDelete(DeleteBehavior.Cascade);
 
 		}
 		#endregion
@@ -133,7 +173,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region Feedback
 		public void Configure(EntityTypeBuilder<Feedback> builder)
 		{
-
+			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
 
 		}
 		#endregion
@@ -157,7 +197,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region LearnerStatistic
 		public void Configure(EntityTypeBuilder<LearnerStatistic> builder)
 		{
-
+			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
 
 		}
 		#endregion
@@ -165,7 +205,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region LearningHistory
 		public void Configure(EntityTypeBuilder<LearningHistory> builder)
 		{
-
+			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
 
 		}
 		#endregion
@@ -189,7 +229,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region LearningPathCourse
 		public void Configure(EntityTypeBuilder<LearningPathCourse> builder)
 		{
-
+			builder.HasKey(fl => new { fl.LearningPathId, fl.CourseId });
 
 		}
 		#endregion

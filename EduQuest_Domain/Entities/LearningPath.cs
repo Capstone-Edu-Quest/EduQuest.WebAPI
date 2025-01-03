@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
@@ -15,6 +11,7 @@ namespace EduQuest_Domain.Entities
 		public string UserId { get; set; }
 
 		public virtual User User { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<LearningPathCourse> LearningPathCourses { get; set; }
 	}
 }

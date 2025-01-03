@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
@@ -12,18 +13,27 @@ namespace EduQuest_Domain.Entities
 		public string Phone { get; set; } = string.Empty;
 		public string? PasswordHash { get; set; }
 		public string? PasswordSalt { get; set; }
-
-		public int RoleId { get; set; }
+		public string RoleId { get; set; }
 		public int? PackagePrivilegeId { get; set; }
 		public int? AccountPackageId { get; set; }
 
 		public virtual Role Role { get; set; } = null!;
+		public virtual UserStatistic UserStatistic { get; set; } = null!;
+
+		[JsonIgnore]
 		public virtual ICollection<SearchHistory> SearchHistories { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Achievement> Achievements { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Badge> Badges { get; set; }
-		public virtual ICollection<Course> CreatedCourses { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Certificate> Certificates { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Course> Courses { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Cart> Carts { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+		
 	}
 }
