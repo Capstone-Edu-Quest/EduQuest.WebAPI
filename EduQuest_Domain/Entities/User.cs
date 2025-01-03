@@ -22,5 +22,8 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<Achievement> Achievements { get; set; }
 		public virtual ICollection<Badge> Badges { get; set; }
 		public virtual ICollection<Course> CreatedCourses { get; set; }
+		public virtual ICollection<Certificate> Certificates { get; set; }
+		public virtual ICollection<Course> Courses { get; set; }
+		public virtual ICollection<Cart> Carts { get; set; }
 	}
 }

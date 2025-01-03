@@ -20,5 +20,6 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<Certificate> Certificates { get; set; }
 		public virtual ICollection<Tag> Tags { get; set; }
 		public virtual ICollection<Item> Items { get; set; }
+		public virtual ICollection<Cart> Carts { get; set; }
 	}
 }
