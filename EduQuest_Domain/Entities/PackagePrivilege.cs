@@ -10,6 +10,6 @@ namespace EduQuest_Domain.Entities
 		public string? Description { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<AccountPackage> AccountPackages { get; set; }
+		public virtual ICollection<User> Users { get; set; }
 	}
 }

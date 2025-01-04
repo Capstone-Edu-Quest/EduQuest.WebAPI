@@ -13,6 +13,6 @@ namespace EduQuest_Domain.Entities
 		public bool IsFree { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<PackagePrivilege> PackagePrivileges { get; set; }
+		public virtual ICollection<User> Users { get; set; }
 	}
 }

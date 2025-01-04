@@ -14,10 +14,12 @@ namespace EduQuest_Domain.Entities
 		public string? PasswordHash { get; set; }
 		public string? PasswordSalt { get; set; }
 		public string RoleId { get; set; }
-		public int? PackagePrivilegeId { get; set; }
-		public int? AccountPackageId { get; set; }
+		public string PackagePrivilegeId { get; set; }
+		public string AccountPackageId { get; set; }
 
 		public virtual Role Role { get; set; } = null!;
+		public virtual AccountPackage AccountPackage { get; set; } = null!;
+		public virtual PackagePrivilege PackagePrivilege { get; set; } = null!;
 		public virtual UserStatistic UserStatistic { get; set; } = null!;
 
 		[JsonIgnore]
