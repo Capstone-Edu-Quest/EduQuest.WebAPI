@@ -13,10 +13,13 @@ namespace EduQuest_Domain.Entities
 	{
 		public string Title { get; set; } = string.Empty;
 		public string? Description { get; set; }
-		public string? Color { get; set; }
-		public decimal Price { get; set; }
+        public string? PhotoUrl { get; set; }
+        public string? Color { get; set; }
+		public decimal? Price { get; set; }
+	
 		public bool IsRequired { get; set; }
 		public string CreatedBy { get; set; }
+		public DateTime? LastUpdated { get; set; }
 
 		public virtual User User { get; set; } = null!;
 

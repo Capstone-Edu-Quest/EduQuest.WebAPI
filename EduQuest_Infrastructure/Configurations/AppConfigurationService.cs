@@ -105,6 +105,7 @@ namespace EduQuest_Infrastructure
 			#region AddSingleton
 			services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
 			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<ICourseRepository, CourseRepository>();
 
 			#endregion
 

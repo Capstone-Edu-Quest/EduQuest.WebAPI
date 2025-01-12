@@ -1,10 +1,8 @@
 ﻿using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Domain.Constants;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 
 namespace EduQuest_API.Controllers
 {
