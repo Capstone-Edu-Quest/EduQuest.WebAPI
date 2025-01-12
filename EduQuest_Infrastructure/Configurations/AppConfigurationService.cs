@@ -6,6 +6,8 @@ using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
 using EduQuest_Infrastructure.ExternalServices.Oauth2.Setting;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -160,6 +162,12 @@ namespace EduQuest_Infrastructure
 			}));
 			#endregion
 
+			#region Firebase
+			FirebaseApp.Create(new AppOptions
+			{
+				Credential = GoogleCredential.FromFile("path/to/service-account.json")
+			});
+			#endregion
 
 			return services;
 		}
