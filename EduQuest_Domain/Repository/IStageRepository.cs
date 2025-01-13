@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface ICourseRepository : IGenericRepository<Course>
+	public interface IStageRepository : IGenericRepository<Stage>
 	{
-		Task<Course> GetCourseById(string Id);
 	}
 }

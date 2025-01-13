@@ -16,8 +16,8 @@ namespace EduQuest_Domain.Entities
         public string? PhotoUrl { get; set; }
         public string? Color { get; set; }
 		public decimal? Price { get; set; }
-	
-		public bool IsRequired { get; set; }
+        public string? Requirement { get; set; }
+        public bool IsRequired { get; set; }
 		public string CreatedBy { get; set; }
 		public DateTime? LastUpdated { get; set; }
 
@@ -33,5 +33,7 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<Cart> Carts { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Stage> Stages { get; set; }
 	}
 }

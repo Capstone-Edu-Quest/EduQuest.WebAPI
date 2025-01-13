@@ -11,11 +11,13 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 	public class SearchCourseQueryHandler : IRequestHandler<SearchCourseQuery, APIResponse>
 	{
 		private readonly ICourseRepository _courseRepository;
+		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
 
-		public SearchCourseQueryHandler(ICourseRepository courseRepository, IMapper mapper)
+		public SearchCourseQueryHandler(ICourseRepository courseRepository, IUserRepository userRepository, IMapper mapper)
 		{
 			_courseRepository = courseRepository;
+			_userRepository = userRepository;
 			_mapper = mapper;
 		}
 
@@ -44,7 +46,13 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 
 			//Chưa check rating
 
-			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse); //Chưa check Discount Price, chưa map Author Name, Rating
+			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse); //Chưa check Discount Price, chưa map Rating
+			foreach (var course in listCourseResponse)
+			{
+				var user = await _userRepository.GetById(course.CreatedBy); 
+				course.Author = user!.Username; 
+			}
+
 			int totalItem = listCourseResponse.Count;
 			var result = listCourseResponse.Skip((request.PageNo - 1) * request.EachPage)
 											.Take(request.EachPage)

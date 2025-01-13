@@ -2,11 +2,7 @@
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -17,6 +13,11 @@ namespace EduQuest_Infrastructure.Repository
 		public CourseRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<Course> GetCourseById(string Id)
+		{
+			return await _context.Courses.Include(x => x.Stages).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == Id);
 		}
 	}
 }

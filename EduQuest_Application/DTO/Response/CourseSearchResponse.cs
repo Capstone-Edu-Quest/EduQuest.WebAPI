@@ -14,6 +14,7 @@ namespace EduQuest_Application.DTO.Response
 		public string? Description { get; set; }
 		public string? PhotoUrl { get; set; }
 		public string Author { get; set; }
+		public string CreatedBy { get; set; }
 		public decimal Price { get; set; }
 		public decimal? DiscountPrice { get; set; }
         public double? Rating { get; set; }
