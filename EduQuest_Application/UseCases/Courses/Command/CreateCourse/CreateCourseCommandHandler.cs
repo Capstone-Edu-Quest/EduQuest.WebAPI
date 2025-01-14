@@ -13,18 +13,27 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		private readonly ICourseRepository _courseRepository;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly IUserRepository _userRepository;
 
-		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork)
+		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork,
+			IUserRepository userRepository)
 		{
 			_courseRepository = courseRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
+			_userRepository = userRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
 		{
 			var course = _mapper.Map<Course>(request.CourseRequest);
-			course.CreatedBy = "A84B8BBD-73E0-4857-85A8-C16136C214C8"; //A84B8BBD-73E0-4857-85A8-C16136C214C8
+			
+			User user = await _userRepository.GetById("A84B8BBD-73E0-4857-85A8-C16136C214C8");
+			if (user != null)
+			{
+                //course.CreatedBy = "A84B8BBD-73E0-4857-85A8-C16136C214C8";
+                course.CreatedBy = user.Id;
+            }
 			course.Id = Guid.NewGuid().ToString();
 			course.LastUpdated = DateTime.Now;
 			await _courseRepository.Add(course);
