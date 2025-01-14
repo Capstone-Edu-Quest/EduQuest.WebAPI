@@ -24,12 +24,10 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
 		{
 			var course = _mapper.Map<Course>(request.CourseRequest);
-			course.CreatedBy = "A84B8BBD-73E0-4857-85A8-C16136C214C8";
+			course.CreatedBy = "A84B8BBD-73E0-4857-85A8-C16136C214C8"; //A84B8BBD-73E0-4857-85A8-C16136C214C8
 			course.Id = Guid.NewGuid().ToString();
-			course.CreatedAt = DateTime.Now;
-			course.UpdatedAt = DateTime.Now;
 			course.LastUpdated = DateTime.Now;
-			_courseRepository.Add(course);
+			await _courseRepository.Add(course);
 			await _unitOfWork.SaveChangesAsync();
 			return new APIResponse
 			{

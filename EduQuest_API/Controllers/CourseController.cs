@@ -27,6 +27,15 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
+		[HttpGet("byCourseId")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> SearchCourseById([FromBody] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		{
+			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, request), cancellationToken);
+			return Ok(result);
+		}
+
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
