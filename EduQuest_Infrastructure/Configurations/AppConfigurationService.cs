@@ -2,6 +2,7 @@
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
+using EduQuest_Infrastructure.Configurations;
 using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
 using EduQuest_Infrastructure.ExternalServices.Oauth2.Setting;
 using EduQuest_Infrastructure.Persistence;
@@ -40,12 +41,18 @@ namespace EduQuest_Infrastructure
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
 						b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
 					});
+				options.EnableSensitiveDataLogging();
+				options.EnableDetailedErrors();
 				options.UseLazyLoadingProxies();
 			});
 
+			services.AddTransient<ApplicationDbContext>();
+			//services.AddScoped<IApplicationDbContext>(
+				//provider => provider.GetService<ApplicationDbContext>());
+
 			#endregion
 
-			#region Redis
+				#region Redis
 			var redisConnection = configuration["Redis:HostName"];
 			var redisDatabase = ConnectionMultiplexer.Connect($"{redisConnection},abortConnect=false");
 			services.AddSingleton<IConnectionMultiplexer>(sp =>
@@ -198,7 +205,7 @@ namespace EduQuest_Infrastructure
 			await using ApplicationDbContext dbContext =
 				scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			await dbContext.Database.MigrateAsync();
-
+			await DatabaseInitializer.InitializeAsync(dbContext);
 		}
 		public static async Task ManageDataAsync(IServiceProvider svcProvider)
 		{

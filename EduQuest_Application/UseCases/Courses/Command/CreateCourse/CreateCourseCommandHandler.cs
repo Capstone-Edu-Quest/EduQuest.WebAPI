@@ -5,6 +5,9 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using System.Net;
+using System.Runtime.InteropServices;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 {
@@ -28,21 +31,28 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		{
 			var course = _mapper.Map<Course>(request.CourseRequest);
 			
-			User user = await _userRepository.GetById("A84B8BBD-73E0-4857-85A8-C16136C214C8");
-			if (user != null)
-			{
-                //course.CreatedBy = "A84B8BBD-73E0-4857-85A8-C16136C214C8";
-                course.CreatedBy = user.Id;
-            }
+			var user = await _userRepository.GetById(request.UserId);
+			
+			course.CreatedBy = user.Id;
 			course.Id = Guid.NewGuid().ToString();
 			course.LastUpdated = DateTime.Now;
 			await _courseRepository.Add(course);
-			await _unitOfWork.SaveChangesAsync();
-			return new APIResponse
+			//await _unitOfWork.SaveChangesAsync();
+			return await _unitOfWork.SaveChangesAsync() > 0 ? new APIResponse
 			{
 				IsError = false,
 				Payload = course,
 				Errors = null,
+			} : new APIResponse
+			{
+				IsError = true,
+				Payload = null,
+				Errors = new ErrorResponse
+				{
+					StatusResponse = HttpStatusCode.BadRequest, // Use appropriate HTTP status code
+					StatusCode = (int)HttpStatusCode.BadRequest,
+					Message = MessageCommon.SavingFailed,
+				}
 			};
 
 		}

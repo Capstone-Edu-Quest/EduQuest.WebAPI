@@ -4,6 +4,7 @@ using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250114043114_checkUser")]
+    partial class checkUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,6 +124,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("AccountPackage");
                 });
 
@@ -160,6 +165,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Achievement");
                 });
 
@@ -193,6 +200,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("QuestionId");
 
@@ -235,6 +244,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Badge");
                 });
 
@@ -270,6 +281,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId");
 
@@ -312,6 +325,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId");
 
@@ -369,6 +384,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("CreatedBy");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Course");
                 });
 
@@ -405,6 +422,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.ToTable("CourseAchievement");
                 });
@@ -501,6 +520,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Item");
                 });
 
@@ -539,6 +560,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId");
 
@@ -612,6 +635,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("CourseId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("LearningHistory");
                 });
 
@@ -655,6 +680,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("StageId");
 
                     b.ToTable("LearningMaterial");
@@ -691,6 +718,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId");
 
@@ -757,6 +786,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("PackagePrivilege");
                 });
 
@@ -799,6 +830,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("CartId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Payment");
                 });
 
@@ -832,6 +865,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("QuizId");
 
@@ -875,6 +910,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("CreatorId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("StageId");
 
                     b.ToTable("Quiz");
@@ -914,6 +951,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("QuizId");
 
                     b.HasIndex("UserId");
@@ -952,6 +991,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("StageId");
 
                     b.ToTable("Reward");
@@ -980,6 +1021,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.ToTable("Role");
                 });
@@ -1011,6 +1054,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId");
 
@@ -1047,6 +1092,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId");
 
@@ -1090,6 +1137,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("CourseId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Stage");
                 });
 
@@ -1116,6 +1165,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.ToTable("Tag");
                 });
@@ -1147,6 +1198,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Transaction");
@@ -1159,6 +1212,7 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccountPackageId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AvatarUrl")
@@ -1171,15 +1225,19 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Headline")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PackagePrivilegeId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PasswordHash")
@@ -1189,9 +1247,11 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1201,11 +1261,14 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountPackageId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("PackagePrivilegeId");
 
@@ -1249,6 +1312,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -1650,15 +1715,20 @@ namespace EduQuest_Infrastructure.Migrations
                 {
                     b.HasOne("EduQuest_Domain.Entities.AccountPackage", "AccountPackage")
                         .WithMany("Users")
-                        .HasForeignKey("AccountPackageId");
+                        .HasForeignKey("AccountPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EduQuest_Domain.Entities.PackagePrivilege", "PackagePrivilege")
                         .WithMany("Users")
-                        .HasForeignKey("PackagePrivilegeId");
+                        .HasForeignKey("PackagePrivilegeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EduQuest_Domain.Entities.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("RoleId")
+                        .IsRequired();
 
                     b.Navigation("AccountPackage");
 
@@ -1758,7 +1828,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Navigation("SearchHistories");
 
-                    b.Navigation("UserStatistic");
+                    b.Navigation("UserStatistic")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

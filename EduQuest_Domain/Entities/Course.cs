@@ -24,16 +24,16 @@ namespace EduQuest_Domain.Entities
 		public virtual User User { get; set; } = null!;
 
 		[JsonIgnore]
-		public virtual ICollection<Certificate> Certificates { get; set; }
+		public virtual ICollection<Certificate>? Certificates { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Tag> Tags { get; set; }
+		public virtual ICollection<Tag>? Tags { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Item> Items { get; set; }
+		public virtual ICollection<Item>? Items { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Cart> Carts { get; set; }
+		public virtual ICollection<Cart>? Carts { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Stage> Stages { get; set; }
+		public virtual ICollection<Stage>? Stages { get; set; }
 	}
 }

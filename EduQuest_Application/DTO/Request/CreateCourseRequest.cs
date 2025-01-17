@@ -15,7 +15,8 @@ namespace EduQuest_Application.DTO.Request
 		public string? Description { get; set; }
 		public string? PhotoUrl { get; set; }
 		public string? Requirement { get; set; }
-        //public List<string> Tags { get; set; }
-       // public StageCourseRequest StageCourse { get; set; }
-    }
+		public bool IsRequired { get; set; }
+		//public List<string> Tags { get; set; }
+		// public StageCourseRequest StageCourse { get; set; }
+	}
 }

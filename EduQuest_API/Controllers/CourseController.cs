@@ -5,6 +5,7 @@ using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace EduQuest_API.Controllers
 {
@@ -21,28 +22,28 @@ namespace EduQuest_API.Controllers
 		[HttpGet("searchCourse")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> SearchCourse([FromBody] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
 		{
 			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, request), cancellationToken);
 			return Ok(result);
 		}
 
-		[HttpGet("byCourseId")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> SearchCourseById([FromBody] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-		{
-			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, request), cancellationToken);
-			return Ok(result);
-		}
+		//[HttpGet("byCourseId")]
+		//[ProducesResponseType(StatusCodes.Status200OK)]
+		//[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		//public async Task<IActionResult> SearchCourseById([FromQuery] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		//{
+		//	var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, request), cancellationToken);
+		//	return Ok(result);
+		//}
 
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest request, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest request, string userId, CancellationToken cancellationToken = default)
 		{
-			var result = await _mediator.Send(new CreateCourseCommand(request), cancellationToken);
-			return Ok(result);
+			var result = await _mediator.Send(new CreateCourseCommand(request, userId), cancellationToken);
+			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 	}
 }
