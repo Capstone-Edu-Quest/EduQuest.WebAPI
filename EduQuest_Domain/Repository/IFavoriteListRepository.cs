@@ -3,8 +3,7 @@ using EduQuest_Domain.Repository.Generic;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface IUserRepository : IGenericRepository<User>
+	public interface IFavoriteListRepository : IGenericRepository<FavoriteList>
 	{
-		
 	}
 }
