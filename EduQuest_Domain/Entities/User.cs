@@ -19,9 +19,13 @@ namespace EduQuest_Domain.Entities
 		public string? PackagePrivilegeId { get; set; }
 		public string? AccountPackageId { get; set; }
 
+		[JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
+		[JsonIgnore]
 		public virtual AccountPackage? AccountPackage { get; set; } = null!;
+		[JsonIgnore]
 		public virtual PackagePrivilege? PackagePrivilege { get; set; } = null!;
+		[JsonIgnore]
 		public virtual UserStatistic? UserStatistic { get; set; } = null!;
 
 		[JsonIgnore]

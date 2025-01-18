@@ -41,18 +41,18 @@ namespace EduQuest_Infrastructure
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
 						b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
 					});
-				options.EnableSensitiveDataLogging();
-				options.EnableDetailedErrors();
+				//options.EnableSensitiveDataLogging();
+				//options.EnableDetailedErrors();
 				options.UseLazyLoadingProxies();
 			});
 
-			services.AddTransient<ApplicationDbContext>();
+			//services.AddTransient<ApplicationDbContext>();
 			//services.AddScoped<IApplicationDbContext>(
 				//provider => provider.GetService<ApplicationDbContext>());
 
 			#endregion
 
-				#region Redis
+			#region Redis
 			var redisConnection = configuration["Redis:HostName"];
 			var redisDatabase = ConnectionMultiplexer.Connect($"{redisConnection},abortConnect=false");
 			services.AddSingleton<IConnectionMultiplexer>(sp =>
@@ -113,6 +113,9 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
 			services.AddScoped<IUserRepository, UserRepository>();
 			services.AddScoped<ICourseRepository, CourseRepository>();
+			services.AddScoped<ITagRepository, TagRepository>();
+			services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
+			services.AddScoped<IStageRepository, StageRepository>();
 
 			#endregion
 
@@ -205,7 +208,7 @@ namespace EduQuest_Infrastructure
 			await using ApplicationDbContext dbContext =
 				scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			await dbContext.Database.MigrateAsync();
-			await DatabaseInitializer.InitializeAsync(dbContext);
+			//await DatabaseInitializer.InitializeAsync(dbContext);
 		}
 		public static async Task ManageDataAsync(IServiceProvider svcProvider)
 		{

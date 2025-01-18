@@ -10,9 +10,9 @@ namespace EduQuest_Application.DTO.Request
 {
 	public class LearningMaterialStageRequest : IMapFrom<LearningMaterial>, IMapTo<LearningMaterial>
 	{
-		public string Type { get; set; }
-		public string Title { get; set; }
-		public string Description { get; set; }
-		public string UrlMaterial { get; set; }
+		public string? Type { get; set; }
+		public string? Title { get; set; }
+		public string? Description { get; set; }
+		public string? UrlMaterial { get; set; }
 	}
 }

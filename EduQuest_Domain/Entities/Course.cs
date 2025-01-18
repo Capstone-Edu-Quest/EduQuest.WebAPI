@@ -21,6 +21,7 @@ namespace EduQuest_Domain.Entities
 		public string CreatedBy { get; set; }
 		public DateTime? LastUpdated { get; set; }
 
+		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
 
 		[JsonIgnore]

@@ -17,6 +17,6 @@ namespace EduQuest_Application.DTO.Request
 		public string? Requirement { get; set; }
 		public bool IsRequired { get; set; }
 		//public List<string> Tags { get; set; }
-		// public StageCourseRequest StageCourse { get; set; }
+		public List<StageCourseRequest>? StageCourse { get; set; }
 	}
 }

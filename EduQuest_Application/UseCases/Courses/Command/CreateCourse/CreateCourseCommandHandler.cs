@@ -17,14 +17,17 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
+		private readonly IStageRepository _stageRepository;
+		private readonly ILearningMaterialRepository _learningMaterialRepository;
 
-		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork,
-			IUserRepository userRepository)
+		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository, IStageRepository stageRepository, ILearningMaterialRepository learningMaterialRepository)
 		{
 			_courseRepository = courseRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_userRepository = userRepository;
+			_stageRepository = stageRepository;
+			_learningMaterialRepository = learningMaterialRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
@@ -33,26 +36,60 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			
 			var user = await _userRepository.GetById(request.UserId);
 			
-			course.CreatedBy = user.Id;
+			course.CreatedBy = user!.Id;
 			course.Id = Guid.NewGuid().ToString();
-			course.LastUpdated = DateTime.Now;
+			course.LastUpdated = DateTime.UtcNow.ToLocalTime();
 			await _courseRepository.Add(course);
-			//await _unitOfWork.SaveChangesAsync();
-			return await _unitOfWork.SaveChangesAsync() > 0 ? new APIResponse
+			await _unitOfWork.SaveChangesAsync(); //Save course
+			if(request.CourseRequest.StageCourse != null && request.CourseRequest.StageCourse.Any())
+			{
+				var stages = request.CourseRequest.StageCourse.Select(stagerequest =>
+				{
+					int i = 1;
+					var stage = new Stage
+					{
+						Id = Guid.NewGuid().ToString(),
+						CourseId = course.Id,
+						Name = stagerequest.Name!,
+						Description = stagerequest.Description!,
+						Level = 1
+					};
+					_stageRepository.Add(stage);
+					_unitOfWork.SaveChangesAsync();
+					i++;
+					
+					if (stagerequest.LearningMaterial != null)
+					{
+						stage.LearningMaterial = new LearningMaterial
+						{
+							StageId = stage.Id,
+							Id = Guid.NewGuid().ToString(),
+							Type = stagerequest.LearningMaterial.Type!,
+							Title = stagerequest.LearningMaterial.Title!,
+							Description = stagerequest.LearningMaterial.Description!,
+							UrlMaterial = stagerequest.LearningMaterial.UrlMaterial!
+						};
+						_learningMaterialRepository.Add(stage.LearningMaterial);
+						_unitOfWork.SaveChangesAsync();
+					}
+					return stage;
+				}).ToList();
+			}
+			return new APIResponse
 			{
 				IsError = false,
 				Payload = course,
 				Errors = null,
-			} : new APIResponse
-			{
-				IsError = true,
-				Payload = null,
-				Errors = new ErrorResponse
-				{
-					StatusResponse = HttpStatusCode.BadRequest, // Use appropriate HTTP status code
-					StatusCode = (int)HttpStatusCode.BadRequest,
-					Message = MessageCommon.SavingFailed,
-				}
+			//} : new APIResponse
+			//{
+			//	IsError = true,
+			//	Payload = null,
+			//	Errors = new ErrorResponse
+			//	{
+			//		StatusResponse = HttpStatusCode.BadRequest, 
+			//		StatusCode = (int)HttpStatusCode.BadRequest,
+			//		Message = MessageCommon.SavingFailed,
+			//	}
 			};
 
 		}

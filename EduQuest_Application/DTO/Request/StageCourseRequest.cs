@@ -10,8 +10,8 @@ namespace EduQuest_Application.DTO.Request
 {
 	public class StageCourseRequest : IMapFrom<Stage>, IMapTo<Stage>
 	{
-		public string Name { get; set; }
-		public string Description { get; set; }
-        public LearningMaterialStageRequest LearningMaterial { get; set; }
+		public string? Name { get; set; }
+		public string? Description { get; set; }
+        public LearningMaterialStageRequest? LearningMaterial { get; set; }
     }
 }

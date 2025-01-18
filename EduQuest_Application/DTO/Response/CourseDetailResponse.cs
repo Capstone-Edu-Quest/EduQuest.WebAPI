@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Mappings;
+﻿using AutoMapper;
+using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,16 @@ namespace EduQuest_Application.DTO.Response
 		public decimal Price { get; set; }
 		public decimal? DiscountPrice { get; set; }
 		public double? Rating { get; set; }
-		public AuthorCourseResponse Author { get; set; }
-        public List<StageCourseResponse> ListStage { get; set; }
+		public AuthorCourseResponse? Author { get; set; }
+        public List<StageCourseResponse>? ListStage { get; set; }
+		public List<TagResponse>? ListTag { get; set; }
 
-    }
+		//public void Mapping(Profile profile)
+		//{
+		//	profile.CreateMap<Course, CourseDetailResponse>()
+		//		.ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.User)) // Map Author
+		//		.ForMember(dest => dest.ListStage, opt => opt.MapFrom(src => src.Stages)); // Map ListStage
+		//}
+
+	}
 }
