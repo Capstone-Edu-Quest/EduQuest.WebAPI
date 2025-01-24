@@ -5,6 +5,6 @@ namespace EduQuest_Domain.Repository
 {
 	public interface IAchievementRepository : IGenericRepository<Achievement>
 	{
-	
+		Task<Achievement> GetAchievementById(string Id);
 	}
 }

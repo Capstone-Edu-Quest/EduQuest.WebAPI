@@ -1,12 +1,8 @@
-﻿using EduQuest_Application.DTO.Request;
-using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
-using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
-using EduQuest_Application.UseCases.FavoriteCourse.Commands.AddFavoriteList;
+﻿using EduQuest_Application.UseCases.FavoriteCourse.Commands.AddFavoriteList;
 using EduQuest_Application.UseCases.FavoriteCourse.Commands.DeleteFavoriteList;
 using EduQuest_Application.UseCases.FavoriteCourse.Queries.SearchFavoriteCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -23,10 +19,10 @@ namespace EduQuest_API.Controllers
 
 		}
 
-		[HttpGet("")]
+		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> AddFavCourse([FromQuery] string courseId, string userId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> AddFavCourse([FromBody] string courseId, string userId, CancellationToken cancellationToken = default)
 		{
 			var result = await _mediator.Send(new AddFavoriteListCommand(userId, courseId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);

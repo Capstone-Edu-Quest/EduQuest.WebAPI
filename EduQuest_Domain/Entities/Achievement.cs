@@ -9,11 +9,11 @@ namespace EduQuest_Domain.Entities
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public string Image { get; set; }
-		public string Color { get; set; }
-
-		[JsonIgnore]
+		public string? Color { get; set; }
+        
+        [JsonIgnore]
 		public virtual ICollection<User> Users { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Badge> Badges { get; set; }
+		public virtual ICollection<Badge> Badges { get; set; } = new List<Badge>();
 	}
 }

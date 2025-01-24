@@ -31,7 +31,7 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Achievement>? Achievements { get; set; }
+		public virtual ICollection<Achievement>? Achievements { get; set; } = new List<Achievement>();
 		[JsonIgnore]
 		public virtual ICollection<Badge>? Badges { get; set; }
 		[JsonIgnore]
