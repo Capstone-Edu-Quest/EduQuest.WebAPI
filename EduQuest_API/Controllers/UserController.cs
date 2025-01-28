@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EduQuest_API.Controllers
 {
-	[Route(Constants.Http.API_VERSION + "/User")]
+	[Route(Constants.Http.API_VERSION + "/user")]
 	public class UserController : BaseController
 	{
 		private ISender _mediator;

@@ -13,7 +13,6 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
 		public virtual ICollection<User> Users { get; set; }
-		[JsonIgnore]
-		public virtual ICollection<Achievement> Achievements { get; set; }
+		
 	}
 }

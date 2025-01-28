@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement
 {
-	public class UpdateAchievementCommand : IRequest<APIResponse>
+	public class UpdateQuestCommand : IRequest<APIResponse>
 	{
-		public UpdateAchievementRequest Achievement { get; set; }
+		public UpdateQuestRequest Quest { get; set; }
 
-		public UpdateAchievementCommand(UpdateAchievementRequest achievement)
+		public UpdateQuestCommand(UpdateQuestRequest quest)
 		{
-			Achievement = achievement;
+			Quest = quest;
 		}
 	}
 }

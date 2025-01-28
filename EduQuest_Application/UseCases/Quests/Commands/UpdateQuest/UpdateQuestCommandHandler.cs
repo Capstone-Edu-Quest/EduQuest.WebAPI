@@ -1,28 +1,31 @@
 ﻿using AutoMapper;
-using EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using static EduQuest_Domain.Constants.Constants;
 using System.Net;
-using System.Reflection.Metadata.Ecma335;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement
 {
-	public class UpdateAchievementCommandHandler : IRequestHandler<UpdateAchievementCommand, APIResponse>
+	public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, APIResponse>
 	{
-		private readonly IAchievementRepository _achievementRepository;
+		private readonly IQuestRepository _questRepository;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IBadgeRepository _badgeRepository;
 
-		
-
-		public async Task<APIResponse> Handle(UpdateAchievementCommand request, CancellationToken cancellationToken)
+		public UpdateQuestCommandHandler(IQuestRepository questRepository, IMapper mapper, IUnitOfWork unitOfWork, IBadgeRepository badgeRepository)
 		{
-			var achiExisted = await _achievementRepository.GetAchievementById(request.Achievement.Id);
+			_questRepository = questRepository;
+			_mapper = mapper;
+			_unitOfWork = unitOfWork;
+			_badgeRepository = badgeRepository;
+		}
+
+		public async Task<APIResponse> Handle(UpdateQuestCommand request, CancellationToken cancellationToken)
+		{
+			var achiExisted = await _questRepository.GetQuestById(request.Quest.Id);
 			if(achiExisted.Users == null)
 			{
 				return new APIResponse
@@ -37,16 +40,16 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement
 					}
 				};
 			}
-			achiExisted.Name = request.Achievement.Name;
-			achiExisted.Description = request.Achievement.Description;
-			achiExisted.Badges.Clear();
-			foreach (var badId in request.Achievement.ListBadgeId)
-			{
-				var badge = await _badgeRepository.GetById(badId);
-				achiExisted.Badges.Add(badge!);
-				await _unitOfWork.SaveChangesAsync();
-			}
-			await _achievementRepository.Add(achiExisted);
+			achiExisted.Name = request.Quest.Name;
+			achiExisted.Description = request.Quest.Description;
+			//achiExisted.Badges.Clear();
+			//foreach (var badId in request.Quest.ListBadgeId)
+			//{
+			//	var badge = await _badgeRepository.GetById(badId);
+			//	achiExisted.Badges.Add(badge!);
+			//	await _unitOfWork.SaveChangesAsync();
+			//}
+			await _questRepository.Add(achiExisted);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse
 			{

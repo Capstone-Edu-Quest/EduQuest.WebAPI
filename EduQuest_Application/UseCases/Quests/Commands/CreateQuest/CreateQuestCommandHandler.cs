@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.UseCases.Quests.Commands.CreateQuest;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -9,14 +10,14 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 {
-	public class CreateAchievementCommandHandler : IRequestHandler<CreateAchievementCommand, APIResponse>
+	public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, APIResponse>
 	{
-		private readonly IAchievementRepository _achievementRepository;
+		private readonly IQuestRepository _achievementRepository;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IBadgeRepository _badgeRepository;
 
-		public CreateAchievementCommandHandler(IAchievementRepository achievementRepository, IMapper mapper, IUnitOfWork unitOfWork, IBadgeRepository badgeRepository)
+		public CreateQuestCommandHandler(IQuestRepository achievementRepository, IMapper mapper, IUnitOfWork unitOfWork, IBadgeRepository badgeRepository)
 		{
 			_achievementRepository = achievementRepository;
 			_mapper = mapper;
@@ -24,22 +25,22 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 			_badgeRepository = badgeRepository;
 		}
 
-		public async Task<APIResponse> Handle(CreateAchievementCommand request, CancellationToken cancellationToken)
+		public async Task<APIResponse> Handle(CreateQuestCommand request, CancellationToken cancellationToken)
 		{
-			var achiEntity = _mapper.Map<Achievement>(request.Achievement);
-			achiEntity.Id = Guid.NewGuid().ToString();
-			foreach(var badId in request.Achievement.ListBadgeId)
-			{
-				var badge = await _badgeRepository.GetById(badId);
-				achiEntity.Badges.Add(badge!);
-				await _unitOfWork.SaveChangesAsync();
-			}
-			await _achievementRepository.Add(achiEntity);
+			var questEntity = _mapper.Map<Quest>(request.Quest);
+			questEntity.Id = Guid.NewGuid().ToString();
+			//foreach(var badId in request.Quest.ListBadgeId)
+			//{
+			//	var badge = await _badgeRepository.GetById(badId);
+			//	questEntity.Badges.Add(badge!);
+			//	await _unitOfWork.SaveChangesAsync();
+			//}
+			await _achievementRepository.Add(questEntity);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse
 			{
 				IsError = !result,
-				Payload = result ? achiEntity : null,
+				Payload = result ? questEntity : null,
 				Errors = result ? null : new ErrorResponse
 				{
 					StatusResponse = HttpStatusCode.BadRequest,

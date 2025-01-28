@@ -3,7 +3,7 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Request
 {
-	public class UpdateAchievementRequest : IMapFrom<Achievement>, IMapTo<Achievement>
+	public class UpdateQuestRequest : IMapFrom<Quest>, IMapTo<Quest>
 	{
         public string Id { get; set; }
         public string Name { get; set; }

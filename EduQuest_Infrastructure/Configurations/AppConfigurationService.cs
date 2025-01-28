@@ -117,7 +117,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
 			services.AddScoped<IStageRepository, StageRepository>();
 			services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
-			services.AddScoped<IAchievementRepository, AchievementRepository>();
+			services.AddScoped<IQuestRepository, QuestRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			#endregion
 
