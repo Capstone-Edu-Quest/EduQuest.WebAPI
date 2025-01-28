@@ -140,7 +140,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region FavoriteList
 		public void Configure(EntityTypeBuilder<FavoriteList> builder)
 		{
-			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
+			
 
 			// Define the relationship with User
 			builder.HasOne(fl => fl.User)

@@ -88,6 +88,11 @@ namespace EduQuest_Domain.Constants
 			//public const string UserDontHavePer = "USER_DONT_HAVE_PERMISSION";
 		}
 
+		public static class MessageAchievement
+		{
+			public const string ExistedUser = "USERS HAVE USED";
+		}
+
 		#endregion	
 
 	}

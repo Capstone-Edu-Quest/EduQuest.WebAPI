@@ -26,7 +26,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			var listCourse = await _courseRepository.GetAll();
 			if(request.SearchRequest.KeywordName != null)
 			{
-				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName)));
+				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
 			} else if(request.SearchRequest.DateTo != null)
 			{
 				listCourse = listCourse.Where(x => x.LastUpdated <= request.SearchRequest.DateTo);
