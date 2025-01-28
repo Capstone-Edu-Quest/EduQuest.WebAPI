@@ -16,13 +16,13 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<User> Users { get; set; } = null!;
 		public virtual DbSet<Role> Roles { get; set; } = null!;
 		public virtual DbSet<AccountPackage> AccountPackages { get; set; } = null!;
-		public virtual DbSet<Achievement> Achievements { get; set; } = null!;
+		public virtual DbSet<Quest> Quests { get; set; } = null!;
 		public virtual DbSet<Answer> Answers { get; set; } = null!;
 		public virtual DbSet<Badge> Badges { get; set; } = null!;
 		public virtual DbSet<Cart> Carts { get; set; } = null!;
 		public virtual DbSet<Certificate> Certificates { get; set; } = null!;
 		public virtual DbSet<Course> Courses { get; set; } = null!;
-		public virtual DbSet<CourseAchievement> CourseAchievements { get; set; } = null!;
+		public virtual DbSet<ShopItem> ShopItems { get; set; } = null!;
 		public virtual DbSet<FavoriteList> FavoriteLists { get; set; } = null!;
 		public virtual DbSet<Feedback> Feedbacks { get; set; } = null!;
 		public virtual DbSet<Item> Items { get; set; } = null!;
@@ -37,14 +37,14 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<Question> Questions { get; set; } = null!;
 		public virtual DbSet<Quiz> Quizzes { get; set; } = null!;
 		public virtual DbSet<QuizAttempt> QuizAttempts { get; set; } = null!;
-		public virtual DbSet<Reward> Rewards { get; set; } = null!;
 		public virtual DbSet<SearchHistory> SearchHistories { get; set; } = null!;
 		public virtual DbSet<Setting> Settings { get; set; } = null!;
 		public virtual DbSet<Stage> Stages { get; set; } = null!;
 		public virtual DbSet<Tag> Tags { get; set; } = null!;
 		public virtual DbSet<Transaction> Transactions { get; set; } = null!;
 		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
-		
+		public virtual DbSet<Level> Level { get; set; } = null!;
+
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
