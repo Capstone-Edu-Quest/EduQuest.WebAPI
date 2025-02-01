@@ -12,9 +12,9 @@ namespace EduQuest_Domain.Entities
 		public int Level { get; set; }
 
 		public virtual Course Course { get; set; } = null;
-		public virtual ICollection<Reward> Rewards { get; set; } = null;
+		
 		[JsonIgnore]
-		public virtual ICollection<LearningMaterial> LearningMaterials { get; set; }
+		public virtual LearningMaterial LearningMaterial { get; set; }
 		
 	}
 }

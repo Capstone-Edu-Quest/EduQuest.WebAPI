@@ -7,35 +7,43 @@ namespace EduQuest_Domain.Entities
 	[Table("User")]
 	public partial class User : BaseEntity
 	{
-		public string Username { get; set; } = string.Empty;
+		public string? Username { get; set; } = string.Empty;
 		public string? AvatarUrl { get; set; }
-		public string Email { get; set; } = string.Empty;
-		public string Phone { get; set; } = string.Empty;
+		public string? Email { get; set; } = string.Empty;
+		public string? Phone { get; set; } = string.Empty;
+		public string? Headline { get; set; }
+		public string? Description { get; set; }
 		public string? PasswordHash { get; set; }
 		public string? PasswordSalt { get; set; }
-		public string RoleId { get; set; }
-		public string PackagePrivilegeId { get; set; }
-		public string AccountPackageId { get; set; }
-
-		public virtual Role Role { get; set; } = null!;
-		public virtual AccountPackage AccountPackage { get; set; } = null!;
-		public virtual PackagePrivilege PackagePrivilege { get; set; } = null!;
-		public virtual UserStatistic UserStatistic { get; set; } = null!;
+		public string? RoleId { get; set; }
+		public string? PackagePrivilegeId { get; set; }
+		public string? AccountPackageId { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<SearchHistory> SearchHistories { get; set; }
+		public virtual Role? Role { get; set; } = null!;
 		[JsonIgnore]
-		public virtual ICollection<Achievement> Achievements { get; set; }
+		public virtual AccountPackage? AccountPackage { get; set; } = null!;
 		[JsonIgnore]
-		public virtual ICollection<Badge> Badges { get; set; }
+		public virtual PackagePrivilege? PackagePrivilege { get; set; } = null!;
 		[JsonIgnore]
-		public virtual ICollection<Certificate> Certificates { get; set; }
+		public virtual UserStatistic? UserStatistic { get; set; } = null!;
 		[JsonIgnore]
-		public virtual ICollection<Course> Courses { get; set; }
+		public virtual UserMascot UserMascot { get; set; } = null!;
+
 		[JsonIgnore]
-		public virtual ICollection<Cart> Carts { get; set; }
+		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+		public virtual ICollection<Quest>? Quests { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Badge>? Badges { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Certificate>? Certificates { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Course>? Courses { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Cart>? Carts { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
 		
 	}
 }
