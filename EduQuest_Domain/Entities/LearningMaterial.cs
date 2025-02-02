@@ -10,7 +10,8 @@ namespace EduQuest_Domain.Entities
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public string UrlMaterial { get; set; }
+        public int? Duration { get; set; }
 
-		public virtual Stage Stage { get; set; } = null;
+        public virtual Stage Stage { get; set; } = null;
 	}
 }

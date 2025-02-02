@@ -1,5 +1,6 @@
 ﻿using EduQuest_Domain.Models.Response;
 using System.Net;
+using System.Text.Json;
 
 namespace EduQuest_API.Middleware
 {
@@ -38,21 +39,25 @@ namespace EduQuest_API.Middleware
 				Location = (methodError != null ? "Class: " + methodError + ", " : "") + "Method: " + ex.TargetSite?.Name,
 				Detail = ex.Message,
 			};
+			var apiResponse = new APIResponse
+			{
+				IsError = true,
+				Payload = null,
+				Errors = errorResponse
+			};
+
+			// Set response metadata
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = statusCode;
 
-			if (ex is FluentValidation.ValidationException validationException)
+			// Serialize the APIResponse to JSON and return it
+			var responseJson = JsonSerializer.Serialize(apiResponse, new JsonSerializerOptions
 			{
-				validationException.Errors.Select(error => new
-				{
-					PropertyName = error.PropertyName,
-					ErrorMessage = error.ErrorMessage
-				}).ToList();
+				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+				WriteIndented = true
+			});
 
-
-			}
-
-			return context.Response.WriteAsync(errorResponse.ToString());
+			return context.Response.WriteAsync(responseJson);
 
 
 

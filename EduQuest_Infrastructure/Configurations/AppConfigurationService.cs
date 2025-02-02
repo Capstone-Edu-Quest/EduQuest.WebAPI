@@ -2,6 +2,7 @@
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
+using EduQuest_Infrastructure.Configurations;
 using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
 using EduQuest_Infrastructure.ExternalServices.Oauth2.Setting;
 using EduQuest_Infrastructure.Persistence;
@@ -42,8 +43,14 @@ namespace EduQuest_Infrastructure
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
 						b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
 					});
+				//options.EnableSensitiveDataLogging();
+				//options.EnableDetailedErrors();
 				options.UseLazyLoadingProxies();
 			});
+
+			//services.AddTransient<ApplicationDbContext>();
+			//services.AddScoped<IApplicationDbContext>(
+				//provider => provider.GetService<ApplicationDbContext>());
 
 			#endregion
 
@@ -107,7 +114,13 @@ namespace EduQuest_Infrastructure
 			#region AddSingleton
 			services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
 			services.AddScoped<IUserRepository, UserRepository>();
-
+			services.AddScoped<ICourseRepository, CourseRepository>();
+			services.AddScoped<ITagRepository, TagRepository>();
+			services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
+			services.AddScoped<IStageRepository, StageRepository>();
+			services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
+			services.AddScoped<IQuestRepository, QuestRepository>();
+			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			#endregion
 
 			#region Swagger
@@ -205,7 +218,7 @@ namespace EduQuest_Infrastructure
 			await using ApplicationDbContext dbContext =
 				scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			await dbContext.Database.MigrateAsync();
-
+			//await DatabaseInitializer.InitializeAsync(dbContext);
 		}
 		public static async Task ManageDataAsync(IServiceProvider svcProvider)
 		{

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
 {
@@ -13,22 +8,31 @@ namespace EduQuest_Domain.Entities
 	{
 		public string Title { get; set; } = string.Empty;
 		public string? Description { get; set; }
-		public string? Color { get; set; }
-		public decimal Price { get; set; }
-		public bool IsRequired { get; set; }
+        public string? PhotoUrl { get; set; }
+        public string? Color { get; set; }
+		public decimal? Price { get; set; }
+        public string? Requirement { get; set; }
+        public string? Feature { get; set; }
+        public bool IsRequired { get; set; }
 		public string CreatedBy { get; set; }
+		public DateTime? LastUpdated { get; set; }
 
+		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
+		[JsonIgnore]
+		public virtual CourseStatistic CourseStatistic { get; set; } = null!;
 
 		[JsonIgnore]
-		public virtual ICollection<Certificate> Certificates { get; set; }
+		public virtual ICollection<Certificate>? Certificates { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Tag> Tags { get; set; }
+		public virtual ICollection<Tag>? Tags { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Item> Items { get; set; }
+		public virtual ICollection<Item>? Items { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Cart> Carts { get; set; }
+		public virtual ICollection<Cart>? Carts { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<FavoriteList> FavoriteLists { get; set; }
+		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Stage>? Stages { get; set; }
 	}
 }

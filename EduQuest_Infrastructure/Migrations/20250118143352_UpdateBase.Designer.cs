@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250103135420_UpdateEntities")]
-    partial class UpdateEntities
+    [Migration("20250118143352_UpdateBase")]
+    partial class UpdateBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,21 +27,6 @@ namespace EduQuest_Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AccountPackagePackagePrivilege", b =>
-                {
-                    b.Property<string>("AccountPackagesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PackagePrivilegesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("AccountPackagesId", "PackagePrivilegesId");
-
-                    b.HasIndex("PackagePrivilegesId");
-
-                    b.ToTable("AccountPackagePackagePrivilege");
-                });
 
             modelBuilder.Entity("AchievementUser", b =>
                 {
@@ -373,8 +358,17 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<bool>("IsRequired")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("Price")
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Requirement")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -448,6 +442,10 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -457,6 +455,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("UserId", "CourseId");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.ToTable("FavoriteList");
                 });
@@ -688,7 +688,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("StageId");
+                    b.HasIndex("StageId")
+                        .IsUnique();
 
                     b.ToTable("LearningMaterial");
                 });
@@ -1217,8 +1218,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("AccountPackageId")
-                        .HasColumnType("int");
+                    b.Property<string>("AccountPackageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
@@ -1229,12 +1230,17 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PackagePrivilegeId")
-                        .HasColumnType("int");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Headline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PackagePrivilegeId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -1243,11 +1249,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1257,12 +1261,15 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountPackageId");
+
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("PackagePrivilegeId");
 
                     b.HasIndex("RoleId");
 
@@ -1326,21 +1333,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("TransactionsId");
 
                     b.ToTable("PaymentTransaction");
-                });
-
-            modelBuilder.Entity("AccountPackagePackagePrivilege", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.AccountPackage", null)
-                        .WithMany()
-                        .HasForeignKey("AccountPackagesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.PackagePrivilege", null)
-                        .WithMany()
-                        .HasForeignKey("PackagePrivilegesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("AchievementUser", b =>
@@ -1567,8 +1559,8 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningMaterial", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Stage", "Stage")
-                        .WithMany("LearningMaterials")
-                        .HasForeignKey("StageId")
+                        .WithOne("LearningMaterial")
+                        .HasForeignKey("EduQuest_Domain.Entities.LearningMaterial", "StageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1699,7 +1691,7 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.Stage", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Course", "Course")
-                        .WithMany()
+                        .WithMany("Stages")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1720,10 +1712,21 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.User", b =>
                 {
+                    b.HasOne("EduQuest_Domain.Entities.AccountPackage", "AccountPackage")
+                        .WithMany("Users")
+                        .HasForeignKey("AccountPackageId");
+
+                    b.HasOne("EduQuest_Domain.Entities.PackagePrivilege", "PackagePrivilege")
+                        .WithMany("Users")
+                        .HasForeignKey("PackagePrivilegeId");
+
                     b.HasOne("EduQuest_Domain.Entities.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .IsRequired();
+                        .HasForeignKey("RoleId");
+
+                    b.Navigation("AccountPackage");
+
+                    b.Navigation("PackagePrivilege");
 
                     b.Navigation("Role");
                 });
@@ -1754,6 +1757,11 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.AccountPackage", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.Cart", b =>
                 {
                     b.Navigation("Payments");
@@ -1766,11 +1774,18 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Certificates");
 
                     b.Navigation("FavoriteLists");
+
+                    b.Navigation("Stages");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPath", b =>
                 {
                     b.Navigation("LearningPathCourses");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.PackagePrivilege", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Question", b =>
@@ -1790,7 +1805,8 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Stage", b =>
                 {
-                    b.Navigation("LearningMaterials");
+                    b.Navigation("LearningMaterial")
+                        .IsRequired();
 
                     b.Navigation("Rewards");
                 });
@@ -1807,8 +1823,7 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Navigation("SearchHistories");
 
-                    b.Navigation("UserStatistic")
-                        .IsRequired();
+                    b.Navigation("UserStatistic");
                 });
 #pragma warning restore 612, 618
         }
