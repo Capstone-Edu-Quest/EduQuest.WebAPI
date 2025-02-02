@@ -13,9 +13,10 @@ VALUES
 -- Insert data into Role table
 INSERT INTO [Edu_Quest].[dbo].[Role] ([Id], [RoleName], [CreatedAt], [UpdatedBy], [UpdatedAt], [DeletedAt])
 VALUES 
-(1, 'Guest', GETDATE(), 'System', GETDATE(), NULL),
-(2, 'User', GETDATE(), 'System', GETDATE(), NULL),
-(3, 'Admin', GETDATE(), 'System', GETDATE(), NULL);
+(1, 'Admin', GETDATE(), 'System', GETDATE(), NULL),
+(2, 'Instructor', GETDATE(), 'System', GETDATE(), NULL),
+(3, 'Learner', GETDATE(), 'System', GETDATE(), NULL),
+(4, 'Guest', GETDATE(), 'System', GETDATE(), NULL);
 
 INSERT INTO [Edu_Quest].[dbo].[User] (
     [Id],

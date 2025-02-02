@@ -14,5 +14,9 @@ namespace EduQuest_Application.DTO.Response
         public string Username { get; set; }
         public string Headline { get; set; }
         public string Description { get; set; }
-    }
+		public int? TotalCourseCreated { get; set; }
+		public int? TotalLearner { get; set; }
+		public double? Rating { get; set; }
+		public int? TotalReview { get; set; }
+	}
 }

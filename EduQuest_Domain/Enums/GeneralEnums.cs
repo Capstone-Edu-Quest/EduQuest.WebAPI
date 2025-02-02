@@ -31,5 +31,14 @@ namespace EduQuest_Domain.Enums
 
 		#endregion
 
+		#region Course
+		public enum SortCourse
+		{
+			MostReviews = 1,
+			NewestCourses = 2,
+			HighestRated = 3
+		}
+		#endregion
+
 	}
 }

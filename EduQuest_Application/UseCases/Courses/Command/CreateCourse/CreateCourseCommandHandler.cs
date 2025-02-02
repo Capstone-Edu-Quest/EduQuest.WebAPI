@@ -58,19 +58,23 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 					_unitOfWork.SaveChangesAsync();
 					i++;
 					
-					if (stagerequest.LearningMaterial != null)
+
+					if(stagerequest.LearningMaterial != null)
 					{
-						stage.LearningMaterial = new LearningMaterial
+						foreach(var learningMaterial in stagerequest.LearningMaterial)
 						{
-							StageId = stage.Id,
-							Id = Guid.NewGuid().ToString(),
-							Type = stagerequest.LearningMaterial.Type!,
-							Title = stagerequest.LearningMaterial.Title!,
-							Description = stagerequest.LearningMaterial.Description!,
-							UrlMaterial = stagerequest.LearningMaterial.UrlMaterial!
-						};
-						_learningMaterialRepository.Add(stage.LearningMaterial);
-						_unitOfWork.SaveChangesAsync();
+							var newLM = new LearningMaterial
+							{
+								StageId = stage.Id,
+								Id = Guid.NewGuid().ToString(),
+								Type = learningMaterial.Type!,
+								Title = learningMaterial.Title!,
+								Description = learningMaterial.Description!,
+								UrlMaterial = learningMaterial.UrlMaterial!
+							};
+							_learningMaterialRepository.Add(newLM);
+							_unitOfWork.SaveChangesAsync();
+						}
 					}
 					return stage;
 				}).ToList();

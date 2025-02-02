@@ -22,6 +22,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<Cart> Carts { get; set; } = null!;
 		public virtual DbSet<Certificate> Certificates { get; set; } = null!;
 		public virtual DbSet<Course> Courses { get; set; } = null!;
+		public virtual DbSet<CourseStatistic> CourseStatistics { get; set; } = null!;
 		public virtual DbSet<ShopItem> ShopItems { get; set; } = null!;
 		public virtual DbSet<FavoriteList> FavoriteLists { get; set; } = null!;
 		public virtual DbSet<Feedback> Feedbacks { get; set; } = null!;

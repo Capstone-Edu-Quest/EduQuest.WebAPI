@@ -10,11 +10,15 @@ namespace EduQuest_Application.UseCases.FavoriteCourse.Queries.SearchFavoriteCou
 	public class SearchFavoriteCourseQueryHandler : IRequestHandler<SearchFavoriteCourseQuery, APIResponse>
 	{
 		private readonly IFavoriteListRepository _favoriteListRepository;
+		private readonly IUserRepository _userRepository;
+		private readonly ICourseStatisticRepository _courseStatisticRepository;
 		private readonly IMapper _mapper;
 
-		public SearchFavoriteCourseQueryHandler(IFavoriteListRepository favoriteListRepository, IMapper mapper)
+		public SearchFavoriteCourseQueryHandler(IFavoriteListRepository favoriteListRepository, IUserRepository userRepository, ICourseStatisticRepository courseStatisticRepository, IMapper mapper)
 		{
 			_favoriteListRepository = favoriteListRepository;
+			_userRepository = userRepository;
+			_courseStatisticRepository = courseStatisticRepository;
 			_mapper = mapper;
 		}
 
@@ -25,17 +29,19 @@ namespace EduQuest_Application.UseCases.FavoriteCourse.Queries.SearchFavoriteCou
 			{
 				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.Course.Title.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.Name.ToLower()))).ToList();
 			}
-			 var listResponse = new List<FavoriteCourseResponse>();
-			listCourse.Select(course =>
+			var listResponse = new List<FavoriteCourseResponse>();
+			listCourse.Select(async course =>
 			{
 				var response = _mapper.Map<FavoriteCourseResponse>(course.Course);
-				response.Author = course.User! != null ? new AuthorCourseResponse
-				{
-					Id = course.User.Id,
-					Username = course.User.Username ?? string.Empty,
-					Headline = course.User.Headline ?? string.Empty,
-					Description = course.User.Description ?? string.Empty
-				} : null;
+				var user = await _userRepository.GetById(course.UserId);
+				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Course.Id);
+
+				//Mapping data
+				response.Author = user!.Username!;
+				response.Rating = courseSta.Rating;
+				response.TotalLesson = courseSta.TotalLesson;
+				response.TotalReview = courseSta.TotalReview;
+				response.TotalTime = courseSta.TotalTime;	
 				listResponse.Add(response);
 				return response;
 			}).ToList();

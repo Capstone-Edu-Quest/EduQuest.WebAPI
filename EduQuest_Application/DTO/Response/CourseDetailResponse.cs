@@ -14,14 +14,17 @@ namespace EduQuest_Application.DTO.Response
 		public string Title { get; set; } = string.Empty;
 		public string? Description { get; set; }
 		public string? PhotoUrl { get; set; }
-        public int NumOfPurchased { get; set; }
+		public string? Requirement { get; set; }
+		public string? Feature { get; set; }
 		public DateTime? LastUpdated { get; set; }
-		public decimal Price { get; set; }
+		public decimal Price { get; set; }	
 		public decimal? DiscountPrice { get; set; }
-		public double? Rating { get; set; }
 		public AuthorCourseResponse? Author { get; set; }
         public List<StageCourseResponse>? ListStage { get; set; }
 		public List<TagResponse>? ListTag { get; set; }
+		public int? TotalLearner { get; set; }
+		public double? Rating { get; set; }
+		public int? TotalReview { get; set; }
 
 		//public void Mapping(Profile profile)
 		//{
