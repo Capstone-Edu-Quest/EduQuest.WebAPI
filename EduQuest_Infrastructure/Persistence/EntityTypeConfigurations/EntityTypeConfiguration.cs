@@ -7,7 +7,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 	public class EntityTypeConfiguration :
 		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<AccountPackage>,
 		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Badge>,
-		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>,
+		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
 		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<LearnerStatistic>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
@@ -133,6 +133,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.WithOne(fl => fl.Course)
 				.HasForeignKey(fl => fl.CourseId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+		}
+		#endregion
+
+		#region CourseStatistic
+		public void Configure(EntityTypeBuilder<CourseStatistic> builder)
+		{
+			
 
 		}
 		#endregion
