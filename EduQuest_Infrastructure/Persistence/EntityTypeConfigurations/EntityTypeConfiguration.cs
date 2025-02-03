@@ -13,12 +13,11 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
-		IEntityTypeConfiguration<Reward>, IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
+		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
-		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>
-		IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>, IEntityTypeConfiguration<Stage>,
-		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<UserMascot>,
-		IEntityTypeConfiguration<UserStatistic>
+		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<UserMascot>
+		
 	{
 		#region Role
 		public void Configure(EntityTypeBuilder<Role> builder)
@@ -383,10 +382,9 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 		}
 		#endregion
-	}
+	
 
-		}
-        #endregion
+		
 
         #region Refresh token
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
