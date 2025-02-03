@@ -13,5 +13,6 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
 		public virtual ICollection<User> Users { get; set; }
+		
 	}
 }

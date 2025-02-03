@@ -2,6 +2,7 @@
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -12,6 +13,18 @@ namespace EduQuest_Infrastructure.Repository
 		public FavoriteListRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<bool> DeleteFavList(string userId, string courseId)
+		{
+			var favCourse = await _context.FavoriteLists.Where(x => x.UserId.Equals(userId) && x.CourseId.Equals(courseId)).FirstOrDefaultAsync();
+			_context.FavoriteLists.Remove(favCourse!);
+			return await _context.SaveChangesAsync() > 0;
+		}
+
+		public async Task<List<FavoriteList>> GetFavoriteListByUserId(string userId)
+		{
+			return await _context.FavoriteLists.Include(x => x.Course).Include(x => x.User).Where(x => x.UserId == userId).ToListAsync();
 		}
 	}
 }

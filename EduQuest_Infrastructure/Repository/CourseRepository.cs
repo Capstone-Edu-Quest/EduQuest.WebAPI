@@ -15,14 +15,21 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
+		//public async Task<IEnumerable<Course>> GetAllCourse()
+		//{
+		//	return await _context.Courses.Include(x => x.User).Include(x => x.CourseStatistic).ToListAsync();
+		//}
+
 		public async Task<Course> GetCourseById(string Id)
 		{
-			return await _context.Courses.Include(x => x.Stages).Include(x => x.User).Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == Id);
+			return await _context.Courses.Include(x => x.Stages).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == Id);
 		}
 
-		public async Task<List<Course>> GetCourseByUserId(string Id)
+		public async Task<IEnumerable<Course>> GetCourseByUserId(string Id)
 		{
 			return await _context.Courses.Include(x => x.Stages).Include(x => x.Tags).Where(x => x.CreatedBy == Id).ToListAsync();
 		}
+
+
 	}
 }

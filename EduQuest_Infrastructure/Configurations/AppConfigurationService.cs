@@ -176,6 +176,12 @@ namespace EduQuest_Infrastructure
 			}));
 			#endregion
 
+			//#region Firebase
+			//FirebaseApp.Create(new AppOptions
+			//{
+			//	Credential = GoogleCredential.FromFile("path/to/service-account.json")
+			//});
+			//#endregion
 
 			return services;
 		}

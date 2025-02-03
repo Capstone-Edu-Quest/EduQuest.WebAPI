@@ -6,16 +6,19 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 {
 	public class EntityTypeConfiguration :
 		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<AccountPackage>,
-		IEntityTypeConfiguration<Achievement>, IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Badge>,
-		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>,
-		IEntityTypeConfiguration<CourseAchievement>, IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
+		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Badge>,
+		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
+		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
 		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<LearnerStatistic>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
-		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>,
+		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
 		IEntityTypeConfiguration<Reward>, IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
 		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>
+		IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>, IEntityTypeConfiguration<Stage>,
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<UserMascot>,
+		IEntityTypeConfiguration<UserStatistic>
 	{
 		#region Role
 		public void Configure(EntityTypeBuilder<Role> builder)
@@ -91,12 +94,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 		#endregion
 
-		#region Achievement
-		public void Configure(EntityTypeBuilder<Achievement> builder)
-		{
-
-		}
-		#endregion
+		
 
 		#region Answer
 		public void Configure(EntityTypeBuilder<Answer> builder)
@@ -174,10 +172,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region CourseAchievement
-		public void Configure(EntityTypeBuilder<CourseAchievement> builder)
+		#region CourseStatistic
+		public void Configure(EntityTypeBuilder<CourseStatistic> builder)
 		{
-
+			
 
 		}
 		#endregion
@@ -185,7 +183,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region FavoriteList
 		public void Configure(EntityTypeBuilder<FavoriteList> builder)
 		{
-			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
+			
 
 			// Define the relationship with User
 			builder.HasOne(fl => fl.User)
@@ -266,6 +264,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
+		#region Level
+		public void Configure(EntityTypeBuilder<Level> builder)
+		{
+			
+
+		}
+		#endregion
+
 		#region PackagePrivilege
 		public void Configure(EntityTypeBuilder<PackagePrivilege> builder)
 		{
@@ -278,6 +284,13 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		public void Configure(EntityTypeBuilder<Payment> builder)
 		{
 
+
+		}
+		#endregion
+
+		#region Quest
+		public void Configure(EntityTypeBuilder<Quest> builder)
+		{
 
 		}
 		#endregion
@@ -306,13 +319,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region Reward
-		public void Configure(EntityTypeBuilder<Reward> builder)
-		{
-
-
-		}
-		#endregion
 
 		#region SearchHistory
 		public void Configure(EntityTypeBuilder<SearchHistory> builder)
@@ -332,6 +338,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 		#region Stage
 		public void Configure(EntityTypeBuilder<Stage> builder)
+		{
+
+
+		}
+		#endregion
+
+		#region SystemConfig
+		public void Configure(EntityTypeBuilder<SystemConfig> builder)
 		{
 
 
@@ -358,6 +372,18 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		public void Configure(EntityTypeBuilder<UserStatistic> builder)
 		{
 
+
+		}
+		#endregion
+
+		#region UserMascot
+		public void Configure(EntityTypeBuilder<UserMascot> builder)
+		{
+
+
+		}
+		#endregion
+	}
 
 		}
         #endregion

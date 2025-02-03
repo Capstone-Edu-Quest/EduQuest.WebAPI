@@ -11,20 +11,25 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 		private readonly ICourseRepository _courseRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
+		private readonly IUserStatisticRepository _userStatisticRepository;
 
-		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IUserRepository userRepository, IMapper mapper)
+		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IUserRepository userRepository, IMapper mapper, IUserStatisticRepository userStatisticRepository)
 		{
 			_courseRepository = courseRepository;
 			_userRepository = userRepository;
 			_mapper = mapper;
+			_userStatisticRepository = userStatisticRepository;
 		}
 
 		public async Task<APIResponse> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
 		{
-			var course = await _courseRepository.GetById(request.CourseId);
+			var course = await _courseRepository.GetCourseById(request.CourseId);
 			
 			var courseResponse = _mapper.Map<CourseDetailResponse>(course);
-
+			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
+			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
+			courseResponse.Rating = course.CourseStatistic.Rating;
+			
 			courseResponse.Author = course.User! != null ? new AuthorCourseResponse
 			{
 				Id = course.User.Id,
@@ -33,12 +38,19 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				Description = course.User.Description ?? string.Empty
 			} : null;
 
+			var userSta = await _userStatisticRepository.GetByUserId(course.User!.Id);
+			courseResponse.Author!.TotalCourseCreated = userSta.TotalCourseCreated;
+			courseResponse.Author.TotalReview = userSta.TotalReview;
+			courseResponse.Author.Rating = userSta.Rating;
+			courseResponse.Author.TotalLearner = userSta.TotalLearner;
+
 
 			courseResponse.ListStage = course.Stages?
 				.Select(stage => new StageCourseResponse
 				{
 					Level = stage.Level,
-					Name = stage.Name
+					Name = stage.Name,
+					TotalTime = stage.TotalTime,
 				})
 				.ToList() ?? new List<StageCourseResponse>();
 
@@ -47,7 +59,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				Name = tag.Name
 			}).ToList() ?? new List<TagResponse>();
 
-			//Chưa có rating, data fb
+			//Chưa có data fb
 			//Hoàn tiền
 
 			return new APIResponse

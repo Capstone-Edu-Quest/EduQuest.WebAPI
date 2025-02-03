@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
 {
@@ -17,12 +12,15 @@ namespace EduQuest_Domain.Entities
         public string? Color { get; set; }
 		public decimal? Price { get; set; }
         public string? Requirement { get; set; }
+        public string? Feature { get; set; }
         public bool IsRequired { get; set; }
 		public string CreatedBy { get; set; }
 		public DateTime? LastUpdated { get; set; }
 
 		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
+		[JsonIgnore]
+		public virtual CourseStatistic CourseStatistic { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<Certificate>? Certificates { get; set; }

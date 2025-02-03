@@ -27,12 +27,13 @@ namespace EduQuest_Domain.Constants
 		#region Authenticate
 		public static class PolicyType
 		{
-			// All user login into system
-			public const string User = "User";
+			
+			public const string Instructor = "Instructor";
 			// Just admin system
 			public const string Admin = "Admin";
 			// Just guest
 			public const string Guest = "Guest";
+			public const string Learner = "Learner";
 		}
 
 		public static class UserClaimType
@@ -88,7 +89,13 @@ namespace EduQuest_Domain.Constants
 			//public const string UserDontHavePer = "USER_DONT_HAVE_PERMISSION";
 		}
 
-		#endregion	
+		public static class MessageAchievement
+		{
+			public const string ExistedUser = "USERS HAVE USED";
+		}
+
+		#endregion
+
 
 	}
 }

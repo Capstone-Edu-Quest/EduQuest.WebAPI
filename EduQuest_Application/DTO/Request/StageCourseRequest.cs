@@ -12,6 +12,6 @@ namespace EduQuest_Application.DTO.Request
 	{
 		public string? Name { get; set; }
 		public string? Description { get; set; }
-        public LearningMaterialStageRequest? LearningMaterial { get; set; }
+        public List<LearningMaterialStageRequest>? LearningMaterial { get; set; }
     }
 }

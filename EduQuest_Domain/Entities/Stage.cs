@@ -10,11 +10,13 @@ namespace EduQuest_Domain.Entities
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public int Level { get; set; }
+        public int? TotalTime { get; set; }
 
-		public virtual Course Course { get; set; } = null;
-		public virtual ICollection<Reward> Rewards { get; set; } = null;
+
+        public virtual Course Course { get; set; } = null;
+		
 		[JsonIgnore]
-		public virtual LearningMaterial LearningMaterial { get; set; }
+		public virtual ICollection<LearningMaterial> LearningMaterials { get; set; }
 		
 	}
 }

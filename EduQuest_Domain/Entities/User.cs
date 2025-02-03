@@ -26,11 +26,13 @@ namespace EduQuest_Domain.Entities
 		public virtual PackagePrivilege? PackagePrivilege { get; set; } = null!;
 		[JsonIgnore]
 		public virtual UserStatistic? UserStatistic { get; set; } = null!;
+		[JsonIgnore]
+		public virtual UserMascot UserMascot { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Achievement>? Achievements { get; set; }
+		public virtual ICollection<Quest>? Quests { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Badge>? Badges { get; set; }
 		[JsonIgnore]
