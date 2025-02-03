@@ -10,9 +10,9 @@ namespace EduQuest_Application.DTO.Response
 {
 	public class UserResponseTestDto : IMapFrom<User>, IMapTo<User>
 	{
-		public string? FullName { get; set; }
+		public string? Username { get; set; }
 		public string? Email { get; set; }
-		public string? Phone { get; set; }
+		public string? Phone { get; set; }	
 		public DateTime? UpdatedAt { get; set; }
 		public DateTime? CreatedAt { get; set; }
 		public string Status { get; set; } = null!;

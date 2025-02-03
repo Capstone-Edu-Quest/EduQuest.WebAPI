@@ -1,74 +1,75 @@
-﻿using EduQuest_Domain.Models.Response;
+﻿using EduQuest_API.Middleware;
+using EduQuest_Domain.Models.Response;
 using System.Net;
 using System.Text.Json;
 
-namespace EduQuest_API.Middleware
+namespace EduQuest_API.Middleware;
+
+public class GlobalException : IMiddleware
 {
-	public class GlobalException : IMiddleware
+	private readonly ILogger<GlobalException> _logger;
+
+	public GlobalException(ILogger<GlobalException> logger)
 	{
-		private readonly ILogger<GlobalException> _logger;
+		_logger = logger;
+	}
 
-		public GlobalException(ILogger<GlobalException> logger)
+	public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+	{
+		try
 		{
-			_logger = logger;
+
+			await next(context);
 		}
-
-		public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+		catch (Exception ex)
 		{
-			try
-			{
-
-				await next(context);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, ex.Message);
-				await HandleException(context, ex);
-			}
-		}
-
-		private static Task HandleException(HttpContext context, Exception ex)
-		{
-			int statusCode = (int)HttpStatusCode.InternalServerError;
-			var methodError = ex.TargetSite?.DeclaringType?.FullName;
-			var errorResponse = new ErrorResponse()
-			{
-				StatusResponse = HttpStatusCode.InternalServerError,
-				StatusCode = statusCode,
-				Message = ex.GetType().ToString(),
-				Location = (methodError != null ? "Class: " + methodError + ", " : "") + "Method: " + ex.TargetSite?.Name,
-				Detail = ex.Message,
-			};
-			var apiResponse = new APIResponse
-			{
-				IsError = true,
-				Payload = null,
-				Errors = errorResponse
-			};
-
-			// Set response metadata
-			context.Response.ContentType = "application/json";
-			context.Response.StatusCode = statusCode;
-
-			// Serialize the APIResponse to JSON and return it
-			var responseJson = JsonSerializer.Serialize(apiResponse, new JsonSerializerOptions
-			{
-				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-				WriteIndented = true
-			});
-
-			return context.Response.WriteAsync(responseJson);
-
-
-
+			_logger.LogError(ex, ex.Message);
+			await HandleException(context, ex);
 		}
 	}
 
-	public static class ExceptionExtention
+	private static Task HandleException(HttpContext context, Exception ex)
 	{
-		public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+		int statusCode = (int)HttpStatusCode.InternalServerError;
+		var methodError = ex.TargetSite?.DeclaringType?.FullName;
+		var errorResponse = new ErrorResponse()
 		{
-			app.UseMiddleware<GlobalException>();
-		}
+			StatusResponse = HttpStatusCode.InternalServerError,
+			StatusCode = statusCode,
+			Message = ex.GetType().ToString(),
+			Location = (methodError != null ? "Class: " + methodError + ", " : "") + "Method: " + ex.TargetSite?.Name,
+			Detail = ex.Message,
+		};
+		var apiResponse = new APIResponse
+		{
+			IsError = true,
+			Payload = null,
+			Errors = errorResponse
+		};
+
+		// Set response metadata
+		context.Response.ContentType = "application/json";
+		context.Response.StatusCode = statusCode;
+
+		// Serialize the APIResponse to JSON and return it
+		var responseJson = JsonSerializer.Serialize(apiResponse, new JsonSerializerOptions
+		{
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+			WriteIndented = true
+		});
+
+		return context.Response.WriteAsync(responseJson);
+
+
+
 	}
+}
+
+
+public static class ExceptionExtention
+{
+    public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<GlobalException>();
+    }
 }
