@@ -122,6 +122,13 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<ITokenValidation, TokenValidation>();
+            services.AddScoped<IQuestRepository, QuestRepository>();
+            services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
+            services.AddScoped<IBadgeRepository, BadgeRepository>();
+            services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
+            services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
+            services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
+
             #endregion
 
             #region Swagger
