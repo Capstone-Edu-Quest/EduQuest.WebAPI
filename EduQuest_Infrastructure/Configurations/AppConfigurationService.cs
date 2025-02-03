@@ -36,8 +36,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseSqlServer(
-					configuration.GetConnectionString("local"),
-					//configuration.GetConnectionString("production"),
+					//configuration.GetConnectionString("local"),
+					configuration.GetConnectionString("production"),
 					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -121,6 +121,9 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
 			services.AddScoped<IQuestRepository, QuestRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
+			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
+			services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
+			services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
 			#endregion
 
 			#region Swagger
@@ -175,12 +178,12 @@ namespace EduQuest_Infrastructure
 			}));
 			#endregion
 
-			#region Firebase
-			FirebaseApp.Create(new AppOptions
-			{
-				Credential = GoogleCredential.FromFile("path/to/service-account.json")
-			});
-			#endregion
+			//#region Firebase
+			//FirebaseApp.Create(new AppOptions
+			//{
+			//	Credential = GoogleCredential.FromFile("path/to/service-account.json")
+			//});
+			//#endregion
 
 			return services;
 		}

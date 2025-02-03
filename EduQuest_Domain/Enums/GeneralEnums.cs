@@ -38,6 +38,13 @@ namespace EduQuest_Domain.Enums
 			NewestCourses = 2,
 			HighestRated = 3
 		}
+
+		public enum TypeOfLearningMetarial
+		{
+			Docs = 1,
+			Video = 2,
+			Quiz = 3
+		}
 		#endregion
 
 	}

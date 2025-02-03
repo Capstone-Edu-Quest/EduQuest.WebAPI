@@ -41,6 +41,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<SearchHistory> SearchHistories { get; set; } = null!;
 		public virtual DbSet<Setting> Settings { get; set; } = null!;
 		public virtual DbSet<Stage> Stages { get; set; } = null!;
+		public virtual DbSet<SystemConfig> SystemConfigs { get; set; } = null!;
 		public virtual DbSet<Tag> Tags { get; set; } = null!;
 		public virtual DbSet<Transaction> Transactions { get; set; } = null!;
 		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
