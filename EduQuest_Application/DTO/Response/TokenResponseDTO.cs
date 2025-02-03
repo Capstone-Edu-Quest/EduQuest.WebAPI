@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EduQuest_Application.DTO.Response;
 
-namespace EduQuest_Application.DTO.Response
+public class TokenResponseDTO
 {
-    public class TokenResponseDTO
-    {
-        public string? AccessToken { get; set; }
-        public string? RefreshToken { get; set; }
-    }
+    public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
 }

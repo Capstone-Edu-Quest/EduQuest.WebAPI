@@ -15,43 +15,75 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
 		IEntityTypeConfiguration<Reward>, IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
-		IEntityTypeConfiguration<UserStatistic>
+		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>
 	{
 		#region Role
 		public void Configure(EntityTypeBuilder<Role> builder)
 		{
 
 		}
-		#endregion
+        #endregion
 
-		#region User
-		public void Configure(EntityTypeBuilder<User> builder)
-		{
+        #region User
+        public void Configure(EntityTypeBuilder<User> builder)
+        {
+            
+            builder.Property(u => u.Username)
+                .IsRequired(false);  
 
-			builder.HasOne(d => d.Role)
-				.WithMany(p => p.Users)
-				.HasForeignKey(d => d.RoleId)
-				.OnDelete(DeleteBehavior.ClientSetNull);
+            builder.Property(u => u.AvatarUrl)
+                .IsRequired(false); 
 
-			builder.HasMany(u => u.Courses)
-				.WithOne(c => c.User)
-				.HasForeignKey(c => c.CreatedBy)
-				.OnDelete(DeleteBehavior.ClientSetNull);
+            builder.Property(u => u.Email)
+                .IsRequired(false); 
 
-			builder.HasMany(u => u.Carts)
-				.WithOne(c => c.User)
-				.HasForeignKey(c => c.UserId)
-				.OnDelete(DeleteBehavior.Cascade);
+            builder.Property(u => u.Phone)
+                .IsRequired(false); 
 
-			builder.HasMany(u => u.FavoriteLists)
-				.WithOne(fl => fl.User)
-				.HasForeignKey(fl => fl.UserId)
-				.OnDelete(DeleteBehavior.Cascade);
-		}
-		#endregion
+            builder.Property(u => u.Headline)
+                .IsRequired(false); 
 
-		#region AccountPackage
-		public void Configure(EntityTypeBuilder<AccountPackage> builder)
+            builder.Property(u => u.Description)
+                .IsRequired(false);  
+
+            builder.Property(u => u.RoleId)
+                .IsRequired(false);  
+
+            builder.Property(u => u.PackagePrivilegeId)
+                .IsRequired(false);  
+
+            builder.Property(u => u.AccountPackageId)
+                .IsRequired(false); 
+
+            builder.HasOne(d => d.Role)
+                .WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            builder.HasMany(u => u.RefreshTokens)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId);
+
+            builder.HasMany(u => u.Courses)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            builder.HasMany(u => u.Carts)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(u => u.FavoriteLists)
+                .WithOne(fl => fl.User)
+                .HasForeignKey(fl => fl.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        #endregion
+
+        #region AccountPackage
+        public void Configure(EntityTypeBuilder<AccountPackage> builder)
 		{
 
 			
@@ -328,6 +360,15 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 
 		}
-		#endregion
-	}
+        #endregion
+
+        #region Refresh token
+        public void Configure(EntityTypeBuilder<RefreshToken> builder)
+        {
+            
+        }
+        #endregion
+
+
+    }
 }

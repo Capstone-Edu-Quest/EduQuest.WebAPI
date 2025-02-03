@@ -15,14 +15,14 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "Description",
                 table: "User",
                 type: "nvarchar(max)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
                 name: "Headline",
                 table: "User",
                 type: "nvarchar(max)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
 
             migrationBuilder.AlterColumn<decimal>(

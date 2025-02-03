@@ -44,6 +44,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<Tag> Tags { get; set; } = null!;
 		public virtual DbSet<Transaction> Transactions { get; set; } = null!;
 		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
+		public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 		
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

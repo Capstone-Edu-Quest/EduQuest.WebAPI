@@ -25,6 +25,6 @@ namespace EduQuest_Application.Abstractions.Authentication
         /// <param name="userId"></param>
         /// <param name="email"></param>
         /// <returns></returns>
-        Task<TokenResponseDTO> GenerateAccessRefreshTokens(Guid userId, string email);
+        Task<TokenResponseDTO> GenerateAccessRefreshTokens(string userId, string email);
     }
 }

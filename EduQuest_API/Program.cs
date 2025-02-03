@@ -7,10 +7,14 @@ using HealthChecks.UI.Client;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 // Add services to the container.
+builder.ConfigureSerilog();
+
+builder.Services.AddScoped<GlobalException>();
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<GlobalException>();
+
 builder.Services.AddHttpContextAccessor();
 
 
@@ -47,4 +51,5 @@ app.MapHealthChecks("/h", new HealthCheckOptions
 	Predicate = _ => true,
 	ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+app.ConfigureExceptionHandler();
 app.Run();

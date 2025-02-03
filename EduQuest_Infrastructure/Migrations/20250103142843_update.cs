@@ -17,7 +17,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "PackagePrivilegeId",
                 table: "User",
                 type: "nvarchar(450)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "",
                 oldClrType: typeof(int),
                 oldType: "int",
@@ -27,7 +27,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "AccountPackageId",
                 table: "User",
                 type: "nvarchar(450)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "",
                 oldClrType: typeof(int),
                 oldType: "int",
@@ -83,7 +83,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "PackagePrivilegeId",
                 table: "User",
                 type: "int",
-                nullable: true,
+                nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)");
 
@@ -91,7 +91,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "AccountPackageId",
                 table: "User",
                 type: "int",
-                nullable: true,
+                nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)");
 
