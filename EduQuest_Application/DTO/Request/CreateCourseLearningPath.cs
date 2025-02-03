@@ -10,4 +10,6 @@ namespace EduQuest_Application.DTO.Request;
 
 public class CreateCourseLearningPath: IMapFrom<LearningPathCourse>, IMapTo<LearningPathCourse>
 {
+    public string CourseId { get; set; }
+    public int CourseOrder { get; set; }
 }
