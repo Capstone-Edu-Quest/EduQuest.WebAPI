@@ -13,8 +13,8 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
-		IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
-		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<UserMascot>,
+		IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>, IEntityTypeConfiguration<Stage>,
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<UserMascot>,
 		IEntityTypeConfiguration<UserStatistic>
 	{
 		#region Role
@@ -303,6 +303,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 		#region Stage
 		public void Configure(EntityTypeBuilder<Stage> builder)
+		{
+
+
+		}
+		#endregion
+
+		#region SystemConfig
+		public void Configure(EntityTypeBuilder<SystemConfig> builder)
 		{
 
 
