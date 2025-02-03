@@ -12,12 +12,15 @@ namespace EduQuest_Domain.Entities
         public string? Color { get; set; }
 		public decimal? Price { get; set; }
         public string? Requirement { get; set; }
+        public string? Feature { get; set; }
         public bool IsRequired { get; set; }
 		public string CreatedBy { get; set; }
 		public DateTime? LastUpdated { get; set; }
 
 		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
+		[JsonIgnore]
+		public virtual CourseStatistic CourseStatistic { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<Certificate>? Certificates { get; set; }

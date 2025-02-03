@@ -7,14 +7,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 	public class EntityTypeConfiguration :
 		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<AccountPackage>,
 		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Badge>,
-		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>,
+		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
 		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<LearnerStatistic>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
-		IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
-		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<UserMascot>,
+		IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>, IEntityTypeConfiguration<Stage>,
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<UserMascot>,
 		IEntityTypeConfiguration<UserStatistic>
 	{
 		#region Role
@@ -133,6 +133,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.WithOne(fl => fl.Course)
 				.HasForeignKey(fl => fl.CourseId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+		}
+		#endregion
+
+		#region CourseStatistic
+		public void Configure(EntityTypeBuilder<CourseStatistic> builder)
+		{
+			
 
 		}
 		#endregion
@@ -295,6 +303,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 		#region Stage
 		public void Configure(EntityTypeBuilder<Stage> builder)
+		{
+
+
+		}
+		#endregion
+
+		#region SystemConfig
+		public void Configure(EntityTypeBuilder<SystemConfig> builder)
 		{
 
 

@@ -5,24 +5,28 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System.Net;
-using System.Runtime.InteropServices;
-using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 {
 	public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, APIResponse>
 	{
 		private readonly ICourseRepository _courseRepository;
+		private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
 		private readonly IStageRepository _stageRepository;
 		private readonly ILearningMaterialRepository _learningMaterialRepository;
 
-		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository, IStageRepository stageRepository, ILearningMaterialRepository learningMaterialRepository)
+		public CreateCourseCommandHandler(ICourseRepository courseRepository, ISystemConfigRepository systemConfigRepository, 
+			IMapper mapper, IUnitOfWork unitOfWork, 
+			IUserRepository userRepository, 
+			IStageRepository stageRepository, 
+			ILearningMaterialRepository learningMaterialRepository)
 		{
 			_courseRepository = courseRepository;
+			_systemConfigRepository = systemConfigRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_userRepository = userRepository;
@@ -43,7 +47,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			await _unitOfWork.SaveChangesAsync(); //Save course
 			if(request.CourseRequest.StageCourse != null && request.CourseRequest.StageCourse.Any())
 			{
-				var stages = request.CourseRequest.StageCourse.Select(stagerequest =>
+				var stages = request.CourseRequest.StageCourse.Select(async stagerequest =>
 				{
 					int i = 1;
 					var stage = new Stage
@@ -54,23 +58,43 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 						Description = stagerequest.Description!,
 						Level = 1
 					};
-					_stageRepository.Add(stage);
-					_unitOfWork.SaveChangesAsync();
+					await _stageRepository.Add(stage);
+					await _unitOfWork.SaveChangesAsync();
 					i++;
 					
-					if (stagerequest.LearningMaterial != null)
+
+					if(stagerequest.LearningMaterial != null)
 					{
-						stage.LearningMaterial = new LearningMaterial
+						foreach(var learningMaterial in stagerequest.LearningMaterial)
 						{
-							StageId = stage.Id,
-							Id = Guid.NewGuid().ToString(),
-							Type = stagerequest.LearningMaterial.Type!,
-							Title = stagerequest.LearningMaterial.Title!,
-							Description = stagerequest.LearningMaterial.Description!,
-							UrlMaterial = stagerequest.LearningMaterial.UrlMaterial!
-						};
-						_learningMaterialRepository.Add(stage.LearningMaterial);
-						_unitOfWork.SaveChangesAsync();
+							var newLM = new LearningMaterial
+							{
+								StageId = stage.Id,
+								Id = Guid.NewGuid().ToString(),
+								Type = Enum.GetName(typeof (TypeOfLearningMetarial),learningMaterial.Type!) ?? string.Empty,
+								Title = learningMaterial.Title!,
+								Description = learningMaterial.Description!,
+								UrlMaterial = learningMaterial.UrlMaterial!
+							};
+							var value = await _systemConfigRepository.GetByName(newLM.Type);
+							switch ((TypeOfLearningMetarial)learningMaterial.Type!)
+							{
+								case TypeOfLearningMetarial.Docs:
+									newLM.Duration = (int)value.Value!;
+									break;
+								case TypeOfLearningMetarial.Video:
+									newLM.Duration = learningMaterial.EstimateTime;
+									break;
+								case TypeOfLearningMetarial.Quiz:
+									newLM.Duration = (int)((learningMaterial.EstimateTime!) * value.Value!);
+									break;
+								default:
+									newLM.Duration = 0;
+									break;
+							} 
+							await _learningMaterialRepository.Add(newLM);
+							await _unitOfWork.SaveChangesAsync();
+						}
 					}
 					return stage;
 				}).ToList();
