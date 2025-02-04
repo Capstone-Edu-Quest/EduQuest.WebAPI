@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:EduQuest_Infrastructure/Migrations/20250203185436_FixDB2.Designer.cs
-    [Migration("20250203185436_FixDB2")]
-    partial class FixDB2
-========
-    [Migration("20250204041021_firstUpdate")]
-    partial class firstUpdate
->>>>>>>> main:EduQuest_Infrastructure/Migrations/20250204041021_firstUpdate.Designer.cs
+    [Migration("20250203163527_createSystemConfig")]
+    partial class createSystemConfig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -671,13 +666,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EstimateDuration")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -714,6 +702,18 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Property<int>("CourseOrder")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("LearningPathId", "CourseId");
 
@@ -1011,43 +1011,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("QuizAttempt");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.RefreshToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Role", b =>
@@ -1360,15 +1323,17 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("PackagePrivilegeId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordSalt")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1838,15 +1803,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.SearchHistory", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
@@ -2042,8 +1998,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("FavoriteLists");
-
-                    b.Navigation("RefreshTokens");
 
                     b.Navigation("SearchHistories");
 

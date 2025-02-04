@@ -12,9 +12,8 @@ namespace EduQuest_Domain.Entities
 		public string? Email { get; set; } = string.Empty;
 		public string? Phone { get; set; } = string.Empty;
 		public string? Headline { get; set; }
-		public string? Description { get; set; }
-		public string? PasswordHash { get; set; }
-		public string? PasswordSalt { get; set; }
+        public string Status { get; set; } = null!;
+        public string? Description { get; set; }
 		public string? RoleId { get; set; }
 		public string? PackagePrivilegeId { get; set; }
 		public string? AccountPackageId { get; set; }
@@ -22,7 +21,7 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
 		[JsonIgnore]
-		public virtual AccountPackage? AccountPackage { get; set; } = null!;
+		public virtual AccountPackage? AccountPackage { get; set; } = null;
 		[JsonIgnore]
 		public virtual PackagePrivilege? PackagePrivilege { get; set; } = null!;
 		[JsonIgnore]
@@ -44,6 +43,8 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<Cart>? Carts { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
-		
-	}
+        [JsonIgnore]
+        public virtual ICollection<RefreshToken>? RefreshTokens { get; set; }
+
+    }
 }

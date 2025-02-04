@@ -7,12 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="UseCases\Authentication\**" />
+    <EmbeddedResource Remove="UseCases\Authentication\**" />
+    <None Remove="UseCases\Authentication\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EduQuest_Domain\EduQuest_Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
     <Folder Include="Abstractions\Email\" />
+    <Folder Include="UseCases\Authenticate\Queries\" />
     <Folder Include="UseCases\Authentication\" />
     <Folder Include="UseCases\LearningPaths\Commands\" />
     <Folder Include="UseCases\Users\Commands\" />

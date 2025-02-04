@@ -1,10 +1,9 @@
 ﻿using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.Generic;
 
-namespace EduQuest_Domain.Repository
+namespace EduQuest_Domain.Repository;
+
+public interface IUserRepository : IGenericRepository<User>
 {
-	public interface IUserRepository : IGenericRepository<User>
-	{
-		
-	}
+    Task<User?> GetUserByEmailAsync(string email);
 }
