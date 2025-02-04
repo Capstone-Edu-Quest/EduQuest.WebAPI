@@ -7,51 +7,64 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Threading;
 
 namespace EduQuest_API.Controllers;
 [Route(Constants.Http.API_VERSION + "/LearningPath")]
 public class LearningPathController : Controller
 {
-    
-        private ISender _mediator;
-        public LearningPathController(ISender mediator)
-        {
-            _mediator = mediator;
 
-        }
-
-        //[Authorize]
-        [HttpGet("me")]
-        public async Task<IActionResult> GetAllUserLearningPath([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-        {
-            string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetMyLearningPathQuery(userId, pageNo, eachPage), cancellationToken);
-            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    private ISender _mediator;
+    public LearningPathController(ISender mediator)
+    {
+        _mediator = mediator;
     }
 
-        [HttpGet("detail")]
-        public async Task<IActionResult> GetLearningPathDetail([FromQuery] string learningPathId, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetMyPublicLearningPath([FromQuery] string UserId, CancellationToken token = default)
-        {
-            var result = await _mediator.Send(new GetMyPublicLearningPathQuery(UserId), token);
-            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    //[Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetAllUserLearningPath([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+    {
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new GetMyLearningPathQuery(userId, pageNo, eachPage), cancellationToken);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateLearningPath([FromBody] string body, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-        
-        [HttpPut]
-        public async Task<IActionResult> UpdateLearningPath([FromBody] string body, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-
+    //[Authorize]
+    [HttpPost("dup")]
+    public async Task<IActionResult> DuplicateLearningPath([FromQuery, Required] string learningPathId, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+        /*string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new DuplicateLearningPathCommand(userId, learningPathId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);*/
     }
+
+    [HttpGet("detail")]
+    public async Task<IActionResult> GetLearningPathDetail([FromQuery] string learningPathId, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery] string UserId, CancellationToken token = default)
+    {
+        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(UserId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
+
+    //[Authorize]
+    [HttpPost]
+    public async Task<IActionResult> CreateLearningPath([FromBody] string body, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    //[Authorize]
+    [HttpPut]
+    public async Task<IActionResult> UpdateLearningPath([FromBody] string body, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+}
