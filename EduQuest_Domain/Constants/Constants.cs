@@ -64,7 +64,7 @@ namespace EduQuest_Domain.Constants
 			public const string SavingSuccesfully = "SAVING_SUCCESSFULLY";
 			public const string SavingFailed = "SAVING_FAILED";
 			public const string DeleteSuccessfully = "DELETE_SUCCESFULLY";
-			public const string DeleteFailed = "DELETE_EVENT_FAIL";
+			public const string DeleteFailed = "DELETE_EVENT_FAILED";
 			public const string UpdateSuccesfully = "UPDATE_SUCCESSFULLY";
 			public const string UpdateFailed = "UPDATE_FAILED";
 			public const string CreateSuccesfully = "CREATED_SUCCESSFULLY";
@@ -73,7 +73,7 @@ namespace EduQuest_Domain.Constants
 			public const string NotFound = "NOT_FOUND";
 			public const string Complete = "COMPLETE";
 
-			public const string ServerError = "SOMETHINGS WENT WRONG";
+			public const string ServerError = "SOMETHINGS_WENT_WRONG";
 			public const string SessionTimeout = "SESSION_TIMEOUT";
 
 			public const string ReturnListHasValue = "LIST_HAS_VALUE";
