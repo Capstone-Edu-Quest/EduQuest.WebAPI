@@ -1,15 +1,15 @@
 ﻿using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.DTO.Request.LearningPaths;
 
 public class CreateCourseLearningPath : IMapFrom<LearningPathCourse>, IMapTo<LearningPathCourse>
 {
+    [Required(ErrorMessage = MessageError.ValueRequired)]
     public string CourseId { get; set; }
+
+    [Required(ErrorMessage = MessageError.ValueRequired)]
     public int CourseOrder { get; set; }
 }

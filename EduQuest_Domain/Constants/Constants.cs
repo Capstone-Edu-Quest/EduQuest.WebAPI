@@ -79,14 +79,15 @@ namespace EduQuest_Domain.Constants
 			public const string ReturnListHasValue = "LIST_HAS_VALUE";
 			public const string lockAcquired = "LOCK_ACQUIRED";
 
-			//public const string Unauthorized = "UNAUTHORIZED";
-			//public const string Blocked = "USER_BLOCKED";
-			//public const string InvalidToken = "INVALID_TOKEN";
-			//public const string TokenExpired = "TOKEN_EXPIRED";
-			//public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
+			public const string Unauthorized = "UNAUTHORIZED";
+			public const string Blocked = "USER_BLOCKED";
+			public const string InvalidToken = "INVALID_TOKEN";
+			public const string TokenExpired = "TOKEN_EXPIRED";
+			public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
 
-			//public const string LoginFailed = "LOGIN_FAILED";
-			//public const string UserDontHavePer = "USER_DONT_HAVE_PERMISSION";
+			public const string LoginFailed = "LOGIN_FAILED";
+			public const string UserDontHavePer = "USER_DONT_HAVE_PERMISSION";
+
 		}
 
 		public static class MessageAchievement
@@ -94,6 +95,15 @@ namespace EduQuest_Domain.Constants
 			public const string ExistedUser = "USERS HAVE USED";
 		}
 
+		public static class MessageError
+		{
+			public const string NameIsRequired = "NAME_REQUIRED";
+			public const string DescriptionRequired = "DESCRIPTION_REQUIRED";
+			public const string ValueRequired = "FIELD_REQUIRED";
+            public const string DuplicateCourseIdOrCourseOrder = "DETECT_DUPLICATE_COURSE_ID_AND_COURSE_ORDER";
+            public static int NameMaxLength = 500;
+            public static int DescriptionMaxLength = 2500;
+        }
 		#endregion
 
 
