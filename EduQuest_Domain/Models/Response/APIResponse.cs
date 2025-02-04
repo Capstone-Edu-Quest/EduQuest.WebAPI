@@ -12,5 +12,6 @@ namespace EduQuest_Domain.Models.Response
 		public bool IsError { get; set; }
 		public object? Payload { get; set; }
 		public ErrorResponse? Errors { get; set; }
+		public MessageResponse? Message { get; set; }
 	}
 }

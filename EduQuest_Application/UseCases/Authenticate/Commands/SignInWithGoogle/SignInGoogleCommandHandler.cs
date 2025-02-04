@@ -57,8 +57,9 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                     Username = tokenInfo.FullName,
                     AvatarUrl = tokenInfo.picture,
                     Status = AccountStatus.Active.ToString(),
-                    RoleId = "1",
-                };
+                    RoleId = ((int)GeneralEnums.UserRole.Learner).ToString()
+
+            };
 
                 await _userRepository.Add(newUser);
 
