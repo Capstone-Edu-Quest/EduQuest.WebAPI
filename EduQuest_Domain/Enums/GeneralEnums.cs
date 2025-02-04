@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace EduQuest_Domain.Enums
 {
-	public class GeneralEnums
+    public class GeneralEnums
 	{
 		#region User
 		public enum AccountStatus
@@ -24,9 +19,10 @@ namespace EduQuest_Domain.Enums
 
 		public enum UserRole
 		{
-			Guest = 1,
-			User = 2,
-			Admin = 3
+			Admin = 1,
+            Instructor = 2,
+            Learner = 3,
+            Guest = 4
 		}
 
 		#endregion
