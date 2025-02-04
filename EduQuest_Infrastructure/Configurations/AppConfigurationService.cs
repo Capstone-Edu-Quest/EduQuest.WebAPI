@@ -128,8 +128,6 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
-
-            #endregion
 			services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
 			services.AddScoped<IQuestRepository, QuestRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
