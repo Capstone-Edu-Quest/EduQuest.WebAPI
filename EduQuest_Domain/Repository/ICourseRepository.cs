@@ -13,5 +13,6 @@ namespace EduQuest_Domain.Repository
 		Task<Course> GetCourseById(string Id);
 		Task<IEnumerable<Course>> GetCourseByUserId(string Id);
 		//Task<IEnumerable<Course>> GetAllCourse();
+		Task<bool> isExist(string courseId);
 	}
 }

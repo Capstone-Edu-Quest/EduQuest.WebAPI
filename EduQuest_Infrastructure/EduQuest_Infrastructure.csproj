@@ -40,8 +40,4 @@
     <ProjectReference Include="..\EduQuest_Application\EduQuest_Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>
