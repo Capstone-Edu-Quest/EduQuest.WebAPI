@@ -14,4 +14,5 @@ public class CreateLearningPathRequest : IMapFrom<LearningPath>, IMapTo<Learning
     public string Description { get; set; }
     public bool IsPublic { get; set; }
     public string EstimateDuration { get; set; }
+    public List<CreateCourseLearningPath> Courses = new List<CreateCourseLearningPath>();
 }

@@ -653,9 +653,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("CompletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -663,6 +660,10 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EstimateDuration")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -699,6 +700,9 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("CourseOrder")
                         .HasColumnType("int");

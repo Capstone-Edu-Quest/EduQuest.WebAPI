@@ -1,19 +1,17 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
 
 public class GetMyLearningPathQuery: IRequest<APIResponse>
 {
     public string UserId { get; set; }
-
-    public GetMyLearningPathQuery(string userId)
+    public int Page {  get; set; }
+    public int EachPage { get; set; }
+    public GetMyLearningPathQuery(string userId, int page, int eachPage)
     {
         UserId = userId;
+        Page = page;
+        EachPage = eachPage;
     }
 }

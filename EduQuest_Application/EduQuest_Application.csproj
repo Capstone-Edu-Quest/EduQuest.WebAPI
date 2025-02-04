@@ -15,7 +15,6 @@
     <Folder Include="Abstractions\Email\" />
     <Folder Include="UseCases\Authentication\" />
     <Folder Include="UseCases\LearningPaths\Commands\" />
-    <Folder Include="UseCases\LearningPaths\Queries\GetMyPublicLearningPaths\" />
     <Folder Include="UseCases\Users\Commands\" />
   </ItemGroup>
 

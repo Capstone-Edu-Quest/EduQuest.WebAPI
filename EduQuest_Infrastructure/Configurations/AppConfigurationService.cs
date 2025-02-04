@@ -124,6 +124,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
 			services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
 			services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
+			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			#endregion
 
 			#region Swagger

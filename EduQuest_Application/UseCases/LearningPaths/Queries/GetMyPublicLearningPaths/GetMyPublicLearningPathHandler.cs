@@ -1,40 +1,35 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.LearningPaths;
-using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
 using System.Net;
 
-namespace EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
+namespace EduQuest_Application.UseCases.LearningPaths.Queries.GetMyPublicLearningPaths;
 
-public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, APIResponse>
+public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearningPathQuery, APIResponse>
 {
     private readonly ILearningPathRepository _learningPathRepository;
     private readonly IMapper _mapper;
 
-    public GetMyLearningPathHandler(ILearningPathRepository learningPathRepository, IMapper mapper)
+    public GetMyPublicLearningPathHandler(ILearningPathRepository learningPathRepository, IMapper mapper)
     {
         _learningPathRepository = learningPathRepository;
         _mapper = mapper;
     }
 
-    public async Task<APIResponse> Handle(GetMyLearningPathQuery request, CancellationToken cancellationToken)
+    public async Task<APIResponse> Handle(GetMyPublicLearningPathQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _learningPathRepository.GetMyLearningPaths("A84B8BBD-73E0-4857-85A8-C16136C214C8"/*request.UserId*/, request.Page, request.EachPage);
-            var temp = result.Items.ToList();
-            PagedList<MyLearningPathResponse> response = new PagedList<MyLearningPathResponse>(_mapper.Map<List<MyLearningPathResponse>>(temp), result.TotalItems, result.CurrentPage, result.EachPage);
-            //"A84B8BBD-73E0-4857-85A8-C16136C214C8"
+            var result = await _learningPathRepository.GetMyPublicLearningPaths(request.UserId);
 
             return new APIResponse
             {
                 IsError = false,
-                Payload = response,
+                Payload = _mapper.Map<List<MyPublicLearningPathResponse>>(result),
                 Errors = null,
             };
-
         }catch (Exception ex)
         {
             return new APIResponse
