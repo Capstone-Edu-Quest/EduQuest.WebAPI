@@ -1047,7 +1047,7 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Reward", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Role", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -1842,17 +1842,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Reward", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Stage", "Stage")
-                        .WithMany("Rewards")
-                        .HasForeignKey("StageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Stage");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.SearchHistory", b =>
