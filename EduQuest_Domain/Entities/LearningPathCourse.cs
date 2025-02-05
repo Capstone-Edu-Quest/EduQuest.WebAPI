@@ -7,15 +7,12 @@ namespace EduQuest_Domain.Entities
 	{
 		public string CourseId { get; set; }
 		public string LearningPathId { get; set; }
-		public DateTime CompletedAt { get; set; }
 		public int CourseOrder { get; set; }
-		public DateTime? CreatedAt { get; set; }
-		public string? UpdatedBy { get; set; }
-		public DateTime? UpdatedAt { get; set; }
-		public DateTime? DeletedAt { get; set; }
+        public DateTime CompletedAt { get; set; }
 
-		
-		public virtual LearningPath LearningPath { get; set; } = null;
+
+
+        public virtual LearningPath LearningPath { get; set; } = null;
 		public virtual Course Course { get; set; } = null;
 	}
 }

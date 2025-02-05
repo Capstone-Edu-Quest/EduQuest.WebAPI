@@ -26,6 +26,14 @@ namespace EduQuest_Application.UseCases.Users.Queries.GetAllUsers
 				IsError = false,
 				Payload = result,
 				Errors = null,
+				//Message = new MessageResponse
+				//{
+				//	content = "fawf",
+    //                values = users.Take(1)
+    //                     .Select((user, index) => new { Key = $"name", Value = user.Username })
+    //                     .ToDictionary(x => x.Key, x => x.Value)
+					
+    //            }
 			};
 		}
 	}

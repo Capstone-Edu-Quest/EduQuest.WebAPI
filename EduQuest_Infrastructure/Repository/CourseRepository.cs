@@ -31,5 +31,11 @@ namespace EduQuest_Infrastructure.Repository
 		}
 
 
-	}
+        public async Task<bool> isExist(string courseId)
+		{
+			var result = await _context.Courses.FindAsync(courseId);
+			return result != null ? true : false;
+		}
+
+    }
 }

@@ -133,7 +133,8 @@ namespace EduQuest_Infrastructure
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
 			services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
-
+			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
+			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			#endregion
 
 			#region Swagger
