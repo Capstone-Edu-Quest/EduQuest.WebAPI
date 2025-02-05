@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.UseCases.FavoriteCourse.Commands.DeleteFavoriteList;
+﻿
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.FavoriteCourse.Commands.AddFavoriteList
+namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
 {
 	public class AddFavoriteListCommandHandler : IRequestHandler<AddFavoriteListCommand, APIResponse>
 	{

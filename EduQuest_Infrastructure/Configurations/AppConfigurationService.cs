@@ -1,14 +1,18 @@
 ﻿
 using EduQuest_Application.Abstractions.Authentication;
+using EduQuest_Application.Abstractions.Firebase;
 using EduQuest_Application.Abstractions.Oauth2;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.ExternalServices.Authentication;
 using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
+using EduQuest_Infrastructure.ExternalServices.Firebase;
 using EduQuest_Infrastructure.ExternalServices.Oauth2.Setting;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Infrastructure.ExternalServices.Oauth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -37,8 +41,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseSqlServer(
-					//configuration.GetConnectionString("local"),
-					configuration.GetConnectionString("production"),
+					configuration.GetConnectionString("local"),
+					//configuration.GetConnectionString("production"),
 					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -128,11 +132,12 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
+			services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
 
-            #endregion
+			#endregion
 
-            #region Swagger
-            services.AddSwaggerGen(swagger =>
+			#region Swagger
+			services.AddSwaggerGen(swagger =>
 			{
 				swagger.SwaggerDoc("v1", new() { Title = "Edu_Quest API", Version = $"{Constants.Http.API_VERSION}" });
 				swagger.EnableAnnotations();
@@ -183,12 +188,12 @@ namespace EduQuest_Infrastructure
 			}));
 			#endregion
 
-			//#region Firebase
-			//FirebaseApp.Create(new AppOptions
-			//{
-			//	Credential = GoogleCredential.FromFile("path/to/service-account.json")
-			//});
-			//#endregion
+			#region Firebase
+			FirebaseApp.Create(new AppOptions
+			{
+				Credential = GoogleCredential.FromFile("resource/edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json")
+			});
+			#endregion
 
 			return services;
 		}

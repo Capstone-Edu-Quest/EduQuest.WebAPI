@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.FavoriteCourse.Queries.SearchFavoriteCourse
+namespace EduQuest_Application.UseCases.FavoriteCourse.Query.SearchFavoriteCourse
 {
 	public class SearchFavoriteCourseQuery : IRequest<APIResponse>
 	{

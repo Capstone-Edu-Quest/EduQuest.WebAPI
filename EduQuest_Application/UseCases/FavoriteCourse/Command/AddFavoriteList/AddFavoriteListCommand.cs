@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.FavoriteCourse.Commands.AddFavoriteList
+namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
 {
 	public class AddFavoriteListCommand : IRequest<APIResponse>
 	{

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EduQuest_Application.UseCases.Courses.Cpmmands.CreateCourse;
+using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
