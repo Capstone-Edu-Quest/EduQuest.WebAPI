@@ -14,4 +14,10 @@
     <Folder Include="Repository\DbContext\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resource\edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

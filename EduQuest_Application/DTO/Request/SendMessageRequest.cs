@@ -12,7 +12,7 @@ namespace EduQuest_Application.DTO.Request
 		public string? ReceiverId { get; set; }
 		public string? Url { get; set; }
         public string? Message { get; set; }
-        public List<string>? Content { get; set; }       
+        public Dictionary<string, string> Content { get; set; }       
 		public string? ReceiverToken { get; set; } 
 		
 	}

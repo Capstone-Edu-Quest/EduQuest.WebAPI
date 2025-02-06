@@ -21,9 +21,9 @@ namespace EduQuest_Application.UseCases
 			// Create a message object
 			var message = new Message
 			{
-				SenderId = request.Request.SenderId,
-				ReceiverId = request.Request.ReceiverId,
-				Content = request.Request.Content,
+				SenderId = request.Request.SenderId!,
+				ReceiverId = request.Request.ReceiverId!,
+				Content = request.Request.Message!,
 				Timestamp = DateTime.UtcNow
 			};
 
@@ -32,16 +32,21 @@ namespace EduQuest_Application.UseCases
 
 			// Send Firebase notification
 			await _firebaseMessagingService.SendNotificationAsync(
-				receiverToken: request.Request.ReceiverToken,
-				senderId: request.Request.SenderId,
-				messageContent: request.Request.Content
+				receiverToken: request.Request.ReceiverToken!,
+				senderId: request.Request.SenderId!,
+				messageContent: request.Request.Message!
 			);
 
 			return new APIResponse
 			{
 				IsError = false,
-				Payload = message,
-				Errors = null
+				Payload = null,
+				Errors = null,
+				Message = new MessageResponse
+				{
+					content = request.Request.Message!,
+					values = request.Request.Content
+				}
 			};
 
 		}
