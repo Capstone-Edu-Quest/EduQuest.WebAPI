@@ -1,8 +1,8 @@
 ﻿using EduQuest_Application.DTO.Request;
 using EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
 using EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
-using EduQuest_Application.UseCases.FavoriteCourse.Commands.AddFavoriteList;
-using EduQuest_Application.UseCases.Quests.Commands.CreateQuest;
+using EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList;
+using EduQuest_Application.UseCases.Quests.Command.CreateQuest;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

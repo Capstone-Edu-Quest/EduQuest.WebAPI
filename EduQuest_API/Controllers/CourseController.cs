@@ -1,5 +1,5 @@
 ﻿using EduQuest_Application.DTO.Request;
-using EduQuest_Application.UseCases.Courses.Cpmmands.CreateCourse;
+using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;

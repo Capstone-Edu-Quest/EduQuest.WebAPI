@@ -59,34 +59,34 @@ namespace EduQuest_Domain.Constants
 		#region Message
 		public static class MessageCommon
 		{
-			public const string GetSuccesfully = "GET_SUCCESSFULLY";
-			public const string GetFailed = "GET_FAILED";
-			public const string SavingSuccesfully = "SAVING_SUCCESSFULLY";
-			public const string SavingFailed = "SAVING_FAILED";
-			public const string DeleteSuccessfully = "DELETE_SUCCESFULLY";
-			public const string DeleteFailed = "DELETE_EVENT_FAILED";
-			public const string UpdateSuccesfully = "UPDATE_SUCCESSFULLY";
-			public const string UpdateFailed = "UPDATE_FAILED";
-			public const string CreateSuccesfully = "CREATED_SUCCESSFULLY";
-			public const string CreateFailed = "CREATED_FAILED";
+			public const string GetSuccesfully = "List of {{name}}";
+			public const string GetFailed = "Failed to get {{name}}";
+			public const string SavingSuccesfully = "Saved {{name}} successfully";
+			public const string SavingFailed = "Saved {{name}} failed";
+			public const string DeleteSuccessfully = "Deleted {{name}} successfully";
+			public const string DeleteFailed = "Deleted {{name} failed";
+			public const string UpdateSuccesfully = "Updated {{name}} successfully";
+			public const string UpdateFailed = "Update {{name}} failed";
+			public const string CreateSuccesfully = "Created {{name}} successfully";
+			public const string CreateFailed = "Created {{name}} failed";
 
-			public const string NotFound = "NOT_FOUND";
-			public const string Complete = "COMPLETE";
+			public const string NotFound = "{{name}} not found";
+			public const string Complete = "Completed";
 
-			public const string ServerError = "SOMETHINGS_WENT_WRONG";
-			public const string SessionTimeout = "SESSION_TIMEOUT";
+			public const string ServerError = "Something when wrong";
+			public const string SessionTimeout = "Your session has timeout";
 
-			public const string ReturnListHasValue = "LIST_HAS_VALUE";
-			public const string lockAcquired = "LOCK_ACQUIRED";
+			public const string ReturnListHasValue = "User unauthorized";
+			public const string lockAcquired = "You have been blocked";
 
 			public const string Unauthorized = "UNAUTHORIZED";
 			public const string Blocked = "USER_BLOCKED";
-			public const string InvalidToken = "INVALID_TOKEN";
-			public const string TokenExpired = "TOKEN_EXPIRED";
+			public const string InvalidToken = "Token invalid";
+			public const string TokenExpired = "Token expired";
 			public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
 
-			public const string LoginFailed = "LOGIN_FAILED";
-			public const string UserDontHavePer = "USER_DONT_HAVE_PERMISSION";
+			public const string LoginFailed = "Login failed";
+			public const string UserDontHavePer = "Permission denied";
 
 		}
 

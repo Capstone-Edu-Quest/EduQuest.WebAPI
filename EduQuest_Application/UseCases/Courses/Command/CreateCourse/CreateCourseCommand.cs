@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.Courses.Cpmmands.CreateCourse
+namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 {
 	public class CreateCourseCommand : IRequest<APIResponse>
 	{

@@ -1,6 +1,6 @@
-﻿using EduQuest_Application.UseCases.FavoriteCourse.Commands.AddFavoriteList;
-using EduQuest_Application.UseCases.FavoriteCourse.Commands.DeleteFavoriteList;
-using EduQuest_Application.UseCases.FavoriteCourse.Queries.SearchFavoriteCourse;
+﻿using EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList;
+using EduQuest_Application.UseCases.FavoriteCourse.Command.DeleteFavoriteList;
+using EduQuest_Application.UseCases.FavoriteCourse.Query.SearchFavoriteCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

@@ -1,7 +1,7 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.FavoriteCourse.Commands.DeleteFavoriteList
+namespace EduQuest_Application.UseCases.FavoriteCourse.Command.DeleteFavoriteList
 {
 	public class DeleteFavoriteListCommand : IRequest<APIResponse>
 	{

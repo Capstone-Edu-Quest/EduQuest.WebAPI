@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response;
 using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.FavoriteCourse.Query.SearchFavoriteCourse;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
