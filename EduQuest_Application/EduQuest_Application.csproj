@@ -21,8 +21,6 @@
     <Folder Include="Abstractions\Email\" />
     <Folder Include="UseCases\Authenticate\Queries\" />
     <Folder Include="UseCases\Authentication\" />
-    <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
-    <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Users\Commands\" />
   </ItemGroup>
 

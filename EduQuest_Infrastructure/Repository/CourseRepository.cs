@@ -3,6 +3,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -31,11 +32,20 @@ namespace EduQuest_Infrastructure.Repository
 		}
 
 
-        public async Task<bool> isExist(string courseId)
+        public async Task<int> GetTotalTime(string courseId)
+		{
+			var result = await _context.Courses.Include(x => x.CourseStatistic).FirstOrDefaultAsync(c => c.Id == courseId);
+			var statistic = result.CourseStatistic;
+			if(statistic.TotalTime == null)
+			{
+				return 0;
+			}
+			return result.CourseStatistic.TotalTime.Value;
+		}
+		public async Task<bool> IsExist(string courseId)
 		{
 			var result = await _context.Courses.FindAsync(courseId);
 			return result != null ? true : false;
 		}
-
     }
 }

@@ -9,4 +9,6 @@ public interface ILearningPathRepository: IGenericRepository<LearningPath>
     Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, int page, int eachPage);
     Task<List<LearningPath>> GetMyPublicLearningPaths(string UserId);
     Task<LearningPath?> GetLearningPathDetail(string LearningPathId);
+    Task<List<Course>> GetLearningPathCourse(string learningPathId);
+    Task<bool> IsOwner (string UserId, string learningPathId);
 }
