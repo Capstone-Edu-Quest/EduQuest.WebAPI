@@ -1,14 +1,20 @@
 ﻿
 using EduQuest_Application.Abstractions.Authentication;
+using EduQuest_Application.Abstractions.Firebase;
 using EduQuest_Application.Abstractions.Oauth2;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.ExternalServices.Authentication;
 using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
+using EduQuest_Infrastructure.ExternalServices.Firebase;
 using EduQuest_Infrastructure.ExternalServices.Oauth2.Setting;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore.V1;
+using Google.Cloud.Firestore;
 using Infrastructure.ExternalServices.Oauth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -128,17 +134,28 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
-			services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
-			services.AddScoped<IQuestRepository, QuestRepository>();
-			services.AddScoped<IBadgeRepository, BadgeRepository>();
+			services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
+			services.AddScoped<IFirebaseFirestoreService, FirebaseFirestoreService>();
 			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
-			services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
-			services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
+
+			services.AddSingleton(provider =>
+			{
+				// Define the file path to the Firebase credentials
+				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");
+
+				// Initialize the FirestoreDb instance
+				GoogleCredential credential = GoogleCredential.FromFile(filePath);
+				return FirestoreDb.Create("edu-quest-2003", new FirestoreClientBuilder
+				{
+					Credential = credential
+				}.Build());
+			});
+
 			#endregion
 
-            #region Swagger
-            services.AddSwaggerGen(swagger =>
+			#region Swagger
+			services.AddSwaggerGen(swagger =>
 			{
 				swagger.SwaggerDoc("v1", new() { Title = "Edu_Quest API", Version = $"{Constants.Http.API_VERSION}" });
 				swagger.EnableAnnotations();
@@ -189,12 +206,9 @@ namespace EduQuest_Infrastructure
 			}));
 			#endregion
 
-			//#region Firebase
-			//FirebaseApp.Create(new AppOptions
-			//{
-			//	Credential = GoogleCredential.FromFile("path/to/service-account.json")
-			//});
-			//#endregion
+			#region Firebase
+			
+			#endregion
 
 			return services;
 		}

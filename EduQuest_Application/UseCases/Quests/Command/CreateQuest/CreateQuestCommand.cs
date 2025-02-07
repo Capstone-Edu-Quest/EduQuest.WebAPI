@@ -2,7 +2,7 @@
 using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Quests.Commands.CreateQuest
+namespace EduQuest_Application.UseCases.Quests.Command.CreateQuest
 {
 	public class CreateQuestCommand : IRequest<APIResponse>
 	{

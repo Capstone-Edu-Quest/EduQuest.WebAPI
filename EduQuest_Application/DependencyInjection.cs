@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.Behaviour;
+using EduQuest_Application.UseCases;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,10 +16,12 @@ namespace EduQuest_Application
 				cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 				cfg.AddOpenBehavior(typeof(UnitOfWorkBehaviour<,>));
 				cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+				cfg.RegisterServicesFromAssembly(typeof(SendMessageWithNotificationCommandHanlder).Assembly);
 			});
 			services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 
 			return services;
 		}
