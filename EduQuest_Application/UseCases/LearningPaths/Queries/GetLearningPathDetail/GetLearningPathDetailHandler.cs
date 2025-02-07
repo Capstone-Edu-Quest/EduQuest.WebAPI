@@ -51,7 +51,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             LearningPathDetailResponse response = _mapper.Map<LearningPathDetailResponse>(learningPath);
             List<LearningPathCourseResponse> learningPathCourses = _mapper.Map<List<LearningPathCourseResponse>>(await _learningPathRepository.GetLearningPathCourse(request.LearningPathId));
 
-            response.TotalCourse = learningPathCourses.Count;
+            response.TotalCourses = learningPathCourses.Count;
             response.Courses = learningPathCourses;
 
             return new APIResponse
