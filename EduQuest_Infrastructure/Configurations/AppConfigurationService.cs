@@ -13,6 +13,8 @@ using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore.V1;
+using Google.Cloud.Firestore;
 using Infrastructure.ExternalServices.Oauth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -41,8 +43,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseSqlServer(
-					configuration.GetConnectionString("local"),
-					//configuration.GetConnectionString("production"),
+					//configuration.GetConnectionString("local"),
+					configuration.GetConnectionString("production"),
 					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -133,8 +135,23 @@ namespace EduQuest_Infrastructure
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
 			services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
+			services.AddScoped<IFirebaseFirestoreService, FirebaseFirestoreService>();
 			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
+
+			services.AddSingleton(provider =>
+			{
+				// Define the file path to the Firebase credentials
+				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");
+
+				// Initialize the FirestoreDb instance
+				GoogleCredential credential = GoogleCredential.FromFile(filePath);
+				return FirestoreDb.Create("edu-quest-2003", new FirestoreClientBuilder
+				{
+					Credential = credential
+				}.Build());
+			});
+
 			#endregion
 
 			#region Swagger
@@ -190,10 +207,7 @@ namespace EduQuest_Infrastructure
 			#endregion
 
 			#region Firebase
-			FirebaseApp.Create(new AppOptions
-			{
-				Credential = GoogleCredential.FromFile("resource/edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json")
-			});
+			
 			#endregion
 
 			return services;
