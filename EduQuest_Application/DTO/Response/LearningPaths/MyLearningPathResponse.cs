@@ -16,7 +16,7 @@ public class MyLearningPathResponse : IMapFrom<LearningPath>
     public string EstimateDuration { get; set; } = string.Empty;
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public int TotalCourse {  get; set; }
+    public int TotalCourses {  get; set; }
     public bool IsPublic { get; set; }
     public bool IsDuplicated { get; set; }
     public CommonUserResponse User { get; set; } = new CommonUserResponse();

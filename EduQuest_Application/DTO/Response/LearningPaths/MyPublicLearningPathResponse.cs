@@ -9,7 +9,7 @@ public class MyPublicLearningPathResponse: IMapFrom<LearningPath>
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string EstimateDuration { get; set; } = string.Empty;
-    public int TotalCourse { get; set; }
+    public int TotalCourses { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public CommonUserResponse User { get; set; } = new CommonUserResponse();

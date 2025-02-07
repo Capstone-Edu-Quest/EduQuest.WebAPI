@@ -28,7 +28,7 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
             foreach (var item in result)
             {
                 MyPublicLearningPathResponse myLearningPathResponse = _mapper.Map<MyPublicLearningPathResponse>(item);
-                myLearningPathResponse.TotalCourse = item.LearningPathCourses.Count;
+                myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
                 responseDto.Add(myLearningPathResponse);
             }
             return new APIResponse

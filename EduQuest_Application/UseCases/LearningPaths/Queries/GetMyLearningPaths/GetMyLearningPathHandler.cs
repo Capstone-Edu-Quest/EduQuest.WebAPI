@@ -30,7 +30,7 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
             foreach (var item in temp)
             {
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(item);
-                myLearningPathResponse.TotalCourse = item.LearningPathCourses.Count;
+                myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
                 responseDto.Add(myLearningPathResponse);
             }
             PagedList<MyLearningPathResponse> response = new PagedList<MyLearningPathResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);
