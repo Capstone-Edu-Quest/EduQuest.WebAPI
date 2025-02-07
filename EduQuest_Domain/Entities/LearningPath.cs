@@ -15,9 +15,9 @@ namespace EduQuest_Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 		public bool IsPublic { get; set; }
+		public bool IsDuplicated { get; set; }
 
-
-
+        [JsonIgnore]
         public virtual User User { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<LearningPathCourse> LearningPathCourses { get; set; }

@@ -1,6 +1,10 @@
 ﻿using EduQuest_Application.DTO.Request.LearningPaths;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.LearningPaths.Commands.CreateLearningPath;
+using EduQuest_Application.UseCases.LearningPaths.Commands.DeleteLearningPath;
+using EduQuest_Application.UseCases.LearningPaths.Commands.DuplicateLearningPath;
+using EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
+using EduQuest_Application.UseCases.LearningPaths.Queries.GetLearningPathDetail;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyPublicLearningPaths;
 using EduQuest_Domain.Constants;
@@ -21,6 +25,7 @@ public class LearningPathController : Controller
         _mediator = mediator;
     }
 
+    
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetAllUserLearningPath([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
@@ -30,29 +35,37 @@ public class LearningPathController : Controller
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPost("dup")]
-    public async Task<IActionResult> DuplicateLearningPath([FromQuery, Required] string learningPathId, CancellationToken token = default)
+    public async Task<IActionResult> DuplicateLearningPath([FromQuery, Required] string learningPathId,
+        //[FromQuery] string UserId, 
+        CancellationToken token = default)
     {
-        throw new NotImplementedException();
-        /*string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new DuplicateLearningPathCommand(userId, learningPathId), token);
-        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);*/
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new DuplicateLearningPathCommand(learningPathId, userId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
     [HttpGet("detail")]
     public async Task<IActionResult> GetLearningPathDetail([FromQuery] string learningPathId, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var result = await _mediator.Send(new GetLearningPathDetailQuery(learningPathId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
 
     [HttpGet]
-    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery] string UserId, CancellationToken token = default)
+    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery, Required] string UserId, CancellationToken token = default)
     {
         var result = await _mediator.Send(new GetMyPublicLearningPathQuery(UserId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
+
+    /*[HttpGet("dup")]
+    public async Task<IActionResult> GetMyDuplicatedLearningPath([FromQuery, Required] string UserId, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }*/
 
     [Authorize]
     [HttpPost]
@@ -65,11 +78,27 @@ public class LearningPathController : Controller
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateLearningPath([FromBody] string body, CancellationToken token = default)
+    public async Task<IActionResult> UpdateLearningPath([FromQuery, Required] string learningPathId, 
+        //[FromQuery] string UserId,
+        [FromBody] UpdateLearningPathRequest request, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new UpdateLearningPathCommand(learningPathId, userId, request), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
+
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<IActionResult> DeleteLearningPath([FromQuery, Required] string learningPathId,
+                                                        //[FromQuery] string UserId,
+                                                        CancellationToken token = default)
+    {
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new DeleteLearningPathCommand(learningPathId, userId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
 }
