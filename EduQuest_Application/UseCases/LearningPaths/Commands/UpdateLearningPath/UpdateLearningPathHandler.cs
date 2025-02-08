@@ -112,7 +112,7 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
         .ToList();
         for (int i = 0; i < orderedCourses.Count; i++)
         {
-            orderedCourses[i].CourseOrder = i + 1;
+            orderedCourses[i].CourseOrder = i;
         }
         await _learningPathRepository.Update(learingPath);
         if(await _unitOfWork.SaveChangesAsync() > 0)
