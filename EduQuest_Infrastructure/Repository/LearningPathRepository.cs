@@ -31,10 +31,30 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         return await result.ToListAsync();
     }
 
-    public Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, int page, int eachPage)
+    public Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, string? type, int page, int eachPage)
     {
         var result = _context.LearningPaths.Include(l => l.User).Include(l => l.LearningPathCourses)
             .Where(l => l.UserId.Equals(UserId));
+
+        if (!string.IsNullOrEmpty(keyWord))
+        {
+            result = result.Where(s =>
+                s.Name.IndexOf(keyWord, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                s.Description.IndexOf(keyWord, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        if (type == "public")
+        {
+            result = result.Where(s => s.IsPublic == true);
+        }
+        if(type == "private")
+        {
+            result = result.Where(s => s.IsPublic == false);
+        }
+        if(type == "enrolled")
+        {
+            result = result.Where(s => s.IsEnrolled == true);
+        }
         var response = result.ToPagedListAsync(page, eachPage);
         return response;
     }

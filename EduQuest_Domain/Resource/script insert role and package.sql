@@ -42,4 +42,57 @@ VALUES
     (2, 'Video', 1.0, 'Configuration for videos'),
     (3, 'Quiz', 0.8, 'Configuration for quizzes');
 
+INSERT INTO [Edu_Quest].[dbo].[User] (
+    [Id],
+    [Email],
+    [Phone],
+    [UpdatedAt],
+    [CreatedAt],
+    [Username],
+    [RoleId],
+    [UpdatedBy],
+    [DeletedAt],
+    [AccountPackageId],
+    [AvatarUrl],
+    [PackagePrivilegeId],
+    [Description],
+    [Headline],
+	Status
+)
+VALUES 
+-- Example User 1
+(1, 
+ 'user1@example.com', 
+ '1234567890', 
+ GETDATE(), 
+ GETDATE(), 
+ 'user1', 
+ 1, 
+ 'Admin', 
+ NULL, 
+ 1, 
+ 'https://example.com/avatar1.jpg', 
+ 1, 
+ 'This is a description for User 1.', 
+ 'User 1 Headline',
+ 'active'
+),
+-- Example User 2
+(2, 
+ 'user2@example.com', 
+ '0987654321', 
+ GETDATE(), 
+ GETDATE(), 
+ 'user2', 
+ 2, 
+ 'Admin', 
+ NULL, 
+ 2, 
+ 'https://example.com/avatar2.jpg', 
+ 2, 
+ 'This is a description for User 2.', 
+ 'User 2 Headline',
+ 'active'
+);
+
 

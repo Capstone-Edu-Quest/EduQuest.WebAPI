@@ -8,21 +8,28 @@ using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Domain.Entities;
+using EduQuest_Application.DTO.Response.LearningPaths;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
 
 public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathCommand, APIResponse>
 {
     private readonly ILearningPathRepository _learningPathRepository;
+    private readonly ICourseStatisticRepository _courseStatisticRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
     public UpdateLearningPathHandler(ILearningPathRepository learningPathRepository, 
-        IMapper mapper, IUnitOfWork unitOfWork)
+        IUserRepository userRepository,
+        IMapper mapper, IUnitOfWork unitOfWork, 
+        ICourseStatisticRepository courseStatisticRepository)
     {
         _learningPathRepository = learningPathRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _courseStatisticRepository = courseStatisticRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<APIResponse> Handle(UpdateLearningPathCommand request, CancellationToken cancellationToken)
@@ -89,12 +96,16 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseOrder == updatecourse.CourseOrder)!;
                 if (temp != null) updatecourse.CourseOrder += Flag;
                 learingPath.LearningPathCourses.Add(_mapper.Map<LearningPathCourse>(updatecourse));
+                var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
+                learingPath.TotalTimes += cs.TotalTime!.Value;
                 Flag += 1;
             }
             if(updatecourse.Action == "delete")
             {
                 LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
                 learingPath.LearningPathCourses.Remove(temp);
+                var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
+                learingPath.TotalTimes -= cs.TotalTime!.Value;
             }
 
             //update course order/position
@@ -117,10 +128,15 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
         await _learningPathRepository.Update(learingPath);
         if(await _unitOfWork.SaveChangesAsync() > 0)
         {
+            User user = await _userRepository.GetById(request.UserId)!;
+            CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
+            MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learingPath);
+            myLearningPathResponse.TotalCourses = learingPath.LearningPathCourses.Count;
+            myLearningPathResponse.CreatedBy = userResponse;
             return new APIResponse
             {
                 IsError = false,
-                Payload = learingPath,
+                Payload = myLearningPathResponse,
                 Errors = null,
                 Message = new MessageResponse
                 {

@@ -49,11 +49,25 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             }
 
             LearningPathDetailResponse response = _mapper.Map<LearningPathDetailResponse>(learningPath);
-            List<LearningPathCourseResponse> learningPathCourses = _mapper.Map<List<LearningPathCourseResponse>>(await _learningPathRepository.GetLearningPathCourse(request.LearningPathId));
 
+            //get course list
+            List<Course> courses = await _learningPathRepository.GetLearningPathCourse(request.LearningPathId);
+
+            // Create list of LearningPathCourseResponse whit Order field
+            var learningPathCourses = courses.Select(course =>
+            {
+                var learningPathCourse = _mapper.Map<LearningPathCourseResponse>(course);
+                var tempCourse = learningPath.LearningPathCourses.FirstOrDefault(r => r.CourseId == course.Id);
+
+                // parse order from LearningPathCourse Entity
+                learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
+                return learningPathCourse;
+            }).ToList();
+
+            // parse learningPathCourses, CreatedBy and TotalCourses
             response.TotalCourses = learningPathCourses.Count;
-            response.Courses = learningPathCourses;
-
+            response.Courses = learningPathCourses.OrderBy(r => r.Order).ToList();
+            response.CreatedBy = _mapper.Map<CommonUserResponse>(learningPath.User);
             return new APIResponse
             {
                 IsError = false,
