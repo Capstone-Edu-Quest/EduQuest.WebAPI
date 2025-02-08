@@ -27,7 +27,9 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
             List<MyPublicLearningPathResponse> responseDto = new List<MyPublicLearningPathResponse>();
             foreach (var item in result)
             {
+                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
                 MyPublicLearningPathResponse myLearningPathResponse = _mapper.Map<MyPublicLearningPathResponse>(item);
+                myLearningPathResponse.CreatedBy = userResponse;
                 myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
                 responseDto.Add(myLearningPathResponse);
             }

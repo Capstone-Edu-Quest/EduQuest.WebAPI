@@ -12,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace EduQuest_API.Controllers;
@@ -28,10 +29,12 @@ public class LearningPathController : Controller
     
     [Authorize]
     [HttpGet("me")]
-    public async Task<IActionResult> GetAllUserLearningPath([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAllUserLearningPath([FromQuery, AllowNull] string keyWord, [FromQuery, AllowNull] string type,
+        //[FromQuery] string UserId,
+        [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new GetMyLearningPathQuery(userId, pageNo, eachPage), cancellationToken);
+        var result = await _mediator.Send(new GetMyLearningPathQuery(userId, keyWord, type, pageNo, eachPage), cancellationToken);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
@@ -70,7 +73,7 @@ public class LearningPathController : Controller
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateLearningPath([FromBody, Required] CreateLearningPathRequest request,
-                                                        //[FromQuery] string UserId,
+                                                       // [FromQuery] string UserId,
                                                         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();

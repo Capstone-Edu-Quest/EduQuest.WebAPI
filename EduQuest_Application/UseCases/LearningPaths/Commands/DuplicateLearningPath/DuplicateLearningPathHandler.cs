@@ -7,6 +7,7 @@ using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Application.DTO.Request.LearningPaths;
 using AutoMapper;
+using EduQuest_Application.DTO.Response.LearningPaths;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.DuplicateLearningPath;
 
@@ -14,14 +15,18 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
 {
     private readonly ILearningPathRepository _learningPathRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
 
-    public DuplicateLearningPathHandler(ILearningPathRepository learningPathRepository, IUnitOfWork unitOfWork,
-        IMapper mapper)
+    public DuplicateLearningPathHandler(ILearningPathRepository learningPathRepository, 
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IUserRepository userRepository)
     {
         _learningPathRepository = learningPathRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _userRepository = userRepository;
     }
 
     public async Task<APIResponse> Handle(DuplicateLearningPathCommand request, CancellationToken cancellationToken)
@@ -55,12 +60,12 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
             LearningPath newLearningPath = new LearningPath();
             newLearningPath.Id = Guid.NewGuid().ToString();
             newLearningPath.UserId = request.UserId;
-            newLearningPath.IsDuplicated = true;
+            newLearningPath.IsEnrolled = false;
             newLearningPath.IsPublic = temp.IsPublic;
             newLearningPath.CreatedAt = DateTime.Now;
             newLearningPath.Name = temp.Name;
             newLearningPath.Description = temp.Description;
-            newLearningPath.EstimateDuration = temp.EstimateDuration;
+            newLearningPath.TotalTimes = temp.TotalTimes;
             List<CreateCourseLearningPath> newLPC = _mapper.Map<List<CreateCourseLearningPath>>(temp.LearningPathCourses);
             List<LearningPathCourse> learningPathCourses = _mapper.Map<List<LearningPathCourse>>(newLPC);
             newLearningPath.LearningPathCourses = learningPathCourses;
@@ -69,10 +74,15 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
             await _learningPathRepository.Add(newLearningPath);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
+                User user = await _userRepository.GetById(request.UserId)!;
+                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
+                MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(newLearningPath);
+                myLearningPathResponse.TotalCourses = newLearningPath.LearningPathCourses.Count;
+                myLearningPathResponse.CreatedBy = userResponse;
                 return new APIResponse
                 {
                     IsError = false,
-                    Payload = newLearningPath,
+                    Payload = myLearningPathResponse,
                     Errors = null,
                     Message = new MessageResponse
                     {

@@ -24,13 +24,15 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
     {
         try
         {
-            var result = await _learningPathRepository.GetMyLearningPaths(request.UserId, request.Page, request.EachPage);
+            var result = await _learningPathRepository.GetMyLearningPaths(request.UserId,request.KeyWord, request.Type, request.Page, request.EachPage);
             var temp = result.Items.ToList();
             List<MyLearningPathResponse> responseDto = new List<MyLearningPathResponse>();
             foreach (var item in temp)
             {
+                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(item);
                 myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
+                myLearningPathResponse.CreatedBy = userResponse;
                 responseDto.Add(myLearningPathResponse);
             }
             PagedList<MyLearningPathResponse> response = new PagedList<MyLearningPathResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);
