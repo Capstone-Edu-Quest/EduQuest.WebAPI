@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Request.Stages;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
+using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Stages.Command.CreateStage;
 using EduQuest_Application.UseCases.Stages.Command.UpdateStage;
 using EduQuest_Domain.Constants;
@@ -27,7 +28,7 @@ namespace EduQuest_API.Controllers
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateStage([FromBody] List<CreateStageRequest> request, [FromBody] string courseId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> CreateStage([FromQuery] string courseId, [FromBody] List<CreateStageRequest> request, CancellationToken cancellationToken = default)
 		{
 			var result = await _mediator.Send(new CreateStageCommand(courseId, request), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
