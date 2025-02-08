@@ -11,10 +11,10 @@ using System.Net;
 namespace EduQuest_API.Controllers
 {
     [Route(Constants.Http.API_VERSION + "/quest")]
-	public class AchievementController : BaseController
+	public class QuestController : BaseController
 	{
 		private ISender _mediator;
-		public AchievementController(ISender mediator)
+		public QuestController(ISender mediator)
 		{
 			_mediator = mediator;
 
