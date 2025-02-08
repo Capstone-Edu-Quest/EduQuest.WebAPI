@@ -24,11 +24,17 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
         try
         {
             var result = await _learningPathRepository.GetMyPublicLearningPaths(request.UserId);
-
+            List<MyPublicLearningPathResponse> responseDto = new List<MyPublicLearningPathResponse>();
+            foreach (var item in result)
+            {
+                MyPublicLearningPathResponse myLearningPathResponse = _mapper.Map<MyPublicLearningPathResponse>(item);
+                myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
+                responseDto.Add(myLearningPathResponse);
+            }
             return new APIResponse
             {
                 IsError = false,
-                Payload = _mapper.Map<List<MyPublicLearningPathResponse>>(result),
+                Payload = responseDto,
                 Errors = null,
                 Message = new MessageResponse
                 {

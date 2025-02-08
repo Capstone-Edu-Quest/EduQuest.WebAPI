@@ -63,11 +63,11 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                 };
             }
             #endregion
-
+            int totalTime = 0;
             #region validate if any course is unavailable
             foreach (LearningPathCourse course in learningPathCourses)
             {
-                if (!await _courseRepository.isExist(course.CourseId))
+                if (!await _courseRepository.IsExist(course.CourseId))
                 {
                     return new APIResponse
                     {
@@ -86,10 +86,14 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                         }
                     };
                 }
+                int courseTotalTime = await _courseRepository.GetTotalTime(course.CourseId);
+                totalTime += courseTotalTime;
             }
             #endregion
 
             //parse values
+            learningPath.EstimateDuration = totalTime.ToString();
+            learningPath.IsDuplicated = false;
             learningPath.Id = Guid.NewGuid().ToString();
             learningPath.CreatedAt = DateTime.Now;
             learningPath.UserId = request.UserId;

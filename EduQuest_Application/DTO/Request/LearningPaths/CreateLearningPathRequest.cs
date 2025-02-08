@@ -12,15 +12,15 @@ public class CreateLearningPathRequest : IMapFrom<LearningPath>, IMapTo<Learning
     public string Name { get; set; }
 
     [Required(ErrorMessage = MessageError.DescriptionRequired)]
-    [MaxLength(1500, ErrorMessage = "MAX_LENGTH_DESCRIPTION")]
+    [MaxLength(2500, ErrorMessage = "MAX_LENGTH_DESCRIPTION")]
     public string Description { get; set; }
 
     [Required(ErrorMessage = MessageError.ValueRequired)]
     public bool IsPublic { get; set; }
 
-    [Required(ErrorMessage = MessageError.ValueRequired)]
+    /*[Required(ErrorMessage = MessageError.ValueRequired)]
     [MaxLength(50, ErrorMessage = "MAX_LENGTH_DURATION")]
-    public string EstimateDuration { get; set; }
+    public string EstimateDuration { get; set; }*/
 
     [Required(ErrorMessage = MessageError.ValueRequired)]
     public List<CreateCourseLearningPath> Courses { get; set; } = new List<CreateCourseLearningPath>();
