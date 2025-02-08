@@ -1,17 +1,19 @@
-﻿using EduQuest_Application.DTO.Request;
+﻿using EduQuest_Application.DTO.Request.Courses;
+using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace EduQuest_API.Controllers
 {
-	[Route(Constants.Http.API_VERSION + "/course")]
+    [Route(Constants.Http.API_VERSION + "/course")]
 	public class CourseController : BaseController
 	{
 		private ISender _mediator;
@@ -39,6 +41,7 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
+		[Authorize]
 		[HttpGet("createdByMe")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,11 +51,13 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
+		[Authorize]
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest request, string userId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest request, CancellationToken cancellationToken = default)
 		{
+			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new CreateCourseCommand(request, userId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}

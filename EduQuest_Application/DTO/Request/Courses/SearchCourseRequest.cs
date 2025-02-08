@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.DTO.Request
+namespace EduQuest_Application.DTO.Request.Courses
 {
-	public class SearchCourseRequest
-	{
+    public class SearchCourseRequest
+    {
         public string? KeywordName { get; set; }
         public DateTime? DateTo { get; set; }
-		public DateTime? DateFrom { get; set; }
+        public DateTime? DateFrom { get; set; }
         public List<string?>? TagListId { get; set; }
         public string? Author { get; set; }
         public int? Rating { get; set; }

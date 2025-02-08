@@ -4,12 +4,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
@@ -41,6 +36,11 @@ namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
 					StatusResponse = HttpStatusCode.BadRequest,
 					StatusCode = (int)HttpStatusCode.BadRequest,
 					Message = MessageCommon.SavingFailed,
+				},
+				Message = new MessageResponse
+				{
+					content = result ? MessageCommon.CreateSuccesfully : MessageCommon.CreateFailed,
+					values = new Dictionary<string, string> { { "name", "favorite course" } }
 				}
 			};
 		}

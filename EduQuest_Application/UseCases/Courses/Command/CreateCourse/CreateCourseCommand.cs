@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.DTO.Request;
+﻿using EduQuest_Application.DTO.Request.Courses;
 using EduQuest_Domain.Models.Response;
 using MediatR;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 {
-	public class CreateCourseCommand : IRequest<APIResponse>
+    public class CreateCourseCommand : IRequest<APIResponse>
 	{
         public CreateCourseRequest CourseRequest { get; set; }
 		public string UserId { get; set; }

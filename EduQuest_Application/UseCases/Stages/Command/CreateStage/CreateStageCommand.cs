@@ -1,20 +1,17 @@
-﻿using EduQuest_Application.DTO.Request;
+﻿using EduQuest_Application.DTO.Request.Stages;
 using EduQuest_Domain.Models.Response;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 {
-	public class CreateStageCommand : IRequest<APIResponse>
+    public class CreateStageCommand : IRequest<APIResponse>
 	{
-		public List<StageCourseRequest>? StageCourse { get; set; }
+        public string CourseId { get; set; }
+        public List<CreateStageRequest>? StageCourse { get; set; }
 
-		public CreateStageCommand(List<StageCourseRequest>? stageCourse)
+		public CreateStageCommand(string courseId, List<CreateStageRequest>? stageCourse)
 		{
+			CourseId = courseId;
 			StageCourse = stageCourse;
 		}
 	}

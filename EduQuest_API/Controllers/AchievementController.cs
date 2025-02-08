@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.DTO.Request;
+﻿using EduQuest_Application.DTO.Request.Quests;
 using EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
 using EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
 using EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList;
@@ -10,7 +10,7 @@ using System.Net;
 
 namespace EduQuest_API.Controllers
 {
-	[Route(Constants.Http.API_VERSION + "/quest")]
+    [Route(Constants.Http.API_VERSION + "/quest")]
 	public class AchievementController : BaseController
 	{
 		private ISender _mediator;

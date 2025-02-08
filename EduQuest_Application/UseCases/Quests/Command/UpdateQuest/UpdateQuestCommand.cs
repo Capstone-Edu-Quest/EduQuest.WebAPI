@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.DTO.Request;
+﻿using EduQuest_Application.DTO.Request.Quests;
 using EduQuest_Domain.Models.Response;
 using MediatR;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement
 {
-	public class UpdateQuestCommand : IRequest<APIResponse>
+    public class UpdateQuestCommand : IRequest<APIResponse>
 	{
 		public UpdateQuestRequest Quest { get; set; }
 
