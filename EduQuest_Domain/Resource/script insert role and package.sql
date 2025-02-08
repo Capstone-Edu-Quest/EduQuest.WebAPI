@@ -18,59 +18,19 @@ VALUES
 (3, 'Learner', GETDATE(), 'System', GETDATE(), NULL),
 (4, 'Guest', GETDATE(), 'System', GETDATE(), NULL);
 
-INSERT INTO [Edu_Quest].[dbo].[User] (
-    [Id],
-    [PasswordSalt],
-    [Email],
-    [Phone],
-    [UpdatedAt],
-    [CreatedAt],
-    [Username],
-    [RoleId],
-    [PasswordHash],
-    [UpdatedBy],
-    [DeletedAt],
-    [AccountPackageId],
-    [AvatarUrl],
-    [PackagePrivilegeId],
-    [Description],
-    [Headline]
-)
-VALUES 
--- Example User 1
-(1, 
- 'randomSalt123', 
- 'user1@example.com', 
- '1234567890', 
- GETDATE(), 
- GETDATE(), 
- 'user1', 
- 1, 
- 'hashedPassword123', 
- 'Admin', 
- NULL, 
- 1, 
- 'https://example.com/avatar1.jpg', 
- 1, 
- 'This is a description for User 1.', 
- 'User 1 Headline'
-),
--- Example User 2
-(2, 
- 'randomSalt456', 
- 'user2@example.com', 
- '0987654321', 
- GETDATE(), 
- GETDATE(), 
- 'user2', 
- 2, 
- 'hashedPassword456', 
- 'Admin', 
- NULL, 
- 2, 
- 'https://example.com/avatar2.jpg', 
- 2, 
- 'This is a description for User 2.', 
- 'User 2 Headline'
-);
+INSERT INTO [Edu_Quest].[dbo].[User] 
+    ([Id], [Username], [AvatarUrl], [Email], [Phone], [Headline], [Status], 
+     [Description], [RoleId], [PackagePrivilegeId], [AccountPackageId], 
+     [CreatedAt], [UpdatedBy], [UpdatedAt], [DeletedAt])
+VALUES
+    (1, 'john_doe', 'https://example.com/avatar1.png', 'john.doe@example.com', '1234567890', 
+     'Software Engineer', 'Active', 'Passionate developer with 5 years of experience.', 
+     3, 1, 1, GETDATE(), 'Admin', GETDATE(), NULL),
 
+    (2, 'jane_smith', 'https://example.com/avatar2.png', 'jane.smith@example.com', '0987654321', 
+     'Data Scientist', 'Active', 'Experienced data scientist specialized in AI and ML.', 
+     2, 2, 2, GETDATE(), 'Admin', GETDATE(), NULL),
+
+    (3, 'alex_nguyen', 'https://example.com/avatar3.png', 'alex.nguyen@example.com', '1122334455', 
+     'UX Designer', 'Inactive', 'Creative UI/UX designer with a passion for user experience.', 
+     3, 1, 1, GETDATE(), 'Admin', GETDATE(), NULL);
