@@ -6,6 +6,7 @@ using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.DeleteLearningPath;
 
@@ -93,10 +94,14 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
             await _learningPathRepository.Delete(learningPath.Id);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
+                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(learningPath.User);
+                MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learningPath);
+                myLearningPathResponse.TotalCourses = learningPath.LearningPathCourses.Count;
+                myLearningPathResponse.CreatedBy = userResponse;
                 return new APIResponse
                 {
                     IsError = false,
-                    Payload = _mapper.Map<MyLearningPathResponse>(learningPath),
+                    Payload = myLearningPathResponse,
                     Errors = null,
                     Message = new MessageResponse
                     {
