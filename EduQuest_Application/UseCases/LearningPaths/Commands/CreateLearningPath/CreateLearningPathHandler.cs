@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -13,17 +14,20 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
 {
     private readonly ILearningPathRepository _learningPathRepository;
     private readonly ICourseRepository _courseRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateLearningPathHandler(ILearningPathRepository learningPathRepository, 
                                      IMapper mapper,
+                                     IUserRepository userRepository,
                                      ICourseRepository courseRepository,
                                      IUnitOfWork unitOfWork)
     {
         _learningPathRepository = learningPathRepository;
         _mapper = mapper;
         _courseRepository = courseRepository;
+        _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -92,8 +96,8 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             #endregion
 
             //parse values
-            learningPath.EstimateDuration = totalTime.ToString();
-            learningPath.IsDuplicated = false;
+            learningPath.TotalTimes = totalTime;
+            learningPath.IsEnrolled = false;
             learningPath.Id = Guid.NewGuid().ToString();
             learningPath.CreatedAt = DateTime.Now;
             learningPath.UserId = request.UserId;
@@ -101,10 +105,16 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             await _learningPathRepository.Add(learningPath);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
+                User user = await _userRepository.GetById(request.UserId)!;
+                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
+                MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learningPath);
+                myLearningPathResponse.TotalCourses = learningPath.LearningPathCourses.Count;
+                myLearningPathResponse.CreatedBy = userResponse;
+
                 return new APIResponse
                 {
                     IsError = false,
-                    Payload = learningPath,
+                    Payload = myLearningPathResponse,
                     Errors = null,
                     Message = new MessageResponse
                     {

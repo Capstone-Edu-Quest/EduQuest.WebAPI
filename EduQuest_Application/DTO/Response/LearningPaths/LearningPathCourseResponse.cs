@@ -13,4 +13,5 @@ public class LearningPathCourseResponse : IMapFrom<Course>
     public string? PhotoUrl { get; set; }
     public string? Color { get; set; }
     public decimal? Price { get; set; }
+    public int Order { get; set; }
 }
