@@ -41,7 +41,7 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[Authorize]
+		//[Authorize]
 		[HttpGet("createdByMe")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,7 +51,7 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[Authorize]
+		//[Authorize]
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

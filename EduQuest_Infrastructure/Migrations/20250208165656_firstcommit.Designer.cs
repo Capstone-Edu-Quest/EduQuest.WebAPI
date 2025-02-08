@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250208104013_addLearner")]
-    partial class addLearner
+    [Migration("20250208165656_firstcommit")]
+    partial class firstcommit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -735,6 +735,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDuplicated")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit");
 
@@ -768,9 +771,6 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CompletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("CourseOrder")
                         .HasColumnType("int");

@@ -34,3 +34,12 @@ VALUES
     (3, 'alex_nguyen', 'https://example.com/avatar3.png', 'alex.nguyen@example.com', '1122334455', 
      'UX Designer', 'Inactive', 'Creative UI/UX designer with a passion for user experience.', 
      3, 1, 1, GETDATE(), 'Admin', GETDATE(), NULL);
+
+
+INSERT INTO SystemConfig (Id, Name, Value, Description)
+VALUES 
+    (1, 'Docs', 1.0, 'Configuration for documents'),
+    (2, 'Video', 1.0, 'Configuration for videos'),
+    (3, 'Quiz', 0.8, 'Configuration for quizzes');
+
+

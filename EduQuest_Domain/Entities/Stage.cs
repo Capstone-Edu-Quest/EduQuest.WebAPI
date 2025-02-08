@@ -12,8 +12,8 @@ namespace EduQuest_Domain.Entities
 		public int Level { get; set; }
         public int? TotalTime { get; set; }
 
-
-        public virtual Course Course { get; set; } = null;
+		[JsonIgnore]
+		public virtual Course Course { get; set; } = null;
 		
 		[JsonIgnore]
 		public virtual ICollection<LearningMaterial> LearningMaterials { get; set; }

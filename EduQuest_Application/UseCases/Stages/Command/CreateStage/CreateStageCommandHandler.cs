@@ -16,7 +16,12 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 		private readonly IStageRepository _stageRepository;
 		private readonly ICourseRepository _courseRepository;
 
-		
+		public CreateStageCommandHandler(IUnitOfWork unitOfWork, IStageRepository stageRepository, ICourseRepository courseRepository)
+		{
+			_unitOfWork = unitOfWork;
+			_stageRepository = stageRepository;
+			_courseRepository = courseRepository;
+		}
 
 		public async Task<APIResponse> Handle(CreateStageCommand request, CancellationToken cancellationToken)
 		{
@@ -38,7 +43,7 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 					}
 				};
 			}
-			var courseExisted = await _courseRepository.GetById(request.CourseId);
+			var courseExisted = await _courseRepository.GetCourseById(request.CourseId);
 			if (courseExisted == null)
 			{
 				return new APIResponse
@@ -59,6 +64,12 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 			}
 			var stages = new List<Stage>();
 			int level = 1;
+			if (courseExisted.Stages!.Any() && courseExisted.Stages != null)
+			{
+				var maxLevel = await _stageRepository.GetMaxLevelInThisCourse(request.CourseId);
+				level = (int)++maxLevel;
+			}
+			
 
 			foreach (var stageRequest in request.StageCourse)
 			{

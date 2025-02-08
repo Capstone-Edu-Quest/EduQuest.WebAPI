@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduQuest_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateLP : Migration
+    public partial class firstcommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -677,13 +677,13 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Feedback",
+                name: "Learner",
                 columns: table => new
                 {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -691,15 +691,15 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Feedback", x => new { x.UserId, x.CourseId });
+                    table.PrimaryKey("PK_Learner", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Feedback_Course_CourseId",
+                        name: "FK_Learner_Course_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Course",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Feedback_User_UserId",
+                        name: "FK_Learner_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -710,6 +710,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "LearnerStatistic",
                 columns: table => new
                 {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProgressPercentage = table.Column<int>(type: "int", nullable: false),
@@ -722,7 +723,7 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LearnerStatistic", x => new { x.UserId, x.CourseId });
+                    table.PrimaryKey("PK_LearnerStatistic", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LearnerStatistic_Course_CourseId",
                         column: x => x.CourseId,
@@ -741,10 +742,10 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "LearningHistory",
                 columns: table => new
                 {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LastAccessed = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -752,7 +753,7 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LearningHistory", x => new { x.UserId, x.CourseId });
+                    table.PrimaryKey("PK_LearningHistory", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LearningHistory_Course_CourseId",
                         column: x => x.CourseId,
@@ -799,7 +800,12 @@ namespace EduQuest_Infrastructure.Migrations
                 {
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LearningPathId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseOrder = table.Column<int>(type: "int", nullable: false)
+                    CourseOrder = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -864,6 +870,43 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_Payment_Cart_CartId",
                         column: x => x.CartId,
                         principalTable: "Cart",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Feedback",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LearnerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feedback", x => new { x.UserId, x.CourseId });
+                    table.ForeignKey(
+                        name: "FK_Feedback_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Feedback_Learner_LearnerId",
+                        column: x => x.LearnerId,
+                        principalTable: "Learner",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Feedback_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1134,6 +1177,16 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Feedback_DeletedAt",
+                table: "Feedback",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Feedback_LearnerId",
+                table: "Feedback",
+                column: "LearnerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Item_DeletedAt",
                 table: "Item",
                 column: "DeletedAt");
@@ -1149,9 +1202,34 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Learner_CourseId",
+                table: "Learner",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Learner_DeletedAt",
+                table: "Learner",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Learner_UserId",
+                table: "Learner",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LearnerStatistic_CourseId",
                 table: "LearnerStatistic",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LearnerStatistic_DeletedAt",
+                table: "LearnerStatistic",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LearnerStatistic_UserId",
+                table: "LearnerStatistic",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LearningHistory_CourseId",
@@ -1162,6 +1240,11 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_LearningHistory_DeletedAt",
                 table: "LearningHistory",
                 column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LearningHistory_UserId",
+                table: "LearningHistory",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LearningMaterial_DeletedAt",
@@ -1187,6 +1270,11 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_LearningPathCourse_CourseId",
                 table: "LearningPathCourse",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LearningPathCourse_DeletedAt",
+                table: "LearningPathCourse",
+                column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Level_DeletedAt",
@@ -1464,6 +1552,9 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tag");
+
+            migrationBuilder.DropTable(
+                name: "Learner");
 
             migrationBuilder.DropTable(
                 name: "LearningPath");

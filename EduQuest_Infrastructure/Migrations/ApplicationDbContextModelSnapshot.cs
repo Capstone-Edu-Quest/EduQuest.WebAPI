@@ -769,9 +769,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("CompletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("CourseOrder")
                         .HasColumnType("int");
 

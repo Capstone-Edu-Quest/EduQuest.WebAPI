@@ -49,32 +49,31 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			} else if (request.SearchRequest.Rating != null)
 			{
 				listCourse = listCourse.Where(x => x.CourseStatistic.Rating >= request.SearchRequest.Rating).ToList();
-			}
-
-
-
-			var sortOptions = new Dictionary<SortCourse, Func<IQueryable<Course>, IOrderedQueryable<Course>>>
+			} else if (request.SearchRequest.Sort != null)
 			{
-				{ SortCourse.NewestCourses, listCourse => listCourse.OrderByDescending(x => x.CreatedAt) },
-				{ SortCourse.MostReviews, listCourse => listCourse.OrderByDescending(x => x.CourseStatistic.TotalReview) },
-				{ SortCourse.HighestRated, listCourse => listCourse.OrderByDescending(x => x.CourseStatistic.Rating) }
-			};
-
-			if (Enum.IsDefined(typeof(SortCourse), request.SearchRequest.Sort))
-			{
-				var sortType = (SortCourse)request.SearchRequest.Sort;
-
-				// Check if the sortType exists in the dictionary
-				if (sortOptions.TryGetValue(sortType, out var sortFunction))
+				var sortOptions = new Dictionary<SortCourse, Func<IQueryable<Course>, IOrderedQueryable<Course>>>
 				{
-					// Apply the sorting function
-					listCourse = sortFunction(listCourse.AsQueryable()).ToList();
-				}
-				else
-				{
-					// Handle default behavior for valid but unsupported sort types
-					listCourse = listCourse.OrderByDescending(x => x.CreatedAt).ToList(); // Default sort
-				}
+					{ SortCourse.NewestCourses, listCourse => listCourse.OrderByDescending(x => x.CreatedAt) },
+					{ SortCourse.MostReviews, listCourse => listCourse.OrderByDescending(x => x.CourseStatistic.TotalReview) },
+					{ SortCourse.HighestRated, listCourse => listCourse.OrderByDescending(x => x.CourseStatistic.Rating) }
+				};
+
+					if (Enum.IsDefined(typeof(SortCourse), request.SearchRequest.Sort))
+					{
+						var sortType = (SortCourse)request.SearchRequest.Sort;
+
+						// Check if the sortType exists in the dictionary
+						if (sortOptions.TryGetValue(sortType, out var sortFunction))
+						{
+							// Apply the sorting function
+							listCourse = sortFunction(listCourse.AsQueryable()).ToList();
+						}
+						else
+						{
+							// Handle default behavior for valid but unsupported sort types
+							listCourse = listCourse.OrderByDescending(x => x.CreatedAt).ToList(); // Default sort
+						}
+					}
 			}
 
 			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse); //Chưa check Discount Price
