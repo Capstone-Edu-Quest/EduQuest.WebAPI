@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.DTO.Request
+namespace EduQuest_Application.DTO.Request.Courses
 {
-	internal class SortCourseRequest
-	{
-	}
+    internal class SortCourseRequest
+    {
+    }
 }

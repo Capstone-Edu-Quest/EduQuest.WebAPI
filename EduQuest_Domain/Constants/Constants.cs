@@ -72,6 +72,7 @@ namespace EduQuest_Domain.Constants
 
 			public const string NotFound = "{{name}} not found";
 			public const string Complete = "Completed";
+			public const string NoProvided = "No {{name}} provided";
 
 			public const string ServerError = "Something when wrong";
 			public const string SessionTimeout = "Your session has timeout";

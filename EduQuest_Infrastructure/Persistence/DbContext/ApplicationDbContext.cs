@@ -28,6 +28,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<Feedback> Feedbacks { get; set; } = null!;
 		public virtual DbSet<Item> Items { get; set; } = null!;
 		public virtual DbSet<Leaderboard> Leaderboards { get; set; } = null!;
+		public virtual DbSet<Learner> Learners { get; set; } = null!;
 		public virtual DbSet<LearnerStatistic> LearnerStatistics { get; set; } = null!;
 		public virtual DbSet<LearningHistory> LearningHistorys { get; set; } = null!;
 		public virtual DbSet<LearningMaterial> LearningMaterials { get; set; } = null!;

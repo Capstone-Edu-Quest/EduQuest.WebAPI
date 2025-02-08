@@ -21,13 +21,15 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
         private readonly ITokenValidation _googleTokenValidation;
         private readonly IMapper _mapper;
         private readonly IJwtProvider _jwtProvider;
+        private readonly IUserStatisticRepository _userStatisticRepository;
 
         public SignInGoogleCommandHandler(IUserRepository userRepository,
             IRefreshTokenRepository refreshTokenRepository,
             IUnitOfWork unitOfWork,
             ITokenValidation googleTokenValidation,
             IMapper mapper,
-            IJwtProvider jwtProvider)
+            IJwtProvider jwtProvider,
+			IUserStatisticRepository userStatisticRepository)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -35,7 +37,9 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             _googleTokenValidation = googleTokenValidation;
             _mapper = mapper;
             _jwtProvider = jwtProvider;
-        }
+            _userStatisticRepository = userStatisticRepository;
+
+		}
 
         public async Task<APIResponse> Handle(SignInGoogleCommand request, CancellationToken cancellationToken)
         {
@@ -64,8 +68,13 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                 await _userRepository.Add(newUser);
 
                 await _unitOfWork.SaveChangesAsync();
+                var newUserStatistic = new UserStatistic();
+                newUserStatistic.Id = Guid.NewGuid().ToString();
+                newUserStatistic.UserId = newUser.Id;
+                await _userStatisticRepository.Add(newUserStatistic);
+				await _unitOfWork.SaveChangesAsync();
 
-                var response = await _jwtProvider.GenerateAccessRefreshTokens(newUser.Id, newUser.Email!);
+				var response = await _jwtProvider.GenerateAccessRefreshTokens(newUser.Id, newUser.Email!);
 
                 await _unitOfWork.SaveChangesAsync();
 

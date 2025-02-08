@@ -2,6 +2,7 @@
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,16 @@ namespace EduQuest_Infrastructure.Repository
 		public StageRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<List<Stage>> GetByCourseId(string id)
+		{
+			return await _context.Stages.Where(x => x.CourseId.Equals(id)).ToListAsync();
+		}
+
+		public async Task<int?> GetMaxLevelInThisCourse(string id)
+		{
+			return await _context.Stages.MaxAsync(s => (int?)s.Level);
 		}
 	}
 }

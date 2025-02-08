@@ -9,7 +9,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Badge>,
 		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
-		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<LearnerStatistic>,
+		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<Learner>, IEntityTypeConfiguration<LearnerStatistic>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
@@ -92,8 +92,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 
 		#endregion
-
-		
 
 		#region Answer
 		public void Configure(EntityTypeBuilder<Answer> builder)
@@ -223,10 +221,18 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
+		#region Learner
+		public void Configure(EntityTypeBuilder<Learner> builder)
+		{
+
+
+		}
+		#endregion
+
 		#region LearnerStatistic
 		public void Configure(EntityTypeBuilder<LearnerStatistic> builder)
 		{
-			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
+			
 
 		}
 		#endregion
@@ -234,7 +240,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region LearningHistory
 		public void Configure(EntityTypeBuilder<LearningHistory> builder)
 		{
-			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
+			
 
 		}
 		#endregion
@@ -318,7 +324,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-
 		#region SearchHistory
 		public void Configure(EntityTypeBuilder<SearchHistory> builder)
 		{
@@ -383,9 +388,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 	
-
-		
-
         #region Refresh token
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {

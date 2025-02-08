@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
@@ -12,6 +13,7 @@ namespace EduQuest_Domain.Entities
 		public string UrlMaterial { get; set; }
         public int? Duration { get; set; }
 
-        public virtual Stage Stage { get; set; } = null;
+		[JsonIgnore]
+		public virtual Stage Stage { get; set; } = null;
 	}
 }

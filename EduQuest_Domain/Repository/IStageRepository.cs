@@ -10,5 +10,7 @@ namespace EduQuest_Domain.Repository
 {
 	public interface IStageRepository : IGenericRepository<Stage>
 	{
+		Task<List<Stage>> GetByCourseId(string id);
+		Task<int?> GetMaxLevelInThisCourse(string id);
 	}
 }

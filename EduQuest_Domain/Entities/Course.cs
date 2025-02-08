@@ -25,6 +25,8 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Certificate>? Certificates { get; set; }
 		[JsonIgnore]
+		public virtual ICollection<Feedback>? Feedbacks { get; set; }
+		[JsonIgnore]
 		public virtual ICollection<Tag>? Tags { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Item>? Items { get; set; }
