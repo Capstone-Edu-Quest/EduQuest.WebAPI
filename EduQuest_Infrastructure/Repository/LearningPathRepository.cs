@@ -69,6 +69,7 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
     {
         return await _context.LearningPathCourses
         .Where(l => l.LearningPathId == learningPathId)
+        .Include(l => l.Course.CourseStatistic).Include(l => l.Course.User)
         .Select(l => l.Course)
         .ToListAsync();
     }

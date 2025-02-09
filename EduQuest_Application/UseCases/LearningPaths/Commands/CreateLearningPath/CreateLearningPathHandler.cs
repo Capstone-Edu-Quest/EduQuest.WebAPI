@@ -99,7 +99,7 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             learningPath.TotalTimes = totalTime;
             learningPath.IsEnrolled = false;
             learningPath.Id = Guid.NewGuid().ToString();
-            learningPath.CreatedAt = DateTime.Now;
+            learningPath.CreatedAt = DateTime.Now.ToUniversalTime();
             learningPath.UserId = request.UserId;
             learningPath.LearningPathCourses = learningPathCourses;
             await _learningPathRepository.Add(learningPath);
