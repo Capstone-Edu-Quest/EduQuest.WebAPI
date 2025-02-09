@@ -27,9 +27,11 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual UserStatistic? UserStatistic { get; set; } = null!;
 		[JsonIgnore]
-		public virtual UserMascot UserMascot { get; set; } = null!;
+		public virtual MascotInventory UserMascot { get; set; } = null!;
 
-		[JsonIgnore]
+        [JsonIgnore]
+        public virtual ICollection<StudyTime>? StudyTime { get; set; } = null!;
+        [JsonIgnore]
 		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Quest>? Quests { get; set; }

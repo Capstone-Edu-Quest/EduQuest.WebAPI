@@ -41,7 +41,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			var userSta = await _userStatisticRepository.GetByUserId(course.User!.Id);
 			courseResponse.Author!.TotalCourseCreated = userSta.TotalCourseCreated;
 			courseResponse.Author.TotalReview = userSta.TotalReview;
-			courseResponse.Author.Rating = userSta.Rating;
 			courseResponse.Author.TotalLearner = userSta.TotalLearner;
 
 

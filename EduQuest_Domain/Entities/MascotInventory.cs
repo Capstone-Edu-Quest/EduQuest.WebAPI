@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
-	public partial class UserMascot: BaseEntity
+    public partial class MascotInventory: BaseEntity
 	{
         public string UserId { get; set; }
         public string ShopItemId { get; set; }
+        public bool IsEquipped { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
 		public virtual ICollection<ShopItem> ShopItems { get; set; } 
 
 		[JsonIgnore]

@@ -24,8 +24,8 @@ namespace EduQuest_Infrastructure.Repository.Generic
 		public async Task Add(TDomain entity)
 		{
 			
-			entity.CreatedAt = DateTime.Now;
-			entity.UpdatedAt = DateTime.Now;
+			entity.CreatedAt = DateTime.Now.ToUniversalTime(); ;
+			entity.UpdatedAt = DateTime.Now.ToUniversalTime(); ;
 			await _context.Set<TDomain>().AddAsync(entity);
 			
 		}
@@ -40,8 +40,8 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			foreach (var entity in entities)
 			{
 				
-				entity.CreatedAt = DateTime.Now;
-				entity.UpdatedAt = DateTime.Now;
+				entity.CreatedAt = DateTime.Now.ToUniversalTime(); ;
+				entity.UpdatedAt = DateTime.Now.ToUniversalTime(); ;
 			}
 			await _context.AddRangeAsync(entities);
 		}

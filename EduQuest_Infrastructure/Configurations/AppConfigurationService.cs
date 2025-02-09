@@ -28,6 +28,8 @@ using Serilog.Events;
 using StackExchange.Redis;
 using System.Text;
 using System.Text.Json;
+using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Infrastructure.ExternalServices.Redis;
 
 namespace EduQuest_Infrastructure
 {
@@ -42,7 +44,7 @@ namespace EduQuest_Infrastructure
 			#region DbContext
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
-				options.UseSqlServer(
+				options.UseNpgsql(
 					//configuration.GetConnectionString("local"),
 					configuration.GetConnectionString("production"),
 					b =>
@@ -116,10 +118,11 @@ namespace EduQuest_Infrastructure
 				{
 					option.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 				});
-			#endregion
+            #endregion
 
-			#region AddSingleton
-			services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
+            #region AddSingleton
+            services.AddSingleton<IRedisCaching, RedisCaching>();
+            services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
 			services.AddScoped<IUserRepository, UserRepository>();
 			services.AddScoped<ICourseRepository, CourseRepository>();
 			services.AddScoped<ITagRepository, TagRepository>();
@@ -138,6 +141,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IFirebaseFirestoreService, FirebaseFirestoreService>();
 			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
+			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 
 			services.AddSingleton(provider =>
 			{
