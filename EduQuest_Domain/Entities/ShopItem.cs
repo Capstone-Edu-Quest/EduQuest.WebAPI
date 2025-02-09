@@ -9,8 +9,9 @@ namespace EduQuest_Domain.Entities
         public string Name { get; set; }
         public double Price { get; set; }
 
-		[JsonIgnore]
-		public virtual MascotInventory? UserMascot { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<MascotInventory>? MascotItems { get; set; }
+    }
 
-	}
 }
+

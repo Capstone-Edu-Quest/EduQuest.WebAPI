@@ -62,6 +62,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
+            builder.HasMany(u => u.MascotItem)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId);
+
             builder.HasMany(u => u.RefreshTokens)
                 .WithOne(c => c.User)
                 .HasForeignKey(c => c.UserId);
