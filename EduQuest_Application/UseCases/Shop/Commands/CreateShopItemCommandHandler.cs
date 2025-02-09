@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.ShopItemMascot.Commands;
+namespace EduQuest_Application.UseCases.Shop.Commands;
 
 public class CreateShopItemCommandHandler : IRequestHandler<CreateShopItemCommand, APIResponse>
 {
@@ -25,12 +24,12 @@ public class CreateShopItemCommandHandler : IRequestHandler<CreateShopItemComman
 
     public async Task<APIResponse> Handle(CreateShopItemCommand request, CancellationToken cancellationToken)
     {
-        var newShopItems = request.ShopItems.Select(item => new ShopItem
-            {
-                Id = item.Id,
-                Name = item.Name,
-                Price = item.Price
-            }).ToList();
+        var newShopItems = request.ShopItems.Select(item => new EduQuest_Domain.Entities.ShopItem
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Price = item.Price
+        }).ToList();
 
         await _shopItemRepository.CreateRangeAsync(newShopItems);
         await _unitOfWork.SaveChangesAsync();

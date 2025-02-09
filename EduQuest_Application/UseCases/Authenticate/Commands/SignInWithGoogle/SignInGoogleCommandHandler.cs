@@ -71,7 +71,9 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                         StudyTime = 0,
                         TotalCourseCreated = 0,
                         TotalLearner = 0,
-                        TotalReview = 0
+                        TotalReview = 0,
+                        CreatedAt = DateTime.Now.ToUniversalTime(),
+                        UpdatedAt = DateTime.Now.ToUniversalTime(),
                     }
 
                 };

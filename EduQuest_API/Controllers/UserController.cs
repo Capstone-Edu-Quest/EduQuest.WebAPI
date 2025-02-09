@@ -43,14 +43,14 @@ public class UserController : BaseController
         return Ok(result);
     }
 
-    [Authorize]
-    [HttpGet("home-info")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<APIResponse>> GetUserOverallInfo([FromQuery] GetUserGameInfoQuery info, CancellationToken cancellationToken = default)
-    {
-        string email = User.GetEmailFromToken().ToString();
-        var result = await _mediator.Send(info, cancellationToken);
-        return Ok(result);
-    }
+    //[Authorize]
+    //[HttpGet("home-info")]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //public async Task<ActionResult<APIResponse>> GetUserOverallInfo([FromQuery] GetUserGameInfoQuery info, CancellationToken cancellationToken = default)
+    //{
+    //    string email = User.GetEmailFromToken().ToString();
+    //    var result = await _mediator.Send(info, cancellationToken);
+    //    return Ok(result);
+    //}
 }

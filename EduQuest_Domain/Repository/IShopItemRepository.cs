@@ -5,4 +5,5 @@ namespace EduQuest_Domain.Repository;
 
 public interface IShopItemRepository : IGenericRepository<ShopItem>
 {
+    Task<IEnumerable<ShopItem>> GetAllItemAsync();
 }

@@ -7,6 +7,6 @@ public class ShopItemResponseDto : IMapFrom<ShopItem>, IMapTo<ShopItem>
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public string Slot { get; set; }
     public double Price { get; set; }
+    public bool IsOwned { get; set; }
 }

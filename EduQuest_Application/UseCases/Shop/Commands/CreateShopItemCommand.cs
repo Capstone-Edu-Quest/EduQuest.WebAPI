@@ -2,7 +2,7 @@
 using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.ShopItemMascot.Commands;
+namespace EduQuest_Application.UseCases.Shop.Commands;
 
 public class CreateShopItemCommand : IRequest<APIResponse>
 {
