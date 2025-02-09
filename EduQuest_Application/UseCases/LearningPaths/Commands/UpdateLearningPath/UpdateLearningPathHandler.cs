@@ -81,7 +81,7 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
         learingPath.Name = request.LearningPathRequest.Name;
         learingPath.Description = request.LearningPathRequest.Description;
         learingPath.IsPublic = request.LearningPathRequest.IsPublic;
-        learingPath.UpdatedAt = DateTime.Now;
+        learingPath.UpdatedAt = DateTime.Now.ToUniversalTime();
         learingPath.UpdatedBy = request.UserId;
 
         //handler learning path courses

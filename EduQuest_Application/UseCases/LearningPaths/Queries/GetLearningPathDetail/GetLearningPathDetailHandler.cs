@@ -61,6 +61,11 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
 
                 // parse order from LearningPathCourse Entity
                 learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
+
+                learningPathCourse.AverageRating = course.CourseStatistic.Rating != null ? course.CourseStatistic.Rating.Value : 0;
+                learningPathCourse.TotalReview = course.CourseStatistic.TotalReview != null ? course.CourseStatistic.TotalReview.Value : 0;
+                learningPathCourse.TotalLesson = course.CourseStatistic.TotalLesson != null ? course.CourseStatistic.TotalLesson.Value : 0; 
+                learningPathCourse.TotalTime = course.CourseStatistic.TotalTime != null ? course.CourseStatistic.TotalTime.Value :  0;  
                 return learningPathCourse;
             }).ToList();
 
