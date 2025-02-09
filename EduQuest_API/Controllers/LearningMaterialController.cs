@@ -22,7 +22,7 @@ namespace EduQuest_API.Controllers
 			_mediator = mediator;
 		}
 
-		//[Authorize]
+		[Authorize]
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -32,7 +32,7 @@ namespace EduQuest_API.Controllers
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
-		//[Authorize]
+		[Authorize]
 		[HttpPatch("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList;
 using EduQuest_Application.UseCases.FavoriteCourse.Command.DeleteFavoriteList;
 using EduQuest_Application.UseCases.FavoriteCourse.Query.SearchFavoriteCourse;
 using EduQuest_Domain.Constants;
@@ -22,8 +23,9 @@ namespace EduQuest_API.Controllers
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> AddFavCourse([FromBody] string courseId, string userId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> AddFavCourse([FromBody] string courseId, CancellationToken cancellationToken = default)
 		{
+			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new AddFavoriteListCommand(userId, courseId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
@@ -31,8 +33,9 @@ namespace EduQuest_API.Controllers
 		[HttpGet("search")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> SearchFavCourse([FromQuery] string? name, string userId, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> SearchFavCourse([FromQuery] string? name, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
 		{
+			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new SearchFavoriteCourseQuery(pageNo, eachPage, name, userId), cancellationToken);
 			return Ok(result);
 		}
@@ -40,8 +43,9 @@ namespace EduQuest_API.Controllers
 		[HttpDelete("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> DeleteFavCourse([FromQuery] string courseId, string userId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> DeleteFavCourse([FromQuery] string courseId, CancellationToken cancellationToken = default)
 		{
+			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new DeleteFavoriteListCommand(userId, courseId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
