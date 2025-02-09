@@ -26,7 +26,7 @@ namespace EduQuest_Application.Helper
 
 			var identity = user.Identity as ClaimsIdentity;
 			IEnumerable<Claim> claims = identity!.Claims;
-			return claims.FirstOrDefault(s => s.Type.Equals(UserClaimType.Email))?.Value ?? string.Empty;
+			return claims.FirstOrDefault(s => s.Type.Equals(ClaimTypes.Email))?.Value ?? string.Empty;
 		}
 
 		private static string? GetJwtTokenFromHeader(Microsoft.AspNetCore.Http.HttpContext httpContext)

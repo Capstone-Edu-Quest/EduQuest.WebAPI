@@ -9,7 +9,6 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System.Net;
 
 namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
 {
@@ -50,16 +49,32 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             var user = await _userRepository.GetUserByEmailAsync(tokenInfo!.Email!);
             if (user == null)
             {
+                var userId = Guid.NewGuid().ToString();
                 var newUser = new User
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = userId,
                     Email = tokenInfo!.Email,
                     Username = tokenInfo.FullName,
                     AvatarUrl = tokenInfo.picture,
                     Status = AccountStatus.Active.ToString(),
-                    RoleId = ((int)GeneralEnums.UserRole.Learner).ToString()
+                    RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
+                    UserStatistic = new UserStatistic
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserId = userId,
+                        TotalActiveDay = 0,
+                        MaxStudyStreakDay = 0,
+                        CompletedCourses = 0,
+                        Gold = 0,
+                        Exp = 0,
+                        Level = 0,
+                        StudyTime = 0,
+                        TotalCourseCreated = 0,
+                        TotalLearner = 0,
+                        TotalReview = 0
+                    }
 
-            };
+                };
 
                 await _userRepository.Add(newUser);
 
