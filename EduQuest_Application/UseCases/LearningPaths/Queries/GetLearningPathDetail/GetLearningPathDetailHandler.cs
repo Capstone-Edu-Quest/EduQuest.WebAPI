@@ -57,11 +57,13 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             var learningPathCourses = courses.Select(course =>
             {
                 var learningPathCourse = _mapper.Map<LearningPathCourseResponse>(course);
+                CommonUserResponse user = _mapper.Map<CommonUserResponse>(course.User);
                 var tempCourse = learningPath.LearningPathCourses.FirstOrDefault(r => r.CourseId == course.Id);
 
                 // parse order from LearningPathCourse Entity
                 learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
 
+                learningPathCourse.CreatedByUser = user;
                 learningPathCourse.AverageRating = course.CourseStatistic.Rating != null ? course.CourseStatistic.Rating.Value : 0;
                 learningPathCourse.TotalReview = course.CourseStatistic.TotalReview != null ? course.CourseStatistic.TotalReview.Value : 0;
                 learningPathCourse.TotalLesson = course.CourseStatistic.TotalLesson != null ? course.CourseStatistic.TotalLesson.Value : 0; 

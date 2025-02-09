@@ -18,5 +18,5 @@ public class LearningPathCourseResponse : IMapFrom<Course>
     public double AverageRating { get; set; }
     public int TotalLesson { get; set; }
     public int TotalTime { get; set; }
-    public CommonUserResponse CreatedBy { get; set; } = new CommonUserResponse();
+    public CommonUserResponse CreatedByUser { get; set; } = new CommonUserResponse();
 }
