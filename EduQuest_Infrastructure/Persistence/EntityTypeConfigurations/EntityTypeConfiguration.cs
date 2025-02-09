@@ -16,7 +16,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
 		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
-		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<UserMascot>
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>
 		
 	{
 		#region Role
@@ -381,7 +381,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#endregion
 
 		#region UserMascot
-		public void Configure(EntityTypeBuilder<UserMascot> builder)
+		public void Configure(EntityTypeBuilder<MascotInventory> builder)
 		{
 
 

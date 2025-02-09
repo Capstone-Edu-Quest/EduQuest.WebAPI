@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Mascot;
+using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 
@@ -13,6 +15,8 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string Status { get; set; } = null!;
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
+    public UserStatisticDto Statistic { get; set; }
+    public UserMascotDto mascotItem { get; set; }
 
     //public void MappingFrom(Profile profile)
     //{
