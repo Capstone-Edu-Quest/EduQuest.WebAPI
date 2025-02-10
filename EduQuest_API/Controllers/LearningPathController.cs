@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.DTO.Request.LearningPaths;
+using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.LearningPaths.Commands.CreateLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Commands.DeleteLearningPath;
@@ -8,6 +9,7 @@ using EduQuest_Application.UseCases.LearningPaths.Queries.GetLearningPathDetail;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyPublicLearningPaths;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Models.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace EduQuest_API.Controllers;
-[Route(Constants.Http.API_VERSION + "/LearningPath")]
+[Route(Constants.Http.API_VERSION + "/learningPath")]
 public class LearningPathController : Controller
 {
 
@@ -35,7 +37,15 @@ public class LearningPathController : Controller
     {
         string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new GetMyLearningPathQuery(userId, keyWord, type, pageNo, eachPage), cancellationToken);
-        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        if((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
+        {
+            return BadRequest(result);
+        }
+        PagedList<MyLearningPathResponse> list = (PagedList<MyLearningPathResponse>)result.Payload!;
+        Response.Headers.Add("X-Total-Element", list.TotalItems.ToString());
+        Response.Headers.Add("X-Total-Page", list.TotalPages.ToString());
+        Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());
+        return Ok(result);
     }
 
     [Authorize]

@@ -143,6 +143,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
+			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 			services.AddSingleton(provider =>
 			{
