@@ -48,6 +48,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
 		public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 		public virtual DbSet<StudyTime> StudyTimes { get; set; } = null!;
+		public virtual DbSet<MascotInventory> MascotItems { get; set; } = null!;
 		
 		public virtual DbSet<Level> Level { get; set; } = null!;
 

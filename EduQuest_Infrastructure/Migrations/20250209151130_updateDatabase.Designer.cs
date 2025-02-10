@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250209151130_updateDatabase")]
+    partial class updateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -837,7 +840,7 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("Level");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.MascotInventory", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.MascotItem", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -869,8 +872,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
-
-                    b.HasIndex("ShopItemId");
 
                     b.HasIndex("UserId");
 
@@ -1278,6 +1279,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("MascotItemId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1294,6 +1298,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("MascotItemId");
 
                     b.ToTable("ShopItem");
                 });
@@ -1897,21 +1903,13 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("LearningPath");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.MascotInventory", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.MascotItem", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.ShopItem", "ShopItem")
-                        .WithMany("MascotItems")
-                        .HasForeignKey("ShopItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany("MascotItem")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ShopItem");
 
                     b.Navigation("User");
                 });
@@ -2003,6 +2001,15 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.ShopItem", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.MascotItem", "MascotItem")
+                        .WithMany("ShopItems")
+                        .HasForeignKey("MascotItemId");
+
+                    b.Navigation("MascotItem");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Stage", b =>
@@ -2136,6 +2143,11 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("LearningPathCourses");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.MascotItem", b =>
+                {
+                    b.Navigation("ShopItems");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.PackagePrivilege", b =>
                 {
                     b.Navigation("Users");
@@ -2154,11 +2166,6 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.Role", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.ShopItem", b =>
-                {
-                    b.Navigation("MascotItems");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Stage", b =>

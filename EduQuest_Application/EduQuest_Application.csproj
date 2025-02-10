@@ -24,7 +24,7 @@
     <Folder Include="UseCases\Feedback\Commands\UpdateFeedback\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
-    <Folder Include="UseCases\MascotInventory\" />
+    <Folder Include="UseCases\Mascot\Queries\" />
     <Folder Include="UseCases\UserStatistic\" />
     <Folder Include="UseCases\Authenticate\Queries\" />
     <Folder Include="UseCases\Users\Commands\" />

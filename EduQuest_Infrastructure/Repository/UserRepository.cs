@@ -8,15 +8,17 @@ namespace EduQuest_Infrastructure.Repository;
 
 public class UserRepository : GenericRepository<User>, IUserRepository
 {
-	private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext _context;
 
-	public UserRepository(ApplicationDbContext context) : base(context)
-	{
-		_context = context;
-	}
+    public UserRepository(ApplicationDbContext context) : base(context)
+    {
+        _context = context;
+    }
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return await _context.Users.Include(a => a.Role).FirstOrDefaultAsync(x => x.Email!.ToLower().Equals(email.ToLower()));
+        return await _context.Users
+            .Include(a => a.Role)
+            .FirstOrDefaultAsync(x => x.Email!.ToLower().Equals(email.ToLower()));
     }
 }

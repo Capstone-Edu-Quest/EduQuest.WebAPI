@@ -15,14 +15,13 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string Status { get; set; } = null!;
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
-    public UserStatisticDto Statistic { get; set; }
-    public UserMascotDto mascotItem { get; set; }
+    public UserStatisticDto statistic { get; set; }
+    public List<UserMascotDto> mascotItem { get; set; }
 
-    //public void MappingFrom(Profile profile)
-    //{
-    //    profile.CreateMap<User, UserResponseDto>()
-    //     .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Username))   
-    //     .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))          
-    //     .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.AvatarUrl));
-    //}
+    public void MappingFrom(Profile profile)
+    {
+        profile.CreateMap<User, UserResponseDto>()
+            .ForMember(dest => dest.statistic, opt => opt.MapFrom(src => src.UserStatistic))
+            .ForMember(dest => dest.mascotItem, opt => opt.MapFrom(src => src.MascotItem));
+    }
 }

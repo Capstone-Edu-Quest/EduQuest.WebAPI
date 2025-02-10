@@ -1,17 +1,19 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
+    [Table("MascotInventory")]
     public partial class MascotInventory: BaseEntity
 	{
         public string UserId { get; set; }
         public string ShopItemId { get; set; }
         public bool IsEquipped { get; set; }
 
-        [JsonIgnore]
-		public virtual ICollection<ShopItem> ShopItems { get; set; } 
+        [ForeignKey("ShopItemId")]
+        public virtual ShopItem ShopItem { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
 		public virtual User User { get; set; } = null!;
 	}
 }

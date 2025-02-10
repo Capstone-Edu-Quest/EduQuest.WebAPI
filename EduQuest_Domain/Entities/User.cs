@@ -26,9 +26,9 @@ namespace EduQuest_Domain.Entities
 		public virtual PackagePrivilege? PackagePrivilege { get; set; } = null!;
 		[JsonIgnore]
 		public virtual UserStatistic? UserStatistic { get; set; } = null!;
-		[JsonIgnore]
-		public virtual MascotInventory UserMascot { get; set; } = null!;
 
+		[JsonIgnore]
+		public virtual ICollection<MascotInventory>? MascotItem { get; set; } = null!;
         [JsonIgnore]
         public virtual ICollection<StudyTime>? StudyTime { get; set; } = null!;
         [JsonIgnore]
