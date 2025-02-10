@@ -38,24 +38,30 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
 
         if (!string.IsNullOrEmpty(keyWord))
         {
-            result = result.Where(s =>
-                s.Name.IndexOf(keyWord, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                s.Description.IndexOf(keyWord, StringComparison.OrdinalIgnoreCase) >= 0);
+            result = from r in result
+                     where (r.Name.Contains(keyWord) || r.Description.Contains(keyWord))
+                     select r;
         }
 
         if (type == "public")
         {
-            result = result.Where(s => s.IsPublic == true);
+            result = from r in result
+                     where r.IsPublic == true
+                     select r;
         }
         if(type == "private")
         {
-            result = result.Where(s => s.IsPublic == false);
+            result = from r in result
+                     where r.IsPublic == false
+                     select r;
         }
         if(type == "enrolled")
         {
-            result = result.Where(s => s.IsEnrolled == true);
+            result = from r in result
+                     where r.IsEnrolled == true
+                     select r;
         }
-        var response = result.ToPagedListAsync(page, eachPage);
+        var response = result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
 

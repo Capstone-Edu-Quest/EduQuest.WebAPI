@@ -98,6 +98,8 @@ namespace EduQuest_Domain.Constants
 
 		public static class MessageError
 		{
+			public const string FeedbackMaxLength = "MAX_LENGTH_REACHED";
+			public const string RatingLimit = "RATING_LIMIT_ERROR";
 			public const string NameIsRequired = "NAME_REQUIRED";
 			public const string DescriptionRequired = "DESCRIPTION_REQUIRED";
 			public const string ValueRequired = "FIELD_REQUIRED";
