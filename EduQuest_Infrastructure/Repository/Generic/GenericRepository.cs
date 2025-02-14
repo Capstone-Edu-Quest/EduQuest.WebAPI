@@ -40,8 +40,8 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			foreach (var entity in entities)
 			{
 				
-				entity.CreatedAt = DateTime.Now.ToUniversalTime(); ;
-				entity.UpdatedAt = DateTime.Now.ToUniversalTime(); ;
+				entity.CreatedAt = DateTime.Now.ToUniversalTime(); 
+				entity.UpdatedAt = DateTime.Now.ToUniversalTime(); 
 			}
 			await _context.AddRangeAsync(entities);
 		}
@@ -75,7 +75,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 				return null;
 			}
 			
-			_entity.DeletedAt = DateTime.Now;
+			_entity.DeletedAt = DateTime.Now.ToUniversalTime();
 			await Update(_entity);
 			return _entity;
 		}
@@ -137,7 +137,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 		public Task Update(TDomain entity)
 		{
 			
-			entity.UpdatedAt = DateTime.Now;
+			entity.UpdatedAt = DateTime.Now.ToUniversalTime(); ;
 			var entry = _context.Entry(entity);
 			if (entry.State == EntityState.Detached)
 			{
@@ -150,6 +150,10 @@ namespace EduQuest_Infrastructure.Repository.Generic
 
 		public async Task UpdateRangeAsync(IEnumerable<TDomain> entities)
 		{
+			foreach (var entity in entities)
+			{
+				entity.UpdatedAt = DateTime.Now.ToUniversalTime(); 
+			}
 			_context.UpdateRange(entities);
 		}
 	}

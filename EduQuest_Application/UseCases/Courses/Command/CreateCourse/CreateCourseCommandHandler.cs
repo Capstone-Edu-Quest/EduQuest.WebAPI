@@ -32,7 +32,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			
 			course.CreatedBy = user!.Id;
 			course.Id = Guid.NewGuid().ToString();
-			course.LastUpdated = DateTime.UtcNow.ToLocalTime();
+			course.LastUpdated = DateTime.Now.ToUniversalTime();
 			await _courseRepository.Add(course);
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;

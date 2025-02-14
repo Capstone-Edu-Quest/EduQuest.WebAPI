@@ -20,6 +20,6 @@ namespace EduQuest_Application.DTO.Response
 		public string Content { get; set; }
 
 		[FirestoreProperty]
-		public DateTime Timestamp { get; set; } = DateTime.Now;
+		public DateTime Timestamp { get; set; } = DateTime.Now.ToUniversalTime();
 	}
 }

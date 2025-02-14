@@ -6,6 +6,7 @@ using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
+using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
@@ -80,13 +81,16 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			foreach (var course in listCourseResponse)
 			{
 				var user = await _userRepository.GetById(course.CreatedBy); 
-				course.Author = user!.Username; 
+				course.Author = user!.Username!;
 
 				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
-				course.TotalLesson = courseSta.TotalLesson;
-				course.TotalReview = courseSta.TotalReview;
-				course.Rating = courseSta.Rating;
-				course.TotalTime = courseSta.TotalTime;
+				if(courseSta != null)
+				{
+					course.TotalLesson = courseSta.TotalLesson;
+					course.TotalReview = courseSta.TotalReview;
+					course.Rating = courseSta.Rating;
+					course.TotalTime = courseSta.TotalTime;
+				}
 			}
 
 			int totalItem = listCourseResponse.Count;
@@ -104,6 +108,11 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				IsError = false,
 				Payload = result,
 				Errors = null,
+				Message = new MessageResponse
+				{
+					content = MessageCommon.GetSuccesfully,
+					values = new Dictionary<string, string>() { { "name", "courses"} }
+				}
 			};
 
 
