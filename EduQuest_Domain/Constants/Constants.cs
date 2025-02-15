@@ -96,6 +96,11 @@ namespace EduQuest_Domain.Constants
 			public const string ExistedUser = "USERS HAVE USED";
 		}
 
+		public static class MessageFirebase
+		{
+			public const string ExistedUser = "USERS HAVE USED";
+		}
+
 		public static class MessageError
 		{
 			public const string NameIsRequired = "NAME_REQUIRED";

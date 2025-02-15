@@ -31,7 +31,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			var listCourse = await _courseRepository.GetAll();
 			if(request.SearchRequest.KeywordName != null)
 			{
-				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
 			} else if(request.SearchRequest.DateTo != null)
 			{
 				listCourse = listCourse.Where(x => x.LastUpdated <= request.SearchRequest.DateTo);
@@ -46,7 +46,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			}
 			else if (request.SearchRequest.Author != null)
 			{
-				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.CreatedBy.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.SearchRequest.Author)));
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.CreatedBy.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.Author)));
 			} else if (request.SearchRequest.Rating != null)
 			{
 				listCourse = listCourse.Where(x => x.CourseStatistic.Rating >= request.SearchRequest.Rating).ToList();

@@ -22,7 +22,9 @@ namespace EduQuest_Domain.Enums
 			Admin = 1,
             Instructor = 2,
             Learner = 3,
-            Guest = 4
+            Guest = 4,
+			Staff = 5,
+			Expert = 6
 		}
 
 		#endregion
