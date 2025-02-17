@@ -16,7 +16,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
 		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
-		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>
 		
 	{
 		#region Role
@@ -171,10 +171,17 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.OnDelete(DeleteBehavior.Cascade);
 
 		}
-		#endregion
+        #endregion
 
-		#region CourseStatistic
-		public void Configure(EntityTypeBuilder<CourseStatistic> builder)
+        #region Coupon
+        public void Configure(EntityTypeBuilder<Coupon> builder)
+        {
+
+        }
+        #endregion
+
+        #region CourseStatistic
+        public void Configure(EntityTypeBuilder<CourseStatistic> builder)
 		{
 			
 
