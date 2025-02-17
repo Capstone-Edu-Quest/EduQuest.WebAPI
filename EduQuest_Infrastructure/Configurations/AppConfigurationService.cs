@@ -47,8 +47,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					configuration.GetConnectionString("test"),
-					//configuration.GetConnectionString("production"),
+					//configuration.GetConnectionString("test"),
+					configuration.GetConnectionString("production"),
 					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -148,7 +148,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
-            
+            services.AddScoped<ICouponRepository, CouponRepository>();
 
 
             services.AddSingleton(provider =>
