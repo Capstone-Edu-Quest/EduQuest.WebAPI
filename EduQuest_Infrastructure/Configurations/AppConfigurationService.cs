@@ -30,6 +30,8 @@ using System.Text;
 using System.Text.Json;
 using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Infrastructure.ExternalServices.Redis;
+using EduQuest_Domain.Repository.Generic;
+using EduQuest_Infrastructure.Repository.Generic;
 
 namespace EduQuest_Infrastructure
 {
@@ -123,7 +125,8 @@ namespace EduQuest_Infrastructure
             #region AddSingleton
             services.AddSingleton<IRedisCaching, RedisCaching>();
             services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
-			services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IUserRepository, UserRepository>();
 			services.AddScoped<ICourseRepository, CourseRepository>();
 			services.AddScoped<ITagRepository, TagRepository>();
 			services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
@@ -143,9 +146,12 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
+			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+            
 
-			services.AddSingleton(provider =>
+
+            services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials
 				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");
