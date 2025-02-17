@@ -14,8 +14,9 @@ namespace EduQuest_Domain.Entities
         public string? Requirement { get; set; }
         public string? Feature { get; set; }
         public bool IsRequired { get; set; }
-		public string CreatedBy { get; set; }
-		public DateTime? LastUpdated { get; set; }
+        public string Status { get; set; }
+        public string CreatedBy { get; set; }
+		//public DateTime? LastUpdated { get; set; }
 
 		[JsonIgnore]
 		public virtual User User { get; set; } = null!;

@@ -16,7 +16,9 @@ VALUES
 (1, 'Admin', NOW(), 'System', NOW(), NULL),
 (2, 'Instructor', NOW(), 'System', NOW(), NULL),
 (3, 'Learner', NOW(), 'System', NOW(), NULL),
-(4, 'Guest', NOW(), 'System', NOW(), NULL);
+(4, 'Guest', NOW(), 'System', NOW(), NULL),
+(5, 'Staff', NOW(), 'System', NOW(), NULL),
+(6, 'Expert', NOW(), 'System', NOW(), NULL);
 
 INSERT INTO public."SystemConfig" ("Id", "Name", "Value", "Description")
 VALUES 

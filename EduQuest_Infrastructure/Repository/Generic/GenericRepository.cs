@@ -134,6 +134,14 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			return await _context.Set<TDomain>().FindAsync(id);
 		}
 
+		public async Task<List<TDomain>> GetByIdsAsync<TKey>(IEnumerable<TKey> ids)
+		{
+			return await _context.Set<TDomain>()
+								 .Where(entity => ids.Contains(EF.Property<TKey>(entity, "Id")))
+								 .ToListAsync();
+		}
+
+
 		public Task Update(TDomain entity)
 		{
 			

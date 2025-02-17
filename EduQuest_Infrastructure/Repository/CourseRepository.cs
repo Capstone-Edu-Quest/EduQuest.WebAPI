@@ -1,4 +1,5 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -31,8 +32,12 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.Courses.Include(x => x.Stages).Include(x => x.Tags).Where(x => x.CreatedBy == Id).ToListAsync();
 		}
 
+		public Task<List<Course>> GetCoursesByKeywordsAsync(List<string> keywords)
+		{
+			return _context.Courses.Where(course => keywords.Any(keyword => ContentHelper.ConvertVietnameseToEnglish(course.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(keyword.ToLower())))).ToListAsync();
+		}
 
-        public async Task<int> GetTotalTime(string courseId)
+		public async Task<int> GetTotalTime(string courseId)
 		{
 			var result = await _context.Courses.Include(x => x.CourseStatistic).FirstOrDefaultAsync(c => c.Id == courseId);
 			var statistic = result.CourseStatistic;

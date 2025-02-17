@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Application.DTO.Response;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
@@ -17,32 +18,58 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 		private readonly ICourseStatisticRepository _courseStatisticRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
+		private readonly IRedisCaching _redisCaching;
 
-		public SearchCourseQueryHandler(ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, IUserRepository userRepository, IMapper mapper)
+		public SearchCourseQueryHandler(ICourseRepository courseRepository, 
+			ICourseStatisticRepository courseStatisticRepository, 
+			IUserRepository userRepository, 
+			IMapper mapper, 
+			IRedisCaching redisCaching)
 		{
 			_courseRepository = courseRepository;
 			_courseStatisticRepository = courseStatisticRepository;
 			_userRepository = userRepository;
 			_mapper = mapper;
+			_redisCaching = redisCaching;
 		}
 
 		public async Task<APIResponse> Handle(SearchCourseQuery request, CancellationToken cancellationToken)
 		{
+			var cacheKey = $"searchCourse_{request.UserId}_{request.SearchRequest!.KeywordName}";
+			var cacheSearchKey = $"searchHistory_{request.UserId}_{request.SearchRequest!.KeywordName}";
+
+			var cachedDataString = await _redisCaching.GetAsync<PagedList<CourseSearchResponse>>(cacheKey);
+
+			if (cachedDataString != null)
+			{
+				return new APIResponse
+				{
+					IsError = false,
+					Payload = cachedDataString,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.GetSuccesfully,
+						values = new Dictionary<string, string>() { { "name", "courses" } }
+					}
+				};
+			}
+
 			var listCourse = await _courseRepository.GetAll();
 			if(request.SearchRequest.KeywordName != null)
 			{
 				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
 			} else if(request.SearchRequest.DateTo != null)
 			{
-				listCourse = listCourse.Where(x => x.LastUpdated <= request.SearchRequest.DateTo);
+				listCourse = listCourse.Where(x => x.UpdatedAt <= request.SearchRequest.DateTo);
 			}
 			else if (request.SearchRequest.DateFrom != null)
 			{
-				listCourse = listCourse.Where(x => x.LastUpdated >= request.SearchRequest.DateFrom);
+				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom);
 			}
 			else if (request.SearchRequest.DateFrom != null && request.SearchRequest.DateTo != null)
 			{
-				listCourse = listCourse.Where(x => x.LastUpdated >= request.SearchRequest.DateFrom && x.LastUpdated <= request.SearchRequest.DateTo);
+				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom && x.UpdatedAt <= request.SearchRequest.DateTo);
 			}
 			else if (request.SearchRequest.Author != null)
 			{
@@ -93,6 +120,8 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				}
 			}
 
+
+
 			int totalItem = listCourseResponse.Count;
 			var listPaged = listCourseResponse.Skip((request.PageNo - 1) * request.EachPage)
 											.Take(request.EachPage)
@@ -102,7 +131,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				TotalItems = totalItem,
 				Items = listPaged
 			};
-			
+
+			await _redisCaching.SetAsync(cacheKey, result, 60);
+			await _redisCaching.SetAsync(cacheSearchKey, request.SearchRequest.KeywordName, 4320);
+
 			return new APIResponse
 			{
 				IsError = false,

@@ -37,6 +37,13 @@ namespace EduQuest_Domain.Enums
 			HighestRated = 3
 		}
 
+		public enum StatusCourse
+		{
+			Draft = 1,
+			Pending = 2,
+			Public = 3
+		}
+
 		public enum TypeOfLearningMetarial
 		{
 			Docs = 1,

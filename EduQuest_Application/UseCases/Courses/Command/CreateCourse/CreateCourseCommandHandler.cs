@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -32,7 +33,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			
 			course.CreatedBy = user!.Id;
 			course.Id = Guid.NewGuid().ToString();
-			course.LastUpdated = DateTime.Now.ToUniversalTime();
+			//course.LastUpdated = DateTime.Now.ToUniversalTime();
+			course.Status = course.Status = GeneralEnums.StatusCourse.Draft.ToString();
+			course.IsRequired = false;
 			await _courseRepository.Add(course);
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
@@ -54,60 +57,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 				}
 			};
 
-			//if(request.CourseRequest.StageCourse != null && request.CourseRequest.StageCourse.Any())
-			//{
-			//	var stages = request.CourseRequest.StageCourse.Select(async stagerequest =>
-			//	{
-			//		int i = 1;
-			//		var stage = new Stage
-			//		{
-			//			Id = Guid.NewGuid().ToString(),
-			//			CourseId = course.Id,
-			//			Name = stagerequest.Name!,
-			//			Description = stagerequest.Description!,
-			//			Level = 1
-			//		};
-			//		await _stageRepository.Add(stage);
-			//		await _unitOfWork.SaveChangesAsync();
-			//		i++;
-
-
-			//		if(stagerequest.LearningMaterial != null)
-			//		{
-			//			foreach(var learningMaterial in stagerequest.LearningMaterial)
-			//			{
-			//				var newLM = new LearningMaterial
-			//				{
-			//					StageId = stage.Id,
-			//					Id = Guid.NewGuid().ToString(),
-			//					Type = Enum.GetName(typeof (TypeOfLearningMetarial),learningMaterial.Type!) ?? string.Empty,
-			//					Title = learningMaterial.Title!,
-			//					Description = learningMaterial.Description!,
-			//					UrlMaterial = learningMaterial.UrlMaterial!
-			//				};
-			//				var value = await _systemConfigRepository.GetByName(newLM.Type);
-			//				switch ((TypeOfLearningMetarial)learningMaterial.Type!)
-			//				{
-			//					case TypeOfLearningMetarial.Docs:
-			//						newLM.Duration = (int)value.Value!;
-			//						break;
-			//					case TypeOfLearningMetarial.Video:
-			//						newLM.Duration = learningMaterial.EstimateTime;
-			//						break;
-			//					case TypeOfLearningMetarial.Quiz:
-			//						newLM.Duration = (int)((learningMaterial.EstimateTime!) * value.Value!);
-			//						break;
-			//					default:
-			//						newLM.Duration = 0;
-			//						break;
-			//				} 
-			//				await _learningMaterialRepository.Add(newLM);
-			//				await _unitOfWork.SaveChangesAsync();
-			//			}
-			//		}
-			//		return stage;
-			//	}).ToList();
-			//}
+		
 
 
 		}

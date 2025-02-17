@@ -13,12 +13,14 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 	{
 		public int PageNo { get; set; }
 		public int EachPage { get; set; }
+        public string UserId { get; set; }
         public SearchCourseRequest? SearchRequest { get; set; }
 
-		public SearchCourseQuery(int pageNo, int eachPage, SearchCourseRequest searchRequest)
+		public SearchCourseQuery(int pageNo, int eachPage, string userId, SearchCourseRequest? searchRequest)
 		{
 			PageNo = pageNo;
 			EachPage = eachPage;
+			UserId = userId;
 			SearchRequest = searchRequest;
 		}
 	}
