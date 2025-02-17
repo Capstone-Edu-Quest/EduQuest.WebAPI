@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EduQuest_API.Controllers;
 
-[Route(Constants.Http.API_VERSION + "/shop-item")]
+[Route(Constants.Http.API_VERSION + "/shopItem")]
 public class ShopItemController : BaseController
 {
     private readonly ISender _mediator;

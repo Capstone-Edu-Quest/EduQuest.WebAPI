@@ -80,7 +80,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			return _entity;
 		}
 
-		public async Task<IEnumerable<TDomain>> GetAll()
+        public async Task<IEnumerable<TDomain>> GetAll()
 		{
 			return await _context.Set<TDomain>().ToListAsync();
 		}

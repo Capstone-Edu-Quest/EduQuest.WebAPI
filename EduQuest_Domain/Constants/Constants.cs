@@ -59,20 +59,20 @@ namespace EduQuest_Domain.Constants
 		#region Message
 		public static class MessageCommon
 		{
-			public const string GetSuccesfully = "List of {{name}}";
-			public const string GetFailed = "Failed to get {{name}}";
-			public const string SavingSuccesfully = "Saved {{name}} successfully";
-			public const string SavingFailed = "Saved {{name}} failed";
-			public const string DeleteSuccessfully = "Deleted {{name}} successfully";
-			public const string DeleteFailed = "Deleted {{name} failed";
-			public const string UpdateSuccesfully = "Updated {{name}} successfully";
-			public const string UpdateFailed = "Update {{name}} failed";
-			public const string CreateSuccesfully = "Created {{name}} successfully";
-			public const string CreateFailed = "Created {{name}} failed";
+			public const string GetSuccesfully = "GET_SUCCESSFULLY";
+			public const string GetFailed = "GET_FAILED";
+			public const string SavingSuccesfully = "SAVING_SUCCESSFULLY";
+			public const string SavingFailed = "SAVING_FAILED";
+			public const string DeleteSuccessfully = "DELETE_SUCCESFULLY";
+			public const string DeleteFailed = "DELETE_FAILED";
+			public const string UpdateSuccesfully = "UPDATE_SUCCESSFULLY";
+			public const string UpdateFailed = "UPDATE_FAILED";
+			public const string CreateSuccesfully = "CREATED_SUCCESSFULLY";
+			public const string CreateFailed = "CREATED_FAILED";
 
-			public const string NotFound = "{{name}} not found";
-			public const string Complete = "Completed";
-			public const string NoProvided = "No {{name}} provided";
+			public const string NotFound = "NOT_FOUND";
+			public const string Complete = "COMPLETE";
+			public const string NoProvided = "NO_PROVIDED";
 
 			public const string ServerError = "Something when wrong";
 			public const string SessionTimeout = "Your session has timeout";
