@@ -1,20 +1,18 @@
-﻿using EduQuest_Application.Helper;
-using EduQuest_Domain.Constants;
+﻿using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using EduQuest_Application.UseCases.Feedback.Queries.GetCourseFeedbackQuery;
-using Microsoft.AspNetCore.Authorization;
 using EduQuest_Application.DTO.Request.Feedbacks;
 using System.Diagnostics.CodeAnalysis;
-using EduQuest_Application.DTO.Response.LearningPaths;
-using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
-using System.Threading;
 using EduQuest_Application.DTO.Response.Feedbacks;
+using EduQuest_Application.UseCases.Feedbacks.Queries.GetCourseFeedbackQuery;
+using EduQuest_Application.UseCases.Feedbacks.Commands.CreateFeedback;
+using EduQuest_Application.Helper;
+using Microsoft.AspNetCore.Authorization;
+using EduQuest_Application.UseCases.Feedbacks.Commands.UpdateFeedback;
+using EduQuest_Application.UseCases.Feedbacks.Commands.DeteleFeedback;
 
 namespace EduQuest_API.Controllers;
 
@@ -47,31 +45,38 @@ public class FeedbackController : ControllerBase
         return Ok(result);
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateFeedback([FromBody, Required] CreateFeedbackRequest feeback,
+        //[FromQuery] string UserId,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
-        throw new NotImplementedException();
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new CreateFeedbackCommand(feeback, userId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateFeedback([FromBody, Required] UpdateFeedbackRequest feedback, [FromQuery, Required] string feedbackId,
+    public async Task<IActionResult> UpdateFeedback([FromBody, Required] UpdateFeedbackRequest feedback, 
+        [FromQuery, Required] string feedbackId,
+        //[FromQuery] string UserId,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
-        throw new NotImplementedException();
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new UpdateFeedbackCommand(userId, feedbackId, feedback), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpDelete]
     public async Task<IActionResult> DeleteFeedback([FromQuery, Required] string feedbackId,
+        //[FromQuery] string UserId,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
-        throw new NotImplementedException();
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new DeteleFeedbackCommand(userId, feedbackId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
 }

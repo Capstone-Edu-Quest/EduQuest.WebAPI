@@ -37,5 +37,8 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Stage>? Stages { get; set; }
-	}
+
+        [JsonIgnore]
+        public virtual ICollection<Coupon>? Coupons { get; set; }
+    }
 }

@@ -148,7 +148,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
-            
+            services.AddScoped<ICouponRepository, CouponRepository>();
 
 
             services.AddSingleton(provider =>
