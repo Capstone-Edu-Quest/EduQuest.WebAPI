@@ -6,6 +6,7 @@ using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Nest;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -35,5 +36,11 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
         }
 
         return await result.Pagination(pageNo, pageSize).ToPagedListAsync(pageNo, pageSize);
+    }
+
+     public async Task<bool> IsOnwer(string feedbackId, string UserId)
+    {
+        var result = await _context.Feedbacks.FindAsync(feedbackId);
+        return UserId == result!.UserId ? true : false;
     }
 }

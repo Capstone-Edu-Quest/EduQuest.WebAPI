@@ -3,7 +3,7 @@
 using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Feedback.Queries.GetCourseFeedbackQuery;
+namespace EduQuest_Application.UseCases.Feedbacks.Queries.GetCourseFeedbackQuery;
 
 public class GetCourseFeedbackQuery : IRequest<APIResponse>
 {
