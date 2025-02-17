@@ -48,50 +48,60 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
                 };
             }
             var listMaterial = new List<LearningMaterial>();
-            foreach (var item in request.Material)
+			var stageIds = request.Material.SelectMany(m => m.StagesId).Distinct().ToList();
+			var stageDictionary = (await _stageRepository.GetByIdsAsync(stageIds))
+									.ToDictionary(s => s.Id, s => s);
+
+			foreach (var item in request.Material)
             {
-                var stage = await _stageRepository.GetById(item.StageId);
-                if (stage == null)
-                {
-                    return new APIResponse
-                    {
-                        IsError = true,
-                        Errors = new ErrorResponse
-                        {
-                            StatusResponse = HttpStatusCode.NotFound,
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = MessageCommon.NotFound,
-                        },
-                        Message = new MessageResponse
-                        {
-                            content = MessageCommon.NotFound,
-                            values = new Dictionary<string, string> { { "name", $"Stage ID {item.StageId}" } }
-                        }
-                    };
-                }
+               foreach(var stageId in item.StagesId)
+               {
+					if (!stageDictionary.TryGetValue(stageId, out var stage))
+					{
+						return new APIResponse
+						{
+							IsError = true,
+							Errors = new ErrorResponse
+							{
+								StatusResponse = HttpStatusCode.NotFound,
+								StatusCode = (int)HttpStatusCode.NotFound,
+								Message = MessageCommon.NotFound,
+							},
+							Message = new MessageResponse
+							{
+								content = MessageCommon.NotFound,
+								values = new Dictionary<string, string> { { "name", $"Stage ID {stageId}" } }
+							}
+						};
+					}
 
-                var material = _mapper.Map<LearningMaterial>(item);
-                material.Id = Guid.NewGuid().ToString();
-				material.Type = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type);
+					var material = _mapper.Map<LearningMaterial>(item);
+					material.Id = Guid.NewGuid().ToString();
+					material.Type = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type);
+                    material.StageId = stageId;
 
-				var value = await _systemConfigRepository.GetByName(material.Type!);
-                switch ((TypeOfLearningMetarial)item.Type!)
-                {
-                    case TypeOfLearningMetarial.Docs:
-                        material.Duration = (int)value.Value!;
-                        break;
-                    case TypeOfLearningMetarial.Video:
-                        material.Duration = item.EstimateTime;
-                        break;
-                    case TypeOfLearningMetarial.Quiz:
-                        material.Duration = (int)(item.EstimateTime! * value.Value!);
-                        break;
-                    default:
-                        material.Duration = 0;
-                        break;
-                }
-                await _learningMaterialRepository.Add(material);
-                listMaterial.Add(material);
+					var value = await _systemConfigRepository.GetByName(material.Type!);
+					switch ((TypeOfLearningMetarial)item.Type!)
+					{
+						case TypeOfLearningMetarial.Docs:
+							material.Duration = (int)value.Value!;
+							break;
+						case TypeOfLearningMetarial.Video:
+							material.Duration = item.EstimateTime;
+							break;
+						case TypeOfLearningMetarial.Quiz:
+							material.Duration = (int)(item.EstimateTime! * value.Value!);
+							break;
+						default:
+							material.Duration = 0;
+							break;
+					}
+					await _learningMaterialRepository.Add(material);
+					listMaterial.Add(material);
+				}
+                
+
+               
 
 
             }

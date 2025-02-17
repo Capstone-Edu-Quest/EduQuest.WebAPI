@@ -218,9 +218,7 @@ namespace EduQuest_Infrastructure
 			}));
 			#endregion
 
-			#region Firebase
 			
-			#endregion
 
 			return services;
 		}

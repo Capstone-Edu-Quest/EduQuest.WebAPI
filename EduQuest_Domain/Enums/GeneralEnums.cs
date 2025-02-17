@@ -22,7 +22,9 @@ namespace EduQuest_Domain.Enums
 			Admin = 1,
             Instructor = 2,
             Learner = 3,
-            Guest = 4
+            Guest = 4,
+			Staff = 5,
+			Expert = 6
 		}
 
 		#endregion
@@ -33,6 +35,13 @@ namespace EduQuest_Domain.Enums
 			MostReviews = 1,
 			NewestCourses = 2,
 			HighestRated = 3
+		}
+
+		public enum StatusCourse
+		{
+			Draft = 1,
+			Pending = 2,
+			Public = 3
 		}
 
 		public enum TypeOfLearningMetarial

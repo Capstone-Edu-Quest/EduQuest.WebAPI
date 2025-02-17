@@ -39,10 +39,12 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			} : null;
 
 			var userSta = await _userStatisticRepository.GetByUserId(course.User!.Id);
-			courseResponse.Author!.TotalCourseCreated = userSta.TotalCourseCreated;
-			courseResponse.Author.TotalReview = userSta.TotalReview;
-			courseResponse.Author.TotalLearner = userSta.TotalLearner;
-
+			if(userSta != null)
+			{
+				courseResponse.Author!.TotalCourseCreated = userSta.TotalCourseCreated;
+				courseResponse.Author.TotalReview = userSta.TotalReview;
+				courseResponse.Author.TotalLearner = userSta.TotalLearner;
+			}
 
 			courseResponse.ListStage = course.Stages?
 				.Select(stage => new StageCourseResponse
