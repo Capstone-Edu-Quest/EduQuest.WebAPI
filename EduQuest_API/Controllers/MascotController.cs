@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.UseCases.Mascot.Commands;
+﻿using EduQuest_Application.UseCases.Mascot.Commands.EquipMacotItem;
+using EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,14 @@ public class MascotController : BaseController
     }
 
     //[Authorize]
-    //[HttpPost("equip")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> EquipItem([FromBody] EquipItemCommand command, CancellationToken cancellationToken = default)
-    //{
-    //    var result = await _mediator.Send(command, cancellationToken);
-    //    return Ok(result);
-    //}
+    [HttpPost("equip")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EquipItem([FromQuery] EquipMascotItemCommand command, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
 
     //[Authorize]
     [HttpPost("purchase")]

@@ -4,6 +4,7 @@ using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
+using EduQuest_Application.UseCases.Courses.Query.GetRecommendedCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,18 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
 		{
-			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, request), cancellationToken);
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, userId, request), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("recommendedCourse")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetRecommnededCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetRecommendedCourseQuery(userId, pageNo, eachPage), cancellationToken);
 			return Ok(result);
 		}
 

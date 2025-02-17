@@ -28,7 +28,7 @@ namespace EduQuest_Application.UseCases.FavoriteCourse.Queries.SearchFavoriteCou
 			var listCourse = await _favoriteListRepository.GetFavoriteListByUserId(request.UserId);
 			if(request.Name != null)
 			{
-				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.Course.Title.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.Name.ToLower()))).ToList();
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Course.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.Name.ToLower()))).ToList();
 			}
 			var listResponse = new List<FavoriteCourseResponse>();
 			listCourse.Select(async course =>

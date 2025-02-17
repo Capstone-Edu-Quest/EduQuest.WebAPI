@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Application.DTO.Response;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
@@ -6,6 +7,7 @@ using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
+using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
@@ -16,36 +18,62 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 		private readonly ICourseStatisticRepository _courseStatisticRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
+		private readonly IRedisCaching _redisCaching;
 
-		public SearchCourseQueryHandler(ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, IUserRepository userRepository, IMapper mapper)
+		public SearchCourseQueryHandler(ICourseRepository courseRepository, 
+			ICourseStatisticRepository courseStatisticRepository, 
+			IUserRepository userRepository, 
+			IMapper mapper, 
+			IRedisCaching redisCaching)
 		{
 			_courseRepository = courseRepository;
 			_courseStatisticRepository = courseStatisticRepository;
 			_userRepository = userRepository;
 			_mapper = mapper;
+			_redisCaching = redisCaching;
 		}
 
 		public async Task<APIResponse> Handle(SearchCourseQuery request, CancellationToken cancellationToken)
 		{
+			var cacheKey = $"searchCourse_{request.UserId}_{request.SearchRequest!.KeywordName}";
+			var cacheSearchKey = $"searchHistory_{request.UserId}_{request.SearchRequest!.KeywordName}";
+
+			var cachedDataString = await _redisCaching.GetAsync<PagedList<CourseSearchResponse>>(cacheKey);
+
+			if (cachedDataString != null)
+			{
+				return new APIResponse
+				{
+					IsError = false,
+					Payload = cachedDataString,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.GetSuccesfully,
+						values = new Dictionary<string, string>() { { "name", "courses" } }
+					}
+				};
+			}
+
 			var listCourse = await _courseRepository.GetAll();
 			if(request.SearchRequest.KeywordName != null)
 			{
-				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
 			} else if(request.SearchRequest.DateTo != null)
 			{
-				listCourse = listCourse.Where(x => x.LastUpdated <= request.SearchRequest.DateTo);
+				listCourse = listCourse.Where(x => x.UpdatedAt <= request.SearchRequest.DateTo);
 			}
 			else if (request.SearchRequest.DateFrom != null)
 			{
-				listCourse = listCourse.Where(x => x.LastUpdated >= request.SearchRequest.DateFrom);
+				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom);
 			}
 			else if (request.SearchRequest.DateFrom != null && request.SearchRequest.DateTo != null)
 			{
-				listCourse = listCourse.Where(x => x.LastUpdated >= request.SearchRequest.DateFrom && x.LastUpdated <= request.SearchRequest.DateTo);
+				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom && x.UpdatedAt <= request.SearchRequest.DateTo);
 			}
 			else if (request.SearchRequest.Author != null)
 			{
-				listCourse = listCourse.Where(x => SearchHelper.ConvertVietnameseToEnglish(x.CreatedBy.ToLower()).Contains(SearchHelper.ConvertVietnameseToEnglish(request.SearchRequest.Author)));
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.CreatedBy.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.Author)));
 			} else if (request.SearchRequest.Rating != null)
 			{
 				listCourse = listCourse.Where(x => x.CourseStatistic.Rating >= request.SearchRequest.Rating).ToList();
@@ -80,14 +108,19 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			foreach (var course in listCourseResponse)
 			{
 				var user = await _userRepository.GetById(course.CreatedBy); 
-				course.Author = user!.Username; 
+				course.Author = user!.Username!;
 
 				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
-				course.TotalLesson = courseSta.TotalLesson;
-				course.TotalReview = courseSta.TotalReview;
-				course.Rating = courseSta.Rating;
-				course.TotalTime = courseSta.TotalTime;
+				if(courseSta != null)
+				{
+					course.TotalLesson = courseSta.TotalLesson;
+					course.TotalReview = courseSta.TotalReview;
+					course.Rating = courseSta.Rating;
+					course.TotalTime = courseSta.TotalTime;
+				}
 			}
+
+
 
 			int totalItem = listCourseResponse.Count;
 			var listPaged = listCourseResponse.Skip((request.PageNo - 1) * request.EachPage)
@@ -98,12 +131,20 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				TotalItems = totalItem,
 				Items = listPaged
 			};
-			
+
+			await _redisCaching.SetAsync(cacheKey, result, 60);
+			await _redisCaching.SetAsync(cacheSearchKey, request.SearchRequest.KeywordName, 4320);
+
 			return new APIResponse
 			{
 				IsError = false,
 				Payload = result,
 				Errors = null,
+				Message = new MessageResponse
+				{
+					content = MessageCommon.GetSuccesfully,
+					values = new Dictionary<string, string>() { { "name", "courses"} }
+				}
 			};
 
 

@@ -15,5 +15,7 @@ namespace EduQuest_Domain.Repository
 		//Task<IEnumerable<Course>> GetAllCourse();
 		Task<int> GetTotalTime(string courseId);
 		Task<bool> IsExist(string courseId);
-    }
+		Task<List<Course>> GetCoursesByKeywordsAsync(List<string> keywords);
+
+	}
 }

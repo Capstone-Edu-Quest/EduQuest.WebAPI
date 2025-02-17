@@ -54,6 +54,8 @@ namespace EduQuest_Domain.Repository.Generic
 		/// </summary>
 		/// <param name="entity"></param>
 		/// <returns></returns>
+		/// 
+		Task<List<T>> GetByIdsAsync<TKey>(IEnumerable<TKey> ids);
 		Task Add(T entity);
 
 		/// <summary>

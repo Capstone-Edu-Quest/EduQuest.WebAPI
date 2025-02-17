@@ -5,7 +5,7 @@ namespace EduQuest_Application.DTO.Request.Materials
 {
     public class CreateLearningMaterialRequest : IMapFrom<LearningMaterial>, IMapTo<LearningMaterial>
     {
-        public string StageId { get; set; }
+        public List<string> StagesId { get; set; }
         public int? Type { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }

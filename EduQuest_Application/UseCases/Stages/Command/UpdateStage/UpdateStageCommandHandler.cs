@@ -39,7 +39,7 @@ namespace EduQuest_Application.UseCases.Stages.Command.UpdateStage
 					}
 				};
 			}
-
+			var listStage = new List<Stage>();
 			foreach (var stageRequest in request.Stages)
 			{
 				var existingStage = await _stageRepository.GetById(stageRequest.Id);
@@ -61,14 +61,15 @@ namespace EduQuest_Application.UseCases.Stages.Command.UpdateStage
 						}
 					};
 				}
-
 				
+
+
 				existingStage.Name = stageRequest.Name ?? existingStage.Name;
 				existingStage.Description = stageRequest.Description ?? existingStage.Description;
-	
-				await _stageRepository.Update(existingStage);
+				listStage.Add(existingStage);
+				
 			}
-
+			await _stageRepository.UpdateRangeAsync(listStage);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 			return new APIResponse

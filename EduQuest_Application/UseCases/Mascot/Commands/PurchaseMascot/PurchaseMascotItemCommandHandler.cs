@@ -9,7 +9,7 @@ using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Mascot.Commands
+namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot
 {
     public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotItemCommand, APIResponse>
     {
@@ -81,7 +81,7 @@ namespace EduQuest_Application.UseCases.Mascot.Commands
             //var userdetail = await _userStatisticRepository.GetById(request.UserId);
             //userdetail.Gold -= (int)shopItem.Price;
 
-            
+
             await _mascotInventoryRepository.Add(mascotInventory);
             //await _userStatisticRepository.Update(userdetail);
             await _unitOfWork.SaveChangesAsync();

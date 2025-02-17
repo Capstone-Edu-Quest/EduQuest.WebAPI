@@ -83,9 +83,9 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 				};
 
 				stages.Add(stage);
-				await _stageRepository.Add(stage); // Add stage to repository
+				
 			}
-
+			await _stageRepository.CreateRangeAsync(stages); // Add stage to repository
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 			return new APIResponse
