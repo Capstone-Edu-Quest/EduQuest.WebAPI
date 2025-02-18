@@ -7,10 +7,10 @@ namespace EduQuest_Application.DTO.Response.UserStatistics;
 public class UserStatisticDto : IMapFrom<UserStatistic>, IMapTo<UserStatistic>
 {
     public string UserId { get; set; }
-    public int? TotalActiveDay { get; set; }
-    public int? MaxStudyStreakDay { get; set; }
+    public int? CurrentStreak { get; set; }
+    public int? LongestStreak { get; set; }
     public DateTime? LastLearningDay { get; set; }
-    public int? CompletedCourses { get; set; }
+    public int? TotalCompletedCourses { get; set; }
     public int? Gold { get; set; }
     public int? Exp { get; set; }
     public int? Level { get; set; }

@@ -54,16 +54,18 @@ public class SignInGoogleCommandTestHandler : IRequestHandler<SignInGoogleComman
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = userId,
-                    TotalActiveDay = 0,
-                    MaxStudyStreakDay = 0,
-                    CompletedCourses = 0,
+                    CurrentStreak = 0,
+                    LongestStreak = 0,
+                    TotalCompletedCourses = 0,
                     Gold = 0,
                     Exp = 0,
                     Level = 0,
-                    StudyTime = 0,
+                    TotalStudyTime = 0,
                     TotalCourseCreated = 0,
                     TotalLearner = 0,
-                    TotalReview = 0
+                    TotalReview = 0,
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
+                    UpdatedAt = DateTime.Now.ToUniversalTime(),
                 }
 
             };
