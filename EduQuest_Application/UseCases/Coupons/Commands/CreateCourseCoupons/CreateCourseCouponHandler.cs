@@ -9,6 +9,7 @@ using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Domain.Entities;
 using EduQuest_Application.DTO.Response.Coupons;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.Coupons.Commands.CreateCourseCoupons;
 
@@ -60,7 +61,7 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
             }
             else
             {
-                newCoupon.Code = "test"; //random generate code function
+                newCoupon.Code = CodeGenerator.GenerateRandomCouponCode();
             }
             newCoupon.Id = Guid.NewGuid().ToString();
 

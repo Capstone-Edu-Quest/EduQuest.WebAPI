@@ -9,6 +9,8 @@ using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Domain.Entities;
 using EduQuest_Application.DTO.Response.Coupons;
+using static EduQuest_Domain.Enums.GeneralEnums;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.Coupons.Commands.CreatePlatformCoupons;
 
@@ -38,9 +40,9 @@ public class CreatePlatformCouponHandler : IRequestHandler<CreatePlatformCouponC
             {
                 return CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.SessionTimeout);
             }
-
+            string role = ((int)UserRole.Admin).ToString();
             //check if user role is admin
-            if (user.RoleId != "admin")
+            if (user.RoleId != role)
             {
                 return CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UserDontHavePer);
             }
@@ -57,7 +59,7 @@ public class CreatePlatformCouponHandler : IRequestHandler<CreatePlatformCouponC
             }
             else
             {
-                newCoupon.Code = "test"; //random generate code function
+                newCoupon.Code = CodeGenerator.GenerateRandomCouponCode();
             }
             newCoupon.Id = Guid.NewGuid().ToString();
 
