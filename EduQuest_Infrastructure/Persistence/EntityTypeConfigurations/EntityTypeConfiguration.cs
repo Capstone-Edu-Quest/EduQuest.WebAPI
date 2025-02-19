@@ -176,7 +176,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         #region Coupon
         public void Configure(EntityTypeBuilder<Coupon> builder)
         {
-
+            builder.HasOne(c => c.User)
+                .WithMany(u => u.Coupons)
+                .HasForeignKey(c => c.CreatedBy)
+                .OnDelete(DeleteBehavior.Cascade);
         }
         #endregion
 
