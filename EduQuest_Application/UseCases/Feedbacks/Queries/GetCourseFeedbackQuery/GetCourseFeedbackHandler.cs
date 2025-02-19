@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 using static Google.Rpc.Context.AttributeContext.Types;
 
-namespace EduQuest_Application.UseCases.Feedback.Queries.GetCourseFeedbackQuery;
+namespace EduQuest_Application.UseCases.Feedbacks.Queries.GetCourseFeedbackQuery;
 
 public class GetCourseFeedbackHandler : IRequestHandler<GetCourseFeedbackQuery, APIResponse>
 {

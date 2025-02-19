@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250217173143_coupons1")]
+    partial class coupons1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1596,11 +1599,11 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
+                    b.Property<int?>("CompletedCourses")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CurrentStreak")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1617,10 +1620,13 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<int?>("Level")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("LongestStreak")
+                    b.Property<int?>("MaxStudyStreakDay")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TotalCompletedCourses")
+                    b.Property<int?>("StudyTime")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TotalActiveDay")
                         .HasColumnType("integer");
 
                     b.Property<int?>("TotalCourseCreated")
@@ -1630,9 +1636,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int?>("TotalReview")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TotalStudyTime")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -2077,7 +2080,7 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.StudyTime", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.UserStatistic", "User")
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany("StudyTime")
                         .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2243,12 +2246,9 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Navigation("SearchHistories");
 
-                    b.Navigation("UserStatistic");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserStatistic", b =>
-                {
                     b.Navigation("StudyTime");
+
+                    b.Navigation("UserStatistic");
                 });
 #pragma warning restore 612, 618
         }

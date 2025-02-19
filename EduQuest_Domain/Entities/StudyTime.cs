@@ -9,5 +9,5 @@ public class StudyTime : BaseEntity
     public DateTime Date { get; set; }
 
     [JsonIgnore]
-    public virtual User User { get; set; }
+    public virtual UserStatistic User { get; set; }
 }

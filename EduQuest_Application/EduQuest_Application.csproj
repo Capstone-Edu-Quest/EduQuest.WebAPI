@@ -19,15 +19,18 @@
   <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
     <Folder Include="Abstractions\Email\" />
-    <Folder Include="UseCases\Feedback\Commands\CreateFeedback\" />
-    <Folder Include="UseCases\Feedback\Commands\DeteleFeedback\" />
-    <Folder Include="UseCases\Feedback\Commands\UpdateFeedback\" />
+    <Folder Include="DTO\Request\Coupons\" />
+    <Folder Include="DTO\Response\Coupons\" />
+    <Folder Include="UseCases\Coupons\Commands\CreatePlatformCouponCommand\" />
+    <Folder Include="UseCases\Coupons\Commands\CreateCourseCouponCommand\" />
+    <Folder Include="UseCases\Coupons\Commands\UpdateCourseCouponCommand\" />
+    <Folder Include="UseCases\Coupons\Queries\GetPlatformCouponsQuery\" />
+    <Folder Include="UseCases\Coupons\Queries\GetCourseCouponsQuery\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />
     <Folder Include="UseCases\UserStatistic\" />
     <Folder Include="UseCases\Authenticate\Queries\" />
-    <Folder Include="UseCases\Users\Commands\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -155,6 +155,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<AccountService>();
 			services.AddScoped<AccountLinkService>();
 			services.AddScoped<RefundService>();
+            services.AddScoped<ICouponRepository, CouponRepository>();
 
 
 
