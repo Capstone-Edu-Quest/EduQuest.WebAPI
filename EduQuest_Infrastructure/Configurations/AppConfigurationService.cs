@@ -32,6 +32,8 @@ using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Infrastructure.ExternalServices.Redis;
 using EduQuest_Domain.Repository.Generic;
 using EduQuest_Infrastructure.Repository.Generic;
+using EduQuest_Domain.Models.Payment;
+using Stripe;
 
 namespace EduQuest_Infrastructure
 {
@@ -39,16 +41,17 @@ namespace EduQuest_Infrastructure
     {
 		public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
 		{
-			var test = services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+			services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 			services.Configure<GoogleSetting>(configuration.GetSection("GoogleToken"));
+			services.Configure<StripeModel>(configuration.GetSection("Stripe"));
 
 
 			#region DbContext
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					//configuration.GetConnectionString("test"),
-					configuration.GetConnectionString("production"),
+					configuration.GetConnectionString("test"),
+					//configuration.GetConnectionString("production"),
 					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -148,10 +151,14 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
-            
+			services.AddScoped<ITransactionRepository, TransactionRepository>();
+			services.AddScoped<AccountService>();
+			services.AddScoped<AccountLinkService>();
+			services.AddScoped<RefundService>();
 
 
-            services.AddSingleton(provider =>
+
+			services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials
 				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");

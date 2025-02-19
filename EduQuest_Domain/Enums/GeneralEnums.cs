@@ -52,5 +52,17 @@ namespace EduQuest_Domain.Enums
 		}
 		#endregion
 
+		#region Payment
+		public enum StatusPayment
+		{
+			Pending = 1,
+			Completed = 2,
+			Failed = 3,
+			Expired = 4,
+			Canceled = 5
+			
+		}
+		#endregion
+
 	}
 }
