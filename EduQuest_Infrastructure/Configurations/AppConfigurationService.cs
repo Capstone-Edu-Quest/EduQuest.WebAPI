@@ -158,6 +158,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<AccountLinkService>();
 			services.AddScoped<RefundService>();
             services.AddScoped<ICouponRepository, CouponRepository>();
+            services.AddScoped<ICertificateRepository, CertificateRepository>();
 
 
 
