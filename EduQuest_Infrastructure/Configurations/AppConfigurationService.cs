@@ -152,6 +152,8 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
+			services.AddScoped<IPaymentRepository, PaymentRepository>();
+			services.AddScoped<ICartRepository, CartRepository>();
 			services.AddScoped<AccountService>();
 			services.AddScoped<AccountLinkService>();
 			services.AddScoped<RefundService>();

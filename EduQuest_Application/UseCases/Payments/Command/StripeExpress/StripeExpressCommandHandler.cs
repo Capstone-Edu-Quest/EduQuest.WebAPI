@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Stripe;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Payment.Command.StripeExpress
+namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 {
 	public class StripeExpressCommandHandler : IRequestHandler<StripeExpressCommand, APIResponse>
 	{

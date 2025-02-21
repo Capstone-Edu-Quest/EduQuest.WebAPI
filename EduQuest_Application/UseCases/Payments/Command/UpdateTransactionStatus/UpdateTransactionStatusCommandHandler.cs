@@ -7,7 +7,7 @@ using System.Net;
 using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Domain.Entities;
 
-namespace EduQuest_Application.UseCases.Payment.Command.UpdateTransactionStatus
+namespace EduQuest_Application.UseCases.Payments.Command.UpdateTransactionStatus
 {
 	public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
 	{

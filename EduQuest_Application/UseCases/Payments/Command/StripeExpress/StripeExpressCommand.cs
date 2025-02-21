@@ -1,7 +1,7 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Payment.Command.StripeExpress
+namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 {
 	public class StripeExpressCommand : IRequest<APIResponse>
 	{

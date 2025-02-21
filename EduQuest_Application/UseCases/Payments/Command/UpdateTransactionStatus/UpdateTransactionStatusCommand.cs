@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.Payment.Command.UpdateTransactionStatus
+namespace EduQuest_Application.UseCases.Payments.Command.UpdateTransactionStatus
 {
 	public class UpdateTransactionStatusCommand : IRequest<APIResponse>
 	{

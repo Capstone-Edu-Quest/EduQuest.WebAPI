@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.Payment.Command.Refund
+namespace EduQuest_Application.UseCases.Payments.Command.Refund
 {
 	public class RerundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
 	{

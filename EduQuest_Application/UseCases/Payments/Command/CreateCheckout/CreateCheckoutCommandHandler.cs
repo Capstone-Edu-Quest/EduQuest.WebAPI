@@ -11,18 +11,18 @@ using Stripe.Checkout;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
-namespace EduQuest_Application.UseCases.Payment.Command.CreateCheckout
+namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 {
 	public class CreateCheckoutCommandHandler : IRequestHandler<CreateCheckoutCommand, APIResponse>
 	{
 		private readonly StripeModel _stripeModel;
-		private readonly ITransactionRepository _transactionRepository;
+		private readonly IPaymentRepository _paymentRepository;
 		private readonly IUnitOfWork _unitOfWork;
 
-		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork)
+		public CreateCheckoutCommandHandler(StripeModel stripeModel, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork)
 		{
-			_stripeModel = stripeModel.Value;
-			_transactionRepository = transactionRepository;
+			_stripeModel = stripeModel;
+			_paymentRepository = paymentRepository;
 			_unitOfWork = unitOfWork;
 		}
 
@@ -55,17 +55,12 @@ namespace EduQuest_Application.UseCases.Payment.Command.CreateCheckout
 			var service = new SessionService();
 			Session session = service.Create(options);
 
-			var transaction = new Transaction
-			{
-				Id = session.Id,
-				UserId = request.UserId,  
-				TotalAmount = request.Products.Sum(p => p.Price), 
-				Status = StatusPayment.Pending.ToString(), 
-				PaymentIntentId = session.PaymentIntentId,
-				
-			};
+			//var payment = new Payment
+			//{
 
-			await _transactionRepository.Add(transaction);
+			//}
+
+			
 			await _unitOfWork.SaveChangesAsync();
 
 			return new APIResponse

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.Payment.Command.CreateCheckout
+namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 {
 	public class CreateCheckoutCommand : IRequest<APIResponse>
 	{
