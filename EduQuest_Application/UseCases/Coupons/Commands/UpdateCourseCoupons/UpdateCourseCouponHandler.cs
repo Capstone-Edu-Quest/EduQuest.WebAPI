@@ -21,7 +21,8 @@ public class UpdateCourseCouponHandler : IRequestHandler<UpdateCourseCouponComma
     private readonly ICourseRepository _courseRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "coupon";
     public UpdateCourseCouponHandler(ICouponRepository couponRepository, IMapper mapper, ICourseRepository courseRepository, 
         IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
@@ -40,19 +41,19 @@ public class UpdateCourseCouponHandler : IRequestHandler<UpdateCourseCouponComma
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, MessageCommon.SessionTimeout, "name", "coupon");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, MessageCommon.SessionTimeout, Key, value);
             }
             //check coupon is exist
             Coupon? temp = await _couponRepository.GetById(request.CouponId);
             if(temp == null)
             {
-                GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed, MessageCommon.NotFound, "name", "coupon");
+                GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
             }
             //check owner if it's a course exclusive coupon           
             bool isOwner = await _courseRepository.IsOwner(temp.CourseId!, request.UserId);
             if (!isOwner)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, "name", "coupon");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
             }
             #endregion
 
@@ -79,25 +80,15 @@ public class UpdateCourseCouponHandler : IRequestHandler<UpdateCourseCouponComma
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(temp);
                 response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = response,
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateSuccesfully,
-                        values = new Dictionary<string, string> { { "name", "coupons" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, Key, value);
             }
 
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UpdateFailed, "name", "coupon");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UpdateFailed, Key, value);
 
         }
         catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, "name", "coupon");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, Key, value);
         }
     }
 }

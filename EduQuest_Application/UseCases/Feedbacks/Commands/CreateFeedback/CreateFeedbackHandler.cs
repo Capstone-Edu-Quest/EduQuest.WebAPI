@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Feedbacks;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -16,7 +17,8 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "feedback";
     public CreateFeedbackHandler(IFeedbackRepository feedbackRepository, IUserRepository userRepository, 
         IMapper mapper, IUnitOfWork unitOfWork)
     {
@@ -34,22 +36,7 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.Unauthorized,
-                        StatusResponse = HttpStatusCode.Unauthorized,
-                        Message = MessageCommon.SessionTimeout
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateFailed,
-                        values = new Dictionary<string, string> { { "name", "feedback" } }
-                    }
-                };
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
             }
 
             Feedback newFeedback = _mapper.Map<Feedback>(request.Feedback);
@@ -58,53 +45,15 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
             await _feedbackRepository.Add(newFeedback);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = _mapper.Map<FeedbackResponse>(newFeedback),
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateSuccesfully,
-                        values = new Dictionary<string, string> { { "name", "feedback" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully,
+                    _mapper.Map<FeedbackResponse>(newFeedback), Key, value);
             }
 
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    StatusResponse = HttpStatusCode.BadRequest,
-                    Message = MessageCommon.CreateFailed
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "feedback" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, Key, value);
+
         }catch(Exception ex)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    StatusResponse = HttpStatusCode.BadRequest,
-                    Message = ex.Message
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "feedback" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, Key, value);
         }
     }
 }

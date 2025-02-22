@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -12,7 +13,8 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
 {
     private readonly ILearningPathRepository _learningPathRepository;
     private readonly IMapper _mapper;
-
+    private const string Key = "name";
+    private const string value = "learning path";
     public GetMyPublicLearningPathHandler(ILearningPathRepository learningPathRepository, IMapper mapper)
     {
         _learningPathRepository = learningPathRepository;
@@ -33,6 +35,8 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
                 myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
                 responseDto.Add(myLearningPathResponse);
             }
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.GetSuccesfully,
+                responseDto, Key, value);
             return new APIResponse
             {
                 IsError = false,
@@ -46,22 +50,7 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
             };
         }catch (Exception ex)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = ex.Message,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.GetFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, ex.Message, Key, value);
         }
     }
 }

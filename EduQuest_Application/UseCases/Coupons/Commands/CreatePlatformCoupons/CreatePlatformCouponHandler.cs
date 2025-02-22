@@ -21,7 +21,8 @@ public class CreatePlatformCouponHandler : IRequestHandler<CreatePlatformCouponC
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "coupon";
     public CreatePlatformCouponHandler(ICouponRepository couponRepository, IMapper mapper, 
         IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
@@ -39,13 +40,13 @@ public class CreatePlatformCouponHandler : IRequestHandler<CreatePlatformCouponC
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.SessionTimeout, "name", "coupon");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.SessionTimeout, Key, value);
             }
             string role = ((int)UserRole.Admin).ToString();
             //check if user role is admin
             if (user.RoleId != role)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.UserDontHavePer, "name", "coupon");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.UserDontHavePer, Key, value);
             }
             #endregion
 
@@ -60,7 +61,7 @@ public class CreatePlatformCouponHandler : IRequestHandler<CreatePlatformCouponC
                 bool temp = await _couponRepository.ExistByCode(request.Coupon.CustomeCode);
                 if (temp)
                 {
-                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.CouponCodeExist, "name", "coupon");
+                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.CouponCodeExist, Key, value);
                 }
                 newCoupon.Code = request.Coupon.CustomeCode;
             }
@@ -82,25 +83,15 @@ public class CreatePlatformCouponHandler : IRequestHandler<CreatePlatformCouponC
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(newCoupon);
                 response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = response,
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateSuccesfully,
-                        values = new Dictionary<string, string> { { "name", "coupons" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, Key, value);
             }
 
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, "name", "coupon");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, Key, value);
 
         }
         catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, "name", "coupon");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, Key, value);
         }
     }
 }
