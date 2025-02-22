@@ -28,7 +28,7 @@ public class CouponController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Instructor")]
     [HttpGet("course")]
     public async Task<IActionResult> GetCourseCoupons(
         [FromQuery, AllowNull] string couponCode,
@@ -52,7 +52,7 @@ public class CouponController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Instructor")]
     [HttpPost("course")]
     public async Task<IActionResult> CreateCourseCoupon([FromBody, Required] CreateCouponRequest coupon,
         //[FromQuery] string UserId,
@@ -63,7 +63,7 @@ public class CouponController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Instructor")]
     [HttpPut("course")]
     public async Task<IActionResult> UpdateCourseCoupon([FromQuery, Required] string couponId,
         [FromBody, Required] UpdateCouponRequest coupon,
@@ -75,7 +75,7 @@ public class CouponController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreatePlatformCoupon([FromBody, Required] CreatePlatformCouponRequest coupon,
         //[FromQuery] string UserId,
@@ -86,7 +86,7 @@ public class CouponController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    //[Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetPlatformCoupons([FromQuery, AllowNull] string couponCode,
         [FromQuery, AllowNull] double discountValue,
