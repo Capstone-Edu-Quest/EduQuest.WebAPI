@@ -45,7 +45,7 @@ public class SignInGoogleCommandTestHandler : IRequestHandler<SignInGoogleComman
             var newUser = new User
             {
                 Id = userId,
-                Email = "",
+                Email = request.email,
                 Username = "",
                 AvatarUrl = "",
                 Status = AccountStatus.Active.ToString(),

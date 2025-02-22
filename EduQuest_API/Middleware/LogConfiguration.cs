@@ -6,7 +6,7 @@ namespace EduQuest_API.Middleware
     {
         public static void ConfigureSerilog(this WebApplicationBuilder builder)
         {
-            // Set up logs for server
+
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
                 .CreateLogger();
