@@ -7,11 +7,12 @@ namespace EduQuest_Domain.Entities
 	public partial class Quiz : BaseEntity
 	{
 		public string StageId { get; set; }
-		public string QuizData { get; set; }
-		public string CreatedBy { get; set; }
+        public int TimeLimit { get; set; }
+		public decimal PassingPercentage { get; set; }	
+        public string CreatedBy { get; set; }
 
 		public virtual User Creator { get; set; } = null!;
-		public virtual Stage Stage { get; set; } = null!;
+		public virtual LearningMaterial LearningMaterial { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<Question> Questions { get; set; }
