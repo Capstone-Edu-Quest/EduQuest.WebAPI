@@ -9,6 +9,7 @@ using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Domain.Entities;
 using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
 
@@ -19,7 +20,8 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "learning path";
     public UpdateLearningPathHandler(ILearningPathRepository learningPathRepository, 
         IUserRepository userRepository,
         IMapper mapper, IUnitOfWork unitOfWork, 
@@ -34,132 +36,85 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
 
     public async Task<APIResponse> Handle(UpdateLearningPathCommand request, CancellationToken cancellationToken)
     {
-        #region validate
-        //validate Learing path exist 
-        var learingPath = await _learningPathRepository.GetLearningPathDetail(request.LearningPathId);
-        if (learingPath == null)
+        try
         {
-            return new APIResponse
+            #region validate
+            //validate Learing path exist 
+            var learingPath = await _learningPathRepository.GetLearningPathDetail(request.LearningPathId);
+            if (learingPath == null)
             {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = MessageCommon.NotFound,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.UpdateFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
-        }
-        //validate owner
-        if(!await _learningPathRepository.IsOwner(request.UserId, request.LearningPathId))
-        {
-            return new APIResponse
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
+            }
+            //validate owner
+            if (!await _learningPathRepository.IsOwner(request.UserId, request.LearningPathId))
             {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = MessageCommon.UserDontHavePer,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.UpdateFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
-        }
-        #endregion
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
+            }
+            #endregion
 
-        learingPath.Name = request.LearningPathRequest.Name;
-        learingPath.Description = request.LearningPathRequest.Description;
-        learingPath.IsPublic = request.LearningPathRequest.IsPublic;
-        learingPath.UpdatedAt = DateTime.Now.ToUniversalTime();
-        learingPath.UpdatedBy = request.UserId;
+            learingPath.Name = request.LearningPathRequest.Name;
+            learingPath.Description = request.LearningPathRequest.Description;
+            learingPath.IsPublic = request.LearningPathRequest.IsPublic;
+            learingPath.UpdatedAt = DateTime.Now.ToUniversalTime();
+            learingPath.UpdatedBy = request.UserId;
 
-        //handler learning path courses
-        var courses = learingPath.LearningPathCourses;
-        int Flag = 100;
-        foreach(var updatecourse in request.LearningPathRequest.Courses)
-        {
-            //add new courses: new courses get to the bottom of the courses order
-            if(updatecourse.Action == "add")
+            //handler learning path courses
+            var courses = learingPath.LearningPathCourses;
+            int Flag = 100;
+            foreach (var updatecourse in request.LearningPathRequest.Courses)
             {
-                updatecourse.CourseOrder = courses.Count;
-                LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseOrder == updatecourse.CourseOrder)!;
-                if (temp != null) updatecourse.CourseOrder += Flag;
-                learingPath.LearningPathCourses.Add(_mapper.Map<LearningPathCourse>(updatecourse));
-                var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
-                learingPath.TotalTimes += cs.TotalTime!.Value;
-                Flag += 1;
-            }
-            if(updatecourse.Action == "delete")
-            {
-                LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
-                learingPath.LearningPathCourses.Remove(temp);
-                var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
-                learingPath.TotalTimes -= cs.TotalTime!.Value;
-            }
-
-            //update course order/position
-            if(updatecourse.Action == "update")
-            {
-                LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
-                temp.CourseOrder = updatecourse.CourseOrder;
-            }
-        }
-        //rearrange course order after update, some course might have abnormal order number, 
-        //this code will rearrange the order based on the old order number
-        //ex: after update course1 have order 2, course2 have order 8, after the rearrangement, the order will be come 1,2...
-        var orderedCourses = learingPath.LearningPathCourses
-        .OrderBy(c => c.CourseOrder)
-        .ToList();
-        for (int i = 0; i < orderedCourses.Count; i++)
-        {
-            orderedCourses[i].CourseOrder = i;
-        }
-        await _learningPathRepository.Update(learingPath);
-        if(await _unitOfWork.SaveChangesAsync() > 0)
-        {
-            User user = await _userRepository.GetById(request.UserId)!;
-            CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
-            MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learingPath);
-            myLearningPathResponse.TotalCourses = learingPath.LearningPathCourses.Count;
-            myLearningPathResponse.CreatedBy = userResponse;
-            return new APIResponse
-            {
-                IsError = false,
-                Payload = myLearningPathResponse,
-                Errors = null,
-                Message = new MessageResponse
+                //add new courses: new courses get to the bottom of the courses order
+                if (updatecourse.Action == "add")
                 {
-                    content = MessageCommon.UpdateSuccesfully,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
+                    updatecourse.CourseOrder = courses.Count;
+                    LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseOrder == updatecourse.CourseOrder)!;
+                    if (temp != null) updatecourse.CourseOrder += Flag;
+                    learingPath.LearningPathCourses.Add(_mapper.Map<LearningPathCourse>(updatecourse));
+                    var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
+                    learingPath.TotalTimes += cs.TotalTime!.Value;
+                    Flag += 1;
                 }
-            };
-        }
-        return new APIResponse
-        {
-            IsError = true,
-            Payload = null,
-            Errors = new ErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Message = MessageCommon.UpdateFailed,
-                StatusResponse = HttpStatusCode.BadRequest
-            },
-            Message = new MessageResponse
-            {
-                content = MessageCommon.UpdateFailed,
-                values = new Dictionary<string, string> { { "name", "learning path" } }
+                if (updatecourse.Action == "delete")
+                {
+                    LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
+                    learingPath.LearningPathCourses.Remove(temp);
+                    var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
+                    learingPath.TotalTimes -= cs.TotalTime!.Value;
+                }
+
+                //update course order/position
+                if (updatecourse.Action == "update")
+                {
+                    LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
+                    temp.CourseOrder = updatecourse.CourseOrder;
+                }
             }
-        };
+            //rearrange course order after update, some course might have abnormal order number, 
+            //this code will rearrange the order based on the old order number
+            //ex: after update course1 have order 2, course2 have order 8, after the rearrangement, the order will be come 1,2...
+            var orderedCourses = learingPath.LearningPathCourses
+            .OrderBy(c => c.CourseOrder)
+            .ToList();
+            for (int i = 0; i < orderedCourses.Count; i++)
+            {
+                orderedCourses[i].CourseOrder = i;
+            }
+            await _learningPathRepository.Update(learingPath);
+            if (await _unitOfWork.SaveChangesAsync() > 0)
+            {
+                User user = await _userRepository.GetById(request.UserId)!;
+                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
+                MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learingPath);
+                myLearningPathResponse.TotalCourses = learingPath.LearningPathCourses.Count;
+                myLearningPathResponse.CreatedBy = userResponse;
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully,
+                    myLearningPathResponse, Key, value);
+            }
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UpdateFailed, Key, value);
+        }
+        catch (Exception ex)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, Key, value);
+        }
     }
 }

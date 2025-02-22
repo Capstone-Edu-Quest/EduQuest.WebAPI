@@ -11,7 +11,11 @@ public class Coupon : BaseEntity
     public DateTime ExpireAt { get; set; }
     public int Usage {  get; set; }
     public int RemainUsage {  get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
 
     [JsonIgnore]
-    public virtual Course Course { get; set; }
+    public virtual Course? Course { get; set; }
+
+    [JsonIgnore]
+    public virtual User? User { get; set; }
 }

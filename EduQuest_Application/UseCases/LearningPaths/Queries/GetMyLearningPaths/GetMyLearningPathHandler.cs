@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -13,7 +14,8 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
 {
     private readonly ILearningPathRepository _learningPathRepository;
     private readonly IMapper _mapper;
-
+    private const string Key = "name";
+    private const string value = "learning path";
     public GetMyLearningPathHandler(ILearningPathRepository learningPathRepository, IMapper mapper)
     {
         _learningPathRepository = learningPathRepository;
@@ -37,37 +39,12 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
             }
             PagedList<MyLearningPathResponse> response = new PagedList<MyLearningPathResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);
             //"A84B8BBD-73E0-4857-85A8-C16136C214C8"
-
-            return new APIResponse
-            {
-                IsError = false,
-                Payload = response,
-                Errors = null,
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.GetSuccesfully,
-                    values = new Dictionary<string, string>{{"name", "learning path"}}
-                }
-            };
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
+                response, Key, value);
 
         }catch (Exception ex)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = ex.Message,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.GetFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, ex.Message, Key, value);
         }
     }
 }
