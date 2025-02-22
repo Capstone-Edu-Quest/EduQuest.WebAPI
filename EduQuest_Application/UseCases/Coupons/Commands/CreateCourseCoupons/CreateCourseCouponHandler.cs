@@ -21,7 +21,8 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
     private readonly ICourseRepository _courseRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "coupon";
     public CreateCourseCouponHandler(ICouponRepository couponRepository, IMapper mapper, 
         ICourseRepository courseRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
@@ -40,14 +41,14 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.SessionTimeout, "name", "coupon");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.SessionTimeout, Key, value);
             }
 
             //check owner if it's a course exclusive coupon           
             bool isOwner = await _courseRepository.IsOwner(request.CreateCouponRequest.CourseId!, request.UserId);
             if (!isOwner)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.UserDontHavePer, "name", "coupon");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.UserDontHavePer, Key, value);
             }           
             #endregion
 
@@ -62,7 +63,7 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
                 bool temp = await _couponRepository.ExistByCode(request.CreateCouponRequest.CustomeCode);
                 if (temp)
                 {
-                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.CouponCodeExist, "name", "coupon");
+                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.CouponCodeExist, Key, value);
                 }
                 newCoupon.Code = request.CreateCouponRequest.CustomeCode;
             }
@@ -84,23 +85,13 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(newCoupon);
                 response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = response,
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateSuccesfully,
-                        values = new Dictionary<string, string> { { "name", "coupons" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, Key, value);
             }
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, "name", "coupon");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, Key, value);
 
         }catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, "name", "coupon");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, Key, value);
         }
     }
 }

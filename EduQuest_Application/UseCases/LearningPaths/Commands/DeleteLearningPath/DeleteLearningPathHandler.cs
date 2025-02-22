@@ -7,6 +7,7 @@ using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Domain.Entities;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.DeleteLearningPath;
 
@@ -16,7 +17,8 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "learning path";
     public DeleteLearningPathHandler(ILearningPathRepository learningPathRepository,
         IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository)
     {
@@ -34,61 +36,16 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Message = MessageCommon.NotFound,
-                        StatusResponse = HttpStatusCode.BadRequest
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.NotFound,
-                        values = new Dictionary<string, string> { { "name", "user" } }
-                    }
-                };
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.UserDontHavePer, Key, value);
             }
             var learningPath = await _learningPathRepository.GetById(request.LearningPathId);
             if (learningPath == null)
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Message = MessageCommon.NotFound,
-                        StatusResponse = HttpStatusCode.BadRequest
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.NotFound,
-                        values = new Dictionary<string, string> { { "name", "learning path" } }
-                    }
-                };
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.NotFound, Key, value);
             }
             if (learningPath.UserId != user.Id)
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Message = MessageCommon.DeleteFailed,
-                        StatusResponse = HttpStatusCode.BadRequest
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.UserDontHavePer,
-                        values = new Dictionary<string, string> { { "name", "learning path" } }
-                    }
-                };
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.UserDontHavePer, Key, value);
             }
             #endregion
             await _learningPathRepository.Delete(learningPath.Id);
@@ -98,47 +55,17 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learningPath);
                 myLearningPathResponse.TotalCourses = learningPath.LearningPathCourses.Count;
                 myLearningPathResponse.CreatedBy = userResponse;
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = myLearningPathResponse,
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.DeleteSuccessfully,
-                        values = new Dictionary<string, string> { { "name", "learning path" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.DeleteSuccessfully,
+                    myLearningPathResponse, Key, value);
             }
-            return new APIResponse
-            {
-                IsError = false,
-                Payload = learningPath,
-                Errors = null,
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.DeleteFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
-        }catch (Exception ex)
+
+            
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.DeleteFailed, Key, value);
+        
+        }
+        catch (Exception ex)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = ex.Message,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.DeleteFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, ex.Message, Key, value);
         }
     }
 }

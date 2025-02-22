@@ -23,7 +23,6 @@
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />
     <Folder Include="UseCases\Authenticate\Queries\" />
-    <Folder Include="UseCases\Users\Commands\" />
   </ItemGroup>
 
   <ItemGroup>
