@@ -112,6 +112,9 @@ namespace EduQuest_Domain.Constants
             public const string DuplicateCourseIdOrCourseOrder = "DETECT_DUPLICATE_COURSE_ID_AND_COURSE_ORDER";
             public static int NameMaxLength = 500;
             public static int DescriptionMaxLength = 2500;
+
+
+			public static string CouponCodeExist = "COUPON_CODE_EXIST";
         }
 		#endregion
 

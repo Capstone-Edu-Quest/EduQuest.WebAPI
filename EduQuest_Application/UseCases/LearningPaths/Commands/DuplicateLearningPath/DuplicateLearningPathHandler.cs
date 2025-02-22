@@ -8,6 +8,7 @@ using System.Net;
 using EduQuest_Application.DTO.Request.LearningPaths;
 using AutoMapper;
 using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.DuplicateLearningPath;
 
@@ -17,7 +18,8 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-
+    private const string Key = "name";
+    private const string value = "learning path";
     public DuplicateLearningPathHandler(ILearningPathRepository learningPathRepository, 
         IUnitOfWork unitOfWork,
         IMapper mapper,
@@ -37,22 +39,7 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
             LearningPath? temp = await _learningPathRepository.GetLearningPathDetail(request.LearningPathId);
             if (temp == null)
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Message = MessageCommon.NotFound,
-                        StatusResponse = HttpStatusCode.BadRequest
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateFailed,
-                        values = new Dictionary<string, string> { { "name", "learning path" } }
-                    }
-                };
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
             }
             #endregion
 
@@ -79,49 +66,15 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(newLearningPath);
                 myLearningPathResponse.TotalCourses = newLearningPath.LearningPathCourses.Count;
                 myLearningPathResponse.CreatedBy = userResponse;
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = myLearningPathResponse,
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateSuccesfully,
-                        values = new Dictionary<string, string> { { "name", "learning path" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.CreateSuccesfully,
+                    myLearningPathResponse, Key, value);
             }
 
-            return new APIResponse
-            {
-                IsError = false,
-                Payload = temp,
-                Errors = null,
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, Key, value);
         }
         catch (Exception ex)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = ex.Message,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, Key, value);
         }
     }
 }

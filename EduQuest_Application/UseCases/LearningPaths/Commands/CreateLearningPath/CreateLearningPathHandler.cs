@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -17,7 +18,8 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
+    private const string Key = "name";
+    private const string value = "learning path";
     public CreateLearningPathHandler(ILearningPathRepository learningPathRepository, 
                                      IMapper mapper,
                                      IUserRepository userRepository,
@@ -49,22 +51,7 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             int after = learningPathCourses.Count;
             if(before > after)
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Message = MessageError.DuplicateCourseIdOrCourseOrder,
-                        StatusResponse = HttpStatusCode.BadRequest
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageError.DuplicateCourseIdOrCourseOrder,
-                        values = new Dictionary<string, string> { { "name", "learning path courses" } }
-                    }
-                };
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.DuplicateCourseIdOrCourseOrder, Key, "learning path courses");
             }
             #endregion
             int totalTime = 0;
@@ -73,22 +60,7 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             {
                 if (!await _courseRepository.IsExist(course.CourseId))
                 {
-                    return new APIResponse
-                    {
-                        IsError = true,
-                        Payload = null,
-                        Errors = new ErrorResponse
-                        {
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Message = MessageCommon.NotFound,
-                            StatusResponse = HttpStatusCode.BadRequest
-                        },
-                        Message = new MessageResponse
-                        {
-                            content = MessageCommon.CreateFailed,
-                            values = new Dictionary<string, string> { { "name", "learning path" } }
-                        }
-                    };
+                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
                 }
                 int courseTotalTime = await _courseRepository.GetTotalTime(course.CourseId);
                 totalTime += courseTotalTime;
@@ -111,48 +83,16 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                 myLearningPathResponse.TotalCourses = learningPath.LearningPathCourses.Count;
                 myLearningPathResponse.CreatedBy = userResponse;
 
-                return new APIResponse
-                {
-                    IsError = false,
-                    Payload = myLearningPathResponse,
-                    Errors = null,
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.CreateSuccesfully,
-                        values = new Dictionary<string, string> { { "name", "learning path" } }
-                    }
-                };
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully,
+                    myLearningPathResponse, Key, value);
             }
-            return new APIResponse
-            {
-                IsError = false,
-                Payload = learningPath,
-                Errors = null,
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.CreateFailed, Key, value);
+        
         }
         catch (Exception ex)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Payload = null,
-                Errors = new ErrorResponse
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = ex.Message,
-                    StatusResponse = HttpStatusCode.BadRequest
-                },
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, Key, value);
         }
     }
 }
