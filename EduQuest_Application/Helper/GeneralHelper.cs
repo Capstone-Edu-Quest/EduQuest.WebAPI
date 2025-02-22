@@ -5,7 +5,8 @@ namespace EduQuest_Application.Helper;
 
 public class GeneralHelper
 {
-    public static APIResponse CreateErrorResponse(HttpStatusCode statusCode, string message, string messageError, string key, string value)
+    public static APIResponse CreateErrorResponse(HttpStatusCode statusCode, string message, 
+        string messageError, string key, string value)
     {
         return new APIResponse
         {
