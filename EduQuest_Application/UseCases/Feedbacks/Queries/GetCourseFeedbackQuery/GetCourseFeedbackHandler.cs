@@ -33,7 +33,7 @@ public class GetCourseFeedbackHandler : IRequestHandler<GetCourseFeedbackQuery, 
         {
             var result = await _feedbackRepository.GetByCourseId(request.courseId, request.PageNo, request.PageSize, request.Rating, request.Feedback);
 
-            if (result == null)
+            /*if (result == null)
             {
                 return new APIResponse
                 {
@@ -51,7 +51,7 @@ public class GetCourseFeedbackHandler : IRequestHandler<GetCourseFeedbackQuery, 
                         values = new Dictionary<string, string> { { "name", "feedback" } }
                     }
                 };
-            }
+            }*/
 
             List<FeedbackResponse> responseDto = new List<FeedbackResponse>();
             var temp = result.Items.ToList();

@@ -68,9 +68,9 @@ public class LearningPathController : Controller
 
 
     [HttpGet]
-    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery, Required] string UserId, CancellationToken token = default)
+    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery, Required] string userId, CancellationToken token = default)
     {
-        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(UserId), token);
+        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
@@ -80,14 +80,14 @@ public class LearningPathController : Controller
         throw new NotImplementedException();
     }*/
 
-    //[Authorize]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateLearningPath([FromBody, Required] CreateLearningPathRequest request,
-                                                        [FromQuery] string UserId,
+                                                       // [FromQuery] string UserId,
                                                         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new CreateLearningPathCommand(request, UserId), token);
+        var result = await _mediator.Send(new CreateLearningPathCommand(request, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 

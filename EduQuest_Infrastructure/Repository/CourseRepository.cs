@@ -52,5 +52,11 @@ namespace EduQuest_Infrastructure.Repository
 			var result = await _context.Courses.FindAsync(courseId);
 			return result != null ? true : false;
 		}
+
+		public async Task<bool> IsOwner(string courseId, string UserId)
+		{
+            return await _context.Courses
+			.AnyAsync(c => c.Id == courseId && c.CreatedBy == UserId);
+        }
     }
 }
