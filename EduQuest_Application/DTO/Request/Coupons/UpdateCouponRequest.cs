@@ -16,5 +16,5 @@ public class UpdateCouponRequest
     public DateTime ExpireAt { get; set; }
 
     [Required(ErrorMessage = MessageError.ValueRequired)]
-    public int Usage { get; set; }
+    public int AddedUsage { get; set; } = 0;
 }

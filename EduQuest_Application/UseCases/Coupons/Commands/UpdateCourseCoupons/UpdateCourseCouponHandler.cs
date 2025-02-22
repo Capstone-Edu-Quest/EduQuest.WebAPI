@@ -1,14 +1,103 @@
 ﻿
 
+using AutoMapper;
 using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository.UnitOfWork;
+using EduQuest_Domain.Repository;
 using MediatR;
+using EduQuest_Application.DTO.Response.Coupons;
+using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Domain.Entities;
+using static EduQuest_Domain.Constants.Constants;
+using System.Net;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.Coupons.Commands.UpdateCourseCoupons;
 
 public class UpdateCourseCouponHandler : IRequestHandler<UpdateCourseCouponCommand, APIResponse>
 {
-    public Task<APIResponse> Handle(UpdateCourseCouponCommand request, CancellationToken cancellationToken)
+    private readonly ICouponRepository _couponRepository;
+    private readonly IMapper _mapper;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UpdateCourseCouponHandler(ICouponRepository couponRepository, IMapper mapper, ICourseRepository courseRepository, 
+        IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
-        throw new NotImplementedException();
+        _couponRepository = couponRepository;
+        _mapper = mapper;
+        _courseRepository = courseRepository;
+        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<APIResponse> Handle(UpdateCourseCouponCommand request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            #region check role and authorization
+            var user = await _userRepository.GetById(request.UserId);
+            if (user == null)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, MessageCommon.SessionTimeout, "name", "coupon");
+            }
+            //check coupon is exist
+            Coupon? temp = await _couponRepository.GetById(request.CouponId);
+            if(temp == null)
+            {
+                GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed, MessageCommon.NotFound, "name", "coupon");
+            }
+            //check owner if it's a course exclusive coupon           
+            bool isOwner = await _courseRepository.IsOwner(temp.CourseId!, request.UserId);
+            if (!isOwner)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, "name", "coupon");
+            }
+            #endregion
+
+            temp.DiscountValue = request.Coupon.DiscountValue;
+            temp.ExpireAt = request.Coupon.ExpireAt;
+            if(request.Coupon.AddedUsage != 0)
+            {
+                temp.Usage += request.Coupon.AddedUsage;
+                temp.Usage = Math.Max(temp.Usage, -1); // Đảm bảo không nhỏ hơn -1
+                if(temp.Usage > 0)
+                {
+                    temp.RemainUsage += request.Coupon.AddedUsage;
+                    temp.RemainUsage = Math.Max(temp.RemainUsage, 0);// Đảm bảo không nhỏ hơn 0
+                }
+                temp.RemainUsage += request.Coupon.AddedUsage;
+                temp.RemainUsage = Math.Max(temp.RemainUsage, -1);// Đảm bảo không nhỏ hơn -1 
+            }
+            temp.UpdatedAt = DateTime.Now.ToUniversalTime();
+            temp.UpdatedBy = request.UserId;
+            
+
+            await _couponRepository.Update(temp);
+            if (await _unitOfWork.SaveChangesAsync() > 0)
+            {
+                CouponResponse response = _mapper.Map<CouponResponse>(temp);
+                response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
+                return new APIResponse
+                {
+                    IsError = false,
+                    Payload = response,
+                    Errors = null,
+                    Message = new MessageResponse
+                    {
+                        content = MessageCommon.CreateSuccesfully,
+                        values = new Dictionary<string, string> { { "name", "coupons" } }
+                    }
+                };
+            }
+
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UpdateFailed, "name", "coupon");
+
+        }
+        catch (Exception ex)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, "name", "coupon");
+        }
     }
 }

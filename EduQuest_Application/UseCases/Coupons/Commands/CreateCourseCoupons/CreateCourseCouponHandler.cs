@@ -10,6 +10,7 @@ using System.Net;
 using EduQuest_Domain.Entities;
 using EduQuest_Application.DTO.Response.Coupons;
 using EduQuest_Application.Helper;
+using EduQuest_Application.DTO.Response.LearningPaths;
 
 namespace EduQuest_Application.UseCases.Coupons.Commands.CreateCourseCoupons;
 
@@ -39,14 +40,14 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
             {
-                return CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.SessionTimeout);
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.SessionTimeout, "name", "coupon");
             }
 
             //check owner if it's a course exclusive coupon           
             bool isOwner = await _courseRepository.IsOwner(request.CreateCouponRequest.CourseId!, request.UserId);
             if (!isOwner)
             {
-                return CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UserDontHavePer);
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.UserDontHavePer, "name", "coupon");
             }           
             #endregion
 
@@ -55,29 +56,39 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
             newCoupon.CreatedAt = DateTime.Now.ToUniversalTime();
             newCoupon.CreatedBy = request.UserId;
             newCoupon.IsCourseExclusive = true;
-            if (request.CreateCouponRequest.CustomeCode != null)
+            #region Validate coupon code
+            if (!string.IsNullOrWhiteSpace(request.CreateCouponRequest.CustomeCode))
             {
+                bool temp = await _couponRepository.ExistByCode(request.CreateCouponRequest.CustomeCode);
+                if (temp)
+                {
+                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.CouponCodeExist, "name", "coupon");
+                }
                 newCoupon.Code = request.CreateCouponRequest.CustomeCode;
             }
             else
             {
-                newCoupon.Code = CodeGenerator.GenerateRandomCouponCode();
+                string code;
+                do
+                {
+                    code = CodeGenerator.GenerateRandomCouponCode();
+                } while (await _couponRepository.ExistByCode(code));
+
+                newCoupon.Code = code;
             }
+            #endregion
             newCoupon.Id = Guid.NewGuid().ToString();
 
             await _couponRepository.Add(newCoupon);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
+                CouponResponse response = _mapper.Map<CouponResponse>(newCoupon);
+                response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
                 return new APIResponse
                 {
                     IsError = false,
-                    Payload = _mapper.Map<CouponResponse>(newCoupon),
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        StatusResponse = HttpStatusCode.OK,
-                        Message = MessageCommon.CreateSuccesfully
-                    },
+                    Payload = response,
+                    Errors = null,
                     Message = new MessageResponse
                     {
                         content = MessageCommon.CreateSuccesfully,
@@ -85,31 +96,11 @@ public class CreateCourseCouponHandler : IRequestHandler<CreateCourseCouponComma
                     }
                 };
             }
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, "name", "coupon");
 
-            return CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed);
         }catch (Exception ex)
         {
-            return CreateErrorResponse(HttpStatusCode.BadRequest, ex.Message);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, "name", "coupon");
         }
-    }
-
-    private APIResponse CreateErrorResponse(HttpStatusCode statusCode, string message)
-    {
-        return new APIResponse
-        {
-            IsError = true,
-            Payload = null,
-            Errors = new ErrorResponse
-            {
-                StatusCode = (int)statusCode,
-                StatusResponse = statusCode,
-                Message = message
-            },
-            Message = new MessageResponse
-            {
-                content = MessageCommon.CreateFailed,
-                values = new Dictionary<string, string> { { "name", "coupons" } }
-            }
-        };
     }
 }

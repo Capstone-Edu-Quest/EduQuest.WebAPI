@@ -11,11 +11,10 @@ public class CouponResponse : IMapFrom<Coupon>
     public string Id { get; set; } = string.Empty;
     public double DiscountValue { get; set; }
     public string Code { get; set; } = string.Empty;
-    public bool IsCourseExclusive { get; set; }
-    public string? CourseId { get; set; }
     public DateTime ExpireAt { get; set; }
     public int Usage { get; set; }
     public int RemainUsage { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public CommonUserResponse CreatedBy { get; set; } = new CommonUserResponse();
+    public DateTime? CreateAt { get; set; }
+    public CommonUserResponse CreatedByUser { get; set; } = new CommonUserResponse();
 }

@@ -52,6 +52,7 @@ namespace EduQuest_Infrastructure.Persistence
 		
 		public virtual DbSet<Level> Level { get; set; } = null!;
 
+		public virtual DbSet<Coupon> Coupon { get; set; } = null!;
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

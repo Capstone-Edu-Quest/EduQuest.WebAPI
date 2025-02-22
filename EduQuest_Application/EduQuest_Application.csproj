@@ -19,8 +19,6 @@
   <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
     <Folder Include="Abstractions\Email\" />
-    <Folder Include="UseCases\Coupons\Queries\GetPlatformCouponsQuery\" />
-    <Folder Include="UseCases\Coupons\Queries\GetCourseCouponsQuery\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />
