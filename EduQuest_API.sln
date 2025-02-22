@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduQuest_Infrastructure", "
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{676F0CF3-B74A-42AE-A242-043EF39FF066}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduQuest_Test", "EduQuest_Test\EduQuest_Test.csproj", "{E3126C86-D260-42B5-87C1-8022A8E93108}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{676F0CF3-B74A-42AE-A242-043EF39FF066}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{676F0CF3-B74A-42AE-A242-043EF39FF066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{676F0CF3-B74A-42AE-A242-043EF39FF066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3126C86-D260-42B5-87C1-8022A8E93108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3126C86-D260-42B5-87C1-8022A8E93108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3126C86-D260-42B5-87C1-8022A8E93108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3126C86-D260-42B5-87C1-8022A8E93108}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

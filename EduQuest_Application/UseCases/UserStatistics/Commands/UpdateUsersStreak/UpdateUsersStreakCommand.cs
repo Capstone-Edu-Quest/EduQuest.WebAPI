@@ -6,9 +6,4 @@ namespace EduQuest_Application.UseCases.UserStatistics.Commands.UpdateUsersStrea
 public class UpdateUsersStreakCommand : IRequest<APIResponse>
 {
     public string UserId { get; set; }
-
-    public UpdateUsersStreakCommand(string userId)
-    {
-        UserId = userId;
-    }
 }
