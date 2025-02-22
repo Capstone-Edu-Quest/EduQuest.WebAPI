@@ -19,10 +19,14 @@
   <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
     <Folder Include="Abstractions\Email\" />
+    <Folder Include="DTO\Request\WebStatistics\" />
+    <Folder Include="DTO\Response\WebStatistics\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />
     <Folder Include="UseCases\Authenticate\Queries\" />
+    <Folder Include="UseCases\WebStatistics\Queries\WebUsersStatistics\" />
+    <Folder Include="UseCases\WebStatistics\Queries\OverallStatistics\" />
   </ItemGroup>
 
   <ItemGroup>
