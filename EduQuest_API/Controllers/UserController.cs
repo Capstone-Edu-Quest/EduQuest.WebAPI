@@ -1,14 +1,13 @@
 ﻿using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
-using EduQuest_Application.UseCases.Users.Queries.GetUserGameInfo;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 
 namespace EduQuest_API.Controllers;
 
@@ -40,6 +39,18 @@ public class UserController : BaseController
     {
         string email = User.GetEmailFromToken().ToString();
         var result = await _mediator.Send(new GetCurrentUserQuery(email), cancellationToken);
+        return Ok(result);
+    }
+
+
+    [Authorize]
+    [HttpPut("switch")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> SwitchRole([FromBody] string accestoken, string roleId,CancellationToken cancellationToken = default)
+    {
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new SwitchRoleCommand(accestoken, userId, roleId), cancellationToken);
         return Ok(result);
     }
 

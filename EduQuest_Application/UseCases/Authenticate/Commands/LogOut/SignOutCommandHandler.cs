@@ -22,6 +22,8 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
 
     public async Task<APIResponse> Handle(SignOutCommand request, CancellationToken cancellationToken)
     {
+        var accessTokenHashKey = $"Token_{request.accessToken}";
+        await _redisCaching.SetAsync(accessTokenHashKey, true, 5);
         var tokenEntity = await _refreshTokenRepository.GetUserByIdAsync(request.userId);
         if (tokenEntity == null)
         {
