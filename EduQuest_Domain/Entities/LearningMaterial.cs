@@ -10,17 +10,17 @@ namespace EduQuest_Domain.Entities
 		public string Type { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
+		public int? Duration { get; set; }
 
 		//Video
 		public string UrlMaterial { get; set; }
-        public int? Duration { get; set; }
         public string? Thumbnail { get; set; }
 		//Document
         public string? Content { get; set; }
 
-       
-        [JsonIgnore]
-		public virtual Stage Stage { get; set; } = null;
+
+		[JsonIgnore]
+		public virtual ICollection<Stage> Stages { get; set; }
 		[JsonIgnore]
 		public virtual Quiz? Quiz { get; set; } = null;
 		[JsonIgnore]

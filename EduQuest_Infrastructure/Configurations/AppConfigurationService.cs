@@ -159,6 +159,10 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<RefundService>();
             services.AddScoped<ICouponRepository, CouponRepository>();
             services.AddScoped<ICertificateRepository, CertificateRepository>();
+			services.AddScoped<IQuizRepository, QuizRepository>();
+			services.AddScoped<IQuestionRepository, QuestionRepository>();
+			services.AddScoped<IAnswerRepository, AnswerRepository>();
+			services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 
 
 

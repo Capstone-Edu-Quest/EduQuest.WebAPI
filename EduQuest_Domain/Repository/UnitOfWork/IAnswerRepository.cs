@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Domain.Repository
+namespace EduQuest_Domain.Repository.UnitOfWork
 {
-	public interface ILearningMaterialRepository : IGenericRepository<LearningMaterial>
+	public interface IAnswerRepository : IGenericRepository<Answer>
 	{
-		Task<List<LearningMaterial>> GetMaterialsByIds(List<string> materialIds);
+
 	}
 }

@@ -1,5 +1,4 @@
-﻿using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.Payment;
+﻿using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -9,7 +8,6 @@ using Stripe;
 using Stripe.Checkout;
 
 using static EduQuest_Domain.Constants.Constants;
-using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 {
@@ -19,9 +17,9 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 		private readonly IPaymentRepository _paymentRepository;
 		private readonly IUnitOfWork _unitOfWork;
 
-		public CreateCheckoutCommandHandler(StripeModel stripeModel, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork)
+		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork)
 		{
-			_stripeModel = stripeModel;
+			_stripeModel = stripeModel.Value;
 			_paymentRepository = paymentRepository;
 			_unitOfWork = unitOfWork;
 		}

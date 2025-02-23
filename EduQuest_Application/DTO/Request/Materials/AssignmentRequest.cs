@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EduQuest_Application.Mappings;
+using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Request.Materials
 {
-	public class AssignmentRequest
+	public class AssignmentRequest : IMapFrom<Assignment>, IMapTo<Assignment>
 	{
 		public int? TimeLimit { get; set; }
 		public string? Question { get; set; }
 		public string? AnswerLanguage { get; set; }
 		public string? ExpectedAnswer { get; set; }
+
+		
 	}
 }

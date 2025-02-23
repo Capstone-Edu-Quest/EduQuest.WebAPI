@@ -11,12 +11,12 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 {
 	public class UpdateCourseCommand : IRequest<APIResponse>
 	{
-        public string UserId { get; set; }
+        
         public UpdateCourseRequest CourseInfo { get; set; }
 
-		public UpdateCourseCommand(string userId, UpdateCourseRequest courseInfo)
+		public UpdateCourseCommand(UpdateCourseRequest courseInfo)
 		{
-			UserId = userId;
+			
 			CourseInfo = courseInfo;
 		}
 	}

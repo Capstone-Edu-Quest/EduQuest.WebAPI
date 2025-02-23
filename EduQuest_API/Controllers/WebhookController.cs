@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.UseCases.Payment.Command.UpdateTransactionStatus;
+﻿using EduQuest_Application.UseCases.Payments.Command.UpdateTransactionStatus;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Payment;
 using MediatR;

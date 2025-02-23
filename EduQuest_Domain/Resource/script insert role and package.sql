@@ -22,6 +22,7 @@ VALUES
 
 INSERT INTO public."SystemConfig" ("Id", "Name", "Value", "Description")
 VALUES 
-    (1, 'Docs', 1.0, 'Configuration for documents'),
-    (2, 'Video', 1.0, 'Configuration for videos'),
-    (3, 'Quiz', 0.8, 'Configuration for quizzes');
+    (1, 'Video', 1.0, 'Configuration for video'),
+    (2, 'Document', 1.0, 'Configuration for document'),
+    (3, 'Quiz', 0.8, 'Configuration for quiz'),
+	(4, 'Assignment', 1.0, 'Configuration for assignment');

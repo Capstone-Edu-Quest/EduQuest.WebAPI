@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -15,114 +16,132 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
         private readonly ILearningMaterialRepository _learningMaterialRepository;
         private readonly ISystemConfigRepository _systemConfigRepository;
         private readonly IStageRepository _stageRepository;
-        private readonly IMapper _mapper;
+        private readonly IAssignmentRepository _assignmentRepository;
+		private readonly IQuizRepository _quizRepository;
+		private readonly IQuestionRepository _questionRepository;
+		private readonly IAnswerRepository _answerRepository;
+		private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateLeaningMaterialCommandHandler(ILearningMaterialRepository learningMaterialRepository, ISystemConfigRepository systemConfigRepository, IStageRepository stageRepository, IMapper mapper, IUnitOfWork unitOfWork)
-        {
-            _learningMaterialRepository = learningMaterialRepository;
-            _systemConfigRepository = systemConfigRepository;
-            _stageRepository = stageRepository;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-        }
+		public CreateLeaningMaterialCommandHandler(ILearningMaterialRepository learningMaterialRepository, 
+			ISystemConfigRepository systemConfigRepository, 
+			IStageRepository stageRepository, 
+			IAssignmentRepository assignmentRepository, 
+			IQuizRepository quizRepository, 
+			IQuestionRepository questionRepository, 
+			IAnswerRepository answerRepository, 
+			IMapper mapper, 
+			IUnitOfWork unitOfWork)
+		{
+			_learningMaterialRepository = learningMaterialRepository;
+			_systemConfigRepository = systemConfigRepository;
+			_stageRepository = stageRepository;
+			_assignmentRepository = assignmentRepository;
+			_quizRepository = quizRepository;
+			_questionRepository = questionRepository;
+			_answerRepository = answerRepository;
+			_mapper = mapper;
+			_unitOfWork = unitOfWork;
+		}
 
-        public async Task<APIResponse> Handle(CreateLeaningMaterialCommand request, CancellationToken cancellationToken)
+		public async Task<APIResponse> Handle(CreateLeaningMaterialCommand request, CancellationToken cancellationToken)
         {
+            var apiResponse = new APIResponse();
             if (request.Material == null || !request.Material.Any())
             {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Errors = new ErrorResponse
-                    {
-                        StatusResponse = HttpStatusCode.NotFound,
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = MessageCommon.CreateFailed,
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.NoProvided,
-                        values = new Dictionary<string, string> { { "name", "learning material" } }
-                    }
-                };
-            }
+                return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,"Empty", "name", "Course");
+			}
             var listMaterial = new List<LearningMaterial>();
-			var stageIds = request.Material.SelectMany(m => m.StagesId).Distinct().ToList();
-			var stageDictionary = (await _stageRepository.GetByIdsAsync(stageIds))
-									.ToDictionary(s => s.Id, s => s);
+			
 
 			foreach (var item in request.Material)
             {
-               foreach(var stageId in item.StagesId)
-               {
-					if (!stageDictionary.TryGetValue(stageId, out var stage))
-					{
-						return new APIResponse
+				var material = _mapper.Map<LearningMaterial>(item);
+				material.Id = Guid.NewGuid().ToString();
+				material.Type = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type);
+
+				var value = await _systemConfigRepository.GetByName(material.Type!);
+				switch ((TypeOfLearningMetarial)item.Type!)
+				{
+					case TypeOfLearningMetarial.Document:
+						material.Duration = (int)value.Value!;
+                        material.Content = item.Content;
+						break;
+					case TypeOfLearningMetarial.Video:
+						material.Duration = item.VideoRequest!.Duration;
+                        material.UrlMaterial = item.VideoRequest.UrlMaterial;
+                        material.Thumbnail = item.VideoRequest.Thumbnail;
+						break;
+					case TypeOfLearningMetarial.Quiz:
+						material.Duration = (int)(item.QuizRequest!.TimeLimit! * value.Value!);
+
+                        //Add new Quiz
+                        var newQuiz = _mapper.Map<Quiz>(item.QuizRequest!);
+                        newQuiz.Id = Guid.NewGuid().ToString(); 
+                        newQuiz.CreatedBy = request.UserId;
+                        await _quizRepository.Add(newQuiz);
+                        
+
+                        //Add new Questions for above quiz
+                        var newQuestions = _mapper.Map<List<Question>>(item.QuizRequest.QuestionRequest);
+                        foreach(var question in newQuestions)
+                        {
+                            question.Id = Guid.NewGuid().ToString();
+                            question.QuizId = newQuiz.Id;
+                            question.MultipleAnswers = question.MultipleAnswers;
+						}
+						await _questionRepository.CreateRangeAsync(newQuestions);
+
+						//Add new answer for list question above
+						var newAnswers = new List<Answer>();
+						foreach (var questionRequest in item.QuizRequest.QuestionRequest)
 						{
-							IsError = true,
-							Errors = new ErrorResponse
+							var question = newQuestions.First(q => q.QuestionTitle == questionRequest.QuestionTitle);
+							var answers = _mapper.Map<List<Answer>>(questionRequest.AnswerRequest);
+
+							foreach (var answer in answers)
 							{
-								StatusResponse = HttpStatusCode.NotFound,
-								StatusCode = (int)HttpStatusCode.NotFound,
-								Message = MessageCommon.NotFound,
-							},
-							Message = new MessageResponse
-							{
-								content = MessageCommon.NotFound,
-								values = new Dictionary<string, string> { { "name", $"Stage ID {stageId}" } }
+								answer.Id = Guid.NewGuid().ToString();
+								answer.QuestionId = question.Id;
 							}
-						};
-					}
 
-					var material = _mapper.Map<LearningMaterial>(item);
-					material.Id = Guid.NewGuid().ToString();
-					material.Type = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type);
-                    material.StageId = stageId;
+							newAnswers.AddRange(answers);
+						}
 
-					var value = await _systemConfigRepository.GetByName(material.Type!);
-					switch ((TypeOfLearningMetarial)item.Type!)
-					{
-						case TypeOfLearningMetarial.Docs:
-							material.Duration = (int)value.Value!;
-							break;
-						case TypeOfLearningMetarial.Video:
-							material.Duration = item.EstimateTime;
-							break;
-						case TypeOfLearningMetarial.Quiz:
-							material.Duration = (int)(item.EstimateTime! * value.Value!);
-							break;
-						default:
-							material.Duration = 0;
-							break;
-					}
-					await _learningMaterialRepository.Add(material);
-					listMaterial.Add(material);
+						await _answerRepository.CreateRangeAsync(newAnswers);
+						await _unitOfWork.SaveChangesAsync();
+						break;
+					case TypeOfLearningMetarial.Assignment:
+						material.Duration = (int)(item.AssignmentRequest!.TimeLimit! * value.Value!);
+                        var newAssignment = _mapper.Map<Assignment>(item.AssignmentRequest);
+                        newAssignment.Id = Guid.NewGuid().ToString();
+						break;
+					default:
+						material.Duration = 0;
+						break;
 				}
-                
-
-               
-
+				await _learningMaterialRepository.Add(material);
+				listMaterial.Add(material);
 
             }
-            var result = await _unitOfWork.SaveChangesAsync() > 0;
+			if (await _unitOfWork.SaveChangesAsync() > 0)
+			{
+				return GeneralHelper.CreateSuccessResponse(
+					HttpStatusCode.OK,
+					MessageCommon.CreateSuccesfully,
+					listMaterial,
+					"name",
+					"Material"
+				);
+			}
 
-            return new APIResponse
-            {
-                IsError = !result,
-                Payload = result ? listMaterial : null,
-                Errors = result ? null : new ErrorResponse
-                {
-                    StatusResponse = HttpStatusCode.BadRequest,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = MessageCommon.CreateFailed,
-                },
-                Message = new MessageResponse
-                {
-                    content = result ? MessageCommon.CreateSuccesfully : MessageCommon.CreateFailed,
-                    values = new Dictionary<string, string> { { "name", "leaning material" } }
-                }
-            };
-        }
+			return GeneralHelper.CreateErrorResponse(
+				HttpStatusCode.BadRequest,
+				MessageCommon.CreateFailed,
+				"Saving Failed",
+				"name",
+				"Material"
+			);
+		}
     }
 }

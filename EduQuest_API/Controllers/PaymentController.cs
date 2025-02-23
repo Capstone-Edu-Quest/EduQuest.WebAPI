@@ -1,8 +1,8 @@
 ﻿using EduQuest_Application.DTO.Request.Payment;
 using EduQuest_Application.Helper;
-using EduQuest_Application.UseCases.Payment.Command.CreateCheckout;
-using EduQuest_Application.UseCases.Payment.Command.Refund;
-using EduQuest_Application.UseCases.Payment.Command.StripeExpress;
+using EduQuest_Application.UseCases.Payments.Command.CreateCheckout;
+using EduQuest_Application.UseCases.Payments.Command.Refund;
+using EduQuest_Application.UseCases.Payments.Command.StripeExpress;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
