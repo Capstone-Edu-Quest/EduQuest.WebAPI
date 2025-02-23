@@ -6,8 +6,8 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 {
 	public class EntityTypeConfiguration :
 		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<AccountPackage>,
-		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Badge>,
-		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
+		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>, IEntityTypeConfiguration<Badge>,
+		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<CartItem>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
 		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<Learner>, IEntityTypeConfiguration<LearnerStatistic>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
@@ -108,6 +108,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
+		#region Assignment
+		public void Configure(EntityTypeBuilder<Assignment> builder)
+		{
+
+
+		}
+		#endregion
+
 		#region Badge
 		public void Configure(EntityTypeBuilder<Badge> builder)
 		{
@@ -123,15 +131,20 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.HasForeignKey(d => d.UserId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
 
-			builder.HasOne(d => d.Course)
-				.WithMany(p => p.Carts)
-				.HasForeignKey(d => d.CourseId)
-				.OnDelete(DeleteBehavior.ClientSetNull);
+			
 
 			builder.HasMany(c => c.Payments)
 				.WithOne(p => p.Cart)
 				.HasForeignKey(p => p.CartId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+		}
+		#endregion
+
+		#region CartItem
+		public void Configure(EntityTypeBuilder<CartItem> builder)
+		{
+			
 
 		}
 		#endregion
@@ -160,10 +173,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.HasForeignKey(c => c.CreatedBy)
 				.OnDelete(DeleteBehavior.ClientSetNull);
 
-			builder.HasMany(c => c.Carts)
-				.WithOne(cart => cart.Course)
-				.HasForeignKey(cart => cart.CourseId)
-				.OnDelete(DeleteBehavior.Cascade);
+			
 
 			builder.HasMany(c => c.FavoriteLists)
 				.WithOne(fl => fl.Course)

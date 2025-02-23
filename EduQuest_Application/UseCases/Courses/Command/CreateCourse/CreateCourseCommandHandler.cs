@@ -34,7 +34,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			course.CreatedBy = user!.Id;
 			course.Id = Guid.NewGuid().ToString();
 			//course.LastUpdated = DateTime.Now.ToUniversalTime();
-			course.Status = course.Status = GeneralEnums.StatusCourse.Draft.ToString();
+			course.Status = GeneralEnums.StatusCourse.Draft.ToString();
 			course.IsRequired = false;
 			await _courseRepository.Add(course);
 

@@ -1,0 +1,80 @@
+﻿using EduQuest_Application.DTO.Request.Courses;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using static EduQuest_Domain.Constants.Constants;
+
+namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
+{
+	public class UpdateCourseCommandHandler : IRequestHandler<UpdateCourseCommand, APIResponse>
+	{
+		private readonly ICourseRepository _courseRepository;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IStageRepository _stageRepository;
+		private readonly ILearningMaterialRepository _learningMaterialRepository;
+
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IStageRepository stageRepository, ILearningMaterialRepository learningMaterialRepository)
+		{
+			_courseRepository = courseRepository;
+			_unitOfWork = unitOfWork;
+			_stageRepository = stageRepository;
+			_learningMaterialRepository = learningMaterialRepository;
+		}
+
+		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
+		{
+			var apiResponse = new APIResponse();
+			var existingCourse = await _courseRepository.GetById(request.CourseInfo.CourseId);
+			if(existingCourse == null)
+			{
+				return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found {request.CourseInfo.CourseId}", "name", "Course");
+				
+			}
+			existingCourse.Title = request.CourseInfo.Title;
+			existingCourse.Description = request.CourseInfo.Description;
+			existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
+			existingCourse.Requirement = request.CourseInfo.Requirement;
+			existingCourse.Feature = request.CourseInfo.Feature;
+			existingCourse.Price = request.CourseInfo.Price;
+
+			var newStages = new List<Stage>();
+			if (request.CourseInfo.StageCourse != null && request.CourseInfo.StageCourse.Any())
+			{
+				
+				await _stageRepository.DeleteStagesByCourseId(existingCourse.Id);
+
+				for (int i = 0; i < request.CourseInfo.StageCourse.Count; i++)
+				{
+					var stageRequest = request.CourseInfo.StageCourse[i];
+
+					var stage = new Stage
+					{
+						Id = Guid.NewGuid().ToString(),
+						Name = stageRequest.Name,
+						Description = stageRequest.Description,
+						CourseId = existingCourse.Id,
+						Level = i + 1, 
+						LearningMaterials = await _learningMaterialRepository.GetMaterialsByIds(stageRequest.MaterialIds) // Gán Material
+					};
+
+					newStages.Add(stage);
+				}
+
+				await _stageRepository.CreateRangeAsync(newStages);
+				await _courseRepository.Update(existingCourse);
+				await _unitOfWork.SaveChangesAsync();
+
+			}
+			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, newStages, "name", "Course and Stages");
+
+		}
+	}
+}

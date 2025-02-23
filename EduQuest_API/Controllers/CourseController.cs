@@ -1,6 +1,7 @@
 ﻿using EduQuest_Application.DTO.Request.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
+using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
@@ -71,6 +72,17 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new CreateCourseCommand(request, userId), cancellationToken);
+			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+		}
+
+		[Authorize]
+		[HttpPut("")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> UpdateCourse([FromBody] UpdateCourseRequest request, CancellationToken cancellationToken = default)
+		{
+			//string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new UpdateCourseCommand(request), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 	}

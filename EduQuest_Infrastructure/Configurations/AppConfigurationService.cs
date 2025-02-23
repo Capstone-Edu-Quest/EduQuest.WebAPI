@@ -32,6 +32,8 @@ using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Infrastructure.ExternalServices.Redis;
 using EduQuest_Domain.Repository.Generic;
 using EduQuest_Infrastructure.Repository.Generic;
+using EduQuest_Domain.Models.Payment;
+using Stripe;
 
 namespace EduQuest_Infrastructure
 {
@@ -39,8 +41,9 @@ namespace EduQuest_Infrastructure
     {
 		public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
 		{
-			var test = services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+			services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 			services.Configure<GoogleSetting>(configuration.GetSection("GoogleToken"));
+			services.Configure<StripeModel>(configuration.GetSection("Stripe"));
 
 
 			#region DbContext
@@ -148,11 +151,22 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
 			services.AddScoped<IBadgeRepository, BadgeRepository>();
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+			services.AddScoped<ITransactionRepository, TransactionRepository>();
+			services.AddScoped<IPaymentRepository, PaymentRepository>();
+			services.AddScoped<ICartRepository, CartRepository>();
+			services.AddScoped<AccountService>();
+			services.AddScoped<AccountLinkService>();
+			services.AddScoped<RefundService>();
             services.AddScoped<ICouponRepository, CouponRepository>();
             services.AddScoped<ICertificateRepository, CertificateRepository>();
+			services.AddScoped<IQuizRepository, QuizRepository>();
+			services.AddScoped<IQuestionRepository, QuestionRepository>();
+			services.AddScoped<IAnswerRepository, AnswerRepository>();
+			services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 
 
-            services.AddSingleton(provider =>
+
+			services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials
 				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");

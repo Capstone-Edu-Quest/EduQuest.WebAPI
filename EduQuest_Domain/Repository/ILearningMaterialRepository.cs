@@ -10,5 +10,6 @@ namespace EduQuest_Domain.Repository
 {
 	public interface ILearningMaterialRepository : IGenericRepository<LearningMaterial>
 	{
+		Task<List<LearningMaterial>> GetMaterialsByIds(List<string> materialIds);
 	}
 }
