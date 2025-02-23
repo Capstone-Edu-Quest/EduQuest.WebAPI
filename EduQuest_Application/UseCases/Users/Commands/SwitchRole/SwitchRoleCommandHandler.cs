@@ -7,6 +7,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using Google.Apis.Auth.OAuth2.Responses;
 using MediatR;
 using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 
@@ -38,10 +39,10 @@ public class SwitchRoleCommandHandler : IRequestHandler<SwitchRoleCommand, APIRe
                 Errors = new ErrorResponse
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
-                    Message = "HARD CODE"
+                    Message = MessageCommon.NotFound
                 },
                 Payload = null,
-                Message = null
+                Message = new MessageResponse { content = MessageCommon.NotFound }
             };
         }
 
@@ -59,7 +60,8 @@ public class SwitchRoleCommandHandler : IRequestHandler<SwitchRoleCommand, APIRe
             Payload = new 
             {
                 AccessToken = response
-            }
+            },
+            Message = new MessageResponse { content = MessageCommon.UpdateSuccesfully }
         };
     }
 }

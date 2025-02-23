@@ -50,7 +50,7 @@ public class AuthenticateController : BaseController
     public async Task<IActionResult> SignOut([FromBody] string accessToken, CancellationToken cancellationToken)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new SignOutCommand(userId, accessToken), cancellationToken);
+        var result = await _mediator.Send(new SignOutCommand { userId = userId, accessToken = accessToken }, cancellationToken);
         return Ok(result);
     }
 }

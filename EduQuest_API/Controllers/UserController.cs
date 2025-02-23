@@ -50,7 +50,7 @@ public class UserController : BaseController
     public async Task<ActionResult<APIResponse>> SwitchRole([FromBody] string accestoken, string roleId,CancellationToken cancellationToken = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new SwitchRoleCommand(accestoken, userId, roleId), cancellationToken);
+        var result = await _mediator.Send(new SwitchRoleCommand { accessToken = accestoken, userId = userId, RoleId = roleId }, cancellationToken);
         return Ok(result);
     }
 

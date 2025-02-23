@@ -11,13 +11,16 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
 {
     public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, APIResponse>
     {
-
         private readonly IUserRepository _userRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtProvider _jwtProvider;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RefreshTokenQueryHandler(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IJwtProvider jwtProvider, IUnitOfWork unitOfWork)
+        public RefreshTokenQueryHandler(
+            IUserRepository userRepository,
+            IRefreshTokenRepository refreshTokenRepository,
+            IJwtProvider jwtProvider,
+            IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -27,16 +30,44 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
 
         public async Task<APIResponse> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
         {
-            //validate the token ưhether it's a jwt token or not, then extract information to create new token
+            // Validate JWT token
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(request.AccessToken);
+            if (principal == null)
+            {
+                return new APIResponse
+                {
+                    IsError = true,
+                    Errors = new ErrorResponse
+                    {
+                        StatusCode = (int)System.Net.HttpStatusCode.Unauthorized,
+                        Message = MessageCommon.InvalidToken
+                    },
+                    Payload = null,
+                    Message = new MessageResponse { content = MessageCommon.InvalidToken }
+                };
+            }
 
-            //extract userId and email from payload
-            var userIdClaim = principal!.Claims.FirstOrDefault(c => c.Type == UserClaimType.UserId);
-            var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == UserClaimType.Email);
+            // Extract user ID from token claims
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == UserClaimType.UserId);
+            if (userIdClaim == null)
+            {
+                return new APIResponse
+                {
+                    IsError = true,
+                    Errors = new ErrorResponse
+                    {
+                        StatusCode = (int)System.Net.HttpStatusCode.Unauthorized,
+                        Message = MessageCommon.InvalidToken
+                    },
+                    Payload = null,
+                    Message = new MessageResponse { content = MessageCommon.InvalidToken }
+                };
+            }
 
-            //check if the user exists in the refresh token list
-            var existUserToken = await _refreshTokenRepository.GetUserByIdAsync(userIdClaim!.Value.ToString());
-            var existUsers = await _userRepository.GetById(userIdClaim!.Value);
+            var userId = userIdClaim.Value;
+
+            // Check if user exists in token repository
+            var existUserToken = await _refreshTokenRepository.GetUserByIdAsync(userId);
             if (existUserToken == null)
             {
                 return new APIResponse
@@ -44,13 +75,16 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
                     IsError = true,
                     Errors = new ErrorResponse
                     {
-                        StatusCode = (int)System.Net.HttpStatusCode.Unauthorized,
-                        Message = "Invalid token"
+                        StatusCode = (int)System.Net.HttpStatusCode.NotFound,
+                        Message = MessageCommon.NotFound
                     },
-                    Payload = null
+                    Payload = null,
+                    Message = new MessageResponse { content = MessageCommon.NotFound }
                 };
             }
-            else if (existUsers!.Status == AccountStatus.Blocked.ToString())
+
+            var existUser = await _userRepository.GetById(userId);
+            if (existUser == null || existUser.Status == AccountStatus.Blocked.ToString())
             {
                 return new APIResponse
                 {
@@ -58,54 +92,48 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
                     Errors = new ErrorResponse
                     {
                         StatusCode = (int)System.Net.HttpStatusCode.Unauthorized,
-                        Message = "HARD CODE"
+                        Message = MessageCommon.Blocked
                     },
-                    Payload = null
+                    Payload = null,
+                    Message = new MessageResponse { content = MessageCommon.Blocked }
                 };
             }
 
-
-            //check refresh token whether it's expired or null
-            var existingRefreshToken = await _refreshTokenRepository.GetTokenAsync(request.RefreshToken!);
-            if (existingRefreshToken == null || existingRefreshToken.ExpireAt <= DateTime.UtcNow)
+            // Validate refresh token
+            if (existUserToken.ExpireAt <= DateTime.UtcNow)
             {
-                if (existingRefreshToken != null && existingRefreshToken.ExpireAt <= DateTime.UtcNow)
-                {
-                    await _refreshTokenRepository.Delete(existingRefreshToken.Id);
-                }
+                await _refreshTokenRepository.Delete(existUserToken.Id);
                 return new APIResponse
                 {
                     IsError = true,
                     Errors = new ErrorResponse
                     {
                         StatusCode = (int)System.Net.HttpStatusCode.Unauthorized,
-                        Message = "Token expired"
+                        Message = MessageCommon.TokenExpired
                     },
-                    Payload = null
+                    Payload = null,
+                    Message = new MessageResponse { content = MessageCommon.TokenExpired }
                 };
             }
 
+            // Remove old refresh token
+            await _refreshTokenRepository.Delete(existUserToken.Id);
 
-            //capture expired date from original token 
-            var originalExpirationDate = existingRefreshToken.ExpireAt;
+            // Generate new access & refresh tokens
+            var tokenResponse = await _jwtProvider.GenerateAccessRefreshTokens(existUser.Id, existUser.Email!);
 
-            // remove old refresh token
-            await _refreshTokenRepository.Delete(existingRefreshToken.Id);
-
-            // generate new tokens
-            var tokenResponse = await _jwtProvider.GenerateAccessRefreshTokens(existUsers.Id, existUsers.Email!);
-
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new APIResponse
             {
-                IsError = true,
+                IsError = false,
                 Errors = null,
                 Payload = new TokenResponseDTO
                 {
                     AccessToken = tokenResponse.AccessToken,
                     RefreshToken = tokenResponse.RefreshToken
-                }
+                },
+                Message = new MessageResponse { content = MessageCommon.TokenRefreshSuccess }
             };
         }
     }
