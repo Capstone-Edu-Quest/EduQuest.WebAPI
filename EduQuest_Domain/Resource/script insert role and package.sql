@@ -20,8 +20,23 @@ VALUES
 (5, 'Staff', NOW(), 'System', NOW(), NULL),
 (6, 'Expert', NOW(), 'System', NOW(), NULL);
 
-INSERT INTO public."SystemConfig" ("Id", "Name", "Value", "Description")
+INSERT INTO public."SystemConfig" ("Id", "Name", "Value", "Description", "CreatedAt", "UpdatedAt")
 VALUES 
-    (1, 'Docs', 1.0, 'Configuration for documents'),
-    (2, 'Video', 1.0, 'Configuration for videos'),
-    (3, 'Quiz', 0.8, 'Configuration for quizzes');
+    ('1', 'Video', 1.0, 'Configuration for video', NOW(), NOW()),
+    ('2', 'Document', 1.0, 'Configuration for document', NOW(), NOW()),
+    ('3', 'Quiz', 0.8, 'Configuration for quiz', NOW(), NOW()),
+    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW());
+
+
+	
+CREATE TABLE public."SystemConfig" (
+    "Id" VARCHAR(50) PRIMARY KEY,  -- Sử dụng VARCHAR thay vì UUID
+    "Name" VARCHAR(255) NOT NULL UNIQUE,
+    "Value" DECIMAL(5,2) NOT NULL,
+    "Description" TEXT,
+    "CreatedAt" TIMESTAMP DEFAULT NOW(),
+    "UpdatedBy" VARCHAR(255),
+    "UpdatedAt" TIMESTAMP,
+    "DeletedAt" TIMESTAMP
+);
+

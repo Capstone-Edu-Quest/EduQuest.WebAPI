@@ -7,10 +7,12 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 {
     public class CreateLeaningMaterialCommand : IRequest<APIResponse>
 	{
+        public string UserId { get; set; }
         public List<CreateLearningMaterialRequest> Material { get; set; }
 
-		public CreateLeaningMaterialCommand(List<CreateLearningMaterialRequest> material)
+		public CreateLeaningMaterialCommand(string userId, List<CreateLearningMaterialRequest> material)
 		{
+			UserId = userId;
 			Material = material;
 		}
 	}

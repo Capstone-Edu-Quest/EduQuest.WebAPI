@@ -23,8 +23,8 @@ namespace EduQuest_Domain.Enums
             Instructor = 2,
             Learner = 3,
             Guest = 4,
-			Staff = 5,
-			Expert = 6
+			Expert = 5,
+			Staff = 6
 		}
 
 		#endregion
@@ -46,9 +46,22 @@ namespace EduQuest_Domain.Enums
 
 		public enum TypeOfLearningMetarial
 		{
-			Docs = 1,
-			Video = 2,
-			Quiz = 3
+			Video = 1,
+			Document = 2,
+			Quiz = 3,
+			Assignment = 4
+		}
+		#endregion
+
+		#region Payment
+		public enum StatusPayment
+		{
+			Pending = 1,
+			Completed = 2,
+			Failed = 3,
+			Expired = 4,
+			Canceled = 5
+			
 		}
 		#endregion
 

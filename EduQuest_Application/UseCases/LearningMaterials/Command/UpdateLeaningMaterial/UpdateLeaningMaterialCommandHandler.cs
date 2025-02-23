@@ -66,7 +66,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.UpdateLeaningM
 						var value = await _systemConfigRepository.GetByName(typeToUpdate!);
 						switch ((TypeOfLearningMetarial)item.Type!)
 						{
-							case TypeOfLearningMetarial.Docs:
+							case TypeOfLearningMetarial.Document:
 								materialUpdate.Duration = (int)value.Value!;
 								break;
 							case TypeOfLearningMetarial.Video:
