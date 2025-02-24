@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EduQuest_Application.Mappings;
+using EduQuest_Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +10,7 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.DTO.Request.Feedbacks;
 
-public class CreateFeedbackRequest
+public class CreateFeedbackRequest : IMapFrom<Feedback>, IMapTo<Feedback>
 {
     [Required(ErrorMessage = MessageError.ValueRequired)]
     public string CourseId { get; set; } = string.Empty;

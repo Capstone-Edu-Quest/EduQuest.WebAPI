@@ -16,7 +16,9 @@ namespace EduQuest_Domain.Entities
         public int? TotalLearner { get; set; }
 		public double? Rating { get; set; }
         public int? TotalReview { get; set; }
+		public double? TotalRevenue { get; set; }
+		public double? TotalRefund { get; set; }
 
-        public virtual Course Course { get; set; } = null!;
+		public virtual Course Course { get; set; } = null!;
 	}
 }

@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface ICartRepository : IGenericRepository<Cart>
+	public interface ICartItemRepository : IGenericRepository<CartItem>
 	{
-		Task<Cart> GetByUserId(string userId);
-		
+		Task DeleteCartItemByCartId(string cartId);
 	}
 }

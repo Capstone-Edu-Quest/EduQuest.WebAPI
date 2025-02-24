@@ -4,8 +4,8 @@ namespace EduQuest_Domain.Entities;
 
 public class StudyTime : BaseEntity
 {
-    public string userId { get; set; }
-    public string studyTime { get; set;}
+    public string UserId { get; set; }
+    public string StudyTimes { get; set;}
     public DateTime Date { get; set; }
 
     [JsonIgnore]
