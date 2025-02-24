@@ -163,6 +163,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IQuestionRepository, QuestionRepository>();
 			services.AddScoped<IAnswerRepository, AnswerRepository>();
 			services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+			services.AddScoped<ICartItemRepository, CartItemRepository>();
 
 
 
