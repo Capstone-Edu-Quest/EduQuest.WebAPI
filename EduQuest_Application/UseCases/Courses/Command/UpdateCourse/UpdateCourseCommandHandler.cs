@@ -32,7 +32,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
 		{
 			var apiResponse = new APIResponse();
-			var existingCourse = await _courseRepository.GetById(request.CourseInfo.CourseId);
+			var existingCourse = await _courseRepository.GetCourseById(request.CourseInfo.CourseId);
 			if(existingCourse == null)
 			{
 				return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found {request.CourseInfo.CourseId}", "name", "Course");
@@ -54,7 +54,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				for (int i = 0; i < request.CourseInfo.StageCourse.Count; i++)
 				{
 					var stageRequest = request.CourseInfo.StageCourse[i];
-
+					var learningMaterials = await _learningMaterialRepository.GetMaterialsByIds(stageRequest.MaterialIds);
 					var stage = new Stage
 					{
 						Id = Guid.NewGuid().ToString(),
@@ -62,13 +62,18 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 						Description = stageRequest.Description,
 						CourseId = existingCourse.Id,
 						Level = i + 1, 
-						LearningMaterials = await _learningMaterialRepository.GetMaterialsByIds(stageRequest.MaterialIds) // Gán Material
+						LearningMaterials = learningMaterials, // Gán Material
+						TotalTime = learningMaterials?.Sum(m => m.Duration) ?? 0
 					};
 
 					newStages.Add(stage);
 				}
 
 				await _stageRepository.CreateRangeAsync(newStages);
+
+				existingCourse.CourseStatistic.TotalTime = newStages.Sum(c => c.TotalTime);
+				existingCourse.CourseStatistic.TotalLesson = newStages.Sum(stage => stage.LearningMaterials?.Count ?? 0);
+
 				await _courseRepository.Update(existingCourse);
 				await _unitOfWork.SaveChangesAsync();
 

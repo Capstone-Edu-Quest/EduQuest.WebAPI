@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 namespace EduQuest_Domain.Entities
 {
 	[Table("CartItem")]
-	public partial class CartItem
+	public partial class CartItem : BaseEntity
 	{
-		public int CartItemId { get; set; }
+		public string CartId { get; set; }
 
-		public int? CartId { get; set; }
-
-		public int? ProductId { get; set; }
+		public string CourseId { get; set; }
 
 		public decimal Price { get; set; }
 
