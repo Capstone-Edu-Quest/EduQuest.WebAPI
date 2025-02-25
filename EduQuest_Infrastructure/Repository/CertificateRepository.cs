@@ -1,7 +1,9 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using Nest;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -14,7 +16,7 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
         _context = context;
     }
 
-    public IEnumerable<Certificate> GetCertificatesWithFilters(string? title, string? userId, string? courseId)
+    public PagedList<Certificate> GetCertificatesWithFilters(string? title, string? userId, string? courseId, int? page, int? eachPage)
     {
         var query = _context.Certificates.AsQueryable();
 
@@ -31,6 +33,6 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
             query = query.Where(c => c.CourseId == courseId);
         }
 
-        return query.ToList();
+        return new PagedList<Certificate>(query.ToList(), query.Count(), (int)page!, (int)eachPage!);
     }
 }
