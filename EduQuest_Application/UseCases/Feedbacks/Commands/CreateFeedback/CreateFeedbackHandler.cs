@@ -17,16 +17,10 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICourseRepository _courseRepository;
     private const string Key = "name";
     private const string value = "feedback";
-    public CreateFeedbackHandler(IFeedbackRepository feedbackRepository, IUserRepository userRepository, 
-        IMapper mapper, IUnitOfWork unitOfWork)
-    {
-        _feedbackRepository = feedbackRepository;
-        _userRepository = userRepository;
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
-    }
+    
 
     public async Task<APIResponse> Handle(CreateFeedbackCommand request, CancellationToken cancellationToken)
     {
@@ -43,8 +37,13 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
             newFeedback.UserId = request.UserId;
 
             await _feedbackRepository.Add(newFeedback);
-            if (await _unitOfWork.SaveChangesAsync() > 0)
+			var courseStatistic = await _courseRepository.GetCourseById(request.Feedback.CourseId);
+			courseStatistic.CourseStatistic.TotalReview++;
+			await _courseRepository.Update(courseStatistic);
+
+			if (await _unitOfWork.SaveChangesAsync() > 0)
             {
+                
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully,
                     _mapper.Map<FeedbackResponse>(newFeedback), Key, value);
             }

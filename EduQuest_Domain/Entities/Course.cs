@@ -41,5 +41,7 @@ namespace EduQuest_Domain.Entities
 
         [JsonIgnore]
         public virtual ICollection<Coupon>? Coupons { get; set; }
-    }
+		[JsonIgnore]
+		public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+	}
 }
