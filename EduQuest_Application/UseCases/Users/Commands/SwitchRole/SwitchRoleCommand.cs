@@ -9,10 +9,4 @@ public class SwitchRoleCommand : IRequest<APIResponse>
     public string userId { get; set; }
     public string RoleId { get; set; }
 
-    public SwitchRoleCommand(string accessToken, string userId, string roleId)
-    {
-        this.accessToken = accessToken;
-        this.userId = userId;
-        RoleId = roleId;
-    }
 }

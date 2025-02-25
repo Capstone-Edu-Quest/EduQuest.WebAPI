@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response;
+using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Users.Queries.GetAllUsers
 {
@@ -19,21 +21,14 @@ namespace EduQuest_Application.UseCases.Users.Queries.GetAllUsers
 
 		public async Task<APIResponse> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
 		{
-			var users = await _userRepo.GetAll();
-			var result = _mapper.Map<List<UserResponseDto>>(users);	
+			var users = await _userRepo.GetAll(request.Page, request.Pagesize);
+			var result = _mapper.Map<PagedList<UserResponseDto>>(users);	
 			return new APIResponse
 			{
 				IsError = false,
 				Payload = result,
 				Errors = null,
-				//Message = new MessageResponse
-				//{
-				//	content = "fawf",
-    //                values = users.Take(1)
-    //                     .Select((user, index) => new { Key = $"name", Value = user.Username })
-    //                     .ToDictionary(x => x.Key, x => x.Value)
-					
-    //            }
+				Message = new MessageResponse { content = MessageCommon.GetSuccesfully}
 			};
 		}
 	}

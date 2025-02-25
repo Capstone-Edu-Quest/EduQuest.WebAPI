@@ -5,12 +5,8 @@ namespace EduQuest_Application.UseCases.Certificates.Commands.CreateCertificate;
 
 public class CreateCertificateCommand : IRequest<APIResponse>
 {
+    public string Title { get; set; }
+    public string? Url { get; set; }
     public string CourseId { get; set; }
     public string UserId { get; set; }
-
-    public CreateCertificateCommand(string courseId, string userId)
-    {
-        CourseId = courseId;
-        UserId = userId;
-    }
 }
