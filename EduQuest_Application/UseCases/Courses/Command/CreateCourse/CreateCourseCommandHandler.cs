@@ -16,13 +16,22 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
+		private readonly IUserStatisticRepository _userStatisticRepository;
+		
 
-		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository)
+		public CreateCourseCommandHandler(ICourseRepository courseRepository, 
+			IMapper mapper, 
+			IUnitOfWork unitOfWork, 
+			IUserRepository userRepository, 
+			IUserStatisticRepository userStatisticRepository 
+			)
 		{
 			_courseRepository = courseRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_userRepository = userRepository;
+			_userStatisticRepository = userStatisticRepository;
+			
 		}
 
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
@@ -34,12 +43,28 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			course.CreatedBy = user!.Id;
 			course.Id = Guid.NewGuid().ToString();
 			//course.LastUpdated = DateTime.Now.ToUniversalTime();
-			course.Status = course.Status = GeneralEnums.StatusCourse.Draft.ToString();
+			course.Status = GeneralEnums.StatusCourse.Draft.ToString();
 			course.IsRequired = false;
+			course.CourseStatistic = new CourseStatistic
+			{
+				Id = Guid.NewGuid().ToString(),
+				CourseId = course.Id,
+				TotalLearner = 0,
+				TotalLesson = 0,
+				TotalReview = 0,
+				Rating = 0,
+				TotalTime = 0
+			};
 			await _courseRepository.Add(course);
 
-			var result = await _unitOfWork.SaveChangesAsync() > 0;
+			
+			//User Statistic
+			var userStatistic = await _userStatisticRepository.GetById(user.Id);
+			userStatistic!.TotalCourseCreated++;
+			await _userStatisticRepository.Update(userStatistic);
+			await _unitOfWork.SaveChangesAsync();
 
+			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse
 			{
 				IsError = !result,

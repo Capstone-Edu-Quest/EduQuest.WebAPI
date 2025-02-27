@@ -13,46 +13,54 @@ namespace EduQuest_Infrastructure.Persistence
 
         }
 
-		public virtual DbSet<User> Users { get; set; } = null!;
-		public virtual DbSet<Role> Roles { get; set; } = null!;
+		
+		
 		public virtual DbSet<AccountPackage> AccountPackages { get; set; } = null!;
-		public virtual DbSet<Quest> Quests { get; set; } = null!;
 		public virtual DbSet<Answer> Answers { get; set; } = null!;
+		public virtual DbSet<Assignment> Assignments { get; set; } = null!;
+		
+		
 		public virtual DbSet<Badge> Badges { get; set; } = null!;
 		public virtual DbSet<Cart> Carts { get; set; } = null!;
+		public virtual DbSet<CartItem> CartItems { get; set; } = null!;
 		public virtual DbSet<Certificate> Certificates { get; set; } = null!;
+		public virtual DbSet<Coupon> Coupon { get; set; } = null!;
 		public virtual DbSet<Course> Courses { get; set; } = null!;
 		public virtual DbSet<CourseStatistic> CourseStatistics { get; set; } = null!;
-		public virtual DbSet<ShopItem> ShopItems { get; set; } = null!;
+		
 		public virtual DbSet<FavoriteList> FavoriteLists { get; set; } = null!;
 		public virtual DbSet<Feedback> Feedbacks { get; set; } = null!;
 		public virtual DbSet<Item> Items { get; set; } = null!;
 		public virtual DbSet<Leaderboard> Leaderboards { get; set; } = null!;
 		public virtual DbSet<Learner> Learners { get; set; } = null!;
-		public virtual DbSet<LearnerStatistic> LearnerStatistics { get; set; } = null!;
+		
 		public virtual DbSet<LearningHistory> LearningHistorys { get; set; } = null!;
 		public virtual DbSet<LearningMaterial> LearningMaterials { get; set; } = null!;
 		public virtual DbSet<LearningPath> LearningPaths { get; set; } = null!;
 		public virtual DbSet<LearningPathCourse> LearningPathCourses { get; set; } = null!;
+		public virtual DbSet<Level> Level { get; set; } = null!;
+		public virtual DbSet<MascotInventory> MascotItems { get; set; } = null!;
 		public virtual DbSet<PackagePrivilege> PackagePrivileges { get; set; } = null!;
 		public virtual DbSet<Payment> Payments { get; set; } = null!;
+		public virtual DbSet<Quest> Quests { get; set; } = null!;
 		public virtual DbSet<Question> Questions { get; set; } = null!;
 		public virtual DbSet<Quiz> Quizzes { get; set; } = null!;
 		public virtual DbSet<QuizAttempt> QuizAttempts { get; set; } = null!;
+		public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+		public virtual DbSet<Role> Roles { get; set; } = null!;
 		public virtual DbSet<SearchHistory> SearchHistories { get; set; } = null!;
 		public virtual DbSet<Setting> Settings { get; set; } = null!;
+		public virtual DbSet<ShopItem> ShopItems { get; set; } = null!;
 		public virtual DbSet<Stage> Stages { get; set; } = null!;
+		public virtual DbSet<StudyTime> StudyTimes { get; set; } = null!;
 		public virtual DbSet<SystemConfig> SystemConfigs { get; set; } = null!;
 		public virtual DbSet<Tag> Tags { get; set; } = null!;
 		public virtual DbSet<Transaction> Transactions { get; set; } = null!;
+		public virtual DbSet<User> Users { get; set; } = null!;
 		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
-		public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
-		public virtual DbSet<StudyTime> StudyTimes { get; set; } = null!;
-		public virtual DbSet<MascotInventory> MascotItems { get; set; } = null!;
 		
-		public virtual DbSet<Level> Level { get; set; } = null!;
-
-		public virtual DbSet<Coupon> Coupon { get; set; } = null!;
+		
+	
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -3,6 +3,7 @@ using EduQuest_Application.DTO.Response.Mascot;
 using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Pagination;
 
 namespace EduQuest_Application.DTO.Response;
 
@@ -23,5 +24,7 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
         profile.CreateMap<User, UserResponseDto>()
             .ForMember(dest => dest.statistic, opt => opt.MapFrom(src => src.UserStatistic))
             .ForMember(dest => dest.mascotItem, opt => opt.MapFrom(src => src.MascotItem));
+
+        profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();
     }
 }

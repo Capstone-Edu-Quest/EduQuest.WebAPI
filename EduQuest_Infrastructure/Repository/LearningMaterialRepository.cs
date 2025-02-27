@@ -2,6 +2,7 @@
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace EduQuest_Infrastructure.Repository
 		public LearningMaterialRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<List<LearningMaterial>> GetMaterialsByIds(List<string> materialIds)
+		{
+			return await _context.LearningMaterials.Where(m => materialIds.Contains(m.Id)).ToListAsync();
 		}
 	}
 }

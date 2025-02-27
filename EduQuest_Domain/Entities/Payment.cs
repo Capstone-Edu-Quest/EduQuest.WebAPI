@@ -8,7 +8,7 @@ namespace EduQuest_Domain.Entities
 	{
 		public string PaymentMethod { get; set; }
 		public decimal PaidAmount { get; set; }
-		public DateTime PaidDate { get; set; }
+		//public DateTime PaidDate { get; set; }
 		public string CartId { get; set; }
 		public decimal TotalAmount { get; set; }
 

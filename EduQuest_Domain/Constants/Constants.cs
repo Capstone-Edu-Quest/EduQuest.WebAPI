@@ -82,9 +82,14 @@ namespace EduQuest_Domain.Constants
 
 			public const string Unauthorized = "UNAUTHORIZED";
 			public const string Blocked = "USER_BLOCKED";
-			public const string InvalidToken = "Token invalid";
-			public const string TokenExpired = "Token expired";
-			public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
+			public const string InvalidToken = "INVALID_TOKEN";
+			public const string TokenExpired = "TOKEN_EXPIRED";
+            public const string TokenBlackListed = "TOKEN_BLACKLIST";
+            public const string LogOutSuccessfully = "SIGN_OUT_SUCCESSFULLY";
+            public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
+
+            public const string AlreadyOwnThisItem = "ALREADY_OWN_THIS_ITEM";
+            public const string PurchaseItemSuccessfully = "PURCHASE_ITEM_SUCCESSFULLY";
 
 			public const string LoginFailed = "Login failed";
 			public const string UserDontHavePer = "Permission denied";

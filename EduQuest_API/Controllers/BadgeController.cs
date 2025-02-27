@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EduQuest_API.Controllers;
 
-[Route(Constants.Http.API_VERSION + "/badges")]
+[Route(Constants.Http.API_VERSION + "/badge")]
 public class BadgeController : BaseController
 {
     private readonly ISender _mediator;

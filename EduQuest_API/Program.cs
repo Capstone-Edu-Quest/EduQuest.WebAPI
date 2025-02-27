@@ -53,3 +53,5 @@ app.MapHealthChecks("/h", new HealthCheckOptions
 });
 app.ConfigureExceptionHandler();
 app.Run();
+
+public partial class Program { }

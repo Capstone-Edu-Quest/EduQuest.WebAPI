@@ -41,7 +41,7 @@ namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot
             {
                 return new APIResponse
                 {
-                    IsError = false,
+                    IsError = true,
                     Errors = new ErrorResponse
                     {
                         StatusCode = (int)HttpStatusCode.NotFound,
@@ -58,14 +58,14 @@ namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot
             {
                 return new APIResponse
                 {
-                    IsError = false,
+                    IsError = true,
                     Errors = new ErrorResponse
                     {
-                        StatusCode = (int)HttpStatusCode.Found,
+                        StatusCode = (int)HttpStatusCode.Conflict,
                         Message = MessageCommon.NotFound,
                     },
                     Payload = null,
-                    Message = null
+                    Message = new MessageResponse{ content = MessageCommon.AlreadyOwnThisItem }
                 };
             }
 
@@ -84,15 +84,23 @@ namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot
 
             await _mascotInventoryRepository.Add(mascotInventory);
             //await _userStatisticRepository.Update(userdetail);
-            await _unitOfWork.SaveChangesAsync();
+            var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
 
             var result = _mapper.Map<UserMascotDto>(mascotInventory);
             return new APIResponse
             {
-                IsError = false,
-                Errors = null,
-                Payload = result,
-                Message = null
+                IsError = !saveResult,
+                Payload = saveResult ? result : null,
+                Errors = saveResult ? null : new ErrorResponse
+                {
+                    StatusResponse = HttpStatusCode.BadRequest,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = MessageCommon.SavingFailed,
+                },
+                Message = new MessageResponse 
+                { 
+                    content = saveResult ? MessageCommon.PurchaseItemSuccessfully : MessageCommon.SavingFailed
+                }
             };
         }
     }

@@ -4,6 +4,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 
@@ -22,6 +23,8 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
 
     public async Task<APIResponse> Handle(SignOutCommand request, CancellationToken cancellationToken)
     {
+        var accessTokenHashKey = $"Token_{request.accessToken}";
+        await _redisCaching.SetAsync(accessTokenHashKey, true, 5);
         var tokenEntity = await _refreshTokenRepository.GetUserByIdAsync(request.userId);
         if (tokenEntity == null)
         {
@@ -31,10 +34,13 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
                 Errors = new ErrorResponse
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
-                    Message = "HARD CODE"
+                    Message = MessageCommon.NotFound
                 },
-                Payload =  null,
-                Message = null
+                Payload = null,
+                Message = new MessageResponse
+                {
+                    content = MessageCommon.NotFound
+                }
             };
         }
 
@@ -47,10 +53,8 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
             IsError = false,
             Errors = null,
             Payload = null,
-            Message = new MessageResponse
-            {
-                content = "Hard code"
-            }
+            Message = new MessageResponse { content = MessageCommon.LogOutSuccessfully }
         };
     }
 }
+

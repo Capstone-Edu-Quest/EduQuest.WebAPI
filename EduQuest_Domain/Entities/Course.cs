@@ -16,9 +16,10 @@ namespace EduQuest_Domain.Entities
         public bool IsRequired { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
-		//public DateTime? LastUpdated { get; set; }
+       
+        //public DateTime? LastUpdated { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
 		public virtual User User { get; set; } = null!;
 		[JsonIgnore]
 		public virtual CourseStatistic CourseStatistic { get; set; } = null!;
@@ -40,5 +41,7 @@ namespace EduQuest_Domain.Entities
 
         [JsonIgnore]
         public virtual ICollection<Coupon>? Coupons { get; set; }
-    }
+		[JsonIgnore]
+		public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+	}
 }

@@ -9,8 +9,9 @@ namespace EduQuest_Domain.Entities
 		public string UserId { get; set; }
 
 		public decimal TotalAmount { get; set; }
-
-		public virtual User User { get; set; } = null;
+		public string Status { get; set; }
+        public string PaymentIntentId { get; set; }
+        public virtual User User { get; set; } = null;
 		[JsonIgnore]
 		public virtual ICollection<Payment> Payments { get; set; } = null;
 	}

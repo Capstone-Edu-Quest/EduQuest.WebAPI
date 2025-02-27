@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EduQuest_Domain\EduQuest_Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
     <Folder Include="Abstractions\Email\" />
     <Folder Include="DTO\Request\WebStatistics\" />
@@ -38,7 +34,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
+    <PackageReference Include="Stripe.net" Version="47.3.0" />
     <PackageReference Include="Unidecode.NET" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EduQuest_Domain\EduQuest_Domain.csproj" />
   </ItemGroup>
 
 </Project>
