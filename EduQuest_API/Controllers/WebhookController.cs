@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.UseCases.Payments.Command.UpdateTransactionStatus;
+﻿using EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Payment;
 using MediatR;
@@ -10,7 +10,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_API.Controllers
 {
-	[Route(Constants.Http.API_VERSION + "/webhook/stripe")]
+	[Route("api/webhook/stripe")]
 	public class WebhookController : ControllerBase
 	{
 		private ISender _mediator;

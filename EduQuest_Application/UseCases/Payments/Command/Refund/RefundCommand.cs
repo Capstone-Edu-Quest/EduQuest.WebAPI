@@ -11,10 +11,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 {
 	public class RefundCommand : IRequest<APIResponse>
 	{
+        public string UserId { get; set; }
         public RefundRequest Refund { get; set; }
 
-		public RefundCommand(RefundRequest refund)
+		public RefundCommand(string userId, RefundRequest refund)
 		{
+			UserId = userId;
 			Refund = refund;
 		}
 	}

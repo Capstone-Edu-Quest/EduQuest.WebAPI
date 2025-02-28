@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -15,18 +17,36 @@ namespace EduQuest_Application.UseCases.Carts.Query
 	public class GetCartByUserIdQueryHandler : IRequestHandler<GetCartByUserIdQuery, APIResponse>
 	{
 		private readonly ICartRepository _cartRepository;
-		private readonly IMapper _mapper;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly ICouponRepository _couponRepository;
 
-		public GetCartByUserIdQueryHandler(ICartRepository cartRepository, IMapper mapper)
+		public GetCartByUserIdQueryHandler(ICartRepository cartRepository, IUnitOfWork unitOfWork, ICouponRepository couponRepository)
 		{
 			_cartRepository = cartRepository;
-			_mapper = mapper;
+			_unitOfWork = unitOfWork;
+			_couponRepository = couponRepository;
 		}
+
 		public async Task<APIResponse> Handle(GetCartByUserIdQuery request, CancellationToken cancellationToken)
 		{
 		
 			var cart = await _cartRepository.GetByUserId(request.UserId);
+			var couponExisted = await _couponRepository.GetById(request.CouponId);
+			
 
+			if(couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.Percentage.ToString())
+			{
+				var discount = couponExisted.DiscountValue / 100 * cart.OriginalPrice;
+				cart.CouponDiscount = discount;
+				cart.Total = cart.OriginalPrice - discount;	
+			} else if(couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.FixedAmount.ToString())
+			{
+				var discount = couponExisted.DiscountValue;
+				cart.CouponDiscount = discount;
+				cart.Total = cart.OriginalPrice - discount;
+			}
+			await _cartRepository.Update(cart);
+			await _unitOfWork.SaveChangesAsync();
 			return new APIResponse
 			{
 				IsError = false,

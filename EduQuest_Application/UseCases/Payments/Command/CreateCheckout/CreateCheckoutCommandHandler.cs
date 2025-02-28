@@ -1,4 +1,6 @@
-﻿using EduQuest_Domain.Models.Payment;
+﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -14,19 +16,22 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 	public class CreateCheckoutCommandHandler : IRequestHandler<CreateCheckoutCommand, APIResponse>
 	{
 		private readonly StripeModel _stripeModel;
-		private readonly IPaymentRepository _paymentRepository;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly ICartRepository _cartRepository;
+		private readonly ITransactionRepository _transactionRepository;
 
-		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork)
+		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IUnitOfWork unitOfWork, ICartRepository cartRepository, ITransactionRepository transactionRepository)
 		{
 			_stripeModel = stripeModel.Value;
-			_paymentRepository = paymentRepository;
 			_unitOfWork = unitOfWork;
+			_cartRepository = cartRepository;
+			_transactionRepository = transactionRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCheckoutCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
+			var cart = await _cartRepository.GetById(request.CartId);
 
 			var options = new SessionCreateOptions
 			{
@@ -34,31 +39,34 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				Currency = "usd",
 				SuccessUrl = _stripeModel.SuccessUrl,
 				CancelUrl = _stripeModel.CancelUrl,
-				LineItems = request.Products.Select(product => new SessionLineItemOptions
+				LineItems = new List<SessionLineItemOptions>
 				{
-					Quantity = 1,
-					PriceData = new SessionLineItemPriceDataOptions
+					new SessionLineItemOptions
 					{
-						Currency = "usd",
-						UnitAmount = (long)(product.Price * 100),
-						ProductData = new SessionLineItemPriceDataProductDataOptions
+						Quantity = 1,
+						PriceData = new SessionLineItemPriceDataOptions
 						{
-							Name = product.Name,
-							Description = product.Description,
+							Currency = "usd",
+							UnitAmount = (long)(cart.Total * 100) // Đảm bảo nhân 100 vì Stripe dùng cents
 						}
 					}
-				}).ToList()
+				}
 			};
 
 			var service = new SessionService();
 			Session session = service.Create(options);
 
-			//var payment = new Payment
-			//{
+			var transaction = new Transaction
+			{
+				Id = Guid.NewGuid().ToString(),
+				UserId = request.UserId,
+				Status = GeneralEnums.StatusPayment.Pending.ToString(),
+				TotalAmount = (decimal)cart.Total,
+				Type = (request.CartId != null)? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : GeneralEnums.TypeTransaction.Account.ToString(),
+				PaymentIntentId = session.Id,
+			};
+			await _transactionRepository.Add(transaction);
 
-			//}
-
-			
 			await _unitOfWork.SaveChangesAsync();
 
 			return new APIResponse

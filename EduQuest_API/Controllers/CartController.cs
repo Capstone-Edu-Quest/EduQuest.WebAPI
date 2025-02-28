@@ -4,7 +4,6 @@ using EduQuest_Application.UseCases.Carts.Query;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -24,11 +23,11 @@ namespace EduQuest_API.Controllers
 		}
 
 		[HttpGet("")]
-		public async Task<IActionResult> Register(CancellationToken token = default)
+		public async Task<IActionResult> Register([FromQuery] string? couponId, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 
-			var result = await _mediator.Send(new GetCartByUserIdQuery(userId), token);
+			var result = await _mediator.Send(new GetCartByUserIdQuery(userId, couponId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 

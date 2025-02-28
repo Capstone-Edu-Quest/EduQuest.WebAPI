@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: EduQuest_API/Dockerfile
+    ports: 
+        - "7205:8081"
   redis:
     image: redis:latest
     container_name: redis_edu_quest
