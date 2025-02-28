@@ -1,10 +1,5 @@
 ﻿using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.LearningPaths;
 
@@ -19,5 +14,7 @@ public class MyLearningPathResponse : IMapFrom<LearningPath>
     public int TotalCourses {  get; set; }
     public bool IsPublic { get; set; }
     public bool IsEnrolled { get; set; }
+    public bool CreatedByExpert { get; set; }
     public CommonUserResponse CreatedBy { get; set; } = new CommonUserResponse();
+    public List<LearningPathTagResponse> Tags { get; set; } = new List<LearningPathTagResponse>();
 }

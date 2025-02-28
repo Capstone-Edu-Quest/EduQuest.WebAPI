@@ -18,4 +18,7 @@ public class Coupon : BaseEntity
 
     [JsonIgnore]
     public virtual User? User { get; set; }
+
+    [JsonIgnore]
+    public virtual ICollection<UserCoupon> UsedByUsers { get; set; }
 }

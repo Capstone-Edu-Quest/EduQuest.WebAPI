@@ -16,7 +16,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
 		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
-		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>
 		
 	{
 		#region Role
@@ -193,6 +193,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         }
         #endregion
 
+        #region UserCoupon
+        public void Configure(EntityTypeBuilder<UserCoupon> builder)
+        {
+            builder.HasKey(fl => new { fl.UserId, fl.CouponId });
+
+        }
+        #endregion
+
         #region CourseStatistic
         public void Configure(EntityTypeBuilder<CourseStatistic> builder)
 		{
@@ -285,10 +293,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 			builder.HasKey(fl => new { fl.LearningPathId, fl.CourseId });
 
 		}
-		#endregion
+        #endregion
 
-		#region Level
-		public void Configure(EntityTypeBuilder<Level> builder)
+        #region Level
+        public void Configure(EntityTypeBuilder<Level> builder)
 		{
 			
 

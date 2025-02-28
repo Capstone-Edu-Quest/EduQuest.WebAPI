@@ -17,18 +17,19 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILearnerStatisticRepository _learnerStatisticRepository;
+    private readonly ILearnerRepository _learnerRepository;
     private readonly ICourseRepository _courseRepository;
     private const string Key = "name";
     private const string value = "feedback";
     public CreateFeedbackHandler(IFeedbackRepository feedbackRepository, IUserRepository userRepository, 
-        IMapper mapper, IUnitOfWork unitOfWork, ILearnerStatisticRepository learnerStatisticRepository)
+        IMapper mapper, IUnitOfWork unitOfWork, ILearnerRepository learnerStatisticRepository, ICourseRepository courseRepository)
     {
         _feedbackRepository = feedbackRepository;
         _userRepository = userRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _learnerStatisticRepository = learnerStatisticRepository;
+        _learnerRepository = learnerStatisticRepository;
+        _courseRepository = courseRepository;
     }
 
     public async Task<APIResponse> Handle(CreateFeedbackCommand request, CancellationToken cancellationToken)
@@ -42,7 +43,7 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
             }
             //validate if user have registerd in course
-            if(!await _learnerStatisticRepository.RegisteredCourse(request.Feedback.CourseId, request.UserId))
+            if(!await _learnerRepository.RegisteredCourse(request.Feedback.CourseId, request.UserId))
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.UserDontHavePer, Key, value);
             }
