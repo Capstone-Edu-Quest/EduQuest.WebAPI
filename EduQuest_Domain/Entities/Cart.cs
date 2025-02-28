@@ -8,8 +8,9 @@ namespace EduQuest_Domain.Entities
 	{
 		public string UserId { get; set; }
 		
-		public decimal TotalPrice { get; set; }
-		
+		public decimal OriginalPrice { get; set; }
+        public decimal? CouponDiscount { get; set; }
+        public decimal? Total { get; set; }
 
 		[JsonIgnore]
 		public virtual User User { get; set; } = null!;

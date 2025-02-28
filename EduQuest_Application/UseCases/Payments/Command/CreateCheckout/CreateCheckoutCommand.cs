@@ -12,12 +12,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 	public class CreateCheckoutCommand : IRequest<APIResponse>
 	{
         public string UserId { get; set; }
-        public List<ProductRequest> Products { get; set; }
+        public string? CartId { get; set; }
 
-		public CreateCheckoutCommand(string userId, List<ProductRequest> products)
+		public CreateCheckoutCommand(string userId, string? cartId)
 		{
 			UserId = userId;
-			Products = products;
+			CartId = cartId;
 		}
 	}
 }

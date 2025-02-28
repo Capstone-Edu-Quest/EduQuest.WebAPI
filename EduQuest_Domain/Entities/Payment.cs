@@ -10,7 +10,7 @@ namespace EduQuest_Domain.Entities
 		public decimal PaidAmount { get; set; }
 		//public DateTime PaidDate { get; set; }
 		public string CartId { get; set; }
-		public decimal TotalAmount { get; set; }
+		//public decimal TotalAmount { get; set; }
 
 		public virtual Cart Cart { get; set; } = null;
 		[JsonIgnore]

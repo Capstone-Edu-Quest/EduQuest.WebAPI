@@ -22,10 +22,10 @@ namespace EduQuest_API.Controllers
 		[HttpPost("checkout")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> Checkout([FromBody] List<ProductRequest> request, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> Checkout([FromBody] string cartId, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new CreateCheckoutCommand(userId, request), cancellationToken);
+			var result = await _mediator.Send(new CreateCheckoutCommand(userId, cartId), cancellationToken);
 			return Ok(result);
 		}
 
@@ -44,8 +44,8 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> Refund([FromBody] RefundRequest request, CancellationToken cancellationToken = default)
 		{
-			//string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new RefundCommand(request), cancellationToken);
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new RefundCommand(userId, request), cancellationToken);
 			return Ok(result);
 		}
 	}

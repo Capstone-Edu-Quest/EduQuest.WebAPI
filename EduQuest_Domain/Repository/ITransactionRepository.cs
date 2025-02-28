@@ -10,5 +10,7 @@ namespace EduQuest_Domain.Repository
 {
 	public interface ITransactionRepository : IGenericRepository<Transaction>
 	{
+		Task<Transaction> GetByPaymentIntentId(string paymentIntentId);
+		Task<List<Transaction>> GetTransactionByUserId(string userId);
 	}
 }
