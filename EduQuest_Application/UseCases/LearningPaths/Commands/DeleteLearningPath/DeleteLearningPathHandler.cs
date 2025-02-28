@@ -39,6 +39,7 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.UserDontHavePer, Key, value);
             }
             var learningPath = await _learningPathRepository.GetById(request.LearningPathId);
+            
             if (learningPath == null)
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.NotFound, Key, value);
@@ -48,12 +49,13 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.UserDontHavePer, Key, value);
             }
             #endregion
+            int coursesCount = learningPath.LearningPathCourses.Count();
             await _learningPathRepository.Delete(learningPath.Id);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(learningPath.User);
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learningPath);
-                myLearningPathResponse.TotalCourses = learningPath.LearningPathCourses.Count;
+                myLearningPathResponse.TotalCourses = coursesCount;
                 myLearningPathResponse.CreatedBy = userResponse;
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.DeleteSuccessfully,
                     myLearningPathResponse, Key, value);

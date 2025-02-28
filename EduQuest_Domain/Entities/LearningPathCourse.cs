@@ -3,7 +3,7 @@
 namespace EduQuest_Domain.Entities
 {
 	[Table("LearningPathCourse")]
-	public partial class LearningPathCourse : BaseEntity
+	public partial class LearningPathCourse
 	{
 		public string CourseId { get; set; }
 		public string LearningPathId { get; set; }
