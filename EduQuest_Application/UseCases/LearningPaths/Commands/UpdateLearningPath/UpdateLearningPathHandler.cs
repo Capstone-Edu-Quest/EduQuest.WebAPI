@@ -10,6 +10,7 @@ using System.Net;
 using EduQuest_Domain.Entities;
 using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.Helper;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
 
@@ -20,18 +21,20 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICourseRepository _courseRepository;
     private const string Key = "name";
     private const string value = "learning path";
     public UpdateLearningPathHandler(ILearningPathRepository learningPathRepository, 
         IUserRepository userRepository,
         IMapper mapper, IUnitOfWork unitOfWork, 
-        ICourseStatisticRepository courseStatisticRepository)
+        ICourseStatisticRepository courseStatisticRepository, ICourseRepository courseRepository)
     {
         _learningPathRepository = learningPathRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _courseStatisticRepository = courseStatisticRepository;
         _userRepository = userRepository;
+        _courseRepository = courseRepository;
     }
 
     public async Task<APIResponse> Handle(UpdateLearningPathCommand request, CancellationToken cancellationToken)
@@ -46,7 +49,18 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
             }
             //validate owner
-            if (!await _learningPathRepository.IsOwner(request.UserId, request.LearningPathId))
+            User? user = await _userRepository.GetById(request.UserId);
+
+            if (user == null)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
+            }
+
+            bool isOwner = await _learningPathRepository.IsOwner(request.UserId, request.LearningPathId);
+            bool isExpert = int.TryParse(user.RoleId, out int roleId) && roleId == (int)UserRole.Expert;
+            bool createdByExpert = learingPath.CreatedByExpert == true;
+
+            if (!isOwner && !(isExpert && createdByExpert))
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
             }
@@ -89,6 +103,7 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                     temp.CourseOrder = updatecourse.CourseOrder;
                 }
             }
+            List<string> courseIds = new List<string>();
             //rearrange course order after update, some course might have abnormal order number, 
             //this code will rearrange the order based on the old order number
             //ex: after update course1 have order 2, course2 have order 8, after the rearrangement, the order will be come 1,2...
@@ -98,11 +113,33 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             for (int i = 0; i < orderedCourses.Count; i++)
             {
                 orderedCourses[i].CourseOrder = i;
+                courseIds.Add(orderedCourses[i].CourseId);
+            }
+
+            List<Tag> tags = await _courseRepository.GetTagByCourseIds(courseIds);
+            //post update learning path tags:
+            var currentTags = learingPath.Tags.ToList();
+
+            // new tags (exist in tags but not in currentTags)
+            var tagsToAdd = tags.Where(nt => !currentTags.Any(ct => ct.Id == nt.Id)).ToList();
+
+            // deleted tag (exist in currentTags but not in tags)
+            var tagsToRemove = currentTags.Where(ct => tags.Any(nt => nt.Id == ct.Id)).ToList();
+
+            // update learning path tags
+            foreach (var tag in tagsToAdd)
+            {
+                learingPath.Tags.Add(tag);
+            }
+
+            foreach (var tag in tagsToRemove)
+            {
+                learingPath.Tags.Remove(tag);
             }
             await _learningPathRepository.Update(learingPath);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                User user = await _userRepository.GetById(request.UserId)!;
+                
                 CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learingPath);
                 myLearningPathResponse.TotalCourses = learingPath.LearningPathCourses.Count;

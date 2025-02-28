@@ -19,7 +19,10 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
 
     public async Task<LearningPath?> GetLearningPathDetail(string LearningPathId)
     {
-        var result = await _context.LearningPaths.Include(l => l.LearningPathCourses).Include(l => l.User)
+        var result = await _context.LearningPaths
+            .Include(l => l.Tags)
+            .Include(l => l.LearningPathCourses)
+            .Include(l => l.User)
             .FirstOrDefaultAsync(l=> l.Id == LearningPathId);
         return result;
     }

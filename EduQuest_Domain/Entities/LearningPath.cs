@@ -16,10 +16,14 @@ namespace EduQuest_Domain.Entities
         public DateTime? DeletedAt { get; set; }
 		public bool IsPublic { get; set; }
 		public bool IsEnrolled { get; set; }
+		public bool CreatedByExpert { get; set; }
 
         [JsonIgnore]
         public virtual User User { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<LearningPathCourse> LearningPathCourses { get; set; }
+
+		[JsonIgnore]
+		public virtual ICollection<Tag> Tags { get; set; }
 	}
 }

@@ -29,14 +29,14 @@ public class LearningPathController : Controller
     }
 
     
-    [Authorize]
+    //[Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetAllUserLearningPath([FromQuery, AllowNull] string keyWord, [FromQuery, AllowNull] string type,
-        //[FromQuery] string UserId,
+        [FromQuery] string UserId,
         [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new GetMyLearningPathQuery(userId, keyWord, type, pageNo, eachPage), cancellationToken);
+        var result = await _mediator.Send(new GetMyLearningPathQuery(UserId, keyWord, type, pageNo, eachPage), cancellationToken);
         if((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
         {
             return BadRequest(result);
@@ -48,14 +48,14 @@ public class LearningPathController : Controller
         return Ok(result);
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPost("dup")]
     public async Task<IActionResult> DuplicateLearningPath([FromQuery, Required] string learningPathId,
-        //[FromQuery] string UserId, 
+        [FromQuery] string UserId, 
         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new DuplicateLearningPathCommand(learningPathId, userId), token);
+        var result = await _mediator.Send(new DuplicateLearningPathCommand(learningPathId, UserId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
@@ -80,37 +80,37 @@ public class LearningPathController : Controller
         throw new NotImplementedException();
     }*/
 
-    [Authorize]
+    //[Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateLearningPath([FromBody, Required] CreateLearningPathRequest request,
-                                                       // [FromQuery] string UserId,
+                                                        [FromQuery] string UserId,
                                                         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new CreateLearningPathCommand(request, userId), token);
+        var result = await _mediator.Send(new CreateLearningPathCommand(request, UserId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPut]
     public async Task<IActionResult> UpdateLearningPath([FromQuery, Required] string learningPathId, 
-        //[FromQuery] string UserId,
+        [FromQuery] string UserId,
         [FromBody] UpdateLearningPathRequest request, CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new UpdateLearningPathCommand(learningPathId, userId, request), token);
+        var result = await _mediator.Send(new UpdateLearningPathCommand(learningPathId, UserId, request), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
 
-    [Authorize]
+    //[Authorize]
     [HttpDelete]
     public async Task<IActionResult> DeleteLearningPath([FromQuery, Required] string learningPathId,
-                                                        //[FromQuery] string UserId,
+                                                        [FromQuery] string UserId,
                                                         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new DeleteLearningPathCommand(learningPathId, userId), token);
+        var result = await _mediator.Send(new DeleteLearningPathCommand(learningPathId, UserId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 

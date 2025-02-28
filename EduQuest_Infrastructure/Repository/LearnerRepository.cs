@@ -20,4 +20,9 @@ public class LearnerRepository : GenericRepository<Learner>, ILearnerRepository
     {
         return await _context.Learners.FirstOrDefaultAsync(a => a.UserId.Equals(userId) && a.CourseId.Equals(courseId));
     }
+
+    public async Task<bool> RegisteredCourse(string courseId, string userId)
+    {
+        return await _context.Learners.AnyAsync(l => l.UserId == userId && l.CourseId == courseId);
+    }
 }
