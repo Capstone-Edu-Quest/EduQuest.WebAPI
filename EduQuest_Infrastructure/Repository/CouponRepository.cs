@@ -29,7 +29,7 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         if(discountValue.HasValue)
         {
             result = from r in result
-                     where r.DiscountValue >= discountValue.Value
+                     where r.DiscountValue >= (decimal)discountValue.Value
                      select r;
         }
         if(expiredAt.HasValue)
@@ -54,7 +54,7 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         if (discountValue.HasValue)
         {
             result = from r in result
-                     where r.DiscountValue >= discountValue.Value
+                     where r.DiscountValue >= (decimal)discountValue.Value
                      select r;
         }
         if (expiredAt.HasValue)

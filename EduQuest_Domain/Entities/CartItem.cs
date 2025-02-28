@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
@@ -16,8 +17,9 @@ namespace EduQuest_Domain.Entities
 
 		public decimal Price { get; set; }
 
-		public virtual Cart? Cart { get; set; }
-
-		public virtual Course? Course { get; set; }
+		[JsonIgnore]
+		public virtual Cart? Cart { get; set;  } =  null!;
+		[JsonIgnore]
+		public virtual Course? Course { get; set; } = null!;
 	}
 }

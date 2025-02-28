@@ -65,5 +65,23 @@ namespace EduQuest_Domain.Enums
 		}
 		#endregion
 
+		#region Transaction
+		public enum TypeTransaction
+		{
+			CheckoutCart = 1,
+			Refund = 2,
+			Account = 3
+
+		}
+		#endregion
+
+		#region Coupon
+		public enum DiscountType
+		{
+			FixedAmount = 1,  
+			Percentage = 2
+		}
+		#endregion
+
 	}
 }

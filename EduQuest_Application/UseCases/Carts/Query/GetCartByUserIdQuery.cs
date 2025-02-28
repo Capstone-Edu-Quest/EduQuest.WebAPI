@@ -11,10 +11,12 @@ namespace EduQuest_Application.UseCases.Carts.Query
 	public class GetCartByUserIdQuery : IRequest<APIResponse>
 	{
 		public string UserId { get; set; }
+        public string? CouponId { get; set; }
 
-		public GetCartByUserIdQuery(string userId)
+		public GetCartByUserIdQuery(string userId, string? couponId)
 		{
 			UserId = userId;
+			CouponId = couponId;
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class UpdateCourseCouponHandler : IRequestHandler<UpdateCourseCouponComma
             }
             #endregion
 
-            temp.DiscountValue = request.Coupon.DiscountValue;
+            temp.DiscountValue = (decimal)request.Coupon.DiscountValue;
             temp.ExpireAt = request.Coupon.ExpireAt;
             if(request.Coupon.AddedUsage != 0)
             {

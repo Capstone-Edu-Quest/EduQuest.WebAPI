@@ -10,6 +10,7 @@ namespace EduQuest_Domain.Entities
 
 		public decimal TotalAmount { get; set; }
 		public string Status { get; set; }
+        public string Type { get; set; }
         public string PaymentIntentId { get; set; }
         public virtual User User { get; set; } = null;
 		[JsonIgnore]
