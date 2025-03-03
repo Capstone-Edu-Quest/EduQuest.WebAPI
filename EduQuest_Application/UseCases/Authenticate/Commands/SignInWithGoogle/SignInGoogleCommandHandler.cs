@@ -57,6 +57,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                     Username = tokenInfo.FullName,
                     AvatarUrl = tokenInfo.picture,
                     Status = AccountStatus.Active.ToString(),
+                    LastActiveDay = DateTime.UtcNow.ToUniversalTime(),
                     RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
                     UserStatistic = new UserStatistic
                     {
