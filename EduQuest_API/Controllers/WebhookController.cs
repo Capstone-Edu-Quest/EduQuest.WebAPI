@@ -30,7 +30,7 @@ namespace EduQuest_API.Controllers
 
 			try
 			{
-				stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.SecretKey);
+				stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], "whsec_54860a401f3f17c0c6f2ffee117b107cb31883f2d769d037a47579561477b640");
 			}
 			catch (StripeException e)
 			{

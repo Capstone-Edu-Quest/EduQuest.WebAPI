@@ -47,7 +47,11 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						PriceData = new SessionLineItemPriceDataOptions
 						{
 							Currency = "usd",
-							UnitAmount = (long)(cart.Total * 100) // Đảm bảo nhân 100 vì Stripe dùng cents
+							UnitAmount = (long)(cart.Total * 100), // Đảm bảo nhân 100 vì Stripe dùng cents
+							ProductData = new SessionLineItemPriceDataProductDataOptions
+							{
+								Name = "Course" 
+							}
 						}
 					}
 				}
