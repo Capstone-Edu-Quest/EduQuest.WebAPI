@@ -6,4 +6,5 @@ namespace EduQuest_Domain.Repository;
 public interface ILearnerRepository : IGenericRepository<Learner>
 {
     Task<Learner?> GetByUserIdAndCourseId(string userId, string courseId);
+    Task<bool> RegisteredCourse(string courseId, string userId);
 }

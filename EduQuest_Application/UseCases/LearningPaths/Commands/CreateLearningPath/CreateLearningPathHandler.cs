@@ -8,6 +8,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.CreateLearningPath;
 
@@ -42,6 +43,14 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             LearningPath learningPath = _mapper.Map<LearningPath>(request.CreateLearningPathRequest);
             List<LearningPathCourse> learningPathCourses = _mapper.Map<List<LearningPathCourse>>(request.CreateLearningPathRequest.Courses);
 
+            //validate if user is exsist
+            User? user = await _userRepository.GetById(request.UserId)!;
+            if(user == null)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.Unauthorized, Key, value);
+            }
+            
+
             #region filter duplicated courseId and duplicated course order
             int before = learningPathCourses.Count;
             var temp = learningPathCourses.AsQueryable();
@@ -55,6 +64,7 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             }
             #endregion
             int totalTime = 0;
+            List<string> courseIds = new List<string>();
             #region validate if any course is unavailable
             foreach (LearningPathCourse course in learningPathCourses)
             {
@@ -62,22 +72,28 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                 {
                     return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
                 }
+                courseIds.Add(course.CourseId);
                 int courseTotalTime = await _courseRepository.GetTotalTime(course.CourseId);
                 totalTime += courseTotalTime;
             }
             #endregion
 
             //parse values
+            learningPath.CreatedByExpert = true ? int.Parse(user.RoleId!) == (int)UserRole.Expert : false;            
             learningPath.TotalTimes = totalTime;
             learningPath.IsEnrolled = false;
             learningPath.Id = Guid.NewGuid().ToString();
             learningPath.CreatedAt = DateTime.Now.ToUniversalTime();
             learningPath.UserId = request.UserId;
             learningPath.LearningPathCourses = learningPathCourses;
+            //getTag list to update LearningPath tag
+            List<Tag> tags = await _courseRepository.GetTagByCourseIds(courseIds);
+            learningPath.Tags = tags;
             await _learningPathRepository.Add(learningPath);
+            
+            
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                User user = await _userRepository.GetById(request.UserId)!;
                 CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learningPath);
                 myLearningPathResponse.TotalCourses = learningPath.LearningPathCourses.Count;

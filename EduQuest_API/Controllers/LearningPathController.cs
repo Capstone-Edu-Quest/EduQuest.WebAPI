@@ -83,7 +83,7 @@ public class LearningPathController : Controller
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateLearningPath([FromBody, Required] CreateLearningPathRequest request,
-                                                       // [FromQuery] string UserId,
+                                                        //[FromQuery] string userId,
                                                         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();

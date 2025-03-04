@@ -56,7 +56,7 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
             List<CreateCourseLearningPath> newLPC = _mapper.Map<List<CreateCourseLearningPath>>(temp.LearningPathCourses);
             List<LearningPathCourse> learningPathCourses = _mapper.Map<List<LearningPathCourse>>(newLPC);
             newLearningPath.LearningPathCourses = learningPathCourses;
-
+            newLearningPath.Tags = temp.Tags;
             //saving
             await _learningPathRepository.Add(newLearningPath);
             if (await _unitOfWork.SaveChangesAsync() > 0)
