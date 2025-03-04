@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+
 
 namespace EduQuest_Domain.Entities;
 
-public class UserQuest
+public class UserQuest : BaseEntity
 {
     public string? Title { get; set; } //change to title?
     public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
@@ -18,6 +14,10 @@ public class UserQuest
     public int? PointToComplete { get; set; }
     public int? CurrentPoint {  get; set; }
     public bool IsCompleted { get; set; }
+
+    public string? UserId { get; set; }
+    [JsonIgnore]
+    public virtual User User { get; set; } = null!;
 
     [JsonIgnore]
     public virtual ICollection<QuestReward> Rewards { get; set; }

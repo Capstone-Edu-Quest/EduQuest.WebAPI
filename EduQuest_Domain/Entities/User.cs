@@ -33,7 +33,7 @@ namespace EduQuest_Domain.Entities
         [JsonIgnore]
 		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<UserQuest>? Quests { get; set; }
+		public virtual ICollection<UserQuest>? UserQuests { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Badge>? Badges { get; set; }
 		[JsonIgnore]
@@ -52,8 +52,8 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Transaction>? Transactions { get; set; }
 
-        /*[JsonIgnore]
-        public virtual ICollection<UserQuest> UserQuests { get; set; }*/
+		[JsonIgnore]
+		public virtual ICollection<Quest> Quests { get; set; }
 
-    }
+	}
 }
