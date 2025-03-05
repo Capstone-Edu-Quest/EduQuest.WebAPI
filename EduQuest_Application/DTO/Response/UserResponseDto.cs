@@ -16,7 +16,6 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string Status { get; set; } = null!;
     public string Headline { get; set; }
     public string Description { get; set; }
-    public DateTime LastActiveDay { get; set; }
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
     public UserStatisticDto statistic { get; set; }

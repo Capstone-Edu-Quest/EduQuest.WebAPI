@@ -18,6 +18,7 @@ public class AuthenticationUnitTests
 {
     private readonly Mock<IRefreshTokenRepository> _mockRefreshTokenRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IUserStatisticRepository> _mockUserStatisticRepository;
     private readonly Mock<IJwtProvider> _mockJwtProvider;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IRedisCaching> _mockRedisCaching;
@@ -28,6 +29,7 @@ public class AuthenticationUnitTests
     {
         _mockRefreshTokenRepository = new Mock<IRefreshTokenRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
+        _mockUserStatisticRepository = new Mock<IUserStatisticRepository>();
         _mockJwtProvider = new Mock<IJwtProvider>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockRedisCaching = new Mock<IRedisCaching>();
@@ -40,6 +42,7 @@ public class AuthenticationUnitTests
 
         _refreshTokenHandler = new RefreshTokenQueryHandler(
             _mockUserRepository.Object,
+            _mockUserStatisticRepository.Object,
             _mockRefreshTokenRepository.Object,
             _mockJwtProvider.Object,
             _mockUnitOfWork.Object
