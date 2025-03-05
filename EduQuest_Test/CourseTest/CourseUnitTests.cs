@@ -40,8 +40,6 @@ public class CourseUnitTests
             _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
             _userStatisticsMock.Object
-            _userRepositoryMock.Object,
-            _userStatisticRepositoryMock.Object
         );
 
         _updateCourseHandler = new UpdateCourseCommandHandler(
