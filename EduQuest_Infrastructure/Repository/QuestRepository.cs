@@ -15,9 +15,9 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
-		public async Task<Quest> GetQuestById(string Id)
+		public async Task<Quest?> GetQuestById(string Id)
 		{
-			return await _context.Quests.Include(x => x.Users).FirstOrDefaultAsync(x => x.Id.Equals(Id));
+			return await _context.Quests.Include(q => q.Rewards).FirstOrDefaultAsync(x => x.Id.Equals(Id));
 		}
 	}
 }

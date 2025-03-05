@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
-using EduQuest_Application.UseCases.Tag.Commands.CreateTag;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace Application.UseCases.Tags.Commands.AddTag;
+namespace EduQuest_Application.UseCases.Tags.Commands.CreateTag;
 
 public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, APIResponse>
 {
@@ -30,7 +28,8 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, APIResp
         {
             var tagEntity = new Tag
             {
-                TagName = request.TagName,
+                Id = Guid.NewGuid().ToString(),
+                Name = request.TagName,
             };
 
             await _tagRepository.Add(tagEntity);

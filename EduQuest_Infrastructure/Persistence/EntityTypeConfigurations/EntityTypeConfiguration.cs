@@ -9,16 +9,17 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>, IEntityTypeConfiguration<Badge>,
 		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<CartItem>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
-		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<Learner>,
+		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<CourseLearner>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
 		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
-		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>
-		
-	{
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
+		IEntityTypeConfiguration<QuestReward>, IEntityTypeConfiguration<Report>
+
+    {
 		#region Role
 		public void Configure(EntityTypeBuilder<Role> builder)
 		{
@@ -232,7 +233,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region Feedback
 		public void Configure(EntityTypeBuilder<Feedback> builder)
 		{
-			builder.HasKey(fl => new { fl.UserId, fl.CourseId });
+			/*builder.HasKey(fl => new { fl.UserId, fl.CourseId });*/
 
 		}
 		#endregion
@@ -254,17 +255,41 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#endregion
 
 		#region Learner
-		public void Configure(EntityTypeBuilder<Learner> builder)
+		public void Configure(EntityTypeBuilder<CourseLearner> builder)
 		{
 
 
 		}
-		#endregion
+        #endregion
 
-		
+        #region Report
+        public void Configure(EntityTypeBuilder<Report> builder)
+        {
+            builder.HasOne(r => r.User)
+                .WithMany(u => u.Reports)
+                .HasForeignKey(r => r.Reporter)
+                .OnDelete(DeleteBehavior.ClientSetNull);
 
-		#region LearningHistory
-		public void Configure(EntityTypeBuilder<LearningHistory> builder)
+            builder.HasOne(r => r.Feedback)
+                .WithMany(f => f.Reports)
+                .HasForeignKey(r => r.FeedbackId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            builder.HasOne(r => r.Course)
+                .WithMany(c => c.Reports)
+                .HasForeignKey(r => r.CourseId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            builder.HasOne<User>()
+					.WithMany()
+					.HasForeignKey(r => r.Violator)
+					.OnDelete(DeleteBehavior.ClientSetNull);
+
+        }
+        #endregion
+
+        #region LearningHistory
+        public void Configure(EntityTypeBuilder<LearningHistory> builder)
 		{
 			
 
@@ -322,12 +347,39 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region Quest
 		public void Configure(EntityTypeBuilder<Quest> builder)
 		{
+            builder.HasOne(q => q.User)
+                .WithMany(c => c.Quests)
+                .HasForeignKey(q => q.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        }
+        #endregion
 
-		}
-		#endregion
+        #region UserQuest
+        public void Configure(EntityTypeBuilder<UserQuest> builder)
+        {
+            builder.HasOne(q => q.User)
+                .WithMany(c => c.UserQuests)
+                .HasForeignKey(q => q.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        }
+        #endregion
+        #region QuestReward
+        public void Configure(EntityTypeBuilder<QuestReward> builder)
+        {
+            builder.HasOne(qr => qr.Quest)
+                .WithMany(q => q.Rewards)
+                .HasForeignKey(qr => qr.QuestId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
 
-		#region Question
-		public void Configure(EntityTypeBuilder<Question> builder)
+            builder.HasOne(qr => qr.UserQuest)
+                .WithMany(uq => uq.Rewards)
+                .HasForeignKey(qr => qr.UserQuestId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        }
+        #endregion
+
+        #region Question
+        public void Configure(EntityTypeBuilder<Question> builder)
 		{
 
 

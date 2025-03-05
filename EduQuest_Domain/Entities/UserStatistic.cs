@@ -18,6 +18,7 @@ namespace EduQuest_Domain.Entities
 		public int? TotalLearner { get; set; }
 		public int? TotalReview { get; set; }
         public double? TotalRevenue { get; set; }
+		public DateTime LastActive { get; set; }
 
         public virtual User User { get; set; } = null!;
         public virtual ICollection<StudyTime>? StudyTime { get; set; } = null!;

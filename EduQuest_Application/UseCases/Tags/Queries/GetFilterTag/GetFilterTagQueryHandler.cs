@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Tags;
-using EduQuest_Application.UseCases.Tag.Queries.GetFilterTag;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Certificates.Queries.GetFilterCertificate;
+namespace EduQuest_Application.UseCases.Tags.Queries.GetFilterTag;
 
 public class GetFilterTagQueryHandler : IRequestHandler<GetFilterTagQuery, APIResponse>
 {
