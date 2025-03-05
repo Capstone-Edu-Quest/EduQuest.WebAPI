@@ -94,6 +94,8 @@ namespace EduQuest_Domain.Constants
 			public const string LoginFailed = "Login failed";
 			public const string UserDontHavePer = "Permission denied";
 
+			public const string CourseShouldBePending = "COURSE_SHOULD_BE_PENDING";
+
 		}
 
 		public static class MessageAchievement
