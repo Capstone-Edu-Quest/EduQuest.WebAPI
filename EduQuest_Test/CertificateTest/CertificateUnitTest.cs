@@ -47,7 +47,7 @@ public class CertificateUnitTest
             Url = "http://example.com/certificate.pdf"
         };
 
-        var existingLearner = new Learner { UserId = request.UserId, CourseId = request.CourseId };
+        var existingLearner = new CourseLearner { UserId = request.UserId, CourseId = request.CourseId };
         var newCertificate = new Certificate
         {
             Title = request.Title,
@@ -91,7 +91,7 @@ public class CertificateUnitTest
         };
 
         _mockLearnerRepo.Setup(repo => repo.GetByUserIdAndCourseId(request.UserId, request.CourseId))
-                        .ReturnsAsync((Learner)null);
+                        .ReturnsAsync((CourseLearner)null);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -116,7 +116,7 @@ public class CertificateUnitTest
             Url = "http://example.com/certificate.pdf"
         };
 
-        var existingLearner = new Learner { UserId = request.UserId, CourseId = request.CourseId };
+        var existingLearner = new CourseLearner { UserId = request.UserId, CourseId = request.CourseId };
         var newCertificate = new Certificate
         {
             Title = request.Title,

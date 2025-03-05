@@ -6,6 +6,7 @@ namespace EduQuest_Application.DTO.Response.Feedbacks;
 
 public class FeedbackResponse : IMapFrom<Feedback>, IMapTo<Feedback>
 {
+    public string Id { get; set; } = string.Empty;
     public string UserId { get; set; } = string.Empty;
     public string CourseId { get; set; } = string.Empty;
     public int Rating { get; set; }
