@@ -14,6 +14,7 @@ namespace EduQuest_Domain.Entities
 		public string? Headline { get; set; }
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
+        public DateTime LastActiveDay { get; set; }
 		public string? RoleId { get; set; }
 		public string? PackagePrivilegeId { get; set; }
 		public string? AccountPackageId { get; set; }

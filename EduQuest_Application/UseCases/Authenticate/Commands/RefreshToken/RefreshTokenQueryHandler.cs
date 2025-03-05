@@ -122,6 +122,8 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
             // Generate new access & refresh tokens
             var tokenResponse = await _jwtProvider.GenerateAccessRefreshTokens(existUser.Id, existUser.Email!);
 
+            existUser.LastActiveDay = DateTime.UtcNow.ToUniversalTime();
+            await _userRepository.Update(existUser);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new APIResponse
