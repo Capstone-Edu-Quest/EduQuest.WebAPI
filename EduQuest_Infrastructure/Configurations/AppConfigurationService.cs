@@ -50,8 +50,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					configuration.GetConnectionString("test"),
-					//configuration.GetConnectionString("production"),
+					//configuration.GetConnectionString("test"),
+					configuration.GetConnectionString("production"),
                     //configuration.GetConnectionString("local"),
                     b =>
 					{

@@ -55,5 +55,8 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Quest> Quests { get; set; }
 
-	}
+        [JsonIgnore]
+        public virtual ICollection<Report> Reports { get; set; }
+
+    }
 }

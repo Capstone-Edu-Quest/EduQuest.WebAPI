@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250305084432_updateDb2")]
+    partial class updateDb2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -622,6 +625,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("CourseLearnerId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -644,6 +650,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("CourseLearnerId");
 
                     b.HasIndex("DeletedAt");
 
@@ -2105,6 +2113,10 @@ namespace EduQuest_Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EduQuest_Domain.Entities.CourseLearner", null)
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("CourseLearnerId");
+
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -2526,6 +2538,11 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Reports");
 
                     b.Navigation("Stages");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.CourseLearner", b =>
+                {
+                    b.Navigation("Feedbacks");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Feedback", b =>

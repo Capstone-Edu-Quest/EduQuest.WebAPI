@@ -7,6 +7,7 @@ namespace EduQuest_Domain.Entities
 	public partial class Quest : BaseEntity
 	{
 		public string? Title { get; set; } //change name to title
+
         public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
 		public string? Description { get; set; }
 		/*public string? RewardType { get; set; }//thêm bảng phụ 

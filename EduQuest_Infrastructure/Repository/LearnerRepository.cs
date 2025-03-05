@@ -7,7 +7,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace EduQuest_Infrastructure.Repository;
 
-public class LearnerRepository : GenericRepository<Learner>, ILearnerRepository
+public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepository
 {
     private readonly ApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class LearnerRepository : GenericRepository<Learner>, ILearnerRepository
         _context = context;
     }
 
-    public async Task<Learner?> GetByUserIdAndCourseId(string userId, string courseId)
+    public async Task<CourseLearner?> GetByUserIdAndCourseId(string userId, string courseId)
     {
         return await _context.Learners.FirstOrDefaultAsync(a => a.UserId.Equals(userId) && a.CourseId.Equals(courseId));
     }
