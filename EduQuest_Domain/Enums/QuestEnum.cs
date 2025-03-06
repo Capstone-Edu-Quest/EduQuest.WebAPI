@@ -12,9 +12,10 @@ public class QuestEnum
         QuizComplete = 4,
         AssignmentComplete = 5,
         QuestComplettion = 6,
-        CertificateCollector = 7,
+        LearningStreak = 7
+        /*CertificateCollector = 7,
         PeerReviewer = 8,
-        FeedbackSubmittor = 9,
+        FeedbackSubmittor = 9,*/
     }
     public enum RewardType
     {

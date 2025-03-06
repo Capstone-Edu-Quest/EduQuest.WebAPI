@@ -34,6 +34,9 @@ using EduQuest_Domain.Repository.Generic;
 using EduQuest_Infrastructure.Repository.Generic;
 using EduQuest_Domain.Models.Payment;
 using Stripe;
+using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Infrastructure.ExternalServices.Quartz;
+using Quartz;
 
 namespace EduQuest_Infrastructure
 {
@@ -166,10 +169,14 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 			services.AddScoped<ICartItemRepository, CartItemRepository>();
 			services.AddScoped<ILearnerRepository, LearnerRepository>();
+			services.AddScoped<IUserQuestRepository, UserQuestRepository>();
+			services.AddScoped<IQuartzService, QuartzService>();
+
+			services.AddQuartz();
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 
-
-			services.AddSingleton(provider =>
+            services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials
 				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");

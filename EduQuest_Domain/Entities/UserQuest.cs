@@ -1,5 +1,7 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using static EduQuest_Domain.Constants.Constants;
 
 
 namespace EduQuest_Domain.Entities;
@@ -14,8 +16,9 @@ public class UserQuest : BaseEntity
     public int? PointToComplete { get; set; }
     public int? CurrentPoint {  get; set; }
     public bool IsCompleted { get; set; }
-
+    public bool? IsDaily { get; set; }
     public string? UserId { get; set; }
+
     [JsonIgnore]
     public virtual User User { get; set; } = null!;
 
