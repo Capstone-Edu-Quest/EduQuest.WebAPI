@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250305151829_Rollback")]
+    partial class Rollback
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1063,12 +1066,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<bool?>("IsDaily")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("PointToComplete")
-                        .HasColumnType("integer");
-
                     b.Property<string>("TimeToComplete")
                         .HasColumnType("text");
 
@@ -1131,7 +1128,7 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("UserQuestId");
 
-                    b.ToTable("QuestRewards");
+                    b.ToTable("QuestReward");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Question", b =>
@@ -1776,9 +1773,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsDaily")
-                        .HasColumnType("boolean");
-
                     b.Property<int?>("PointToComplete")
                         .HasColumnType("integer");
 
@@ -1806,7 +1800,7 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserQuests");
+                    b.ToTable("UserQuest");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.UserStatistic", b =>

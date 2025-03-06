@@ -12,17 +12,15 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
     public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, APIResponse>
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserStatisticRepository _userStatisticRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtProvider _jwtProvider;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RefreshTokenQueryHandler(
-            IUserRepository userRepository,
-            IRefreshTokenRepository refreshTokenRepository,
-            IJwtProvider jwtProvider,
-            IUnitOfWork unitOfWork)
+        public RefreshTokenQueryHandler(IUserRepository userRepository, IUserStatisticRepository userStatisticRepository, IRefreshTokenRepository refreshTokenRepository, IJwtProvider jwtProvider, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
+            _userStatisticRepository = userStatisticRepository;
             _refreshTokenRepository = refreshTokenRepository;
             _jwtProvider = jwtProvider;
             _unitOfWork = unitOfWork;
@@ -122,8 +120,9 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
             // Generate new access & refresh tokens
             var tokenResponse = await _jwtProvider.GenerateAccessRefreshTokens(existUser.Id, existUser.Email!);
 
-            existUser.LastActiveDay = DateTime.UtcNow.ToUniversalTime();
-            await _userRepository.Update(existUser);
+            var statistic = await _userStatisticRepository.GetByUserId(userId);
+            statistic.LastActive = DateTime.UtcNow.ToUniversalTime();
+            await _userStatisticRepository.Update(statistic);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new APIResponse
