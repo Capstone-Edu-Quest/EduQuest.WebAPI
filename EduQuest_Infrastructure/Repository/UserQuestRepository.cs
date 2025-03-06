@@ -1,11 +1,10 @@
-﻿using EduQuest_Application.DTO.Request.Quests;
+﻿
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using Org.BouncyCastle.Ocsp;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -21,13 +20,14 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
 
     public async Task<bool> AddNewQuestToAllUserQuest(Quest newQuest)
     {
+        string roleId = ((int)UserRole.Learner).ToString();
         List<string> UserIds = new List<string>();
-        UserIds = await _context.Users.Select(u => u.Id).ToListAsync();
+        UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
         List<UserQuest> userQuests = new List<UserQuest>();
         ICollection<QuestReward> rewards = newQuest.Rewards;
         foreach (string UserId in UserIds)
         {
-            // Tạo UserQuest mới
+            // new UserQuest
             UserQuest temp = new UserQuest
             {
                 Id = Guid.NewGuid().ToString(),
@@ -60,6 +60,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
 
             userQuests.Add(temp);
         }
+
         await _context.UserQuests.AddRangeAsync(userQuests);
         int result = await _context.SaveChangesAsync();
         return result > 0;
