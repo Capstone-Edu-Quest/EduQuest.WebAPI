@@ -19,12 +19,12 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     }
 
 
-    public async Task<bool> AddNewQuestToAllUseQuest(Quest newQuest)
+    public async Task<bool> AddNewQuestToAllUserQuest(Quest newQuest)
     {
         List<string> UserIds = new List<string>();
         UserIds = await _context.Users.Select(u => u.Id).ToListAsync();
         List<UserQuest> userQuests = new List<UserQuest>();
-        List<QuestReward> rewards = (List<QuestReward>)newQuest.Rewards;
+        ICollection<QuestReward> rewards = newQuest.Rewards;
         foreach (string UserId in UserIds)
         {
             // Tạo UserQuest mới

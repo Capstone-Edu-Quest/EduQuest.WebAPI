@@ -6,7 +6,7 @@ using Quartz;
 
 namespace EduQuest_Infrastructure.ExternalServices.Quartz;
 
-/*public class QuartzService : IQuartzService
+public class QuartzService : IQuartzService
 {
     private readonly ISchedulerFactory _schedulerFactory;
 
@@ -29,4 +29,4 @@ namespace EduQuest_Infrastructure.ExternalServices.Quartz;
         await scheduler.ScheduleJob(job, newTrigger);
         Console.WriteLine($"ScheduleJob:  AddNewQuestToAllUser with id {jobKey}");
     }
-}*/
+}

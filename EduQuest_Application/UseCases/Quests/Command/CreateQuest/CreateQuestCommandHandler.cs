@@ -21,19 +21,20 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserQuestRepository _userQuestRepository;
 		private readonly IUserRepository _userRepository;
-		//private readonly IQuartzService _quartzService;
+		private readonly IQuartzService _quartzService;
 		private const string key = "name";
 		private const string value = "quest";
 
         public CreateQuestCommandHandler(IQuestRepository achievementRepository, IMapper mapper, IUnitOfWork unitOfWork,
-			IUserQuestRepository userQuestRepository, IUserRepository userRepository
-			)
+			IUserQuestRepository userQuestRepository, IUserRepository userRepository,
+            IQuartzService qquartzService)
 		{
 			_achievementRepository = achievementRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_userQuestRepository = userQuestRepository;
 			_userRepository = userRepository;
+			_quartzService = qquartzService;
 		}
 
 		public async Task<APIResponse> Handle(CreateQuestCommand request, CancellationToken cancellationToken)
@@ -53,8 +54,8 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 			if(result)
 			{
                 //add quest to all user.
-				//await _quartzService.AddNewQuestToAllUser(questEntity.Id);
-				await _userQuestRepository.AddNewQuestToAllUseQuest(questEntity);
+				await _quartzService.AddNewQuestToAllUser(questEntity.Id);
+				//await _userQuestRepository.AddNewQuestToAllUseQuest(questEntity);
 
 				//Create response
 				QuestResponse response = _mapper.Map<QuestResponse>(questEntity);

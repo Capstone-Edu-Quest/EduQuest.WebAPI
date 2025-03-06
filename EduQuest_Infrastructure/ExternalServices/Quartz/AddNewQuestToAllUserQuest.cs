@@ -4,7 +4,7 @@ using Quartz;
 
 namespace EduQuest_Infrastructure.ExternalServices.Quartz;
 
-/*public class AddNewQuestToAllUserQuest : IJob
+public class AddNewQuestToAllUserQuest : IJob
 {
     private readonly ISchedulerFactory _schedulerFactory;
     private readonly IUserQuestRepository _userQuestRepository;
@@ -23,17 +23,17 @@ namespace EduQuest_Infrastructure.ExternalServices.Quartz;
         // get scheduler
         IScheduler scheduler = await _schedulerFactory.GetScheduler();
 
-        // get job and trigger
+        // get job and trigge
         IJobDetail currentJob = context.JobDetail;
         ITrigger currentTrigger = context.Trigger;
-        Quest quest = await _questRepository.GetQuestById(currentJob.Key.ToString().Substring(6));
-        bool result = await _userQuestRepository.AddNewQuestToAllUseQuest(quest!);
-        Console.WriteLine("Task run: Event status changed to Ongoing!");
+        Quest quest = await _questRepository.GetQuestById(currentJob.Key.ToString().Substring(8));
+        bool result = await _userQuestRepository.AddNewQuestToAllUserQuest(quest!);
+        Console.WriteLine("Task run: Add New Quest To All UserQuest!");
 
         // delete job and trigger
         await scheduler.DeleteJob(currentJob.Key);
         await scheduler.UnscheduleJob(currentTrigger.Key);
 
-        Console.WriteLine($"DeleteJob Event status changed to Ongoing Job: {currentJob.Key}");
+        Console.WriteLine($"DeleteJob Add New Quest To All UserQuest: {currentJob.Key}");
     }
-}*/
+}
