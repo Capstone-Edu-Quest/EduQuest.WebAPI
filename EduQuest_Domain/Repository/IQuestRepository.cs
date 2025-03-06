@@ -6,5 +6,6 @@ namespace EduQuest_Domain.Repository
 	public interface IQuestRepository : IGenericRepository<Quest>
 	{
 		Task<Quest?> GetQuestById(string Id);
-	}
+
+    }
 }

@@ -58,8 +58,10 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<Transaction> Transactions { get; set; } = null!;
 		public virtual DbSet<User> Users { get; set; } = null!;
 		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
-		
-		
+
+		public virtual DbSet<UserQuest> UserQuests { get; set; } = null!;
+		public virtual DbSet<QuestReward> QuestRewards { get; set; } = null!;
+		public virtual DbSet<Report> Reports { get; set; } = null!;
 	
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
