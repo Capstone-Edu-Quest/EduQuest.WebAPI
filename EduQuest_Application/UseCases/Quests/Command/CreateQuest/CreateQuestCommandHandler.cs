@@ -42,7 +42,8 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 			User? user = await _userRepository.GetById(request.UserId);
 			if (user == null)
 			{
-				return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, MessageCommon.Unauthorized, key, value);
+				return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, 
+					MessageCommon.Unauthorized, key, value);
 			}
 
 			var questEntity = _mapper.Map<Quest>(request.Quest);
@@ -62,7 +63,8 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 				response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
 				return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, key, value);
             }
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.CreateFailed, key, value);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, 
+				MessageCommon.CreateFailed, key, value);
         }
 	}
 }

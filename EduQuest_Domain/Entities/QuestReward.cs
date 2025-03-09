@@ -10,11 +10,8 @@ public class QuestReward : BaseEntity
     public string? RewardValue { get; set; }//thêm bảng phụ
 
     public string? QuestId { get; set; }
-    public string? UserQuestId { get; set; }
+    //public string? UserQuestId { get; set; }
 
     [JsonIgnore]
     public virtual Quest Quest { get; set; }
-
-    [JsonIgnore]
-    public virtual UserQuest UserQuest { get; set; }
 }

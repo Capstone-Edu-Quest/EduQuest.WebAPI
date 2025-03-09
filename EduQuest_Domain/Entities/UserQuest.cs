@@ -18,10 +18,11 @@ public class UserQuest : BaseEntity
     public bool IsCompleted { get; set; }
     public bool? IsDaily { get; set; }
     public string? UserId { get; set; }
+    public string? QuestId { get; set; }
 
     [JsonIgnore]
     public virtual User User { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual ICollection<QuestReward> Rewards { get; set; }
+    public virtual ICollection<UserQuestQuestReward> Rewards { get; set; }
 }

@@ -17,7 +17,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
 		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
-		IEntityTypeConfiguration<QuestReward>, IEntityTypeConfiguration<Report>
+		IEntityTypeConfiguration<QuestReward>, IEntityTypeConfiguration<Report>, IEntityTypeConfiguration<UserQuestQuestReward>
 
     {
 		#region Role
@@ -361,6 +361,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .WithMany(c => c.UserQuests)
                 .HasForeignKey(q => q.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+            builder.HasOne<Quest>()
+                    .WithMany()
+                    .HasForeignKey(r => r.QuestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
         }
         #endregion
         #region QuestReward
@@ -370,11 +374,13 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .WithMany(q => q.Rewards)
                 .HasForeignKey(qr => qr.QuestId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+        }
+        #endregion
 
-            builder.HasOne(qr => qr.UserQuest)
-                .WithMany(uq => uq.Rewards)
-                .HasForeignKey(qr => qr.UserQuestId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+        #region UserQuestQuestReward 
+		public void Configure(EntityTypeBuilder<UserQuestQuestReward> builder)
+		{
+			builder.HasKey(uq => new { uq.UserQuestId, uq.QuestRewardId});
         }
         #endregion
 
