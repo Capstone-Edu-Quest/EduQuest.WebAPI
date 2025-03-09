@@ -22,31 +22,35 @@ namespace EduQuest_API.Controllers
 
 		}
 
-		[Authorize]
+		//[Authorize]
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> AddQuest([FromBody] CreateQuestRequest quest,
-			//[FromQuery] string UserId,
+			[FromQuery] string userId,
 			CancellationToken cancellationToken = default)
 		{
-			string UserId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new CreateQuestCommand(UserId, quest), cancellationToken);
+			//string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new CreateQuestCommand(userId, quest), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
-        [Authorize]
+        //[Authorize]
         [HttpPut("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement,
-            //[FromQuery] string UserId,
+			[FromQuery] string questId,
+            [FromQuery] string userId,
             CancellationToken cancellationToken = default)
 		{
-            /*string UserId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new UpdateQuestCommand(UserId, achievement), cancellationToken);
-			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);*/
+			//string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new UpdateQuestCommand(userId, questId, achievement), cancellationToken);
+			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 			throw new NotImplementedException();
 		}
+
+		//[HttpGet]
+
 	}
 }

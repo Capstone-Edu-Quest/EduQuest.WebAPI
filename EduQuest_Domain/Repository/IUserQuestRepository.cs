@@ -7,4 +7,5 @@ namespace EduQuest_Domain.Repository;
 public interface IUserQuestRepository : IGenericRepository<UserQuest>
 {
     Task<bool> AddNewQuestToAllUserQuest(Quest newQuest);
+    Task<bool> UpdateAllUserQuest(Quest updatedQuest);
 }

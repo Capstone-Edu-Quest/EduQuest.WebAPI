@@ -23,7 +23,7 @@ namespace EduQuest_Application.DTO.Request.Quests
         public string? Description { get; set; }
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public string? TimeToComplete { get; set; } //default value is minute
+        public int? TimeToComplete { get; set; } //default value is minute
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
         public List<QuestRewardRequest> Rewards { get; set; }

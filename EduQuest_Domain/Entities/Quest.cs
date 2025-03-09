@@ -11,7 +11,7 @@ namespace EduQuest_Domain.Entities
         public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
 		public string? Description { get; set; }
 		public int? PointToComplete { get; set; }
-        public string? TimeToComplete { get; set; }
+        public int? TimeToComplete { get; set; }
         public string? CreatedBy { get; set; }
 
         [JsonIgnore]

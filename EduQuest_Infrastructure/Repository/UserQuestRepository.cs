@@ -37,24 +37,22 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
                 IsDaily = newQuest.IsDaily,
                 Description = newQuest.Description,
                 StartDate = DateTime.Now.ToUniversalTime(),
-                DueDate = DateTime.Now.AddMinutes(int.Parse(newQuest.TimeToComplete!)).ToUniversalTime(),
+                DueDate = newQuest.TimeToComplete > 0 ? DateTime.Now.AddMinutes((double)newQuest.TimeToComplete!).ToUniversalTime() : null,
                 PointToComplete = newQuest.PointToComplete!,
                 CurrentPoint = 0,
                 IsCompleted = false,
                 UserId = UserId,
-                Rewards = new List<QuestReward>()
+                QuestId = newQuest.Id,
+                Rewards = new List<UserQuestQuestReward>()
             };
 
             //add reward
             foreach (var reward in rewards)
             {
-                temp.Rewards.Add(new QuestReward
+                temp.Rewards.Add(new UserQuestQuestReward
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    RewardType = reward.RewardType,
-                    RewardValue = reward.RewardValue,
-                    QuestId = null,
-                    UserQuestId = temp.Id
+                    UserQuestId = temp.Id,
+                    QuestRewardId = reward.Id,
                 });
             }
 
@@ -62,6 +60,28 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         }
 
         await _context.UserQuests.AddRangeAsync(userQuests);
+        int result = await _context.SaveChangesAsync();
+        return result > 0;
+    }
+
+    public async Task<bool> UpdateAllUserQuest(Quest updatedQuest)
+    {
+        string roleId = ((int)UserRole.Learner).ToString();
+        List<string> UserIds = new List<string>();
+        UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
+        List<UserQuest> userQuests = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id).ToListAsync();
+        ICollection<QuestReward> rewards = updatedQuest.Rewards;
+
+        foreach(var userQuest in  userQuests)
+        {
+            userQuest.Title = updatedQuest.Title;
+            userQuest.Description = updatedQuest.Description;
+            userQuest.Type = updatedQuest.Type;
+            userQuest.PointToComplete = updatedQuest.PointToComplete;
+            userQuest.DueDate = updatedQuest.TimeToComplete > 0 ? userQuest.StartDate!.Value.AddMinutes((double)updatedQuest.TimeToComplete!).ToUniversalTime() : null;
+            userQuest.IsDaily = updatedQuest.IsDaily;
+        }
+        _context.UserQuests.UpdateRange(userQuests);
         int result = await _context.SaveChangesAsync();
         return result > 0;
     }
