@@ -6,17 +6,24 @@ namespace EduQuest_Domain.Entities
 	[Table("Quest")]
 	public partial class Quest : BaseEntity
 	{
-		public string? Name { get; set; }
-        public string? Type { get; set; }
+		public string? Title { get; set; } //change name to title
+        public bool? IsDaily { get; set; }
+        public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
 		public string? Description { get; set; }
-		public string? RewardType { get; set; }
-		public string? RewardValue { get; set; }
-		
-		public string? Image { get; set; }
-		public string? Color { get; set; }
-        public string? Condition { get; set; }
+		public int? PointToComplete { get; set; }
+        public string? TimeToComplete { get; set; }
+        public string? CreatedBy { get; set; }
 
         [JsonIgnore]
-		public virtual ICollection<User> Users { get; set; }
-	}
+		public virtual User User { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<QuestReward> Rewards { get; set; }
+
+        /*MissionType
+          RewardType
+          Type
+          là dev tạo*/
+
+    }
 }

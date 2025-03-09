@@ -18,6 +18,7 @@ public class UserStatisticDto : IMapFrom<UserStatistic>, IMapTo<UserStatistic>
     public int? TotalCourseCreated { get; set; }
     public int? TotalLearner { get; set; }
     public int? TotalReview { get; set; }
+    public DateTime LastActive { get; set; }
 
     public void MappingFrom(Profile profile)
     {

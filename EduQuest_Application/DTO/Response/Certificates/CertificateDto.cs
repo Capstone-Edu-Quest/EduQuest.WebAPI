@@ -14,6 +14,7 @@ public class CertificateDto : IMapFrom<Certificate>, IMapTo<Certificate>
 
     public void MappingFrom(Profile profile)
     {
+        profile.CreateMap<Certificate, CertificateDto>().ReverseMap();
         profile.CreateMap<PagedList<Certificate>, PagedList<CertificateDto>>().ReverseMap();
     }
 }

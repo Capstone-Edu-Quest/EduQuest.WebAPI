@@ -35,7 +35,7 @@ public class UpdateUsersStreakCommandHandler : IRequestHandler<UpdateUsersStreak
                 Message = new MessageResponse
                 {
                     content = MessageCommon.NotFound,
-                    values = ""
+                    values = new { name = "user" }
                 }
             };
         }
@@ -50,15 +50,18 @@ public class UpdateUsersStreakCommandHandler : IRequestHandler<UpdateUsersStreak
         existUser.CurrentStreak = (lastLearningDay == DateTime.UtcNow.Date.AddDays(-1)) ? existUser.CurrentStreak + 1 : 1;
         existUser.LastLearningDay = DateTime.UtcNow;
         existUser.LongestStreak = Math.Max((byte)existUser.LongestStreak!, (byte)existUser.CurrentStreak!);
+
         await _genericRepo.Update(existUser);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
         return new APIResponse
         {
             IsError = false,
             Message = new MessageResponse
             {
                 content = MessageCommon.UpdateSuccesfully,
-                values = ""
+                values = new { name = "streak" }
             }
         };
 

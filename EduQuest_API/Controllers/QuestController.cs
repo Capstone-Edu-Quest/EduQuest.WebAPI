@@ -1,10 +1,12 @@
 ﻿using EduQuest_Application.DTO.Request.Quests;
+using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
 using EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
 using EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList;
 using EduQuest_Application.UseCases.Quests.Command.CreateQuest;
 using EduQuest_Domain.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -20,22 +22,31 @@ namespace EduQuest_API.Controllers
 
 		}
 
+		[Authorize]
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> AddQuest([FromBody] CreateQuestRequest achievement, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> AddQuest([FromBody] CreateQuestRequest quest,
+			//[FromQuery] string UserId,
+			CancellationToken cancellationToken = default)
 		{
-			var result = await _mediator.Send(new CreateQuestCommand(achievement), cancellationToken);
+			string UserId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new CreateQuestCommand(UserId, quest), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
-		[HttpPut("")]
+        [Authorize]
+        [HttpPut("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement,
+            //[FromQuery] string UserId,
+            CancellationToken cancellationToken = default)
 		{
-			var result = await _mediator.Send(new UpdateQuestCommand(achievement), cancellationToken);
-			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+            /*string UserId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new UpdateQuestCommand(UserId, achievement), cancellationToken);
+			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);*/
+			throw new NotImplementedException();
 		}
 	}
 }

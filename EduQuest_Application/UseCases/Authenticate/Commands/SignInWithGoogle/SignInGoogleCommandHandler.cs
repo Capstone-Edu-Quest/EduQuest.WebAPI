@@ -72,6 +72,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                         TotalCourseCreated = 0,
                         TotalLearner = 0,
                         TotalReview = 0,
+                        LastActive = DateTime.UtcNow.ToUniversalTime(),
                         CreatedAt = DateTime.Now.ToUniversalTime(),
                         UpdatedAt = DateTime.Now.ToUniversalTime(),
                     }

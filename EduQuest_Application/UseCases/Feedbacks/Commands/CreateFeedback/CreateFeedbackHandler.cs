@@ -49,7 +49,7 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
             }
             Feedback newFeedback = _mapper.Map<Feedback>(request.Feedback);
             newFeedback.UserId = request.UserId;
-
+            newFeedback.Id = Guid.NewGuid().ToString();
             await _feedbackRepository.Add(newFeedback);
 			var courseStatistic = await _courseRepository.GetCourseById(request.Feedback.CourseId);
 			courseStatistic.CourseStatistic.TotalReview++;
