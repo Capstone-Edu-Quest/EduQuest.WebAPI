@@ -1,11 +1,6 @@
 ﻿using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Quests;
 
@@ -19,4 +14,5 @@ public class QuestResponse : IMapFrom<Quest>
     public string? TimeToComplete { get; set; }
 
     public CommonUserResponse CreatedByUser { get; set; } = new CommonUserResponse();
+    public List<QuestRewardResponse> QuestRewardResponses { get; set; } = new List<QuestRewardResponse>();
 }

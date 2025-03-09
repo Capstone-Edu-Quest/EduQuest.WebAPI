@@ -1,9 +1,12 @@
 ﻿
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
+using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository;
@@ -84,5 +87,70 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         _context.UserQuests.UpdateRange(userQuests);
         int result = await _context.SaveChangesAsync();
         return result > 0;
+    }
+
+
+    public async Task<PagedList<UserQuest>> GetAllUserQuests(string? title, string? description, int? pointToComplete,
+    int? type, DateTime? startDate, DateTime? dueDate, int page, int pageSize, string userId)
+    {
+        var result = _context.UserQuests
+        .Include(q => q.Rewards)
+        .Where(q => q.UserId == userId)
+        .AsQueryable();
+
+        #region Filter
+        if (!string.IsNullOrEmpty(title))
+        {
+            result = from r in result
+                     where r.Title!.Contains(title)
+                     select r;
+        }
+        if (!string.IsNullOrEmpty(description))
+        {
+            result = from r in result
+                     where r.Description!.Contains(description)
+                     select r;
+        }
+        if (pointToComplete.HasValue)
+        {
+            result = from r in result
+                     where r.PointToComplete! >= pointToComplete.Value
+                     select r;
+        }
+        if (type.HasValue)
+        {
+            result = from r in result
+                     where r.Type! >= type.Value
+                     select r;
+        }
+        if(startDate.HasValue)
+        {
+            result = from r in result
+                     where r.StartDate! >= startDate.Value
+                     select r;
+        }
+        if (dueDate.HasValue)
+        {
+            result = from r in result
+                     where r.DueDate >= dueDate.Value
+                     select r;
+        }
+        #endregion
+
+        var response = await result.Pagination(page, pageSize).ToPagedListAsync(page, pageSize);
+        return response;
+    }
+    public async Task<List<QuestReward>> GetUserQuestRewardAsync(List<string> rewardIds)
+    {
+        if (rewardIds == null || !rewardIds.Any())
+        {
+            return new List<QuestReward>();
+        }
+
+        var result = await _context.QuestRewards
+            .Where(q => rewardIds.Contains(q.Id))
+            .ToListAsync();
+
+        return result;
     }
 }
