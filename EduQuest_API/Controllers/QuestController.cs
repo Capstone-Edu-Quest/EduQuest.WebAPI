@@ -1,5 +1,4 @@
 ﻿using EduQuest_Application.DTO.Request.Quests;
-using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
@@ -35,10 +34,10 @@ namespace EduQuest_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddQuest([FromBody] CreateQuestRequest quest,
-            [FromQuery] string userId,
+            //[FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
-            //string userId = User.GetUserIdFromToken().ToString();
+            string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new CreateQuestCommand(userId, quest), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
@@ -49,10 +48,10 @@ namespace EduQuest_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement,
             [FromQuery] string questId,
-            [FromQuery] string userId,
+            //[FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
-            //string userId = User.GetUserIdFromToken().ToString();
+            string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new UpdateQuestCommand(userId, questId, achievement), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
@@ -64,11 +63,11 @@ namespace EduQuest_API.Controllers
             [FromQuery, AllowNull] int pointToComplete,
             [FromQuery, AllowNull] int type,
             [FromQuery, AllowNull] int timeToComplete,
-            [FromQuery] string userId,
+            //[FromQuery] string userId,
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
              CancellationToken cancellationToken = default)
         {
-            //string userId = User.GetUserIdFromToken().ToString();
+            string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetAllSystemQuestsQuery(title, description,
                 pointToComplete, type, timeToComplete, userId, pageNo, eachPage), cancellationToken);
             if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
@@ -90,11 +89,11 @@ namespace EduQuest_API.Controllers
             [FromQuery, AllowNull] int type,
             [FromQuery, AllowNull] DateTime? startDate,
             [FromQuery, AllowNull] DateTime? dueDate,
-            [FromQuery] string userId,
+            //[FromQuery] string userId,
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
         CancellationToken cancellationToken = default)
         {
-            //string userId = User.GetUserIdFromToken().ToString();
+            string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetAllUserQuestsQuery(title, description,
                 pointToComplete, type, startDate, dueDate, userId, pageNo, eachPage), cancellationToken);
             if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))

@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
-using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace EduQuest_Application.UseCases.Quests.Queries.GetAllUserQuests;
 
@@ -36,7 +30,7 @@ internal class GetAllUserQuestsHandler : IRequestHandler<GetAllUserQuestsQuery, 
     public async Task<APIResponse> Handle(GetAllUserQuestsQuery request, CancellationToken cancellationToken)
     {
 
-        var user = await _userQuestRepository.GetById(request.UserId);
+        var user = await _userRepository.GetById(request.UserId);
         if (user == null)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, 
@@ -50,8 +44,7 @@ internal class GetAllUserQuestsHandler : IRequestHandler<GetAllUserQuestsQuery, 
         foreach (var item in temp)
         {
             UserQuestResponse questResponse = _mapper.Map<UserQuestResponse>(item);
-            List<string> rewardIds = item.Rewards.Select(r => r.QuestRewardId).ToList()!;
-            var rewards = await _userQuestRepository.GetUserQuestRewardAsync(rewardIds);
+            List<QuestReward> rewards = item.Rewards.Select(r => r.QuestReward).ToList();
             List<QuestRewardResponse> questRewardResponse = _mapper.Map<List<QuestRewardResponse>>(rewards);
             questResponse.QuestRewards = questRewardResponse;
             responseDto.Add(questResponse);

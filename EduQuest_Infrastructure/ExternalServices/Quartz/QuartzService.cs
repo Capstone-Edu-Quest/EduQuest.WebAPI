@@ -2,6 +2,7 @@
 
 using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
+using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
 using Quartz;
 
 namespace EduQuest_Infrastructure.ExternalServices.Quartz;
