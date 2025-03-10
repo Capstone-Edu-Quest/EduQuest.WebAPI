@@ -2,7 +2,7 @@
 using EduQuest_Domain.Repository;
 using Quartz;
 
-namespace EduQuest_Infrastructure.ExternalServices.Quartz;
+namespace EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
 
 public class AddNewQuestToAllUserQuest : IJob
 {
@@ -28,7 +28,7 @@ public class AddNewQuestToAllUserQuest : IJob
         ITrigger currentTrigger = context.Trigger;
         Quest quest = await _questRepository.GetQuestById(currentJob.Key.ToString().Substring(8));
         bool result = await _userQuestRepository.AddNewQuestToAllUserQuest(quest!);
-        Console.WriteLine("Task run: Add New Quest To All UserQuest!");
+        Console.WriteLine($"Task run: Add New Quest To All UserQuest! IsCompleted: {result}");
 
         // delete job and trigger
         await scheduler.DeleteJob(currentJob.Key);

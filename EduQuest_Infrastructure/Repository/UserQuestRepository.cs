@@ -8,6 +8,7 @@ using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using static EduQuest_Domain.Enums.GeneralEnums;
+using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -94,7 +95,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     int? type, DateTime? startDate, DateTime? dueDate, int page, int pageSize, string userId)
     {
         var result = _context.UserQuests
-        .Include(q => q.Rewards)
+        //.Include(q => q.Rewards)
         .Where(q => q.UserId == userId)
         .AsQueryable();
 
@@ -152,5 +153,24 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
             .ToListAsync();
 
         return result;
+    }
+
+    public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint)
+    {
+        var userQuests = await _context.UserQuests
+        .Where(uq => uq.UserId == userId && uq.Type == (int)questType)
+        .ToListAsync();
+
+        foreach (var userQuest in userQuests)
+        {
+            userQuest.CurrentPoint += addedPoint;
+            if (userQuest.CurrentPoint >= userQuest.PointToComplete)
+            {
+                userQuest.IsCompleted = true;
+                userQuest.CurrentPoint = userQuest.PointToComplete;
+            }
+        }
+
+        return await _context.SaveChangesAsync() > 0;
     }
 }

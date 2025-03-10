@@ -2,7 +2,7 @@
 using EduQuest_Domain.Repository;
 using Quartz;
 
-namespace EduQuest_Infrastructure.ExternalServices.Quartz;
+namespace EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
 
 public class UpdateAllUserQuest : IJob
 {
