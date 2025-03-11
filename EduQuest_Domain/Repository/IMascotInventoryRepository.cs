@@ -3,8 +3,8 @@ using EduQuest_Domain.Repository.Generic;
 
 namespace EduQuest_Domain.Repository;
 
-public interface IMascotInventoryRepository : IGenericRepository<MascotInventory>
+public interface IMascotInventoryRepository : IGenericRepository<Mascot>
 {
-    Task<MascotInventory?> GetByUserIdAndItemIdAsync(string userId, string shopItemId);
-    Task<IEnumerable<MascotInventory>> GetItemsByUserIdAsync(string userId);
+    Task<Mascot?> GetByUserIdAndItemIdAsync(string userId, string shopItemId);
+    Task<IEnumerable<Mascot>> GetItemsByUserIdAsync(string userId);
 }

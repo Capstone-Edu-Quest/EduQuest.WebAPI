@@ -11,9 +11,11 @@ namespace EduQuest_Domain.Entities
 		public decimal PassingPercentage { get; set; }
 		public string CreatedBy { get; set; }
 
+		[JsonIgnore]
+		public virtual User User { get; set; } = null!;
 
-		public virtual User Creator { get; set; } = null!;
-		
+		[JsonIgnore]
+		public virtual Material Material { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<Question> Questions { get; set; }

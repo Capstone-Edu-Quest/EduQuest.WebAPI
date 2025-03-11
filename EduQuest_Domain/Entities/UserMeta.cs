@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
 	[Table("UserStatistic")]
-	public partial class UserStatistic : BaseEntity
+	public partial class UserMeta : BaseEntity
 	{
 		public string UserId { get; set; }
 		public int? CurrentStreak { get; set; }
@@ -20,7 +21,9 @@ namespace EduQuest_Domain.Entities
         public double? TotalRevenue { get; set; }
 		public DateTime LastActive { get; set; }
 
-        public virtual User User { get; set; } = null!;
-        public virtual ICollection<StudyTime>? StudyTime { get; set; } = null!;
+		[JsonIgnore]
+		public virtual User User { get; set; } = null!;
+		[JsonIgnore]
+		public virtual ICollection<StudyTime>? StudyTime { get; set; } = null!;
     }
 }

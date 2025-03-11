@@ -12,8 +12,10 @@ namespace EduQuest_Domain.Entities
 		public string Status { get; set; }
         public string Type { get; set; }
         public string PaymentIntentId { get; set; }
-        public virtual User User { get; set; } = null;
+
 		[JsonIgnore]
-		public virtual ICollection<Payment> Payments { get; set; } = null;
+		public virtual User User { get; set; } = null;
+		
+		
 	}
 }

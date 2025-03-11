@@ -3,17 +3,17 @@ using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
-    [Table("MascotInventory")]
-    public partial class MascotInventory: BaseEntity
+    [Table("Mascot")]
+    public partial class Mascot: BaseEntity
 	{
         public string UserId { get; set; }
         public string ShopItemId { get; set; }
         public bool IsEquipped { get; set; }
 
-        [ForeignKey("ShopItemId")]
-        public virtual ShopItem ShopItem { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<ShopItem>? ShopItem { get; set; }
 
-        [JsonIgnore]
+		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
 	}
 }

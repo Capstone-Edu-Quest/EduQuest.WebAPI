@@ -18,7 +18,7 @@ namespace EduQuest_Domain.Entities
 		public virtual User User { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<QuestReward> Rewards { get; set; }
+        public virtual ICollection<Reward> Rewards { get; set; }
 
         /*MissionType
           RewardType

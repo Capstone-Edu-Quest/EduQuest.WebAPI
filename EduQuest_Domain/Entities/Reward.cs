@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities;
 
-public class QuestReward : BaseEntity
+public class Reward : BaseEntity
 {
     public string? RewardType { get; set; }//thêm bảng phụ 
     public string? RewardValue { get; set; }//thêm bảng phụ
@@ -14,4 +14,7 @@ public class QuestReward : BaseEntity
 
     [JsonIgnore]
     public virtual Quest Quest { get; set; }
+
+	[JsonIgnore]
+	public virtual UserQuestReward UserQuestReward { get; set; }
 }

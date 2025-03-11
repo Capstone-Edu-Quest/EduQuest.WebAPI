@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace EduQuest_Domain.Entities
 {
 	[Table("Stage")]
-	public partial class Stage : BaseEntity
+	public partial class Lesson : BaseEntity
 	{
 		public string CourseId { get; set; }
 		public string Name { get; set; }
@@ -16,7 +16,7 @@ namespace EduQuest_Domain.Entities
 		public virtual Course Course { get; set; } = null;
 		
 		[JsonIgnore]
-		public virtual ICollection<LearningMaterial> LearningMaterials { get; set; }
+		public virtual ICollection<Material> Materials { get; set; }
 		
 	}
 }

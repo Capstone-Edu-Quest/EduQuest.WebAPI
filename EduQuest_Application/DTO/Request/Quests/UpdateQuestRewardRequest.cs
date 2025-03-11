@@ -5,7 +5,7 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Request.Quests;
 
-public class UpdateQuestRewardRequest : IMapTo<QuestReward>
+public class UpdateQuestRewardRequest : IMapTo<Reward>
 {
     public string? Id { get; set; }
 
