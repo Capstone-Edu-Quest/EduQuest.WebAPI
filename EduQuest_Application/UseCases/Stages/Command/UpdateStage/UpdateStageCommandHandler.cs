@@ -39,7 +39,7 @@ namespace EduQuest_Application.UseCases.Stages.Command.UpdateStage
 					}
 				};
 			}
-			var listStage = new List<Stage>();
+			var listStage = new List<Lesson>();
 			foreach (var stageRequest in request.Stages)
 			{
 				var existingStage = await _stageRepository.GetById(stageRequest.Id);

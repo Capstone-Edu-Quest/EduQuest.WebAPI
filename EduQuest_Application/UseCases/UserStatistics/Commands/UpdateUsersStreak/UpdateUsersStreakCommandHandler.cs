@@ -10,10 +10,10 @@ namespace EduQuest_Application.UseCases.UserStatistics.Commands.UpdateUsersStrea
 
 public class UpdateUsersStreakCommandHandler : IRequestHandler<UpdateUsersStreakCommand, APIResponse>
 {
-    public IGenericRepository<UserStatistic> _genericRepo;
+    public IGenericRepository<UserMeta> _genericRepo;
     public IUnitOfWork _unitOfWork;
 
-    public UpdateUsersStreakCommandHandler(IGenericRepository<UserStatistic> genericRepo, IUnitOfWork unitOfWork)
+    public UpdateUsersStreakCommandHandler(IGenericRepository<UserMeta> genericRepo, IUnitOfWork unitOfWork)
     {
         _genericRepo = genericRepo;
         _unitOfWork = unitOfWork;

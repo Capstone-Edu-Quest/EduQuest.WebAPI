@@ -61,18 +61,18 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
         updatedQuest.IsDaily = request.Quest.IsDaily;
 
 
-        List<QuestReward> rewards = updatedQuest.Rewards.ToList();
+        List<Reward> rewards = updatedQuest.Rewards.ToList();
         foreach(var updatedReward in request.Quest.UpdatedRewards)
         {
             if(updatedReward.Id != null)
             {
-                QuestReward temp = rewards.FirstOrDefault(r => r.Id == updatedReward.Id)!;
+                Reward temp = rewards.FirstOrDefault(r => r.Id == updatedReward.Id)!;
                 temp.RewardValue = updatedReward.RewardValue;
                 temp.RewardType = updatedReward.RewardType;
                 rewards.Add(temp);
             } else
             {
-                rewards.Add(new QuestReward
+                rewards.Add(new Reward
                 {
                     RewardValue = updatedReward.RewardValue,
                     RewardType = updatedReward.RewardType

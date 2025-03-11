@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface IStageRepository : IGenericRepository<Stage>
+	public interface IStageRepository : IGenericRepository<Lesson>
 	{
-		Task<List<Stage>> GetByCourseId(string id);
+		Task<List<Lesson>> GetByCourseId(string id);
 		Task<int?> GetMaxLevelInThisCourse(string id);
 		Task<bool> DeleteStagesByCourseId(string courseId);	
 	}

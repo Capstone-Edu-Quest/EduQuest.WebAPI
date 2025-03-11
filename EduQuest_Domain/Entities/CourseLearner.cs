@@ -11,8 +11,8 @@ namespace EduQuest_Domain.Entities
         public bool IsActive { get; set; }
 		public int ProgressPercentage { get; set; }
 
-		public virtual User User { get; set; } = null;
-		public virtual Course Course { get; set; } = null;
+		public virtual ICollection<User> Users { get; set; } 
+		public virtual ICollection<Course> Courses { get; set; } 
 
 		/*[JsonIgnore]
 		public virtual ICollection<Feedback>? Feedbacks { get; set; }*/

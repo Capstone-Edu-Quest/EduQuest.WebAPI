@@ -51,12 +51,12 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
             {
                 return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,"Empty", "name", "Course");
 			}
-            var listMaterial = new List<LearningMaterial>();
+            var listMaterial = new List<Material>();
 			
 
 			foreach (var item in request.Material)
             {
-				var material = _mapper.Map<LearningMaterial>(item);
+				var material = _mapper.Map<Material>(item);
 				material.Id = Guid.NewGuid().ToString();
 				material.Type = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type);
 

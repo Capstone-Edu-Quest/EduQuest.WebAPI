@@ -70,7 +70,7 @@ namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot
             }
 
             // Add the item to the user's inventory
-            var mascotInventory = new MascotInventory
+            var mascotInventory = new EduQuest_Domain.Entities.Mascot
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.UserId,

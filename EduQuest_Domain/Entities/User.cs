@@ -20,22 +20,23 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
-		[JsonIgnore]
-		public virtual AccountPackage? AccountPackage { get; set; } = null;
-		[JsonIgnore]
-		public virtual PackagePrivilege? PackagePrivilege { get; set; } = null!;
-		[JsonIgnore]
-		public virtual UserStatistic? UserStatistic { get; set; } = null!;
 
 		[JsonIgnore]
-		public virtual ICollection<MascotInventory>? MascotItem { get; set; } = null!;
+		public virtual Level? Level { get; set; } = null!;
+		[JsonIgnore]
+		public virtual Subscription? Subscription { get; set; } = null;
+		
+		[JsonIgnore]
+		public virtual UserMeta? UserMeta { get; set; } = null!;
+
+		[JsonIgnore]
+		public virtual ICollection<Mascot>? MascotItem { get; set; } = null!;
         
         [JsonIgnore]
 		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<UserQuest>? UserQuests { get; set; }
-		[JsonIgnore]
-		public virtual ICollection<Badge>? Badges { get; set; }
+		
 		[JsonIgnore]
 		public virtual ICollection<Certificate>? Certificates { get; set; }
 		[JsonIgnore]
@@ -57,6 +58,10 @@ namespace EduQuest_Domain.Entities
 
         [JsonIgnore]
         public virtual ICollection<Report> Reports { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<LearningPath> LearningPaths { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Leaderboard> Leaderboards { get; set; }
 
-    }
+	}
 }

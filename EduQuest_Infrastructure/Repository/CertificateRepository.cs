@@ -24,10 +24,10 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
         {
             query = query.Where(c => c.Title.Contains(title));
         }
-        if (!string.IsNullOrEmpty(userId))
-        {
-            query = query.Where(c => c.UserId == userId);
-        }
+        //if (!string.IsNullOrEmpty(userId))
+        //{
+        //    query = query.Where(c => c.UserId == userId);
+        //}
         if (!string.IsNullOrEmpty(courseId))
         {
             query = query.Where(c => c.CourseId == courseId);

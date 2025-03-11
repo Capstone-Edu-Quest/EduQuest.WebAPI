@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Authentication;
 using EduQuest_Application.Abstractions.Redis;
-using EduQuest_Application.UseCases.Badges.Commands.CreateBadge;
 using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Domain.Entities;
-using EduQuest_Domain.Repository.Generic;
-using EduQuest_Domain.Repository.UnitOfWork;
-using Moq;
-using static EduQuest_Domain.Constants.Constants;
-using System.Net;
 using EduQuest_Domain.Repository;
-using EduQuest_Application.Abstractions.Authentication;
+using EduQuest_Domain.Repository.UnitOfWork;
 using FluentAssertions;
+using Moq;
+using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Test.UserTest;
 

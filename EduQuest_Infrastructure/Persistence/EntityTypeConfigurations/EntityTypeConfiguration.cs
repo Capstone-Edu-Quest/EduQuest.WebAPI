@@ -5,19 +5,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 {
 	public class EntityTypeConfiguration :
-		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<AccountPackage>,
-		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>, IEntityTypeConfiguration<Badge>,
+		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<Subscription>,
+		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>, IEntityTypeConfiguration<Advertise>,
 		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<CartItem>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
 		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<CourseLearner>,
-		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<LearningMaterial>, IEntityTypeConfiguration<LearningPath>,
-		IEntityTypeConfiguration<LearningPathCourse>, IEntityTypeConfiguration<Level>, IEntityTypeConfiguration<PackagePrivilege>, IEntityTypeConfiguration<Payment>, IEntityTypeConfiguration<Quest>,
+		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<Material>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
-		IEntityTypeConfiguration<Stage>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
-		IEntityTypeConfiguration<UserStatistic>, IEntityTypeConfiguration<RefreshToken>,
-		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<MascotInventory>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
-		IEntityTypeConfiguration<QuestReward>, IEntityTypeConfiguration<Report>, IEntityTypeConfiguration<UserQuestQuestReward>
+		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
+		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
+		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
+		IEntityTypeConfiguration<Reward>, IEntityTypeConfiguration<Report>
 
     {
 		#region Role
@@ -90,7 +89,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         #endregion
 
         #region AccountPackage
-        public void Configure(EntityTypeBuilder<AccountPackage> builder)
+        public void Configure(EntityTypeBuilder<Subscription> builder)
 		{
 
 			
@@ -109,6 +108,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
+		#region Advertise
+		public void Configure(EntityTypeBuilder<Advertise> builder)
+		{
+
+			
+		}
+		#endregion
+
 		#region Assignment
 		public void Configure(EntityTypeBuilder<Assignment> builder)
 		{
@@ -117,12 +124,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region Badge
-		public void Configure(EntityTypeBuilder<Badge> builder)
-		{
-
-		}
-		#endregion
+		
 
 		#region Cart
 		public void Configure(EntityTypeBuilder<Cart> builder)
@@ -134,10 +136,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 			
 
-			builder.HasMany(c => c.Payments)
-				.WithOne(p => p.Cart)
-				.HasForeignKey(p => p.CartId)
-				.OnDelete(DeleteBehavior.Cascade);
 
 		}
 		#endregion
@@ -154,10 +152,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		public void Configure(EntityTypeBuilder<Certificate> builder)
 		{
 
-			builder.HasOne(d => d.User)
-				.WithMany(p => p.Certificates)
-				.HasForeignKey(d => d.UserId)
-				.OnDelete(DeleteBehavior.ClientSetNull);
+		
 
 			builder.HasOne(d => d.Course)
 				.WithMany(p => p.Certificates)
@@ -176,10 +171,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 			
 
-			builder.HasMany(c => c.FavoriteLists)
-				.WithOne(fl => fl.Course)
-				.HasForeignKey(fl => fl.CourseId)
-				.OnDelete(DeleteBehavior.Cascade);
+			
 
 		}
         #endregion
@@ -221,11 +213,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.HasForeignKey(fl => fl.UserId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			// Define the relationship with Course
-			builder.HasOne(fl => fl.Course)
-				.WithMany(c => c.FavoriteLists)
-				.HasForeignKey(fl => fl.CourseId)
-				.OnDelete(DeleteBehavior.Cascade);
+			
 
 		}
 		#endregion
@@ -297,7 +285,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#endregion
 
 		#region LearningMaterial
-		public void Configure(EntityTypeBuilder<LearningMaterial> builder)
+		public void Configure(EntityTypeBuilder<Material> builder)
 		{
 
 
@@ -328,22 +316,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region PackagePrivilege
-		public void Configure(EntityTypeBuilder<PackagePrivilege> builder)
-		{
-
-
-		}
-		#endregion
-
-		#region Payment
-		public void Configure(EntityTypeBuilder<Payment> builder)
-		{
-
-
-		}
-		#endregion
-
 		#region Quest
 		public void Configure(EntityTypeBuilder<Quest> builder)
 		{
@@ -368,7 +340,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         }
         #endregion
         #region QuestReward
-        public void Configure(EntityTypeBuilder<QuestReward> builder)
+        public void Configure(EntityTypeBuilder<Reward> builder)
         {
             builder.HasOne(qr => qr.Quest)
                 .WithMany(q => q.Rewards)
@@ -377,12 +349,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         }
         #endregion
 
-        #region UserQuestQuestReward 
-		public void Configure(EntityTypeBuilder<UserQuestQuestReward> builder)
-		{
-			builder.HasKey(uq => new { uq.UserQuestId, uq.QuestRewardId});
-        }
-        #endregion
+      
 
         #region Question
         public void Configure(EntityTypeBuilder<Question> builder)
@@ -425,7 +392,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#endregion
 
 		#region Stage
-		public void Configure(EntityTypeBuilder<Stage> builder)
+		public void Configure(EntityTypeBuilder<Lesson> builder)
 		{
 
 
@@ -457,7 +424,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#endregion
 
 		#region UserStatistic
-		public void Configure(EntityTypeBuilder<UserStatistic> builder)
+		public void Configure(EntityTypeBuilder<UserMeta> builder)
 		{
 
 
@@ -465,7 +432,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#endregion
 
 		#region UserMascot
-		public void Configure(EntityTypeBuilder<MascotInventory> builder)
+		public void Configure(EntityTypeBuilder<Mascot> builder)
 		{
 
 

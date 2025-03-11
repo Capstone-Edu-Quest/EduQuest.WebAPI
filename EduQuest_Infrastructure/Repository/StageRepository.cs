@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Infrastructure.Repository
 {
-	public class StageRepository : GenericRepository<Stage>, IStageRepository
+	public class StageRepository : GenericRepository<Lesson>, IStageRepository
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -22,25 +22,25 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<bool> DeleteStagesByCourseId(string courseId)
 		{
-			var stages = _context.Stages.Where(x => x.CourseId == courseId).ToList();
+			var stages = _context.Lessons.Where(x => x.CourseId == courseId).ToList();
 
 			if(stages.Any())
 			{
-				_context.Stages.RemoveRange(stages);
+				_context.Lessons.RemoveRange(stages);
 				await _context.SaveChangesAsync();
 				return true;
 			}
 			return false;
 		}
 
-		public async Task<List<Stage>> GetByCourseId(string id)
+		public async Task<List<Lesson>> GetByCourseId(string id)
 		{
-			return await _context.Stages.Where(x => x.CourseId.Equals(id)).ToListAsync();
+			return await _context.Lessons.Where(x => x.CourseId.Equals(id)).ToListAsync();
 		}
 
 		public async Task<int?> GetMaxLevelInThisCourse(string id)
 		{
-			return await _context.Stages.MaxAsync(s => (int?)s.Level);
+			return await _context.Lessons.MaxAsync(s => (int?)s.Level);
 		}
 	}
 }

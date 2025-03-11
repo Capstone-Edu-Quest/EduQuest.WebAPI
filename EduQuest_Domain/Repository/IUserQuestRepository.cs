@@ -12,7 +12,7 @@ public interface IUserQuestRepository : IGenericRepository<UserQuest>
     Task<bool> UpdateAllUserQuest(Quest updatedQuest);
     Task<PagedList<UserQuest>> GetAllUserQuests(string? title, string? description, int? pointToComplete,
     int? type, DateTime? startDate, DateTime? dueDate, int page, int pageSize, string userId);
-    Task<List<QuestReward>> GetUserQuestRewardAsync(List<string> rewardIds);
+    Task<List<Reward>> GetUserQuestRewardAsync(List<string> rewardIds);
 
     Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint);
 }

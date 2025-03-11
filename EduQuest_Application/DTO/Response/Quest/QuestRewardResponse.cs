@@ -3,7 +3,7 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Response.Quests;
 
-public class QuestRewardResponse : IMapFrom<QuestReward>
+public class QuestRewardResponse : IMapFrom<Reward>
 {
     public string? RewardType { get; set; }
     public string? RewardValue { get; set; }

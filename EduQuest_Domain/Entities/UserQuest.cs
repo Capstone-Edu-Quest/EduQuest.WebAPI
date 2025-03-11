@@ -1,11 +1,9 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using static EduQuest_Domain.Constants.Constants;
 
 
 namespace EduQuest_Domain.Entities;
-
+[Table("UserQuest")]
 public class UserQuest : BaseEntity
 {
     public string? Title { get; set; } //change to title?
@@ -23,6 +21,6 @@ public class UserQuest : BaseEntity
     [JsonIgnore]
     public virtual User User { get; set; } = null!;
 
-    [JsonIgnore]
-    public virtual ICollection<UserQuestQuestReward> Rewards { get; set; }
+	[JsonIgnore]
+	public virtual UserQuestReward UserQuestReward { get; set; }
 }

@@ -28,7 +28,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         List<string> UserIds = new List<string>();
         UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
         List<UserQuest> userQuests = new List<UserQuest>();
-        ICollection<QuestReward> rewards = newQuest.Rewards;
+        ICollection<Reward> rewards = newQuest.Rewards;
         foreach (string UserId in UserIds)
         {
             // new UserQuest
@@ -47,18 +47,18 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
                 IsCompleted = false,
                 UserId = UserId,
                 QuestId = newQuest.Id,
-                Rewards = new List<UserQuestQuestReward>()
+                //Rewards = new List<UserQuestReward>()
             };
 
             //add reward
-            foreach (var reward in rewards)
-            {
-                temp.Rewards.Add(new UserQuestQuestReward
-                {
-                    UserQuestId = temp.Id,
-                    QuestRewardId = reward.Id,
-                });
-            }
+            //foreach (var reward in rewards)
+            //{
+            //    temp.Rewards.Add(new UserQuestReward
+            //    {
+            //        UserQuestId = temp.Id,
+            //        QuestRewardId = reward.Id,
+            //    });
+            //}
 
             userQuests.Add(temp);
         }
@@ -74,7 +74,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         List<string> UserIds = new List<string>();
         UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
         List<UserQuest> userQuests = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id).ToListAsync();
-        ICollection<QuestReward> rewards = updatedQuest.Rewards;
+        ICollection<Reward> rewards = updatedQuest.Rewards;
 
         foreach(var userQuest in  userQuests)
         {
@@ -141,11 +141,11 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         var response = await result.Pagination(page, pageSize).ToPagedListAsync(page, pageSize);
         return response;
     }
-    public async Task<List<QuestReward>> GetUserQuestRewardAsync(List<string> rewardIds)
+    public async Task<List<Reward>> GetUserQuestRewardAsync(List<string> rewardIds)
     {
         if (rewardIds == null || !rewardIds.Any())
         {
-            return new List<QuestReward>();
+            return new List<Reward>();
         }
 
         var result = await _context.QuestRewards

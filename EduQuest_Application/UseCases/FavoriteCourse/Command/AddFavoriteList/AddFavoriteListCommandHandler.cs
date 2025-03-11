@@ -23,7 +23,6 @@ namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
 		public async Task<APIResponse> Handle(AddFavoriteListCommand request, CancellationToken cancellationToken)
 		{
 			var newFavCourse = new FavoriteList();
-			newFavCourse.CourseId = request.CourseId;
 			newFavCourse.UserId = request.UserId;
 			await _favoriteListRepository.Add(newFavCourse);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;

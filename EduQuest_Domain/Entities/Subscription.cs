@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
-	[Table("AccountPackage")]
-	public partial class AccountPackage : BaseEntity
+	[Table("Subscription")]
+	public partial class Subscription : BaseEntity
 	{
 		public string Name { get; set; } = string.Empty;
 		public string? Description { get; set; }

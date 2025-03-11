@@ -15,12 +15,13 @@ namespace EduQuest_Infrastructure.Persistence
 
 		
 		
-		public virtual DbSet<AccountPackage> AccountPackages { get; set; } = null!;
+		public virtual DbSet<Subscription> Subscriptions { get; set; } = null!;
 		public virtual DbSet<Answer> Answers { get; set; } = null!;
+		public virtual DbSet<Advertise> Advertises { get; set; } = null!;
 		public virtual DbSet<Assignment> Assignments { get; set; } = null!;
 		
 		
-		public virtual DbSet<Badge> Badges { get; set; } = null!;
+		
 		public virtual DbSet<Cart> Carts { get; set; } = null!;
 		public virtual DbSet<CartItem> CartItems { get; set; } = null!;
 		public virtual DbSet<Certificate> Certificates { get; set; } = null!;
@@ -35,13 +36,13 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<CourseLearner> Learners { get; set; } = null!;
 		
 		public virtual DbSet<LearningHistory> LearningHistorys { get; set; } = null!;
-		public virtual DbSet<LearningMaterial> LearningMaterials { get; set; } = null!;
+		public virtual DbSet<Material> Materials { get; set; } = null!;
 		public virtual DbSet<LearningPath> LearningPaths { get; set; } = null!;
 		public virtual DbSet<LearningPathCourse> LearningPathCourses { get; set; } = null!;
-		public virtual DbSet<Level> Level { get; set; } = null!;
-		public virtual DbSet<MascotInventory> MascotItems { get; set; } = null!;
-		public virtual DbSet<PackagePrivilege> PackagePrivileges { get; set; } = null!;
-		public virtual DbSet<Payment> Payments { get; set; } = null!;
+		public virtual DbSet<Level> Levels { get; set; } = null!;
+		public virtual DbSet<Mascot> Mascots { get; set; } = null!;
+		
+		
 		public virtual DbSet<Quest> Quests { get; set; } = null!;
 		public virtual DbSet<Question> Questions { get; set; } = null!;
 		public virtual DbSet<Quiz> Quizzes { get; set; } = null!;
@@ -51,16 +52,16 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<SearchHistory> SearchHistories { get; set; } = null!;
 		public virtual DbSet<Setting> Settings { get; set; } = null!;
 		public virtual DbSet<ShopItem> ShopItems { get; set; } = null!;
-		public virtual DbSet<Stage> Stages { get; set; } = null!;
+		public virtual DbSet<Lesson> Lessons { get; set; } = null!;
 		public virtual DbSet<StudyTime> StudyTimes { get; set; } = null!;
 		public virtual DbSet<SystemConfig> SystemConfigs { get; set; } = null!;
 		public virtual DbSet<Tag> Tags { get; set; } = null!;
 		public virtual DbSet<Transaction> Transactions { get; set; } = null!;
 		public virtual DbSet<User> Users { get; set; } = null!;
-		public virtual DbSet<UserStatistic> UserStatistics { get; set; } = null!;
+		public virtual DbSet<UserMeta> UserMetas { get; set; } = null!;
 
 		public virtual DbSet<UserQuest> UserQuests { get; set; } = null!;
-		public virtual DbSet<QuestReward> QuestRewards { get; set; } = null!;
+		public virtual DbSet<Reward> QuestRewards { get; set; } = null!;
 		public virtual DbSet<Report> Reports { get; set; } = null!;
 	
 

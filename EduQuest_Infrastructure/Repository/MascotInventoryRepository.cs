@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository;
 
-public class MascotInventoryRepository : GenericRepository<MascotInventory>, IMascotInventoryRepository
+public class MascotInventoryRepository : GenericRepository<Mascot>, IMascotInventoryRepository
 {
     private readonly ApplicationDbContext _context;
 
@@ -15,15 +15,15 @@ public class MascotInventoryRepository : GenericRepository<MascotInventory>, IMa
         _context = context;
     }
 
-    public async Task<MascotInventory?> GetByUserIdAndItemIdAsync(string userId, string shopItemId)
+    public async Task<Mascot?> GetByUserIdAndItemIdAsync(string userId, string shopItemId)
     {
-        return await _context.MascotItems
+        return await _context.Mascots
             .FirstOrDefaultAsync(i => i.UserId == userId && i.ShopItemId == shopItemId);
     }
 
-    public async Task<IEnumerable<MascotInventory>> GetItemsByUserIdAsync(string userId)
+    public async Task<IEnumerable<Mascot>> GetItemsByUserIdAsync(string userId)
     {
-        return await _context.MascotItems
+        return await _context.Mascots
             .Where(i => i.UserId == userId)
             .ToListAsync();
     }
