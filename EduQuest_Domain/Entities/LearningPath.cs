@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace EduQuest_Domain.Entities
 {
 	[Table("LearningPath")]
-	public partial class LearningPath: BaseEntity
+	public partial class LearningPath : BaseEntity
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }

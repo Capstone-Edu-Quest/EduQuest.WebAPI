@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
-	[Table("UserStatistic")]
+	[Table("UserMeta")]
 	public partial class UserMeta : BaseEntity
 	{
 		public string UserId { get; set; }
