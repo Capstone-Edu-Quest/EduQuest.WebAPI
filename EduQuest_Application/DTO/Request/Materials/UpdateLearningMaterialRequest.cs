@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Request.Materials
 {
-	public class UpdateLearningMaterialRequest : IMapFrom<LearningMaterial>, IMapTo<LearningMaterial>
+	public class UpdateLearningMaterialRequest : IMapFrom<Material>, IMapTo<Material>
 	{
 		public string Id { get; set; }
 		public int? Type { get; set; }

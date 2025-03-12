@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface IUserStatisticRepository : IGenericRepository<UserStatistic>
+	public interface IUserStatisticRepository : IGenericRepository<UserMeta>
 	{
-		Task<UserStatistic> GetByUserId(string userId);
+		Task<UserMeta> GetByUserId(string userId);
 	}
 }

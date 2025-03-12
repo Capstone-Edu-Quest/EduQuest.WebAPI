@@ -4,7 +4,7 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Response.UserStatistics;
 
-public class UserStatisticDto : IMapFrom<UserStatistic>, IMapTo<UserStatistic>
+public class UserStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
 {
     public string UserId { get; set; }
     public int? CurrentStreak { get; set; }
@@ -22,7 +22,7 @@ public class UserStatisticDto : IMapFrom<UserStatistic>, IMapTo<UserStatistic>
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<UserStatistic, UserStatisticDto>()
+        profile.CreateMap<UserMeta, UserStatisticDto>()
             .ForAllMembers(opt => opt.Condition((src, dest, sourceMember) => sourceMember != null));
     }
 }

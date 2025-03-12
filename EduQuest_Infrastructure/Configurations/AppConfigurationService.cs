@@ -34,6 +34,9 @@ using EduQuest_Domain.Repository.Generic;
 using EduQuest_Infrastructure.Repository.Generic;
 using EduQuest_Domain.Models.Payment;
 using Stripe;
+using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Infrastructure.ExternalServices.Quartz;
+using Quartz;
 
 namespace EduQuest_Infrastructure
 {
@@ -140,7 +143,7 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ITokenValidation, TokenValidation>();
             services.AddScoped<IQuestRepository, QuestRepository>();
             services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
-            services.AddScoped<IBadgeRepository, BadgeRepository>();
+            
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
@@ -150,10 +153,10 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
-			services.AddScoped<IBadgeRepository, BadgeRepository>();
+			
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
-			services.AddScoped<IPaymentRepository, PaymentRepository>();
+			
 			services.AddScoped<ICartRepository, CartRepository>();
 			services.AddScoped<AccountService>();
 			services.AddScoped<AccountLinkService>();
@@ -166,10 +169,14 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 			services.AddScoped<ICartItemRepository, CartItemRepository>();
 			services.AddScoped<ILearnerRepository, LearnerRepository>();
+			services.AddScoped<IUserQuestRepository, UserQuestRepository>();
+			services.AddScoped<IQuartzService, QuartzService>();
+
+			services.AddQuartz();
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 
-
-			services.AddSingleton(provider =>
+            services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials
 				string filePath = Path.Combine(AppContext.BaseDirectory, "Resource", "edu-quest-2003-firebase-adminsdk-gtcp6-55271f67ec.json");

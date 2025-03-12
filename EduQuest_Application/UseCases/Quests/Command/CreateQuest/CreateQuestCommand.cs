@@ -6,10 +6,12 @@ namespace EduQuest_Application.UseCases.Quests.Command.CreateQuest
 {
     public class CreateQuestCommand : IRequest<APIResponse>
 	{
+		public string UserId { get; set; }
         public CreateQuestRequest Quest { get; set; }
 
-		public CreateQuestCommand(CreateQuestRequest quest)
+		public CreateQuestCommand(string userId, CreateQuestRequest quest)
 		{
+			UserId = userId;
 			Quest = quest;
 		}
 	}

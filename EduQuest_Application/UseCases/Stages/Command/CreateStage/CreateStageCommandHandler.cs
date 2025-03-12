@@ -62,7 +62,7 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 					}
 				};
 			}
-			var stages = new List<Stage>();
+			var stages = new List<Lesson>();
 			int level = 1;
 			if (courseExisted.Stages!.Any() && courseExisted.Stages != null)
 			{
@@ -73,7 +73,7 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 
 			foreach (var stageRequest in request.StageCourse)
 			{
-				var stage = new Stage
+				var stage = new Lesson
 				{
 					Id = Guid.NewGuid().ToString(),
 					CourseId = request.CourseId,

@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface ILearningMaterialRepository : IGenericRepository<LearningMaterial>
+	public interface ILearningMaterialRepository : IGenericRepository<Material>
 	{
-		Task<List<LearningMaterial>> GetMaterialsByIds(List<string> materialIds);
+		Task<List<Material>> GetMaterialsByIds(List<string> materialIds);
 	}
 }

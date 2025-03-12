@@ -1,20 +1,20 @@
 ﻿using EduQuest_Application.DTO.Request.Quests;
 using EduQuest_Domain.Models.Response;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement
 {
     public class UpdateQuestCommand : IRequest<APIResponse>
 	{
+		public string UserId { get; set; }
+		public string QuestId { get; set; }
 		public UpdateQuestRequest Quest { get; set; }
 
-		public UpdateQuestCommand(UpdateQuestRequest quest)
+		public UpdateQuestCommand(string userId,string questId, UpdateQuestRequest quest)
 		{
+			UserId = userId;
+			QuestId = questId;
 			Quest = quest;
 		}
 	}

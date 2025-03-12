@@ -68,8 +68,8 @@ public class MascotItemUnitTest
         var shopItem = new ShopItem { Id = "item1", Price = 100 };
 
         _mockShopItemRepo.Setup(repo => repo.GetById(command.ShopItemId)).ReturnsAsync(shopItem);
-        _mockMascotInventoryRepo.Setup(repo => repo.GetByUserIdAndItemIdAsync(command.UserId, command.ShopItemId))
-            .ReturnsAsync(new MascotInventory());
+        _mockMascotInventoryRepo.Setup<Task<EduQuest_Domain.Entities.Mascot>>(repo => repo.GetByUserIdAndItemIdAsync(command.UserId, command.ShopItemId))
+            .ReturnsAsync(new EduQuest_Domain.Entities.Mascot());
 
         // Act
         var response = await _handler.Handle(command, CancellationToken.None);
@@ -89,8 +89,8 @@ public class MascotItemUnitTest
 
         _mockShopItemRepo.Setup(repo => repo.GetById(command.ShopItemId)).ReturnsAsync(shopItem);
 
-        _mockMascotInventoryRepo.Setup(repo => repo.GetByUserIdAndItemIdAsync(command.UserId, command.ShopItemId))
-            .ReturnsAsync((MascotInventory)null);
+        _mockMascotInventoryRepo.Setup<Task<EduQuest_Domain.Entities.Mascot>>(repo => repo.GetByUserIdAndItemIdAsync(command.UserId, command.ShopItemId))
+            .ReturnsAsync<IMascotInventoryRepository, EduQuest_Domain.Entities.Mascot>((EduQuest_Domain.Entities.Mascot)null);
 
         _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
@@ -109,12 +109,12 @@ public class MascotItemUnitTest
     {
         // Arrange
         var command = new EquipMascotItemCommand { UserId = "user1", ShopItemId = "item1" };
-        var mascotItem = new MascotInventory { UserId = "user1", ShopItemId = "item1", IsEquipped = false };
+        var mascotItem = new EduQuest_Domain.Entities.Mascot { UserId = "user1", ShopItemId = "item1", IsEquipped = false };
 
         _mockMascotInventoryRepo.Setup(repo => repo.GetByUserIdAndItemIdAsync(command.UserId, command.ShopItemId))
             .ReturnsAsync(mascotItem);
 
-        _mockMapper.Setup(mapper => mapper.Map<UserMascotDto>(It.IsAny<MascotInventory>()))
+        _mockMapper.Setup(mapper => mapper.Map<UserMascotDto>(It.IsAny<EduQuest_Domain.Entities.Mascot>()))
             .Returns(new UserMascotDto());
 
         // Act
@@ -130,12 +130,12 @@ public class MascotItemUnitTest
     {
         // Arrange
         var command = new EquipMascotItemCommand { UserId = "user1", ShopItemId = "item1" };
-        var mascotItem = new MascotInventory { UserId = "user1", ShopItemId = "item1", IsEquipped = true };
+        var mascotItem = new EduQuest_Domain.Entities.Mascot { UserId = "user1", ShopItemId = "item1", IsEquipped = true };
 
         _mockMascotInventoryRepo.Setup(repo => repo.GetByUserIdAndItemIdAsync(command.UserId, command.ShopItemId))
             .ReturnsAsync(mascotItem);
 
-        _mockMapper.Setup(mapper => mapper.Map<UserMascotDto>(It.IsAny<MascotInventory>()))
+        _mockMapper.Setup(mapper => mapper.Map<UserMascotDto>(It.IsAny<EduQuest_Domain.Entities.Mascot>()))
             .Returns(new UserMascotDto());
 
         // Act

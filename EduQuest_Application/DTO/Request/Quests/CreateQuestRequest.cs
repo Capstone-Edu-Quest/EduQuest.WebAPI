@@ -1,24 +1,31 @@
 ﻿using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.DTO.Request.Quests
 {
     public class CreateQuestRequest : IMapFrom<Quest>, IMapTo<Quest>
     {
-        public string? Name { get; set; }
-        public string? Type { get; set; }
-        public string? Description { get; set; }
-        public string? RewardType { get; set; }
-        public string? RewardValue { get; set; }
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public string? Title { get; set; } //change name to title
 
-        public string? Image { get; set; }
-        public string? Color { get; set; }
-        public string? Condition { get; set; }
-        public List<string> ListBadgeId { get; set; }
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public int? PointToComplete { get; set; }
+
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public bool? IsDaily { get; set; }
+
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
+
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public string? Description { get; set; }
+
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public int? TimeToComplete { get; set; } //default value is minute
+
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public List<QuestRewardRequest> Rewards { get; set; }
     }
 }

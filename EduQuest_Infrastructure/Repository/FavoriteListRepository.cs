@@ -17,14 +17,14 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<bool> DeleteFavList(string userId, string courseId)
 		{
-			var favCourse = await _context.FavoriteLists.Where(x => x.UserId.Equals(userId) && x.CourseId.Equals(courseId)).FirstOrDefaultAsync();
+			var favCourse = await _context.FavoriteLists.Where(x => x.UserId.Equals(userId)).FirstOrDefaultAsync();
 			_context.FavoriteLists.Remove(favCourse!);
 			return await _context.SaveChangesAsync() > 0;
 		}
 
 		public async Task<List<FavoriteList>> GetFavoriteListByUserId(string userId)
 		{
-			return await _context.FavoriteLists.Include(x => x.Course).Include(x => x.User).Where(x => x.UserId == userId).ToListAsync();
+			return await _context.FavoriteLists.Include(x => x.User).Where(x => x.UserId == userId).ToListAsync();
 		}
 	}
 }

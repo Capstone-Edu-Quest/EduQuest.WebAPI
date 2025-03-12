@@ -8,12 +8,9 @@ using System.Text.Json.Serialization;
 namespace EduQuest_Domain.Entities;
 
 [Table("Report")]
-public partial class Report
+public partial class Report : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; set; }
-    public DateTime? CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
+   
     public DateTime? ClosedAt { get; set; }
     public string Reporter { get; set; } = null!;
     public string Violator { get; set; } = null!;
