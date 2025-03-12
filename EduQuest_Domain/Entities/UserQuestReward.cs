@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities;
 
-public class UserQuestReward
+public class UserQuestReward : BaseEntity
 {
     public string? UserQuestId { get; set; }
     public string? RewardId { get; set; }

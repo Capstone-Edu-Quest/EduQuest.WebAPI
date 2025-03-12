@@ -17,6 +17,8 @@ namespace EduQuest_Domain.Entities
         public string? Thumbnail { get; set; }
 		//Document
         public string? Content { get; set; }
+        public string? AssignmentId { get; set; }
+        public string? QuizId { get; set; }
 
 
 		[JsonIgnore]

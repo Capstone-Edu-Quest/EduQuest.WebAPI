@@ -14,8 +14,6 @@ namespace EduQuest_Domain.Entities
         public string ExpPerLevel { get; set; }
         public string LevelRequirement { get; set; }
 
-		[JsonIgnore]
-		public virtual User? User { get; set; } = null!;
 	}
 
 	

@@ -25,19 +25,34 @@ namespace EduQuest_Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BadgeUser", b =>
+            modelBuilder.Entity("CertificateUser", b =>
                 {
-                    b.Property<string>("BadgesId")
+                    b.Property<string>("CertificatesId")
                         .HasColumnType("text");
 
                     b.Property<string>("UsersId")
                         .HasColumnType("text");
 
-                    b.HasKey("BadgesId", "UsersId");
+                    b.HasKey("CertificatesId", "UsersId");
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("BadgeUser");
+                    b.ToTable("CertificateUser");
+                });
+
+            modelBuilder.Entity("CourseFavoriteList", b =>
+                {
+                    b.Property<string>("CoursesId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FavoriteListsId")
+                        .HasColumnType("text");
+
+                    b.HasKey("CoursesId", "FavoriteListsId");
+
+                    b.HasIndex("FavoriteListsId");
+
+                    b.ToTable("CourseFavoriteList");
                 });
 
             modelBuilder.Entity("CourseItem", b =>
@@ -70,11 +85,14 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("CourseTag");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.AccountPackage", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Advertise", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
+
+                    b.Property<int>("Clicks")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -83,20 +101,32 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DurationDays")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsFree")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RedirectUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -108,7 +138,7 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.ToTable("AccountPackage");
+                    b.ToTable("Advertise");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Answer", b =>
@@ -179,52 +209,16 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Assignment");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Badge", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("IconUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.ToTable("Badge");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Cart", b =>
@@ -341,17 +335,11 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
                     b.HasIndex("DeletedAt");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Certificate");
                 });
@@ -421,7 +409,13 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
+                    b.Property<string>("AdvertiseId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Color")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CourseLearnerId")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -452,6 +446,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Requirement")
                         .HasColumnType("text");
 
+                    b.Property<string>("SettingId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
@@ -468,9 +465,15 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AdvertiseId");
+
+                    b.HasIndex("CourseLearnerId");
+
                     b.HasIndex("CreatedBy");
 
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("SettingId");
 
                     b.ToTable("Course");
                 });
@@ -509,11 +512,7 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
-
                     b.HasIndex("DeletedAt");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("CourseLearner");
                 });
@@ -577,10 +576,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -598,8 +593,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
 
                     b.HasIndex("DeletedAt");
 
@@ -721,8 +714,6 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Leaderboard");
                 });
 
@@ -764,65 +755,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("LearningHistory");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.LearningMaterial", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("AssignmentId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Duration")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("QuizId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Thumbnail")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UrlMaterial")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignmentId");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("QuizId");
-
-                    b.ToTable("LearningMaterial");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPath", b =>
@@ -878,20 +810,87 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPathCourse", b =>
                 {
-                    b.Property<string>("LearningPathId")
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<string>("CourseId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("CourseOrder")
                         .HasColumnType("integer");
 
-                    b.HasKey("LearningPathId", "CourseId");
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LearningPathId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("LearningPathId");
+
                     b.ToTable("LearningPathCourse");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.Lesson", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CourseId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TotalTime")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.ToTable("Stage");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Level", b =>
@@ -932,10 +931,10 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.ToTable("Level");
+                    b.ToTable("Levels");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.MascotInventory", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Mascot", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -968,17 +967,21 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("ShopItemId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("MascotInventory");
+                    b.ToTable("Mascot");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.PackagePrivilege", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Material", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AssignmentId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -988,9 +991,23 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<int?>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("QuizId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1000,49 +1017,20 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.ToTable("PackagePrivilege");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Payment", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CartId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("PaidAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
+                    b.Property<string>("UrlMaterial")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("AssignmentId")
+                        .IsUnique();
 
                     b.HasIndex("DeletedAt");
 
-                    b.ToTable("Payment");
+                    b.HasIndex("QuizId")
+                        .IsUnique();
+
+                    b.ToTable("LearningMaterial");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quest", b =>
@@ -1084,49 +1072,16 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Quest");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.QuestReward", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("QuestId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RewardType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RewardValue")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("QuestId");
-
-                    b.ToTable("QuestRewards");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Question", b =>
@@ -1180,9 +1135,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CreatorId")
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1198,11 +1150,14 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatorId");
-
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Quiz");
                 });
@@ -1302,6 +1257,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("FeedbackId")
                         .HasColumnType("text");
 
@@ -1319,6 +1277,12 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<int?>("Type")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
                     b.Property<string>("Violator")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1327,6 +1291,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("CourseId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("FeedbackId");
 
                     b.HasIndex("Reporter");
@@ -1334,6 +1300,47 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("Violator");
 
                     b.ToTable("Report");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.Reward", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("QuestId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RewardType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RewardValue")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserQuestRewardId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("QuestId");
+
+                    b.HasIndex("UserQuestRewardId");
+
+                    b.ToTable("QuestRewards");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Role", b =>
@@ -1425,15 +1432,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Setting");
                 });
@@ -1470,56 +1471,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("ShopItem");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Stage", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("AssignmentId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("TotalTime")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignmentId");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.ToTable("Stage");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.StudyTime", b =>
                 {
                     b.Property<string>("Id")
@@ -1549,13 +1500,57 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserMetaId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserMetaId");
 
                     b.ToTable("StudyTimes");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.Subscription", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsFree")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.ToTable("Subscription");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.SystemConfig", b =>
@@ -1679,6 +1674,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text");
 
+                    b.Property<string>("CourseLearnerId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1694,6 +1692,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Headline")
                         .HasColumnType("text");
 
+                    b.Property<string>("LevelId")
+                        .HasColumnType("text");
+
                     b.Property<string>("PackagePrivilegeId")
                         .HasColumnType("text");
 
@@ -1707,6 +1708,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SubscriptionId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1718,13 +1722,15 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountPackageId");
+                    b.HasIndex("CourseLearnerId");
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("PackagePrivilegeId");
+                    b.HasIndex("LevelId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("User");
                 });
@@ -1747,84 +1753,7 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("UserCoupon");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuest", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CurrentPoint")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsDaily")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("PointToComplete")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("QuestId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("QuestId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserQuests");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuestQuestReward", b =>
-                {
-                    b.Property<string>("UserQuestId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("QuestRewardId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserQuestId", "QuestRewardId");
-
-                    b.HasIndex("QuestRewardId");
-
-                    b.ToTable("UserQuestQuestReward");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserStatistic", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.UserMeta", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -1892,22 +1821,120 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserStatistic");
+                    b.ToTable("UserMeta");
                 });
 
-            modelBuilder.Entity("LearningMaterialStage", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuest", b =>
                 {
-                    b.Property<string>("LearningMaterialsId")
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<string>("StagesId")
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CurrentPoint")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.HasKey("LearningMaterialsId", "StagesId");
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasIndex("StagesId");
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
 
-                    b.ToTable("LearningMaterialStage");
+                    b.Property<bool?>("IsDaily")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("PointToComplete")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("QuestId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserQuestRewardId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("QuestId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserQuestRewardId");
+
+                    b.ToTable("UserQuest");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuestReward", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RewardId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserQuestId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.ToTable("UserQuestReward");
+                });
+
+            modelBuilder.Entity("LeaderboardUser", b =>
+                {
+                    b.Property<string>("LeaderboardsId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("LeaderboardsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("LeaderboardUser");
                 });
 
             modelBuilder.Entity("LearningPathTag", b =>
@@ -1925,32 +1952,62 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("LearningPathTag");
                 });
 
-            modelBuilder.Entity("PaymentTransaction", b =>
+            modelBuilder.Entity("LessonMaterial", b =>
                 {
-                    b.Property<string>("PaymentsId")
+                    b.Property<string>("MaterialsId")
                         .HasColumnType("text");
 
-                    b.Property<string>("TransactionsId")
+                    b.Property<string>("StagesId")
                         .HasColumnType("text");
 
-                    b.HasKey("PaymentsId", "TransactionsId");
+                    b.HasKey("MaterialsId", "StagesId");
 
-                    b.HasIndex("TransactionsId");
+                    b.HasIndex("StagesId");
 
-                    b.ToTable("PaymentTransaction");
+                    b.ToTable("LessonMaterial");
                 });
 
-            modelBuilder.Entity("BadgeUser", b =>
+            modelBuilder.Entity("MascotShopItem", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.Badge", null)
+                    b.Property<string>("MascotItemsId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShopItemId")
+                        .HasColumnType("text");
+
+                    b.HasKey("MascotItemsId", "ShopItemId");
+
+                    b.HasIndex("ShopItemId");
+
+                    b.ToTable("MascotShopItem");
+                });
+
+            modelBuilder.Entity("CertificateUser", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.Certificate", null)
                         .WithMany()
-                        .HasForeignKey("BadgesId")
+                        .HasForeignKey("CertificatesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EduQuest_Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CourseFavoriteList", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.Course", null)
+                        .WithMany()
+                        .HasForeignKey("CoursesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduQuest_Domain.Entities.FavoriteList", null)
+                        .WithMany()
+                        .HasForeignKey("FavoriteListsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1995,6 +2052,15 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.Assignment", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.Cart", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Course", null)
@@ -2035,14 +2101,7 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasForeignKey("CourseId")
                         .IsRequired();
 
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany("Certificates")
-                        .HasForeignKey("UserId")
-                        .IsRequired();
-
                     b.Navigation("Course");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Coupon", b =>
@@ -2064,29 +2123,22 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Course", b =>
                 {
+                    b.HasOne("EduQuest_Domain.Entities.Advertise", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("AdvertiseId");
+
+                    b.HasOne("EduQuest_Domain.Entities.CourseLearner", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("CourseLearnerId");
+
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany("Courses")
                         .HasForeignKey("CreatedBy")
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.CourseLearner", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
+                    b.HasOne("EduQuest_Domain.Entities.Setting", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("SettingId");
 
                     b.Navigation("User");
                 });
@@ -2104,19 +2156,11 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.Course", "Course")
-                        .WithMany("FavoriteLists")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany("FavoriteLists")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Course");
 
                     b.Navigation("User");
                 });
@@ -2140,17 +2184,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Leaderboard", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningHistory", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Course", "Course")
@@ -2170,25 +2203,10 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.LearningMaterial", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Assignment", "Assignment")
-                        .WithMany()
-                        .HasForeignKey("AssignmentId");
-
-                    b.HasOne("EduQuest_Domain.Entities.Quiz", "Quiz")
-                        .WithMany()
-                        .HasForeignKey("QuizId");
-
-                    b.Navigation("Assignment");
-
-                    b.Navigation("Quiz");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPath", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("LearningPaths")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2215,52 +2233,50 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("LearningPath");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.MascotInventory", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Lesson", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.ShopItem", "ShopItem")
-                        .WithMany("MascotItems")
-                        .HasForeignKey("ShopItemId")
+                    b.HasOne("EduQuest_Domain.Entities.Course", "Course")
+                        .WithMany("Stages")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.Mascot", b =>
+                {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany("MascotItem")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ShopItem");
-
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Payment", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Material", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.Cart", "Cart")
-                        .WithMany("Payments")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("EduQuest_Domain.Entities.Assignment", "Assignment")
+                        .WithOne("Material")
+                        .HasForeignKey("EduQuest_Domain.Entities.Material", "AssignmentId");
 
-                    b.Navigation("Cart");
+                    b.HasOne("EduQuest_Domain.Entities.Quiz", "Quiz")
+                        .WithOne("Material")
+                        .HasForeignKey("EduQuest_Domain.Entities.Material", "QuizId");
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quest", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany("Quests")
-                        .HasForeignKey("CreatedBy");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.QuestReward", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Quest", "Quest")
-                        .WithMany("Rewards")
-                        .HasForeignKey("QuestId");
-
-                    b.Navigation("Quest");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Question", b =>
@@ -2276,11 +2292,11 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quiz", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.User", "Creator")
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("Creator");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.QuizAttempt", b =>
@@ -2338,6 +2354,21 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.Reward", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.Quest", "Quest")
+                        .WithMany("Rewards")
+                        .HasForeignKey("QuestId");
+
+                    b.HasOne("EduQuest_Domain.Entities.UserQuestReward", "UserQuestReward")
+                        .WithMany("Rewards")
+                        .HasForeignKey("UserQuestRewardId");
+
+                    b.Navigation("Quest");
+
+                    b.Navigation("UserQuestReward");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.SearchHistory", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
@@ -2349,41 +2380,13 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Setting", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Stage", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Assignment", null)
-                        .WithMany("Stages")
-                        .HasForeignKey("AssignmentId");
-
-                    b.HasOne("EduQuest_Domain.Entities.Course", "Course")
-                        .WithMany("Stages")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.StudyTime", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.UserStatistic", "User")
+                    b.HasOne("EduQuest_Domain.Entities.UserMeta", "UserMeta")
                         .WithMany("StudyTime")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserMetaId");
 
-                    b.Navigation("User");
+                    b.Navigation("UserMeta");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Transaction", b =>
@@ -2399,23 +2402,27 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.User", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.AccountPackage", "AccountPackage")
+                    b.HasOne("EduQuest_Domain.Entities.CourseLearner", null)
                         .WithMany("Users")
-                        .HasForeignKey("AccountPackageId");
+                        .HasForeignKey("CourseLearnerId");
 
-                    b.HasOne("EduQuest_Domain.Entities.PackagePrivilege", "PackagePrivilege")
-                        .WithMany("Users")
-                        .HasForeignKey("PackagePrivilegeId");
+                    b.HasOne("EduQuest_Domain.Entities.Level", "Level")
+                        .WithMany()
+                        .HasForeignKey("LevelId");
 
                     b.HasOne("EduQuest_Domain.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
 
-                    b.Navigation("AccountPackage");
+                    b.HasOne("EduQuest_Domain.Entities.Subscription", "Subscription")
+                        .WithMany("Users")
+                        .HasForeignKey("SubscriptionId");
 
-                    b.Navigation("PackagePrivilege");
+                    b.Navigation("Level");
 
                     b.Navigation("Role");
+
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.UserCoupon", b =>
@@ -2437,6 +2444,17 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.UserMeta", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
+                        .WithOne("UserMeta")
+                        .HasForeignKey("EduQuest_Domain.Entities.UserMeta", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.UserQuest", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Quest", null)
@@ -2447,50 +2465,26 @@ namespace EduQuest_Infrastructure.Migrations
                         .WithMany("UserQuests")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuestQuestReward", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.QuestReward", "QuestReward")
-                        .WithMany()
-                        .HasForeignKey("QuestRewardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.UserQuest", "UserQuest")
-                        .WithMany("Rewards")
-                        .HasForeignKey("UserQuestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("QuestReward");
-
-                    b.Navigation("UserQuest");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserStatistic", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithOne("UserStatistic")
-                        .HasForeignKey("EduQuest_Domain.Entities.UserStatistic", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("EduQuest_Domain.Entities.UserQuestReward", "UserQuestReward")
+                        .WithMany("UserQuests")
+                        .HasForeignKey("UserQuestRewardId");
 
                     b.Navigation("User");
+
+                    b.Navigation("UserQuestReward");
                 });
 
-            modelBuilder.Entity("LearningMaterialStage", b =>
+            modelBuilder.Entity("LeaderboardUser", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.LearningMaterial", null)
+                    b.HasOne("EduQuest_Domain.Entities.Leaderboard", null)
                         .WithMany()
-                        .HasForeignKey("LearningMaterialsId")
+                        .HasForeignKey("LeaderboardsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduQuest_Domain.Entities.Stage", null)
+                    b.HasOne("EduQuest_Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("StagesId")
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2510,36 +2504,50 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PaymentTransaction", b =>
+            modelBuilder.Entity("LessonMaterial", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.Payment", null)
+                    b.HasOne("EduQuest_Domain.Entities.Material", null)
                         .WithMany()
-                        .HasForeignKey("PaymentsId")
+                        .HasForeignKey("MaterialsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduQuest_Domain.Entities.Transaction", null)
+                    b.HasOne("EduQuest_Domain.Entities.Lesson", null)
                         .WithMany()
-                        .HasForeignKey("TransactionsId")
+                        .HasForeignKey("StagesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.AccountPackage", b =>
+            modelBuilder.Entity("MascotShopItem", b =>
                 {
-                    b.Navigation("Users");
+                    b.HasOne("EduQuest_Domain.Entities.Mascot", null)
+                        .WithMany()
+                        .HasForeignKey("MascotItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduQuest_Domain.Entities.ShopItem", null)
+                        .WithMany()
+                        .HasForeignKey("ShopItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.Advertise", b =>
+                {
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Assignment", b =>
                 {
-                    b.Navigation("Stages");
+                    b.Navigation("Material")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Cart", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Coupon", b =>
@@ -2560,13 +2568,18 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("CourseStatistic")
                         .IsRequired();
 
-                    b.Navigation("FavoriteLists");
-
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Reports");
 
                     b.Navigation("Stages");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.CourseLearner", b =>
+                {
+                    b.Navigation("Courses");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Feedback", b =>
@@ -2577,11 +2590,6 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPath", b =>
                 {
                     b.Navigation("LearningPathCourses");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.PackagePrivilege", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quest", b =>
@@ -2596,6 +2604,9 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quiz", b =>
                 {
+                    b.Navigation("Material")
+                        .IsRequired();
+
                     b.Navigation("Questions");
                 });
 
@@ -2604,22 +2615,27 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.ShopItem", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Setting", b =>
                 {
-                    b.Navigation("MascotItems");
+                    b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.Subscription", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.User", b =>
                 {
                     b.Navigation("Carts");
 
-                    b.Navigation("Certificates");
-
                     b.Navigation("Coupons");
 
                     b.Navigation("Courses");
 
                     b.Navigation("FavoriteLists");
+
+                    b.Navigation("LearningPaths");
 
                     b.Navigation("MascotItem");
 
@@ -2633,19 +2649,21 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Navigation("Transactions");
 
+                    b.Navigation("UserMeta");
+
                     b.Navigation("UserQuests");
-
-                    b.Navigation("UserStatistic");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuest", b =>
-                {
-                    b.Navigation("Rewards");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserStatistic", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.UserMeta", b =>
                 {
                     b.Navigation("StudyTime");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.UserQuestReward", b =>
+                {
+                    b.Navigation("Rewards");
+
+                    b.Navigation("UserQuests");
                 });
 #pragma warning restore 612, 618
         }

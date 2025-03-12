@@ -1,6 +1,7 @@
 ﻿using EduQuest_Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 {
@@ -287,9 +288,17 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region LearningMaterial
 		public void Configure(EntityTypeBuilder<Material> builder)
 		{
+            builder
+			.HasOne(a => a.Assignment)
+			.WithOne(m => m.Material)
+			.HasForeignKey<Material>(m => m.AssignmentId);
 
+            builder
+            .HasOne(a => a.Quiz)
+            .WithOne(m => m.Material)
+            .HasForeignKey<Material>(m => m.QuizId);
 
-		}
+        }
 		#endregion
 
 		#region LearningPath
