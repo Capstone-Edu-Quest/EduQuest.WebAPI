@@ -17,6 +17,9 @@ namespace EduQuest_Domain.Entities
 		public string? ExpectedAnswer { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<Stage> Stages { get; set; }
+		public virtual User User { get; set; } = null!;
+
+		[JsonIgnore]
+		public virtual Material Material { get; set; } = null!;
 	}
 }

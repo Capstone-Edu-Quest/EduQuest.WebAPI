@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response
 {
-	public class StageCourseResponse : IMapFrom<Stage>, IMapTo<Stage>
+	public class StageCourseResponse : IMapFrom<Lesson>, IMapTo<Lesson>
 	{
         public string Id { get; set; }
         public int Level { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Entities
@@ -12,5 +13,8 @@ namespace EduQuest_Domain.Entities
         public string UpLevelReward { get; set; }
         public string ExpPerLevel { get; set; }
         public string LevelRequirement { get; set; }
-    }
+
+	}
+
+	
 }

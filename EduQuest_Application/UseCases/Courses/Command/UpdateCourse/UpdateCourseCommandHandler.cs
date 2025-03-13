@@ -45,7 +45,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			existingCourse.Feature = request.CourseInfo.Feature;
 			existingCourse.Price = request.CourseInfo.Price;
 
-			var newStages = new List<Stage>();
+			var newStages = new List<Lesson>();
 			if (request.CourseInfo.StageCourse != null && request.CourseInfo.StageCourse.Any())
 			{
 				
@@ -55,14 +55,14 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				{
 					var stageRequest = request.CourseInfo.StageCourse[i];
 					var learningMaterials = await _learningMaterialRepository.GetMaterialsByIds(stageRequest.MaterialIds);
-					var stage = new Stage
+					var stage = new Lesson
 					{
 						Id = Guid.NewGuid().ToString(),
 						Name = stageRequest.Name,
 						Description = stageRequest.Description,
 						CourseId = existingCourse.Id,
 						Level = i + 1, 
-						LearningMaterials = learningMaterials, // Gán Material
+						Materials = learningMaterials, // Gán Material
 						TotalTime = learningMaterials?.Sum(m => m.Duration) ?? 0
 					};
 
@@ -72,7 +72,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				await _stageRepository.CreateRangeAsync(newStages);
 
 				existingCourse.CourseStatistic.TotalTime = newStages.Sum(c => c.TotalTime);
-				existingCourse.CourseStatistic.TotalLesson = newStages.Sum(stage => stage.LearningMaterials?.Count ?? 0);
+				existingCourse.CourseStatistic.TotalLesson = newStages.Sum(stage => stage.Materials?.Count ?? 0);
 
 				await _courseRepository.Update(existingCourse);
 				await _unitOfWork.SaveChangesAsync();

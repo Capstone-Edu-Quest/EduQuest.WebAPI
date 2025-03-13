@@ -12,12 +12,12 @@ namespace EduQuest_Test.UserStatisticTest;
 public sealed class UserStatisticUnitTests
 {
     private readonly UpdateUsersStreakCommandHandler _handler;
-    private readonly Mock<IGenericRepository<UserStatistic>> _mockRepository;
+    private readonly Mock<IGenericRepository<UserMeta>> _mockRepository;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
     public UserStatisticUnitTests()
     {
-        _mockRepository = new Mock<IGenericRepository<UserStatistic>>();
+        _mockRepository = new Mock<IGenericRepository<UserMeta>>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _handler = new UpdateUsersStreakCommandHandler(_mockRepository.Object, _mockUnitOfWork.Object);
     }
@@ -28,7 +28,7 @@ public sealed class UserStatisticUnitTests
         // Arrange
         var invalidId = "test";
         var command = new UpdateUsersStreakCommand { UserId = "test" };
-        _mockRepository.Setup(repo => repo.GetById(It.IsAny<string>())).ReturnsAsync((UserStatistic)null);
+        _mockRepository.Setup(repo => repo.GetById(It.IsAny<string>())).ReturnsAsync((UserMeta)null);
 
 
         // Act
@@ -43,7 +43,7 @@ public sealed class UserStatisticUnitTests
     public async Task Handle_LastLearningDayNull_ShouldInitializeIt()
     {
         // Arrange
-        var userStat = new UserStatistic { Id = "user1", LastLearningDay = null, CurrentStreak = 0, LongestStreak = 0 };
+        var userStat = new UserMeta { Id = "user1", LastLearningDay = null, CurrentStreak = 0, LongestStreak = 0 };
         var command = new UpdateUsersStreakCommand { UserId = "user1" };
 
         _mockRepository.Setup(repo => repo.GetById(command.UserId)).ReturnsAsync(userStat);
@@ -62,7 +62,7 @@ public sealed class UserStatisticUnitTests
     {
         // Arrange
         var yesterday = DateTime.UtcNow.Date.AddDays(-1);
-        var userStat = new UserStatistic { Id = "user1", LastLearningDay = yesterday, CurrentStreak = 9, LongestStreak = 14 };
+        var userStat = new UserMeta { Id = "user1", LastLearningDay = yesterday, CurrentStreak = 9, LongestStreak = 14 };
         var command = new UpdateUsersStreakCommand { UserId = "user1" };
 
         _mockRepository.Setup(repo => repo.GetById(command.UserId)).ReturnsAsync(userStat);
@@ -82,7 +82,7 @@ public sealed class UserStatisticUnitTests
     {
         // Arrange
         var yesterday = DateTime.UtcNow.Date.AddDays(-1);
-        var userStat = new UserStatistic { Id = "user1", LastLearningDay = yesterday, CurrentStreak = 3, LongestStreak = 3 };
+        var userStat = new UserMeta { Id = "user1", LastLearningDay = yesterday, CurrentStreak = 3, LongestStreak = 3 };
         var command = new UpdateUsersStreakCommand { UserId = "user1" };
 
         _mockRepository.Setup(repo => repo.GetById(command.UserId)).ReturnsAsync(userStat);
@@ -101,7 +101,7 @@ public sealed class UserStatisticUnitTests
     {
         // Arrange
         var twoDaysAgo = DateTime.UtcNow.Date.AddDays(-2);
-        var userStat = new UserStatistic { Id = "user1", LastLearningDay = twoDaysAgo, CurrentStreak = 5, LongestStreak = 5 };
+        var userStat = new UserMeta { Id = "user1", LastLearningDay = twoDaysAgo, CurrentStreak = 5, LongestStreak = 5 };
         var command = new UpdateUsersStreakCommand { UserId = "user1" };
 
         _mockRepository.Setup(repo => repo.GetById(command.UserId)).ReturnsAsync(userStat);
@@ -120,7 +120,7 @@ public sealed class UserStatisticUnitTests
     {
         // Arrange
         var yesterday = DateTime.UtcNow.Date.AddDays(-1);
-        var userStat = new UserStatistic { Id = "user1", LastLearningDay = yesterday, CurrentStreak = 7, LongestStreak = 5 };
+        var userStat = new UserMeta { Id = "user1", LastLearningDay = yesterday, CurrentStreak = 7, LongestStreak = 5 };
         var command = new UpdateUsersStreakCommand { UserId = "user1" };
 
         _mockRepository.Setup(repo => repo.GetById(command.UserId)).ReturnsAsync(userStat);

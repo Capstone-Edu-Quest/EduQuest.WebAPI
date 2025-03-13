@@ -1,4 +1,5 @@
 ﻿using Application.UseCases.Authenticate.Commands.SignInWithGoogle;
+using EduQuest_Application.DTO.Request.Authenticate;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 using EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken;
@@ -47,10 +48,10 @@ public class AuthenticateController : BaseController
     [HttpPost("sign-out")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> SignOut([FromBody] string accessToken, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignOut([FromBody] SignOutRequest request, CancellationToken cancellationToken)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new SignOutCommand { userId = userId, accessToken = accessToken }, cancellationToken);
+        var result = await _mediator.Send(new SignOutCommand { userId = userId, accessToken = request.AccessToken }, cancellationToken);
         return Ok(result);
     }
 }
