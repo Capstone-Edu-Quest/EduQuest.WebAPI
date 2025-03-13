@@ -18,6 +18,6 @@ namespace EduQuest_Domain.Repository
 		Task<List<Course>> GetCoursesByKeywordsAsync(List<string> keywords);
         Task<bool> IsOwner(string courseId, string UserId);
 		Task<List<Tag>> GetTagByCourseIds(List<string> courseIds);
-
+		Task<List<Course>?> GetByListIds(List<string> courseIds);
     }
 }
