@@ -36,12 +36,13 @@ public class GetPlatformCouponsHandler : IRequestHandler<GetPlatformCouponsQuery
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.GetFailed, MessageCommon.SessionTimeout, Key, value);
             }
-            string role = ((int)UserRole.Admin).ToString();
-            //check if user role is admin
-            if (user.RoleId != role)
+            string admin = ((int)UserRole.Admin).ToString();
+            string staff = ((int)UserRole.Staff).ToString();
+            /*//check if user role is admin
+            if (user.RoleId != admin || user.RoleId != staff)
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.GetFailed, MessageCommon.UserDontHavePer, Key, value);
-            }
+            }*/
             #endregion
 
             var result = await _couponRepository.GetAllPlatformCoupon(request.PageNo, request.PageSize,
@@ -53,8 +54,8 @@ public class GetPlatformCouponsHandler : IRequestHandler<GetPlatformCouponsQuery
             {
                 //CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
                 CouponResponse myCouponResponse = _mapper.Map<CouponResponse>(item);
-                myCouponResponse.WhiteListCourseIds = item.Course.Select(c => c.Id).ToList();
-                myCouponResponse.WhiteListUserIds = item.WhiteListUsers.Select(w => w.UserId).ToList();
+                myCouponResponse.WhiteListCourseIds = item.Course.Count > 0 ? item.Course.Select(c => c.Id).ToList() : null;
+                myCouponResponse.WhiteListUserIds = item.WhiteListUsers.Count > 0 ? item.WhiteListUsers.Select(w => w.Id).ToList() : null;
                 responseDto.Add(myCouponResponse);
             }
             PagedList<CouponResponse> responses = new PagedList<CouponResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);

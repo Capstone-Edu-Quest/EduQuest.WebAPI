@@ -98,32 +98,23 @@ public class UpdateCouponHandler : IRequestHandler<UpdateCouponCommand, APIRespo
 
             if (request.Coupon.WhiteListUserIds != null)
             {
-                List<UserCoupon>? existUser = temp.WhiteListUsers.ToList();
-                HashSet<string> whiteListUserIdsSet = new HashSet<string>(request.Coupon.WhiteListUserIds);
+                List<User>? existUsers = temp.WhiteListUsers.ToList();
+                List<User> users = await _userRepository.GetByUserIds(request.Coupon.WhiteListUserIds);
 
-                List<UserCoupon> userToDelete = existUser
-                    .Where(e => !whiteListUserIdsSet.Contains(e.UserId))
-                    .ToList();
+                HashSet<User> existUsersSet = new HashSet<User>(existUsers);
+                HashSet<User> usersSet = new HashSet<User>(users);
 
-                List<string> userIdToAdd = request.Coupon.WhiteListUserIds
-                    .Where(id => !whiteListUserIdsSet.Contains(id))
-                    .ToList();
+                IEnumerable<User> userToAdd = usersSet.Except(existUsersSet);
+                IEnumerable<User> userToDelete = existUsersSet.Except(usersSet);
 
-                foreach (UserCoupon userCoupon in userToDelete)
+                foreach (User user1 in userToAdd)
                 {
-                    temp.WhiteListUsers.Remove(userCoupon);
+                    temp.WhiteListUsers.Add(user1);
                 }
 
-                foreach (var item in userIdToAdd)
+                foreach (User user1 in userToDelete)
                 {
-                    UserCoupon userCoupon = new UserCoupon
-                    {
-                        CouponId = temp.Id,
-                        UserId = item,
-                        RemainUsage = temp.AllowUsagePerUser,
-                        AllowUsage = temp.AllowUsagePerUser,
-                    };
-                    temp.WhiteListUsers.Add(userCoupon);
+                    temp.WhiteListUsers.Remove(user1);
                 }
             }
 
@@ -131,9 +122,9 @@ public class UpdateCouponHandler : IRequestHandler<UpdateCouponCommand, APIRespo
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(temp);
-                List<string>? UserIds = temp.WhiteListUsers.Select(t => t.UserId).ToList();
+                List<string>? UserIds = temp.WhiteListUsers != null ? temp.WhiteListUsers.Select(t => t.Id).ToList() : null;
                 response.WhiteListUserIds = UserIds;
-                List<string>? CourseIds = temp.Course.Select(t => t.Id).ToList();
+                List<string>? CourseIds = temp.Course != null ? temp.Course.Select(t => t.Id).ToList() : null;
                 response.WhiteListCourseIds = CourseIds;
                 //response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, Key, value);

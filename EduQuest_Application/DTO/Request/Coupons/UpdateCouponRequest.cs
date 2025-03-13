@@ -4,7 +4,7 @@ public class UpdateCouponRequest
 {
     public decimal Discount { get; set; }
     public string? Description { get; set; }
-    public string Code { get; set; } = string.Empty;
+    public string? Code { get; set; } = string.Empty;
     public DateTime StartTime { get; set; }
     public DateTime? ExpireTime { get; set; }
     public int AllowUsagePerUser { get; set; }

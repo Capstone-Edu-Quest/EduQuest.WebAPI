@@ -77,32 +77,18 @@ public class CreateCouponHandler : IRequestHandler<CreateCouponCommand, APIRespo
                 newCoupon.Course = await _courseRepository.GetByListIds(request.CreateCouponRequest.WhiteListCourseIds);
             }
 
-
-            List<UserCoupon> userCoupons = new List<UserCoupon>();
             if(request.CreateCouponRequest.WhiteListUserIds != null)
             {
-                foreach (var item in request.CreateCouponRequest.WhiteListUserIds!)
-                {
-                    UserCoupon userCoupon = new UserCoupon
-                    {
-                        UserId = item,
-                        CouponId = newCoupon.Id,
-                        AllowUsage = newCoupon.AllowUsagePerUser,
-                        RemainUsage = newCoupon.AllowUsagePerUser,
-                    };
-                    userCoupons.Add(userCoupon);
-                }
-            }
-                
-            newCoupon.WhiteListUsers = userCoupons;
+                newCoupon.WhiteListUsers = await _userRepository.GetByUserIds(request.CreateCouponRequest.WhiteListUserIds);
+            }               
 
             await _couponRepository.Add(newCoupon);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(newCoupon);
-                List<string>? UserIds = newCoupon.WhiteListUsers.Select(t => t.UserId).ToList();
+                List<string>? UserIds = newCoupon.WhiteListUsers != null ? newCoupon.WhiteListUsers.Select(t => t.Id).ToList() : null;
                 response.WhiteListUserIds = UserIds;
-                List<string>? CourseIds = newCoupon.Course.Select(t => t.Id).ToList();
+                List<string>? CourseIds = newCoupon.Course != null ? newCoupon.Course.Select(t => t.Id).ToList() : null;
                 response.WhiteListCourseIds = CourseIds;
                 //response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, Key, value);

@@ -21,5 +21,8 @@ public class Coupon : BaseEntity
     public virtual User? User { get; set; }
 
     [JsonIgnore]
-    public virtual ICollection<UserCoupon>? WhiteListUsers { get; set; }
+    public virtual ICollection<UserCoupon>? UserCoupons { get; set; }
+
+    [JsonIgnore]
+    public virtual ICollection<User>? WhiteListUsers { get; set; }
 }

@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250313172740_updateCoupon2.1")]
+    partial class updateCoupon21
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,21 +56,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("CouponCourse");
-                });
-
-            modelBuilder.Entity("CouponUser", b =>
-                {
-                    b.Property<string>("CouponId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.HasKey("CouponId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CouponUser");
                 });
 
             modelBuilder.Entity("CourseItem", b =>
@@ -1706,6 +1694,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text");
 
+                    b.Property<string>("CouponId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1746,6 +1737,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountPackageId");
+
+                    b.HasIndex("CouponId");
 
                     b.HasIndex("DeletedAt");
 
@@ -1996,21 +1989,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasOne("EduQuest_Domain.Entities.Course", null)
                         .WithMany()
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CouponUser", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Coupon", null)
-                        .WithMany()
-                        .HasForeignKey("CouponId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2457,6 +2435,10 @@ namespace EduQuest_Infrastructure.Migrations
                         .WithMany("Users")
                         .HasForeignKey("AccountPackageId");
 
+                    b.HasOne("EduQuest_Domain.Entities.Coupon", null)
+                        .WithMany("WhiteListUsers")
+                        .HasForeignKey("CouponId");
+
                     b.HasOne("EduQuest_Domain.Entities.PackagePrivilege", "PackagePrivilege")
                         .WithMany("Users")
                         .HasForeignKey("PackagePrivilegeId");
@@ -2599,6 +2581,8 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.Coupon", b =>
                 {
                     b.Navigation("UserCoupons");
+
+                    b.Navigation("WhiteListUsers");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Course", b =>

@@ -28,6 +28,16 @@ VALUES
     ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW());
 
 
+INSERT INTO "User" ("Id", "Username", "AvatarUrl", "Email", "Phone", "Headline", "Status", "Description", "RoleId", "PackagePrivilegeId",
+                    "AccountPackageId", "CreatedAt", "UpdatedBy", "UpdatedAt", "DeletedAt")
+VALUES 
+    (1, 'user1', 'avatar1.png', 'user1@example.com', '1234567890', 'Headline 1', 'Active', 'Description 1', 1, 1, NULL, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
+    (2, 'user2', 'avatar2.png', 'user2@example.com', '1234567891', 'Headline 2', 'Active', 'Description 2', 2, 1, NULL, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
+    (3, 'user3', 'avatar3.png', 'user3@example.com', '1234567892', 'Headline 3', 'Active', 'Description 3', 3, 1, NULL, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
+    (4, 'user4', 'avatar4.png', 'user4@example.com', '1234567893', 'Headline 4', 'Active', 'Description 4', 4, 1, NULL, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
+    (5, 'user5', 'avatar5.png', 'user5@example.com', '1234567894', 'Headline 5', 'Active', 'Description 5', 5, 1, NULL, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
+    (6, 'user6', 'avatar6.png', 'user6@example.com', '1234567895', 'Headline 6', 'Active', 'Description 6', 6, 1, NULL, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL);
+
 	
 CREATE TABLE public."SystemConfig" (
     "Id" VARCHAR(50) PRIMARY KEY,  -- Sử dụng VARCHAR thay vì UUID
