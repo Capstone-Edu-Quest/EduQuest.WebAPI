@@ -7,8 +7,6 @@ namespace EduQuest_Domain.Repository;
 public interface ICouponRepository : IGenericRepository<Coupon>
 {
     Task<bool> ExistByCode(string code);
-    Task<PagedList<Coupon>> GetAllByCourseId(string courseId, int pageNo, int pageSize,
-        double? discountValue, string? couponCode, DateTime? expiredAt);
     Task<PagedList<Coupon>> GetAllPlatformCoupon(int pageNo, int pageSize,
         double? discountValue, string? couponCode, DateTime? expiredAt);
 }

@@ -120,7 +120,8 @@ namespace EduQuest_Domain.Constants
             public static int DescriptionMaxLength = 2500;
 
 
-			public static string CouponCodeExist = "COUPON_CODE_EXIST";
+            public const string CouponCodeExist = "COUPON_CODE_EXIST";
+			public const string CannotUpdateCoupon = "START_TIME_PASSED_ERROR";
         }
 		#endregion
 

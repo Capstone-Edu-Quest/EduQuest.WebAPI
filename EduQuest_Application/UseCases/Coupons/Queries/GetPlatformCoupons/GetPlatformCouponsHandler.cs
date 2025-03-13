@@ -7,7 +7,6 @@ using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 using System.Net;
 using EduQuest_Application.DTO.Response.Coupons;
-using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Domain.Models.Pagination;
 
 namespace EduQuest_Application.UseCases.Coupons.Queries.GetPlatformCouponsQuery;
@@ -52,9 +51,10 @@ public class GetPlatformCouponsHandler : IRequestHandler<GetPlatformCouponsQuery
             var temp = result.Items.ToList();
             foreach (var item in temp)
             {
-                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
+                //CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
                 CouponResponse myCouponResponse = _mapper.Map<CouponResponse>(item);
-                myCouponResponse.CreatedByUser = userResponse;
+                myCouponResponse.WhiteListCourseIds = item.Course.Select(c => c.Id).ToList();
+                myCouponResponse.WhiteListUserIds = item.WhiteListUsers.Select(w => w.UserId).ToList();
                 responseDto.Add(myCouponResponse);
             }
             PagedList<CouponResponse> responses = new PagedList<CouponResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);

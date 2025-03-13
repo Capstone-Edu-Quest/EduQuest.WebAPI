@@ -67,5 +67,13 @@ namespace EduQuest_Infrastructure.Repository
 
             return tags;
         }
+
+		public async Task<List<Course>?> GetByListIds(List<string> courseIds)
+		{
+			var result = await _context.Courses
+				.Where(c => courseIds.Contains(c.Id))
+				.ToListAsync();
+			return result;
+		}
     }
 }

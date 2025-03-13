@@ -19,48 +19,24 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
 
     public async Task<bool> ExistByCode(string code)
     {
-        return await _context.Coupon.AnyAsync(x => x.Code == code);
-    }
-
-    public async Task<PagedList<Coupon>> GetAllByCourseId(string courseId, int pageNo, int pageSize, double? discountValue, string? couponCode, DateTime? expiredAt)
-    {
-        var result = _context.Coupon.Include(c => c.User).Where(c => c.CourseId == courseId);
-
-        if(discountValue.HasValue)
-        {
-            result = from r in result
-                     where r.DiscountValue >= (decimal)discountValue.Value
-                     select r;
-        }
-        if(expiredAt.HasValue)
-        {
-            result = from r in result
-                     where r.ExpireAt >= expiredAt.Value
-                     select r;
-        }
-        if(!string.IsNullOrWhiteSpace(couponCode))
-        {
-            result = from r in result
-                     where r.Code.Contains(couponCode!)
-                     select r;
-        }
-        return await result.Pagination(pageNo, pageSize).ToPagedListAsync(pageNo, pageSize);
+        return await _context.Coupon.Where(c => c.Usage <= c.Limit)
+            .AnyAsync(x => x.Code == code);
     }
 
     public async Task<PagedList<Coupon>> GetAllPlatformCoupon(int pageNo, int pageSize, double? discountValue, string? couponCode, DateTime? expiredAt)
     {
-        var result = _context.Coupon.Include(c => c.User).Where(c => c.CourseId == null);
+        var result = _context.Coupon.Include(c => c.User).AsQueryable();
 
         if (discountValue.HasValue)
         {
             result = from r in result
-                     where r.DiscountValue >= (decimal)discountValue.Value
+                     where r.Discount >= (decimal)discountValue.Value
                      select r;
         }
         if (expiredAt.HasValue)
         {
             result = from r in result
-                     where r.ExpireAt >= expiredAt.Value
+                     where r.ExpireTime >= expiredAt.Value
                      select r;
         }
         if (!string.IsNullOrWhiteSpace(couponCode))
