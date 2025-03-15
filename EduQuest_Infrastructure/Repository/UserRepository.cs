@@ -21,4 +21,15 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             .Include(a => a.Role)
             .FirstOrDefaultAsync(x => x.Email!.ToLower().Equals(email.ToLower()));
     }
+
+    public async Task<List<User>?> GetByUserIds(List<string> ids)
+    {
+
+        var result = await _context.Users
+            .Where(c => ids.Contains(c.Id))
+            .ToListAsync();
+        return result;
+    }
+
+
 }

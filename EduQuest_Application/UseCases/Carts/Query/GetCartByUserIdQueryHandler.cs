@@ -35,23 +35,19 @@ namespace EduQuest_Application.UseCases.Carts.Query
 			{
 				var couponExisted = await _couponRepository.GetById(request.CouponId);
 
-
-				if (couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.Percentage.ToString())
-				{
-					var discount = couponExisted.DiscountValue / 100 * cart.OriginalPrice;
-					cart.CouponDiscount = discount;
-					cart.Total = cart.OriginalPrice - discount;
-				}
-				else if (couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.FixedAmount.ToString())
-				{
-					var discount = couponExisted.DiscountValue;
-					cart.CouponDiscount = discount;
-					cart.Total = cart.OriginalPrice - discount;
-				}
-				await _cartRepository.Update(cart);
-				await _unitOfWork.SaveChangesAsync();
-			}
-			
+			if(couponExisted != null)
+			{
+				var discount = couponExisted.Discount / 100 * cart.OriginalPrice;
+				cart.CouponDiscount = discount;
+				cart.Total = cart.OriginalPrice - discount;	
+			} /*else if(couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.FixedAmount.ToString())
+			{
+				var discount = couponExisted.DiscountValue;
+				cart.CouponDiscount = discount;
+				cart.Total = cart.OriginalPrice - discount;
+			}*/
+			await _cartRepository.Update(cart);
+			await _unitOfWork.SaveChangesAsync();
 			return new APIResponse
 			{
 				IsError = false,

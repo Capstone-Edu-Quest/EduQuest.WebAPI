@@ -7,7 +7,7 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Request.Quests;
 
-public class QuestRewardRequest: IMapFrom<QuestReward>, IMapTo<QuestReward>
+public class QuestRewardRequest: IMapFrom<Reward>, IMapTo<Reward>
 {
     [Required(ErrorMessage = MessageError.ValueRequired)]
     public string? RewardType { get; set; }

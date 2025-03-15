@@ -51,13 +51,13 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.UpdateLeaningM
 				};
 			}
 
-			var listUpdated = new List<LearningMaterial>();
+			var listUpdated = new List<Material>();
 			foreach(var item in request.Material)
 			{
 				var materialExisted = await _learningMaterialRepository.GetById(item.Id);
 				if (materialExisted != null)
 				{
-					var materialUpdate = _mapper.Map<LearningMaterial>(item);
+					var materialUpdate = _mapper.Map<Material>(item);
 					var typeToUpdate = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type!);
 
 					if (materialExisted.Type != typeToUpdate)

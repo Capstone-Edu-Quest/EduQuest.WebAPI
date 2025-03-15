@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository;
 
-    public class UserStatisticRepository : GenericRepository<UserStatistic>, IUserStatisticRepository
+    public class UserStatisticRepository : GenericRepository<UserMeta>, IUserStatisticRepository
 {
 	private readonly ApplicationDbContext _context;
 
@@ -15,8 +15,8 @@ namespace EduQuest_Infrastructure.Repository;
 		_context = context;
 	}
 
-	public async Task<UserStatistic> GetByUserId(string userId)
+	public async Task<UserMeta> GetByUserId(string userId)
 	{
-		return await _context.UserStatistics.FirstOrDefaultAsync(x => x.UserId.Equals(userId));
+		return await _context.UserMetas.FirstOrDefaultAsync(x => x.UserId.Equals(userId));
 	}
 }

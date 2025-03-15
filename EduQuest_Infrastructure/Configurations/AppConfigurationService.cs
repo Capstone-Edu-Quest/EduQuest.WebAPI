@@ -142,7 +142,7 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ITokenValidation, TokenValidation>();
             services.AddScoped<IQuestRepository, QuestRepository>();
             services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
-            services.AddScoped<IBadgeRepository, BadgeRepository>();
+            
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
@@ -152,10 +152,10 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
-			services.AddScoped<IBadgeRepository, BadgeRepository>();
+			
 			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
-			services.AddScoped<IPaymentRepository, PaymentRepository>();
+			
 			services.AddScoped<ICartRepository, CartRepository>();
 			services.AddScoped<AccountService>();
 			services.AddScoped<AccountLinkService>();

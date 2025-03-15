@@ -50,7 +50,7 @@ public class SignInGoogleCommandTestHandler : IRequestHandler<SignInGoogleComman
                 AvatarUrl = "",
                 Status = AccountStatus.Active.ToString(),
                 RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
-                UserStatistic = new UserStatistic
+                UserMeta = new UserMeta
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = userId,

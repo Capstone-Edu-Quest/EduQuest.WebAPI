@@ -15,9 +15,7 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
 		
-
-		[JsonIgnore]
-		public virtual ICollection<Payment> Payments { get; set; }
+		
 		[JsonIgnore]
 		public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

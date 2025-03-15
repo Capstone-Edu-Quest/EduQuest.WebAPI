@@ -3,7 +3,7 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Request.Materials
 {
-    public class CreateLearningMaterialRequest : IMapFrom<LearningMaterial>, IMapTo<LearningMaterial>
+    public class CreateLearningMaterialRequest : IMapFrom<Material>, IMapTo<Material>
     {
         //public List<string> StagesId { get; set; }
         public int? Type { get; set; }

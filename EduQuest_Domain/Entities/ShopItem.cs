@@ -10,7 +10,7 @@ namespace EduQuest_Domain.Entities
         public double Price { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<MascotInventory>? MascotItems { get; set; }
+        public virtual ICollection<Mascot>? MascotItems { get; set; }
     }
 
 }

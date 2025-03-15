@@ -52,7 +52,7 @@ public class CertificateUnitTest
         {
             Title = request.Title,
             Url = request.Url,
-            UserId = request.UserId,
+           
             CourseId = request.CourseId
         };
 
@@ -121,7 +121,7 @@ public class CertificateUnitTest
         {
             Title = request.Title,
             Url = request.Url,
-            UserId = request.UserId,
+           
             CourseId = request.CourseId
         };
 
