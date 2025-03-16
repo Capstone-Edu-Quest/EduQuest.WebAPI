@@ -54,8 +54,8 @@ public class GetPlatformCouponsHandler : IRequestHandler<GetPlatformCouponsQuery
             {
                 //CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
                 CouponResponse myCouponResponse = _mapper.Map<CouponResponse>(item);
-                myCouponResponse.WhiteListCourseIds = item.Course.Count > 0 ? item.Course.Select(c => c.Id).ToList() : null;
-                myCouponResponse.WhiteListUserIds = item.WhiteListUsers.Count > 0 ? item.WhiteListUsers.Select(w => w.Id).ToList() : null;
+                /*myCouponResponse.WhiteListCourseIds = item.Course.Count > 0 ? item.Course.Select(c => c.Id).ToList() : null;
+                myCouponResponse.WhiteListUserIds = item.WhiteListUsers.Count > 0 ? item.WhiteListUsers.Select(w => w.Id).ToList() : null;*/
                 responseDto.Add(myCouponResponse);
             }
             PagedList<CouponResponse> responses = new PagedList<CouponResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);

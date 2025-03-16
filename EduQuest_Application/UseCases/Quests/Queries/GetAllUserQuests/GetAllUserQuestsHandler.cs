@@ -36,8 +36,8 @@ internal class GetAllUserQuestsHandler : IRequestHandler<GetAllUserQuestsQuery, 
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, 
                 MessageCommon.Unauthorized, key, value);
         }
-        var result = await _userQuestRepository.GetAllUserQuests(request.Title, request.Description, request.PointToComplete,
-            request.Type, request.StartDate, request.DueDate, request.Page, request.EachPage, request.UserId);
+        var result = await _userQuestRepository.GetAllUserQuests(request.Title, request.QuestType, request.Type,
+            request.PointToComplete, request.StartDate, request.DueDate,request.IsComplete, request.UserId, request.Page, request.EachPage);
 
         var temp = result.Items.ToList();
         List<UserQuestResponse> responseDto = new List<UserQuestResponse>();

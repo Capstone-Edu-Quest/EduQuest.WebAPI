@@ -7,7 +7,7 @@ namespace EduQuest_Domain.Repository
 	public interface IQuestRepository : IGenericRepository<Quest>
 	{
 		Task<Quest?> GetQuestById(string Id);
-        Task<PagedList<Quest>> GetAllQuests(string? title, string? description, int? pointToComplete,
-        int? type, int? timeToComplete, int page, int pageSize);
+        Task<PagedList<Quest>> GetAllQuests(string? title, int? questType, int? type, int? questValue,
+        string userId, int page, int eachPage);
     }
 }

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_API.Controllers
 {
@@ -29,47 +30,45 @@ namespace EduQuest_API.Controllers
 
         }
 
-        [Authorize(Roles ="Staff, Admin")]
+        //[Authorize(Roles ="Staff, Admin")]
         [HttpPost("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddQuest([FromBody] CreateQuestRequest quest,
-            //[FromQuery] string userId,
+            [FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
+            //string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new CreateQuestCommand(userId, quest), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
 
-        [Authorize(Roles = "Staff, Admin")]
+        //[Authorize(Roles = "Staff, Admin")]
         [HttpPut("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement,
             [FromQuery] string questId,
-            //[FromQuery] string userId,
+            [FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
+            //string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new UpdateQuestCommand(userId, questId, achievement), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
 
-        [Authorize(Roles = "Staff, Admin")]
+        //[Authorize(Roles = "Staff, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetAllSystemQuests([FromQuery, AllowNull] string? title,
-            [FromQuery, AllowNull] string? description,
-            [FromQuery, AllowNull] int pointToComplete,
+        public async Task<IActionResult> GetAllSystemQuests([FromQuery] string userId,
+            [FromQuery, AllowNull] string? title,
+            [FromQuery, AllowNull] int questType,
             [FromQuery, AllowNull] int type,
-            [FromQuery, AllowNull] int timeToComplete,
-            //[FromQuery] string userId,
+            [FromQuery, AllowNull] int questValue,
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
              CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetAllSystemQuestsQuery(title, description,
-                pointToComplete, type, timeToComplete, userId, pageNo, eachPage), cancellationToken);
+            //string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetAllSystemQuestsQuery(title, questType, type, questValue, userId, pageNo, eachPage), cancellationToken);
             if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
             {
                 return BadRequest(result);
@@ -81,21 +80,22 @@ namespace EduQuest_API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("user")]
-        public async Task<IActionResult> GetAllUserQuests([FromQuery, AllowNull] string? title,
-            [FromQuery, AllowNull] string? description,
-            [FromQuery, AllowNull] int pointToComplete,
+        public async Task<IActionResult> GetAllUserQuests([FromQuery] string userId,
+            [FromQuery, AllowNull] string? title,
+            [FromQuery, AllowNull] int questType,
             [FromQuery, AllowNull] int type,
+            [FromQuery, AllowNull] int pointToComplete,
             [FromQuery, AllowNull] DateTime? startDate,
             [FromQuery, AllowNull] DateTime? dueDate,
-            //[FromQuery] string userId,
+            [FromQuery, AllowNull] bool isComplete = false,          
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
         CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetAllUserQuestsQuery(title, description,
-                pointToComplete, type, startDate, dueDate, userId, pageNo, eachPage), cancellationToken);
+            //string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetAllUserQuestsQuery(title, questType,
+                type, pointToComplete, startDate, dueDate, isComplete, userId, pageNo, eachPage), cancellationToken);
             if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
             {
                 return BadRequest(result);

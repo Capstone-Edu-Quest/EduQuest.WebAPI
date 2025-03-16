@@ -22,8 +22,8 @@ public class QuestRepository : GenericRepository<Quest>, IQuestRepository
         return await _context.Quests.Include(q => q.Rewards).FirstOrDefaultAsync(x => x.Id.Equals(Id));
     }
 
-    public async Task<PagedList<Quest>> GetAllQuests(string? title, string? description, int? pointToComplete,
-    int? type, int? timeToComplete, int page, int pageSize)
+    public async Task<PagedList<Quest>> GetAllQuests(string? title, int? questType, int? type, int? questValue,
+        string userId, int page, int eachPage)
     {
         var result = _context.Quests.Include(q => q.Rewards).AsQueryable();
 
@@ -33,31 +33,25 @@ public class QuestRepository : GenericRepository<Quest>, IQuestRepository
                      where r.Title!.Contains(title)
                      select r;
         }
-        if (!string.IsNullOrEmpty(description))
+        if(type.HasValue)
         {
             result = from r in result
-                     where r.Description!.Contains(description)
+                     where r.Type! == type.Value
                      select r;
         }
-        if (pointToComplete.HasValue)
+        /*if (questValue.HasValue)
         {
             result = from r in result
-                     where r.PointToComplete! >= pointToComplete.Value
+                     where r.QuestValue! >= questValue.Value
                      select r;
-        }
-        if (type.HasValue)
+        }*/
+        if (questType.HasValue)
         {
             result = from r in result
-                     where r.Type! >= type.Value
+                     where r.QuestType! == questType.Value
                      select r;
         }
-        if (timeToComplete.HasValue)
-        {
-            result = from r in result
-                     where r.TimeToComplete! >= timeToComplete.Value
-                     select r;
-        }
-        var response = await result.Pagination(page, pageSize).ToPagedListAsync(page, pageSize);
+        var response = await result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
     

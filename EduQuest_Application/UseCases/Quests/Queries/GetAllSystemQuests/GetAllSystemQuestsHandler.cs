@@ -34,8 +34,8 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
     public async Task<APIResponse> Handle(GetAllSystemQuestsQuery request, CancellationToken cancellationToken)
     {
 
-        var result = await _questRepository.GetAllQuests(request.Title, request.Description, request.PointToComplete,
-            request.Type, request.TimeToComplete, request.Page, request.EachPage);
+        var result = await _questRepository.GetAllQuests(request.Title, request.QuestType, request.Type, request.QuestValue,
+            request.UserId, request.Page, request.EachPage);
 
         var temp = result.Items.ToList();
         List<QuestResponse> responseDto = new List<QuestResponse>();

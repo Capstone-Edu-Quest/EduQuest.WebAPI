@@ -184,9 +184,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .WithMany(u => u.Coupons)
                 .HasForeignKey(c => c.CreatedBy)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(c => c.WhiteListUsers)
-        .WithMany()
-        .UsingEntity<Dictionary<string, object>>(
+
+            /*builder.HasMany(c => c.WhiteListUsers)
+			.WithMany()
+			.UsingEntity<Dictionary<string, object>>(
             "CouponUser", // Tên của bảng trung gian
             j => j
                 .HasOne<User>()
@@ -200,7 +201,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
             j =>
             {
                 j.HasKey("CouponId", "UserId"); // Khóa chính của bảng trung gian
-            });
+            });*/
         }
         #endregion
 

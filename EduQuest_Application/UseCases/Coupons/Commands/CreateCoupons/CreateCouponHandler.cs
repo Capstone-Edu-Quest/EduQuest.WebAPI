@@ -72,7 +72,7 @@ public class CreateCouponHandler : IRequestHandler<CreateCouponCommand, APIRespo
             #endregion
             newCoupon.Id = Guid.NewGuid().ToString();
 
-            if (request.CreateCouponRequest.WhiteListCourseIds != null)
+            /*if (request.CreateCouponRequest.WhiteListCourseIds != null)
             {
                 newCoupon.Course = await _courseRepository.GetByListIds(request.CreateCouponRequest.WhiteListCourseIds);
             }
@@ -80,16 +80,16 @@ public class CreateCouponHandler : IRequestHandler<CreateCouponCommand, APIRespo
             if(request.CreateCouponRequest.WhiteListUserIds != null)
             {
                 newCoupon.WhiteListUsers = await _userRepository.GetByUserIds(request.CreateCouponRequest.WhiteListUserIds);
-            }               
+            }      */         
 
             await _couponRepository.Add(newCoupon);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(newCoupon);
-                List<string>? UserIds = newCoupon.WhiteListUsers != null ? newCoupon.WhiteListUsers.Select(t => t.Id).ToList() : null;
+                /*List<string>? UserIds = newCoupon.WhiteListUsers != null ? newCoupon.WhiteListUsers.Select(t => t.Id).ToList() : null;
                 response.WhiteListUserIds = UserIds;
                 List<string>? CourseIds = newCoupon.Course != null ? newCoupon.Course.Select(t => t.Id).ToList() : null;
-                response.WhiteListCourseIds = CourseIds;
+                response.WhiteListCourseIds = CourseIds;*/
                 //response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, Key, value);
             }

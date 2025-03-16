@@ -9,7 +9,7 @@ public class UpdateQuestRewardRequest : IMapTo<Reward>
 {
     public string? Id { get; set; }
 
-    public string? RewardType { get; set; }
+    public int? RewardType { get; set; }
 
-    public string? RewardValue { get; set; }
+    public int? RewardValue { get; set; }
 }

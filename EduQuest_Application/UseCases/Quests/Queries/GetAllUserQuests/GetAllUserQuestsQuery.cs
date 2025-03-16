@@ -11,24 +11,26 @@ namespace EduQuest_Application.UseCases.Quests.Queries.GetAllUserQuests;
 public class GetAllUserQuestsQuery : IRequest<APIResponse>
 {
     public string? Title { get; set; }
-    public string? Description { get; set; }
-    public int? PointToComplete { get; set; }
+    public int? QuestType { get; set; }
     public int? Type { get; set; }
+    public int? PointToComplete { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? DueDate { get; set; }
+    public bool? IsComplete { get; set; }
     public string UserId { get; set; }
     public int Page { get; set; }
     public int EachPage { get; set; }
 
-    public GetAllUserQuestsQuery(string? title, string? description, int? pointToComplete, int? type, 
-        DateTime? startDate, DateTime? dueDate, string userId, int page, int eachPage)
+    public GetAllUserQuestsQuery(string? title, int? questType, int? type, int? pointToComplete, 
+        DateTime? startDate, DateTime? dueDate, bool isComplete, string userId, int page, int eachPage)
     {
         Title = title;
-        Description = description;
-        PointToComplete = pointToComplete;
+        QuestType = questType;
         Type = type;
+        PointToComplete = pointToComplete;
         StartDate = startDate;
         DueDate = dueDate;
+        IsComplete = isComplete;
         UserId = userId;
         Page = page;
         EachPage = eachPage;

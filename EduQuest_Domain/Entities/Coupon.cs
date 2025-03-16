@@ -14,8 +14,8 @@ public class Coupon : BaseEntity
     public int Limit {  get; set; }
     public string CreatedBy { get; set; } = string.Empty;
 
-    [JsonIgnore]
-    public virtual ICollection<Course>? Course { get; set; }
+    /*[JsonIgnore]
+    public virtual ICollection<Course>? Course { get; set; }*/
 
     [JsonIgnore]
     public virtual User? User { get; set; }
@@ -23,6 +23,6 @@ public class Coupon : BaseEntity
     [JsonIgnore]
     public virtual ICollection<UserCoupon>? UserCoupons { get; set; }
 
-    [JsonIgnore]
-    public virtual ICollection<User>? WhiteListUsers { get; set; }
+    /*[JsonIgnore]
+    public virtual ICollection<User>? WhiteListUsers { get; set; }*/
 }
