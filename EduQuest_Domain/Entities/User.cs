@@ -15,11 +15,12 @@ namespace EduQuest_Domain.Entities
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
 		public string? RoleId { get; set; }
-		public string? PackagePrivilegeId { get; set; }
-		public string? AccountPackageId { get; set; }
+        public string? BankAccountId { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
+		[JsonIgnore]
+		public virtual Cart? Carts { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual Level? Level { get; set; } = null!;
@@ -41,8 +42,8 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<Certificate>? Certificates { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Course>? Courses { get; set; }
-		[JsonIgnore]
-		public virtual ICollection<Cart>? Carts { get; set; }
+		
+		
 		[JsonIgnore]
 		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
         [JsonIgnore]

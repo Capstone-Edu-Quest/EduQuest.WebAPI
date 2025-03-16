@@ -10,11 +10,12 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_API.Controllers
 {
-	[Route("api/webhook/stripe")]
+	[Route(Constants.Http.API_VERSION + "/webhook/stripe")]
 	public class WebhookController : ControllerBase
 	{
 		private ISender _mediator;
 		private readonly StripeModel _stripeModel;
+		
 
 		public WebhookController(ISender mediator, IOptions<StripeModel> stripeModel)
 		{
@@ -28,20 +29,14 @@ namespace EduQuest_API.Controllers
 			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 			Event stripeEvent;
 
-			try
-			{
-				stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.SecretKey);
-			}
-			catch (StripeException e)
-			{
-				return BadRequest($"⚠️ Webhook signature verification failed: {e.Message}");
-			}
+			stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.LocalSigningKey);
 
-			if (stripeEvent.Type == "checkout.session.completed")
+			if (stripeEvent.Type == "checkout.session.completed" || stripeEvent.Type == "payment_intent.succeeded" || stripeEvent.Type == "charge.succeeded")
 			{
 				var session = stripeEvent.Data.Object as Session;
 				if (session != null)
 				{
+					
 					await _mediator.Send(new UpdateTransactionStatusCommand
 					{
 						TransactionId = session.Id,
@@ -54,6 +49,7 @@ namespace EduQuest_API.Controllers
 				var session = stripeEvent.Data.Object as Session;
 				if (session != null)
 				{
+					
 					await _mediator.Send(new UpdateTransactionStatusCommand
 					{
 						TransactionId = session.Id,

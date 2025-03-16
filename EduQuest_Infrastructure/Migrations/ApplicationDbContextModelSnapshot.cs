@@ -70,6 +70,21 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("CouponUser");
                 });
 
+            modelBuilder.Entity("CourseFavoriteList", b =>
+                {
+                    b.Property<string>("CoursesId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FavoriteListsId")
+                        .HasColumnType("text");
+
+                    b.HasKey("CoursesId", "FavoriteListsId");
+
+                    b.HasIndex("FavoriteListsId");
+
+                    b.ToTable("CourseFavoriteList");
+                });
+
             modelBuilder.Entity("CourseItem", b =>
                 {
                     b.Property<string>("CoursesId")
@@ -276,7 +291,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Cart");
                 });
@@ -1640,6 +1656,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal?>("NetAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("PaymentIntentId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1647,6 +1666,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal?>("StripeFee")
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric");
@@ -1680,10 +1702,10 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<string>("AccountPackageId")
+                    b.Property<string>("AvatarUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("AvatarUrl")
+                    b.Property<string>("BankAccountId")
                         .HasColumnType("text");
 
                     b.Property<string>("CourseLearnerId")
@@ -1705,9 +1727,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LevelId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PackagePrivilegeId")
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
@@ -2027,21 +2046,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CourseFavoriteList", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.FavoriteList", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteListsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CouponUser", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Coupon", null)
@@ -2053,6 +2057,21 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasOne("EduQuest_Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CourseFavoriteList", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.Course", null)
+                        .WithMany()
+                        .HasForeignKey("CoursesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduQuest_Domain.Entities.FavoriteList", null)
+                        .WithMany()
+                        .HasForeignKey("FavoriteListsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2113,8 +2132,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasForeignKey("CourseId");
 
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany("Carts")
-                        .HasForeignKey("UserId")
+                        .WithOne("Carts")
+                        .HasForeignKey("EduQuest_Domain.Entities.Cart", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");

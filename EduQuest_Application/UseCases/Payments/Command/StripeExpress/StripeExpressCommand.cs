@@ -6,10 +6,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 	public class StripeExpressCommand : IRequest<APIResponse>
 	{
         public string Email { get; set; }
+        public string UserId { get; set; }
 
-		public StripeExpressCommand(string email)
+		public StripeExpressCommand(string email, string userId)
 		{
 			Email = email;
+			UserId = userId;
 		}
 	}
 }

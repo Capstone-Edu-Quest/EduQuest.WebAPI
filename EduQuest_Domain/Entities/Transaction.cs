@@ -7,13 +7,14 @@ namespace EduQuest_Domain.Entities
 	public partial class Transaction : BaseEntity
 	{
 		public string UserId { get; set; }
-
 		public decimal TotalAmount { get; set; }
-		public string Status { get; set; }
+        public decimal? NetAmount { get; set; }
+        public decimal? StripeFee { get; set; }
+        public string Status { get; set; }
         public string Type { get; set; }
         public string PaymentIntentId { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
 		public virtual User User { get; set; } = null;
 		
 		

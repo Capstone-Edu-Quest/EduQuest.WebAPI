@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface ICartRepository : IGenericRepository<Cart>
+	public interface ITransactionDetailRepository : IGenericRepository<TransactionDetail>
 	{
-		Task<Cart> GetByUserId(string userId);
-		Task<Cart> GetListCartItemByCartId(string cartId);
-		
+		Task<List<TransactionDetail>> GetByTransactionId(string transactionId);
 	}
 }
