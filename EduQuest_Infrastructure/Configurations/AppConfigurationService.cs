@@ -53,8 +53,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					configuration.GetConnectionString("test"),
-					//configuration.GetConnectionString("production"),
+					//configuration.GetConnectionString("test"),
+					configuration.GetConnectionString("production"),
 					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -142,7 +142,7 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ITokenValidation, TokenValidation>();
             services.AddScoped<IQuestRepository, QuestRepository>();
             services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
-            
+            services.AddScoped<ITransactionDetailRepository, TransactionDetailRepository>();
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();

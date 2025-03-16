@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduQuest_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class resetDatabase : Migration
+    public partial class UpdateForTransaction : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -243,8 +243,7 @@ namespace EduQuest_Infrastructure.Migrations
                     Status = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     RoleId = table.Column<string>(type: "text", nullable: true),
-                    PackagePrivilegeId = table.Column<string>(type: "text", nullable: true),
-                    AccountPackageId = table.Column<string>(type: "text", nullable: true),
+                    BankAccountId = table.Column<string>(type: "text", nullable: true),
                     LevelId = table.Column<string>(type: "text", nullable: true),
                     SubscriptionId = table.Column<string>(type: "text", nullable: true),
                     CourseLearnerId = table.Column<string>(type: "text", nullable: true),
@@ -301,6 +300,36 @@ namespace EduQuest_Infrastructure.Migrations
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Coupon",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Discount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpireTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AllowUsagePerUser = table.Column<int>(type: "integer", nullable: false),
+                    Usage = table.Column<int>(type: "integer", nullable: false),
+                    Limit = table.Column<int>(type: "integer", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Coupon", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Coupon_User_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -554,6 +583,8 @@ namespace EduQuest_Infrastructure.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    NetAmount = table.Column<decimal>(type: "numeric", nullable: true),
+                    StripeFee = table.Column<decimal>(type: "numeric", nullable: true),
                     Status = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false),
                     PaymentIntentId = table.Column<string>(type: "text", nullable: false),
@@ -574,7 +605,7 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserStatistic",
+                name: "UserMeta",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -599,9 +630,59 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserStatistic", x => x.Id);
+                    table.PrimaryKey("PK_UserMeta", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserStatistic_User_UserId",
+                        name: "FK_UserMeta_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CouponUser",
+                columns: table => new
+                {
+                    CouponId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CouponUser", x => new { x.CouponId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_CouponUser_Coupon_CouponId",
+                        column: x => x.CouponId,
+                        principalTable: "Coupon",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CouponUser_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserCoupon",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CouponId = table.Column<string>(type: "text", nullable: false),
+                    AllowUsage = table.Column<int>(type: "integer", nullable: false),
+                    RemainUsage = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserCoupon", x => new { x.UserId, x.CouponId });
+                    table.ForeignKey(
+                        name: "FK_UserCoupon_Coupon_CouponId",
+                        column: x => x.CouponId,
+                        principalTable: "Coupon",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserCoupon_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -635,7 +716,8 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_Cart_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -662,36 +744,25 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Coupon",
+                name: "CouponCourse",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    DiscountValue = table.Column<decimal>(type: "numeric", nullable: false),
-                    Code = table.Column<string>(type: "text", nullable: false),
-                    IsCourseExclusive = table.Column<bool>(type: "boolean", nullable: false),
-                    CourseId = table.Column<string>(type: "text", nullable: true),
-                    ExpireAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Usage = table.Column<int>(type: "integer", nullable: false),
-                    RemainUsage = table.Column<int>(type: "integer", nullable: false),
-                    DiscountType = table.Column<string>(type: "text", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CouponsId = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Coupon", x => x.Id);
+                    table.PrimaryKey("PK_CouponCourse", x => new { x.CouponsId, x.CourseId });
                     table.ForeignKey(
-                        name: "FK_Coupon_Course_CourseId",
+                        name: "FK_CouponCourse_Coupon_CouponsId",
+                        column: x => x.CouponsId,
+                        principalTable: "Coupon",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CouponCourse_Course_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Course",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Coupon_User_CreatedBy",
-                        column: x => x.CreatedBy,
-                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1140,9 +1211,9 @@ namespace EduQuest_Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_StudyTimes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StudyTimes_UserStatistic_UserMetaId",
+                        name: "FK_StudyTimes_UserMeta_UserMetaId",
                         column: x => x.UserMetaId,
-                        principalTable: "UserStatistic",
+                        principalTable: "UserMeta",
                         principalColumn: "Id");
                 });
 
@@ -1195,31 +1266,6 @@ namespace EduQuest_Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_CertificateUser_User_UsersId",
                         column: x => x.UsersId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserCoupon",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    CouponId = table.Column<string>(type: "text", nullable: false),
-                    UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserCoupon", x => new { x.UserId, x.CouponId });
-                    table.ForeignKey(
-                        name: "FK_UserCoupon_Coupon_CouponId",
-                        column: x => x.CouponId,
-                        principalTable: "Coupon",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserCoupon_User_UserId",
-                        column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -1353,7 +1399,8 @@ namespace EduQuest_Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Cart_UserId",
                 table: "Cart",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItem_CartId",
@@ -1386,11 +1433,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Coupon_CourseId",
-                table: "Coupon",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Coupon_CreatedBy",
                 table: "Coupon",
                 column: "CreatedBy");
@@ -1399,6 +1441,16 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_Coupon_DeletedAt",
                 table: "Coupon",
                 column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CouponCourse_CourseId",
+                table: "CouponCourse",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CouponUser_UserId",
+                table: "CouponUser",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Course_AdvertiseId",
@@ -1779,6 +1831,17 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "CouponId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserMeta_DeletedAt",
+                table: "UserMeta",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMeta_UserId",
+                table: "UserMeta",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserQuest_DeletedAt",
                 table: "UserQuest",
                 column: "DeletedAt");
@@ -1802,17 +1865,6 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_UserQuestReward_DeletedAt",
                 table: "UserQuestReward",
                 column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserStatistic_DeletedAt",
-                table: "UserStatistic",
-                column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserStatistic_UserId",
-                table: "UserStatistic",
-                column: "UserId",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -1826,6 +1878,12 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CertificateUser");
+
+            migrationBuilder.DropTable(
+                name: "CouponCourse");
+
+            migrationBuilder.DropTable(
+                name: "CouponUser");
 
             migrationBuilder.DropTable(
                 name: "CourseFavoriteList");
@@ -1927,7 +1985,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "Feedback");
 
             migrationBuilder.DropTable(
-                name: "UserStatistic");
+                name: "UserMeta");
 
             migrationBuilder.DropTable(
                 name: "Coupon");

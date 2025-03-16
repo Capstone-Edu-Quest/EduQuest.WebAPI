@@ -71,7 +71,13 @@ namespace EduQuest_Domain.Enums
 			CheckoutCart = 1,
 			Refund = 2,
 			Account = 3
+		}
 
+		public enum ItemTypeTransaction
+		{
+			Course = 1,
+			PremiumAccount = 2,
+			
 		}
 		#endregion
 

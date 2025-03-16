@@ -35,7 +35,7 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Cart>? Carts { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
+		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; } = new List<FavoriteList>();
 		[JsonIgnore]
 		public virtual ICollection<Lesson>? Stages { get; set; }
 

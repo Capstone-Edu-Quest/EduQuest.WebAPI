@@ -20,8 +20,9 @@ namespace EduQuest_Domain.Entities
 		public int? TotalReview { get; set; }
         public double? TotalRevenue { get; set; }
 		public DateTime LastActive { get; set; }
-
-		[JsonIgnore]
+        public decimal? HeldAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
+        [JsonIgnore]
 		public virtual User User { get; set; } = null!;
 		[JsonIgnore]
 		public virtual ICollection<StudyTime>? StudyTime { get; set; } = null!;

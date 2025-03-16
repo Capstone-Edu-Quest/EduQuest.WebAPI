@@ -1,5 +1,7 @@
 ﻿using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -12,49 +14,74 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 		private readonly Stripe.AccountService _accountService;
 		private readonly AccountLinkService _accountLinkService;
 		private readonly StripeModel _stripeModel;
+		private readonly IUserRepository _userRepository;
+		private readonly IUnitOfWork _unitOfWork;
 
-		public StripeExpressCommandHandler(IOptions<StripeModel> stripeModel , Stripe.AccountService accountService, AccountLinkService accountLinkService)
+		public StripeExpressCommandHandler(AccountService accountService, AccountLinkService accountLinkService, IOptions<StripeModel> stripeModel, IUserRepository userRepository, IUnitOfWork unitOfWork)
 		{
 			_accountService = accountService;
 			_accountLinkService = accountLinkService;
 			_stripeModel = stripeModel.Value;
+			_userRepository = userRepository;
+			_unitOfWork = unitOfWork;
 		}
 
 		public async Task<APIResponse> Handle(StripeExpressCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-			var account = await _accountService.CreateAsync(new AccountCreateOptions
+			var user = await _userRepository.GetById(request.UserId);
+            if (user!.BankAccountId == null)
 			{
-				Type = "express",
-				Country = "SG",
-				Email = request.Email,
-				Capabilities = new AccountCapabilitiesOptions
+				var account = await _accountService.CreateAsync(new AccountCreateOptions
 				{
-					CardPayments = new AccountCapabilitiesCardPaymentsOptions {  Requested = true},
-					Transfers = new AccountCapabilitiesTransfersOptions { Requested = true},
-				}
-			});
+					Type = "express",
+					Country = "SG",
+					Email = request.Email,
+					Capabilities = new AccountCapabilitiesOptions
+					{
+						CardPayments = new AccountCapabilitiesCardPaymentsOptions { Requested = true },
+						Transfers = new AccountCapabilitiesTransfersOptions { Requested = true },
+					}
+				});
 
-			var accountLinkOptions = new AccountLinkCreateOptions
-			{
-				Account = account.Id,
-				RefreshUrl = "https://eduquests.giakhang3005.com/",
-				ReturnUrl = "https://eduquests.giakhang3005.com/",
-				Type = "account_onboarding"
-			};
-
-			var accountLink = await _accountLinkService.CreateAsync(accountLinkOptions);
-			return new APIResponse
-			{
-				IsError = false,
-				Payload = accountLink.Url,
-				Errors = null,
-				Message = new MessageResponse
+				var accountLinkOptions = new AccountLinkCreateOptions
 				{
-					content = MessageCommon.CreateSuccesfully,
-					values = new Dictionary<string, string> { { "name", "stripe express" } }
-				}
-			};
+					Account = account.Id,
+					RefreshUrl = "https://eduquests.giakhang3005.com/",
+					ReturnUrl = "https://eduquests.giakhang3005.com/",
+					Type = "account_onboarding"
+				};
+				user.BankAccountId = account.Id;
+				await _userRepository.Update(user);
+				await _unitOfWork.SaveChangesAsync();
+				var accountLink = await _accountLinkService.CreateAsync(accountLinkOptions);
+				return new APIResponse
+				{
+					IsError = false,
+					Payload = accountLink.Url,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.CreateSuccesfully,
+						values = new Dictionary<string, string> { { "name", "stripe express" } }
+					}
+				};
+			} else
+			{
+				return new APIResponse
+				{
+					IsError = false,
+					Payload = user!.BankAccountId,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.GetSuccesfully,
+						values = new Dictionary<string, string> { { "name", "bank account" } }
+					}
+				};
+			}
+          
+            
 		}
 	}
 }
