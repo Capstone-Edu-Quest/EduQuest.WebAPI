@@ -56,13 +56,11 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 				TotalTime = 0
 			};
 			await _courseRepository.Add(course);
-
 			
 			//User Statistic
-			var userStatistic = await _userStatisticRepository.GetById(user.Id);
+			var userStatistic = await _userStatisticRepository.GetByUserId(user.Id);
 			userStatistic!.TotalCourseCreated++;
 			await _userStatisticRepository.Update(userStatistic);
-			await _unitOfWork.SaveChangesAsync();
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse

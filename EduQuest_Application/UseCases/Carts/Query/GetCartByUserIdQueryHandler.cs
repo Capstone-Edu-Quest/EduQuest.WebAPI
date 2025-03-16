@@ -29,37 +29,56 @@ namespace EduQuest_Application.UseCases.Carts.Query
 
 		public async Task<APIResponse> Handle(GetCartByUserIdQuery request, CancellationToken cancellationToken)
 		{
-		
-			var cart = await _cartRepository.GetByUserId(request.UserId);
-			var couponExisted = await _couponRepository.GetById(request.CouponId);
-			
 
-			if(couponExisted != null)
+			var cart = await _cartRepository.GetByUserId(request.UserId);
+			if (cart != null)
 			{
-				var discount = couponExisted.Discount / 100 * cart.OriginalPrice;
-				cart.CouponDiscount = discount;
-				cart.Total = cart.OriginalPrice - discount;	
-			} /*else if(couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.FixedAmount.ToString())
+				var couponExisted = await _couponRepository.GetById(request.CouponId);
+
+				if (couponExisted != null)
+				{
+					var discount = couponExisted.Discount / 100 * cart.OriginalPrice;
+					cart.CouponDiscount = discount;
+					cart.Total = cart.OriginalPrice - discount;
+				} /*else if(couponExisted != null && couponExisted.DiscountType == GeneralEnums.DiscountType.FixedAmount.ToString())
 			{
 				var discount = couponExisted.DiscountValue;
 				cart.CouponDiscount = discount;
 				cart.Total = cart.OriginalPrice - discount;
 			}*/
-			await _cartRepository.Update(cart);
-			await _unitOfWork.SaveChangesAsync();
-			return new APIResponse
-			{
-				IsError = false,
-				Payload = cart,
-				Errors = null,
-				Message = new MessageResponse
+				await _cartRepository.Update(cart);
+				await _unitOfWork.SaveChangesAsync();
+				return new APIResponse
 				{
-					content = MessageCommon.GetSuccesfully,
-					values = new Dictionary<string, string> { { "name", "cart" } }
-				}
-			};
+					IsError = false,
+					Payload = cart,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.GetSuccesfully,
+						values = new Dictionary<string, string> { { "name", "cart" } }
+					}
+				};
 
-			
+
+			} else
+			{
+				return new APIResponse
+				{
+					IsError = true,
+					Payload = null,
+					Errors = new ErrorResponse
+					{
+						StatusCode = 404,
+						StatusResponse = HttpStatusCode.NotFound,
+					},
+					Message = new MessageResponse
+					{
+						content = MessageCommon.GetFailed,
+						values = new Dictionary<string, string> { { "name", "cart" } }
+					}
+				};
+			}
 		}
 	}
 }

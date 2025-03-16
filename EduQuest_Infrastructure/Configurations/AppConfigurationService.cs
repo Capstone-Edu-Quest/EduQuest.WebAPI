@@ -55,8 +55,7 @@ namespace EduQuest_Infrastructure
 				options.UseNpgsql(
 					//configuration.GetConnectionString("test"),
 					configuration.GetConnectionString("production"),
-                    //configuration.GetConnectionString("local"),
-                    b =>
+					b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
 						b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
@@ -143,7 +142,7 @@ namespace EduQuest_Infrastructure
             services.AddScoped<ITokenValidation, TokenValidation>();
             services.AddScoped<IQuestRepository, QuestRepository>();
             services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
-            
+            services.AddScoped<ITransactionDetailRepository, TransactionDetailRepository>();
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
             services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();

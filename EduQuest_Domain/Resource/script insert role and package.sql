@@ -15,7 +15,8 @@ VALUES
     ('1', 'Video', 1.0, 'Configuration for video', NOW(), NOW()),
     ('2', 'Document', 1.0, 'Configuration for document', NOW(), NOW()),
     ('3', 'Quiz', 0.8, 'Configuration for quiz', NOW(), NOW()),
-    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW());
+    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW()),
+	('5', 'CourseFee', 0.18, 'Configuration for course', NOW(), NOW());
 
 
 INSERT INTO "Subscription" ("Id", "Name", "Description", "DurationDays", "Price", "IsFree", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")

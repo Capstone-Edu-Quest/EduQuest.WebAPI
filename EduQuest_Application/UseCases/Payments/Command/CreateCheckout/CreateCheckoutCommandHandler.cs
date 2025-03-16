@@ -5,7 +5,6 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 
@@ -19,19 +18,15 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICartRepository _cartRepository;
 		private readonly ITransactionRepository _transactionRepository;
+		private readonly ITransactionDetailRepository _transactionDetailRepository;
+		private readonly ICourseRepository _courseRepository;
 
-		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IUnitOfWork unitOfWork, ICartRepository cartRepository, ITransactionRepository transactionRepository)
-		{
-			_stripeModel = stripeModel.Value;
-			_unitOfWork = unitOfWork;
-			_cartRepository = cartRepository;
-			_transactionRepository = transactionRepository;
-		}
+
 
 		public async Task<APIResponse> Handle(CreateCheckoutCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-			var cart = await _cartRepository.GetById(request.CartId);
+			var cart = await _cartRepository.GetListCartItemByCartId(request.CartId);
 
 			var options = new SessionCreateOptions
 			{
@@ -47,37 +42,76 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						PriceData = new SessionLineItemPriceDataOptions
 						{
 							Currency = "usd",
-							UnitAmount = (long)(cart.Total * 100) // Đảm bảo nhân 100 vì Stripe dùng cents
+							UnitAmount = (long)(cart.Total * 100), // Đảm bảo nhân 100 vì Stripe dùng cents
+							ProductData = new SessionLineItemPriceDataProductDataOptions
+							{
+								Name = "Course"
+							}
 						}
 					}
 				}
 			};
-
 			var service = new SessionService();
 			Session session = service.Create(options);
+			var paymentIntentId = session.Id;
 
-			var transaction = new Transaction
+			//Transaction
+			var transaction = new Transaction();
+			if (cart.Total > 0)
 			{
-				Id = Guid.NewGuid().ToString(),
-				UserId = request.UserId,
-				Status = GeneralEnums.StatusPayment.Pending.ToString(),
-				TotalAmount = (decimal)cart.Total,
-				Type = (request.CartId != null)? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : GeneralEnums.TypeTransaction.Account.ToString(),
-				PaymentIntentId = session.Id,
-			};
-			await _transactionRepository.Add(transaction);
+				transaction.Id = Guid.NewGuid().ToString();
+				transaction.UserId = request.UserId;
+				transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
+				transaction.TotalAmount = (decimal)cart.Total;
+				transaction.Type = (request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : GeneralEnums.TypeTransaction.Account.ToString();
+				transaction.PaymentIntentId = paymentIntentId;
+				await _transactionRepository.Add(transaction);
+			}
 
-			await _unitOfWork.SaveChangesAsync();
+			//Transaction Detail
+			var cartItems = cart.CartItems;
+			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
+			if (cartItems.Any())
+			{
+				foreach (var item in cartItems)
+				{
+					var course = await _courseRepository.GetById(item.CourseId);
+					var transactionDetail = new TransactionDetail
+					{
+						Id = Guid.NewGuid().ToString(),
+						TransactionId = transaction.Id,
+						InstructorId = course.CreatedBy,
+						ItemId = item.CourseId,
+						ItemType = GeneralEnums.ItemTypeTransaction.Course.ToString(),
+						Amount = item.Price,
+					};
 
+					transactionDetails.Add(transactionDetail);
+				}
+				await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
+				//await _cartRepository.Delete(cart.Id);
+				await _unitOfWork.SaveChangesAsync();
+				return new APIResponse
+				{
+					IsError = false,
+					Payload = session.Url,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.CreateSuccesfully,
+						values = new Dictionary<string, string> { { "name", "payment" } }
+					}
+				};
+			}
 			return new APIResponse
 			{
-				IsError = false,
-				Payload = session.Url,
+				IsError = true,
+				Payload = null,
 				Errors = null,
 				Message = new MessageResponse
 				{
-					content = MessageCommon.CreateSuccesfully,
-					values = new Dictionary<string, string> { { "name", "payment"} }
+					content = MessageCommon.NotFound,
+					values = new Dictionary<string, string> { { "name", "cartitem" } }
 				}
 			};
 		}

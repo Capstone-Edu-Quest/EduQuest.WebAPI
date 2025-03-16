@@ -34,8 +34,8 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> CreateStripeExpress([FromBody] string email, CancellationToken cancellationToken = default)
 		{
-			//string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new StripeExpressCommand(email), cancellationToken);
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new StripeExpressCommand(email, userId), cancellationToken);
 			return Ok(result);
 		}
 

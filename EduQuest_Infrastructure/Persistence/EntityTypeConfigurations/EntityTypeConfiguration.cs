@@ -14,7 +14,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<Material>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
-		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>,
+		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<TransactionDetail>,
 		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
 		IEntityTypeConfiguration<Reward>, IEntityTypeConfiguration<Report>
@@ -52,12 +52,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
             builder.Property(u => u.RoleId)
                 .IsRequired(false);  
 
-            builder.Property(u => u.PackagePrivilegeId)
-                .IsRequired(false);  
-
-            builder.Property(u => u.AccountPackageId)
-                .IsRequired(false); 
-
             builder.HasOne(d => d.Role)
                 .WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
@@ -75,11 +69,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .WithOne(c => c.User)
                 .HasForeignKey(c => c.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull);
-
-            builder.HasMany(u => u.Carts)
-                .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.FavoriteLists)
                 .WithOne(fl => fl.User)
@@ -125,18 +114,9 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		
-
 		#region Cart
 		public void Configure(EntityTypeBuilder<Cart> builder)
 		{
-			builder.HasOne(d => d.User)
-				.WithMany(p => p.Carts)
-				.HasForeignKey(d => d.UserId)
-				.OnDelete(DeleteBehavior.ClientSetNull);
-
-			
-
 
 		}
 		#endregion
@@ -375,8 +355,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         }
         #endregion
 
-      
-
         #region Question
         public void Configure(EntityTypeBuilder<Question> builder)
 		{
@@ -449,6 +427,14 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
+		#region TransactionDetail
+		public void Configure(EntityTypeBuilder<TransactionDetail> builder)
+		{
+
+
+		}
+		#endregion
+
 		#region UserStatistic
 		public void Configure(EntityTypeBuilder<UserMeta> builder)
 		{
@@ -471,7 +457,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
             
         }
         #endregion
-
 
     }
 }

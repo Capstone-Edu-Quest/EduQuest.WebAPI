@@ -24,5 +24,10 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Carts.Include(x => x.CartItems).FirstOrDefaultAsync(x => x.UserId.Equals(userId));
 		}
+
+		public async Task<Cart> GetListCartItemByCartId(string cartId)
+		{
+			return await _context.Carts.Include(x => x.CartItems).FirstOrDefaultAsync(x => x.Id.Equals(cartId));
+		}
 	}
 }
