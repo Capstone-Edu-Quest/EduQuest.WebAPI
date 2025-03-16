@@ -63,17 +63,18 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
             questEntity.Id = Guid.NewGuid().ToString();
 			questEntity.CreatedAt = DateTime.Now.ToUniversalTime();
 			questEntity.CreatedBy = request.UserId;
-
-			for(int i = 0; i <= request.Quest.RewardType.Length; i++)
+			List<Reward> rewards = new List<Reward>();
+			for(int i = 0; i < request.Quest.RewardType.Length; i++)
 			{
 				Reward temp = new Reward
 				{
+					Id = Guid.NewGuid().ToString(),
 					RewardType = request.Quest.RewardType[i],
 					RewardValue = request.Quest.RewardValue[i]
 				};
-				questEntity.Rewards.Add(temp);
+				rewards.Add(temp);
 			}
-
+			questEntity.Rewards = rewards;
             await _achievementRepository.Add(questEntity);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			if(result)
@@ -84,6 +85,7 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 
 				//Create response
 				QuestResponse response = _mapper.Map<QuestResponse>(questEntity);
+				response.QuestValue = request.Quest.QuestValue;
 				response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
 				return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, key, value);
             }

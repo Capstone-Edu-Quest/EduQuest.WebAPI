@@ -25,7 +25,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     private int GetPointToComplete(Quest newQuest)
     {
         string[] temp = newQuest.QuestValues!.Split(",");
-        return int.Parse(temp[1]);
+        return int.Parse(temp[0]);
     }
     private double? GetTimeToComplete(Quest newQuest)
     {
@@ -36,7 +36,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
             newQuest.QuestType == (int)QuestType.LEARNING_TIME_TIME)
         {
             string[] temp = newQuest.QuestValues!.Split(",");
-            return double.Parse(temp[2]);
+            return double.Parse(temp[1]);
         }
 
         return null;
@@ -66,19 +66,18 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
                 IsCompleted = false,
                 UserId = UserId,
                 QuestId = newQuest.Id,
-                //Rewards = new List<UserQuestReward>()
             };
-
+            List<UserQuestReward> Rewards = new List<UserQuestReward>();
             //add reward
-            //foreach (var reward in rewards)
-            //{
-            //    temp.Rewards.Add(new UserQuestReward
-            //    {
-            //        UserQuestId = temp.Id,
-            //        QuestRewardId = reward.Id,
-            //    });
-            //}
-
+            foreach (var reward in rewards)
+            {
+                Rewards.Add(new UserQuestReward
+                {
+                   UserQuestId = temp.Id,
+                   RewardId = reward.Id,
+               });
+            }
+            temp.Rewards = Rewards;
             userQuests.Add(temp);
         }
 

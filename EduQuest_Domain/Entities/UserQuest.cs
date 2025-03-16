@@ -22,5 +22,5 @@ public class UserQuest : BaseEntity
     public virtual User User { get; set; } = null!;
 
 	[JsonIgnore]
-	public virtual UserQuestReward UserQuestReward { get; set; }
+	public virtual ICollection<UserQuestReward> Rewards { get; set; }
 }

@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -43,6 +44,7 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
         {
             CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
             QuestResponse questResponse = _mapper.Map<QuestResponse>(item);
+            questResponse.QuestValue = ToArray(item.QuestValues!);
             questResponse.CreatedByUser = userResponse;
             responseDto.Add(questResponse);
         }
@@ -50,5 +52,15 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
 
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, key, value);
+    }
+    private int[] ToArray(string values)
+    {
+        string[] temp = values.Split(',');
+        int[] result = new int[temp.Length];
+        for (int i = 0; i < temp.Length; i++)
+        {
+            result[i] = Convert.ToInt32(temp[i]);
+        }
+        return result;
     }
 }

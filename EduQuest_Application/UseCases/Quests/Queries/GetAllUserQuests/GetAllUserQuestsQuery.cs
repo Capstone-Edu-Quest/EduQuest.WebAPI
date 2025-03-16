@@ -22,7 +22,7 @@ public class GetAllUserQuestsQuery : IRequest<APIResponse>
     public int EachPage { get; set; }
 
     public GetAllUserQuestsQuery(string? title, int? questType, int? type, int? pointToComplete, 
-        DateTime? startDate, DateTime? dueDate, bool isComplete, string userId, int page, int eachPage)
+        DateTime? startDate, DateTime? dueDate, bool? isComplete, string userId, int page, int eachPage)
     {
         Title = title;
         QuestType = questType;

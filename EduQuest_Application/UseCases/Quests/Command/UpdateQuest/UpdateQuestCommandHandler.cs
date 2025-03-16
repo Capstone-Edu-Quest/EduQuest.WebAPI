@@ -97,6 +97,7 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
 
             QuestResponse response = _mapper.Map<QuestResponse>(updatedQuest);
             response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
+            response.QuestValue = request.Quest.QuestValue;
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, key, value);
         }
         return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed,

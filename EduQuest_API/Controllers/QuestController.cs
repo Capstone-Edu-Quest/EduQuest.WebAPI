@@ -61,9 +61,9 @@ namespace EduQuest_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllSystemQuests([FromQuery] string userId,
             [FromQuery, AllowNull] string? title,
-            [FromQuery, AllowNull] int questType,
-            [FromQuery, AllowNull] int type,
-            [FromQuery, AllowNull] int questValue,
+            [FromQuery, AllowNull] int? questType,
+            [FromQuery, AllowNull] int? type,
+            [FromQuery, AllowNull] int? questValue,
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
              CancellationToken cancellationToken = default)
         {
@@ -84,12 +84,12 @@ namespace EduQuest_API.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetAllUserQuests([FromQuery] string userId,
             [FromQuery, AllowNull] string? title,
-            [FromQuery, AllowNull] int questType,
-            [FromQuery, AllowNull] int type,
-            [FromQuery, AllowNull] int pointToComplete,
+            [FromQuery, AllowNull] int? questType,
+            [FromQuery, AllowNull] int? type,
+            [FromQuery, AllowNull] int? pointToComplete,
             [FromQuery, AllowNull] DateTime? startDate,
             [FromQuery, AllowNull] DateTime? dueDate,
-            [FromQuery, AllowNull] bool isComplete = false,          
+            [FromQuery, AllowNull] bool? isComplete = false,          
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
         CancellationToken cancellationToken = default)
         {
