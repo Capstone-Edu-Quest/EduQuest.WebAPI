@@ -1,4 +1,5 @@
-﻿using EduQuest_Domain.Models.Payment;
+﻿using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -14,6 +15,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ITransactionDetailRepository _transactionDetailRepository;
+        private readonly ICartRepository _cartRepository;
+        private readonly ISystemConfigRepository _systemConfigRepository;
         private readonly IUnitOfWork _unitOfWork;
 		private readonly StripeModel _stripeModel;
 
@@ -85,9 +88,40 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 			transactionExisted.Status = request.Status;
             await _transactionRepository.Update(transactionExisted);
 
-            //Trasaction Detail
-            var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
+            //Update Trasaction Detail
+            var myCart = await _cartRepository.GetByUserId(request.UserId);
+			var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
+            if (transactionDetailList.Any())
+            {
+                foreach(var detail in transactionDetailList)
+                {
+					var cartItem = myCart.CartItems.FirstOrDefault(c => c.CourseId == detail.ItemId);
+					decimal? systemShare, instructorShare;
+					if (cartItem != null)
+                    {
+                        //Calculate Stripe fee
+                        decimal? percentage = (cartItem.Price/myCart.Total) * 100;
+						decimal? stripeFeeForInstructor = (percentage / 100) * transactionExisted.StripeFee;
 
+                        //Calculate amount after fees
+						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
+                        
+
+						var courseFeeForPlatForm = await _systemConfigRepository.GetByName(GeneralEnums.Fee.CourseFee.ToString());
+                        if(detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
+                        {
+                            systemShare = courseNetAmount * (decimal)(courseFeeForPlatForm.Value);
+                            instructorShare = courseNetAmount - systemShare;
+
+                            //Update for transaction detail
+							detail.StripeFee = stripeFeeForInstructor;
+							detail.NetAmount = courseNetAmount;
+							detail.SystemShare = systemShare;
+							detail.InstructorShare = instructorShare;
+						} 
+					}
+				}
+            }
             var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 

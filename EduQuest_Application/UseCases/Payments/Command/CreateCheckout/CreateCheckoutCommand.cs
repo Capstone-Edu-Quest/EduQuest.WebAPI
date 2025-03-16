@@ -13,11 +13,13 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 	{
         public string UserId { get; set; }
         public string? CartId { get; set; }
+        public int? ProAccountType { get; set; }
 
-		public CreateCheckoutCommand(string userId, string? cartId)
+		public CreateCheckoutCommand(string userId, string? cartId, int? proAccountType)
 		{
 			UserId = userId;
 			CartId = cartId;
+			ProAccountType = proAccountType;
 		}
 	}
 }

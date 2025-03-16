@@ -51,6 +51,7 @@ namespace EduQuest_Domain.Enums
 			Quiz = 3,
 			Assignment = 4
 		}
+
 		#endregion
 
 		#region Payment
@@ -70,13 +71,13 @@ namespace EduQuest_Domain.Enums
 		{
 			CheckoutCart = 1,
 			Refund = 2,
-			Account = 3
+			ProAccount = 3
 		}
 
 		public enum ItemTypeTransaction
 		{
 			Course = 1,
-			PremiumAccount = 2,
+			ProAccount = 2,
 			
 		}
 		#endregion
@@ -89,5 +90,13 @@ namespace EduQuest_Domain.Enums
 		}
 		#endregion
 
+		#region Platform
+		public enum Fee
+		{
+			CourseFee = 1,
+			ProAccountMonth = 2,
+			ProAccountYear = 3,
+		}
+		#endregion
 	}
 }
