@@ -19,7 +19,5 @@ public class CouponResponse : IMapFrom<Coupon>
     public int Limit { get; set; }
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
-    public List<string>? WhiteListCourseIds { get; set; }
-    public List<string>? WhiteListUserIds { get; set; }
     //public CommonUserResponse CreatedByUser { get; set; } = new CommonUserResponse();
 }

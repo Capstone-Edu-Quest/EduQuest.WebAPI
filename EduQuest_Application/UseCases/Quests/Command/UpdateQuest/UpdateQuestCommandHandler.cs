@@ -9,6 +9,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
+using System.Text;
 using static EduQuest_Domain.Constants.Constants;
 using static Google.Rpc.Context.AttributeContext.Types;
 
@@ -54,11 +55,19 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
 
         updatedQuest.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
         updatedQuest.UpdatedBy = request.UserId;
-        updatedQuest.Description = request.Quest.Description;
-        updatedQuest.PointToComplete = request.Quest.PointToComplete;
-        updatedQuest.TimeToComplete = request.Quest.TimeToComplete;
-        updatedQuest.PointToComplete = request.Quest.PointToComplete;
-        updatedQuest.IsDaily = request.Quest.IsDaily;
+        StringBuilder valuesBuilder = new StringBuilder();
+        foreach (int value in request.Quest.QuestValue)
+        {
+            valuesBuilder.Append(value);
+            valuesBuilder.Append(",");
+        }
+        // remove the last comma
+        string values = valuesBuilder.ToString();
+        updatedQuest.QuestValues = values.Substring(0, values.Length - 1);
+        updatedQuest.QuestType = request.Quest.QuestType;
+        updatedQuest.Title = request.Quest.Title;
+        updatedQuest.Type = request.Quest.Type;
+
 
 
         List<Reward> rewards = updatedQuest.Rewards.ToList();
@@ -88,6 +97,7 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
 
             QuestResponse response = _mapper.Map<QuestResponse>(updatedQuest);
             response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
+            response.QuestValue = request.Quest.QuestValue;
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, key, value);
         }
         return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed,

@@ -5,6 +5,7 @@ namespace EduQuest_Application.DTO.Response.Quests;
 
 public class QuestRewardResponse : IMapFrom<Reward>
 {
-    public string? RewardType { get; set; }
-    public string? RewardValue { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public int? RewardType { get; set; }
+    public int? RewardValue { get; set; }
 }

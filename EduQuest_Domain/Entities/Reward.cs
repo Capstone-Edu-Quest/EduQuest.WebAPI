@@ -6,8 +6,8 @@ namespace EduQuest_Domain.Entities;
 
 public class Reward : BaseEntity
 {
-    public string? RewardType { get; set; }//thêm bảng phụ 
-    public string? RewardValue { get; set; }//thêm bảng phụ
+    public int? RewardType { get; set; }//thêm bảng phụ 
+    public int? RewardValue { get; set; }//thêm bảng phụ
 
     public string? QuestId { get; set; }
     //public string? UserQuestId { get; set; }

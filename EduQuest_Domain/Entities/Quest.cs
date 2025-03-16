@@ -7,11 +7,9 @@ namespace EduQuest_Domain.Entities
 	public partial class Quest : BaseEntity
 	{
 		public string? Title { get; set; } //change name to title
-        public bool? IsDaily { get; set; }
         public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
-		public string? Description { get; set; }
-		public int? PointToComplete { get; set; }
-        public int? TimeToComplete { get; set; }
+        public int? QuestType { get; set; }// learning streak, complete courses,....
+		public string? QuestValues { get; set; } //break to array when response to fe.
         public string? CreatedBy { get; set; }
 
         [JsonIgnore]

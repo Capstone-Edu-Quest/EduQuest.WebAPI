@@ -53,9 +53,10 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					//configuration.GetConnectionString("test"),
-					configuration.GetConnectionString("production"),
-					b =>
+					configuration.GetConnectionString("test"),
+                    //configuration.GetConnectionString("local"),
+                    //configuration.GetConnectionString("production"),
+                    b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
 						b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);

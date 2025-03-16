@@ -10,6 +10,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
+using System.Text;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
@@ -47,9 +48,33 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 			}
 
 			var questEntity = _mapper.Map<Quest>(request.Quest);
-			questEntity.Id = Guid.NewGuid().ToString();
+            if (request.Quest.QuestValue != null && request.Quest.QuestValue.Any())
+            {
+                StringBuilder valuesBuilder = new StringBuilder();
+                foreach (int value in request.Quest.QuestValue)
+                {
+                    valuesBuilder.Append(value);
+                    valuesBuilder.Append(",");
+                }
+                // remove the last comma
+                string values = valuesBuilder.ToString();
+                questEntity.QuestValues = values.Substring(0, values.Length - 1);
+            }
+            questEntity.Id = Guid.NewGuid().ToString();
 			questEntity.CreatedAt = DateTime.Now.ToUniversalTime();
 			questEntity.CreatedBy = request.UserId;
+			List<Reward> rewards = new List<Reward>();
+			for(int i = 0; i < request.Quest.RewardType.Length; i++)
+			{
+				Reward temp = new Reward
+				{
+					Id = Guid.NewGuid().ToString(),
+					RewardType = request.Quest.RewardType[i],
+					RewardValue = request.Quest.RewardValue[i]
+				};
+				rewards.Add(temp);
+			}
+			questEntity.Rewards = rewards;
             await _achievementRepository.Add(questEntity);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			if(result)
@@ -60,6 +85,7 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
 
 				//Create response
 				QuestResponse response = _mapper.Map<QuestResponse>(questEntity);
+				response.QuestValue = request.Quest.QuestValue;
 				response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
 				return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, key, value);
             }

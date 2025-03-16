@@ -11,6 +11,6 @@ public class UserQuestReward : BaseEntity
     public string? UserQuestId { get; set; }
     public string? RewardId { get; set; }
 
-    public virtual ICollection<UserQuest> UserQuests{ get; set; }
-    public virtual ICollection<Reward> Rewards { get; set; }
+    public virtual UserQuest UserQuest { get; set; }
+    public virtual Reward Reward { get; set; }
 }
