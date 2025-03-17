@@ -44,9 +44,9 @@ internal class GetAllUserQuestsHandler : IRequestHandler<GetAllUserQuestsQuery, 
         foreach (var item in temp)
         {
             UserQuestResponse questResponse = _mapper.Map<UserQuestResponse>(item);
-            List<Reward> rewards = item.Rewards.Select(r => r.Reward).ToList();
-            List<QuestRewardResponse> questRewardResponse = _mapper.Map<List<QuestRewardResponse>>(rewards);
-            questResponse.QuestRewards = questRewardResponse;
+            questResponse.QuestValue = ToArray(item.QuestValues!);
+            questResponse.RewardType = ToArray(item.RewardTypes!);
+            questResponse.RewardValue = ToArray(item.RewardValues!);
             responseDto.Add(questResponse);
         }
 
@@ -54,5 +54,15 @@ internal class GetAllUserQuestsHandler : IRequestHandler<GetAllUserQuestsQuery, 
 
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, key, value);
+    }
+    private int[] ToArray(string values)
+    {
+        string[] temp = values.Split(',');
+        int[] result = new int[temp.Length];
+        for (int i = 0; i < temp.Length; i++)
+        {
+            result[i] = Convert.ToInt32(temp[i]);
+        }
+        return result;
     }
 }

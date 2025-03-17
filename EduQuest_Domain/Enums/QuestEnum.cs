@@ -31,4 +31,9 @@ public class QuestEnum
         Coupon = 4,
         Booster = 5,
     }
+    public enum ResetType
+    {
+        Daily = 1,
+        OneTime = 2
+    }
 }

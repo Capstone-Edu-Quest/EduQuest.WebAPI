@@ -2,19 +2,11 @@
 using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
-using Google.Cloud.Firestore.V1;
-using Google.Protobuf.WellKnownTypes;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Quests.Queries.GetAllSystemQuests;
@@ -45,6 +37,8 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
             CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
             QuestResponse questResponse = _mapper.Map<QuestResponse>(item);
             questResponse.QuestValue = ToArray(item.QuestValues!);
+            questResponse.RewardType = ToArray(item.RewardTypes!);
+            questResponse.RewardValue = ToArray(item.RewardValues!);
             questResponse.CreatedByUser = userResponse;
             responseDto.Add(questResponse);
         }
