@@ -11,12 +11,11 @@ namespace EduQuest_Domain.Entities
         public int? QuestType { get; set; }// learning streak, complete courses,....
 		public string? QuestValues { get; set; } //break to array when response to fe.
         public string? CreatedBy { get; set; }
+        public string? RewardTypes { get; set; } //break to array when response to fe.
+        public string? RewardValues { get; set; } //break to array when response to fe.
 
         [JsonIgnore]
 		public virtual User User { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<Reward> Rewards { get; set; }
 
         /*MissionType
           RewardType

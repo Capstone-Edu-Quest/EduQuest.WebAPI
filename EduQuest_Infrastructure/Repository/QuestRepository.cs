@@ -19,13 +19,13 @@ public class QuestRepository : GenericRepository<Quest>, IQuestRepository
 
     public async Task<Quest?> GetQuestById(string Id)
     {
-        return await _context.Quests.Include(q => q.Rewards).FirstOrDefaultAsync(x => x.Id.Equals(Id));
+        return await _context.Quests.FirstOrDefaultAsync(x => x.Id.Equals(Id));
     }
 
     public async Task<PagedList<Quest>> GetAllQuests(string? title, int? questType, int? type, int? questValue,
         string userId, int page, int eachPage)
     {
-        var result = _context.Quests.Include(q => q.Rewards).AsQueryable();
+        var result = _context.Quests.AsQueryable();
 
         if (!string.IsNullOrEmpty(title))
         {

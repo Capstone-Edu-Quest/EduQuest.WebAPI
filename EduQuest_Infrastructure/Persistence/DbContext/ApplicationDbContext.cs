@@ -54,7 +54,6 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<User> Users { get; set; } = null!;
 		public virtual DbSet<UserMeta> UserMetas { get; set; } = null!;
 		public virtual DbSet<UserQuest> UserQuests { get; set; } = null!;
-		public virtual DbSet<Reward> QuestRewards { get; set; } = null!;
 		public virtual DbSet<Report> Reports { get; set; } = null!;
 	
 

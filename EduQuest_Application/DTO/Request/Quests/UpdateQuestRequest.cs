@@ -12,9 +12,8 @@ namespace EduQuest_Application.DTO.Request.Quests
         public int? QuestType { get; set; }// learning streak, complete courses,....
         public int[] QuestValue { get; set; }
 
-        /*public int[] RewardType { get; set; }
-        public int[] RewardValue { get; set; }*/
+        public int[] RewardType { get; set; }
+        public int[] RewardValue { get; set; }
 
-        public List<UpdateQuestRewardRequest> UpdatedRewards { get; set; }
     }
 }

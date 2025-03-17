@@ -11,7 +11,6 @@ using MediatR;
 using System.Net;
 using System.Text;
 using static EduQuest_Domain.Constants.Constants;
-using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
 
@@ -20,20 +19,17 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
     private readonly IQuestRepository _achievementRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserQuestRepository _userQuestRepository;
     private readonly IUserRepository _userRepository;
     private readonly IQuartzService _quartzService;
     private const string key = "name";
     private const string value = "quest";
 
     public UpdateQuestCommandHandler(IQuestRepository achievementRepository, IMapper mapper, 
-        IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, 
-        IUserRepository userRepository, IQuartzService quartzService)
+        IUnitOfWork unitOfWork, IUserRepository userRepository, IQuartzService quartzService)
     {
         _achievementRepository = achievementRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _userQuestRepository = userQuestRepository;
         _userRepository = userRepository;
         _quartzService = quartzService;
     }
@@ -53,41 +49,15 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
                 MessageCommon.NotFound, key, value);
         }
 
-        updatedQuest.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
+        updatedQuest.UpdatedAt = DateTime.Now.ToUniversalTime();
         updatedQuest.UpdatedBy = request.UserId;
-        StringBuilder valuesBuilder = new StringBuilder();
-        foreach (int value in request.Quest.QuestValue)
-        {
-            valuesBuilder.Append(value);
-            valuesBuilder.Append(",");
-        }
-        // remove the last comma
-        string values = valuesBuilder.ToString();
-        updatedQuest.QuestValues = values.Substring(0, values.Length - 1);
         updatedQuest.QuestType = request.Quest.QuestType;
         updatedQuest.Title = request.Quest.Title;
         updatedQuest.Type = request.Quest.Type;
 
-
-
-        List<Reward> rewards = updatedQuest.Rewards.ToList();
-        foreach(var updatedReward in request.Quest.UpdatedRewards)
-        {
-            if(updatedReward.Id != null)
-            {
-                Reward temp = rewards.FirstOrDefault(r => r.Id == updatedReward.Id)!;
-                temp.RewardValue = updatedReward.RewardValue;
-                temp.RewardType = updatedReward.RewardType;
-                rewards.Add(temp);
-            } else
-            {
-                rewards.Add(new Reward
-                {
-                    RewardValue = updatedReward.RewardValue,
-                    RewardType = updatedReward.RewardType
-                });
-            }
-        }
+        updatedQuest.QuestValues = ArrayToString(request.Quest.QuestValue);
+        updatedQuest.RewardValues = ArrayToString(request.Quest.RewardValue);
+        updatedQuest.RewardTypes = ArrayToString(request.Quest.RewardType);
 
         await _achievementRepository.Update(updatedQuest);
         if(await _unitOfWork.SaveChangesAsync() > 0)
@@ -96,11 +66,26 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
             await _quartzService.UpdateAllUserQuest(updatedQuest.Id);
 
             QuestResponse response = _mapper.Map<QuestResponse>(updatedQuest);
-            response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
+            response.CreatedByUser = _mapper.Map<CommonUserResponse>(updatedQuest.User);
             response.QuestValue = request.Quest.QuestValue;
+            response.RewardType = request.Quest.RewardType;
+            response.RewardValue = request.Quest.RewardValue;
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, key, value);
         }
         return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed,
                 MessageCommon.CreateFailed, key, value);
+    }
+
+    private string ArrayToString(int[] input)
+    {
+        StringBuilder valuesBuilder = new StringBuilder();
+        foreach (int value in input)
+        {
+            valuesBuilder.Append(value);
+            valuesBuilder.Append(",");
+        }
+        // remove the last comma
+        string values = valuesBuilder.ToString();
+        return values.Substring(0, values.Length - 1);
     }
 }

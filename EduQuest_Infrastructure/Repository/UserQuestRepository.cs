@@ -1,13 +1,11 @@
 ﻿
 using EduQuest_Domain.Entities;
-using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using static EduQuest_Domain.Enums.GeneralEnums;
 using static EduQuest_Domain.Enums.QuestEnum;
 
@@ -47,7 +45,6 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         List<string> UserIds = new List<string>();
         UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
         List<UserQuest> userQuests = new List<UserQuest>();
-        ICollection<Reward> rewards = newQuest.Rewards;
         foreach (string UserId in UserIds)
         {
             // new UserQuest
@@ -59,6 +56,8 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
                 Type = newQuest.Type,
                 QuestType = newQuest.QuestType,
                 QuestValues = newQuest.QuestValues,
+                RewardTypes = newQuest.RewardTypes,
+                RewardValues = newQuest.RewardValues,
                 StartDate = DateTime.Now.ToUniversalTime(),
                 DueDate = GetTimeToComplete(newQuest) != null ? DateTime.Now.AddMinutes(GetTimeToComplete(newQuest)!.Value).ToUniversalTime() : null,
                 PointToComplete = GetPointToComplete(newQuest),
@@ -67,17 +66,6 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
                 UserId = UserId,
                 QuestId = newQuest.Id,
             };
-            List<UserQuestReward> Rewards = new List<UserQuestReward>();
-            //add reward
-            foreach (var reward in rewards)
-            {
-                Rewards.Add(new UserQuestReward
-                {
-                   UserQuestId = temp.Id,
-                   RewardId = reward.Id,
-               });
-            }
-            temp.Rewards = Rewards;
             userQuests.Add(temp);
         }
 
@@ -92,15 +80,18 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         List<string> UserIds = new List<string>();
         UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
         List<UserQuest> userQuests = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id).ToListAsync();
-        ICollection<Reward> rewards = updatedQuest.Rewards;
 
         foreach(var userQuest in  userQuests)
         {
+            DateTime temp = userQuest.StartDate!.Value;
             userQuest.Title = updatedQuest.Title;
             userQuest.Type = updatedQuest.Type;
             userQuest.QuestType = updatedQuest.QuestType;
             userQuest.PointToComplete = GetPointToComplete(updatedQuest);
-            userQuest.DueDate = GetTimeToComplete(updatedQuest) != null ? DateTime.Now.AddMinutes(GetTimeToComplete(updatedQuest)!.Value).ToUniversalTime() : null;
+            userQuest.DueDate = GetTimeToComplete(updatedQuest) != null ? temp.AddMinutes(GetTimeToComplete(updatedQuest)!.Value).ToUniversalTime() : null;
+            userQuest.QuestValues = updatedQuest.QuestValues;
+            userQuest.RewardValues = updatedQuest.RewardValues;
+            userQuest.RewardTypes = updatedQuest.RewardTypes;
             userQuest.QuestValues = updatedQuest.QuestValues;
         }
         _context.UserQuests.UpdateRange(userQuests);
@@ -165,24 +156,10 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         var response = await result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
-    public async Task<List<Reward>> GetUserQuestRewardAsync(List<string> rewardIds)
-    {
-        if (rewardIds == null || !rewardIds.Any())
-        {
-            return new List<Reward>();
-        }
-
-        var result = await _context.QuestRewards
-            .Where(q => rewardIds.Contains(q.Id))
-            .ToListAsync();
-
-        return result;
-    }
-
     public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint)
     {
         var userQuests = await _context.UserQuests
-        .Where(uq => uq.UserId == userId && uq.Type == (int)questType)
+        .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
         .ToListAsync();
 
         foreach (var userQuest in userQuests)
@@ -193,6 +170,34 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
                 userQuest.IsCompleted = true;
                 userQuest.CurrentPoint = userQuest.PointToComplete;
             }
+        }
+
+        return await _context.SaveChangesAsync() > 0;
+    }
+    public async Task<bool> ResetQuestProgress()
+    {
+        var quests = await _context.UserQuests
+            .Where(q => q.DueDate <= DateTime.UtcNow && q.IsCompleted == false && q.Type == (int)ResetType.OneTime)
+            .ToListAsync();
+
+        foreach(var quest in quests)
+        {
+            quest.PointToComplete = 0;
+        }
+
+        return await _context.SaveChangesAsync() > 0;
+    }
+    public async Task<bool> ResetDailyQuests()
+    {
+        var quests = await _context.UserQuests
+            .Where(q => q.Type == (int) ResetType.Daily)
+            .ToListAsync();
+
+        foreach (var quest in quests)
+        {
+            quest.PointToComplete = 0;
+            quest.StartDate = DateTime.Now.ToUniversalTime();
+            quest.DueDate = DateTime.Now.AddDays(1).ToUniversalTime();
         }
 
         return await _context.SaveChangesAsync() > 0;

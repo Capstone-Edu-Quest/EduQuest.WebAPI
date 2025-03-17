@@ -11,7 +11,9 @@ public class UserQuest : BaseEntity
     public int? QuestType { get; set; }// learning streak, complete courses,....
     public DateTime? StartDate { get; set; }
     public DateTime? DueDate { get; set; }
-    public string? QuestValues { get; set; }
+    public string? QuestValues { get; set; } //break to array when response to fe.
+    public string? RewardTypes { get; set; } //break to array when response to fe.
+    public string? RewardValues { get; set; } //break to array when response to fe.
     public int PointToComplete { get; set; }
     public int? CurrentPoint {  get; set; }
     public bool IsCompleted { get; set; }
@@ -21,6 +23,4 @@ public class UserQuest : BaseEntity
     [JsonIgnore]
     public virtual User User { get; set; } = null!;
 
-	[JsonIgnore]
-	public virtual ICollection<UserQuestReward> Rewards { get; set; }
 }
