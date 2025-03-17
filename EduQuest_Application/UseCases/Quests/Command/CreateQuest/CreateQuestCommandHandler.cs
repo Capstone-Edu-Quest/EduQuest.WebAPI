@@ -5,6 +5,7 @@ using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Quests.Command.CreateQuest;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -12,6 +13,7 @@ using MediatR;
 using System.Net;
 using System.Text;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
 
@@ -20,26 +22,24 @@ public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, API
     private readonly IQuestRepository _achievementRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserQuestRepository _userQuestRepository;
     private readonly IUserRepository _userRepository;
     private readonly IQuartzService _quartzService;
     private const string key = "name";
     private const string value = "quest";
 
     public CreateQuestCommandHandler(IQuestRepository achievementRepository, IMapper mapper, IUnitOfWork unitOfWork,
-    IUserQuestRepository userQuestRepository, IUserRepository userRepository,
-        IQuartzService qquartzService)
+        IUserRepository userRepository,IQuartzService qquartzService)
     {
         _achievementRepository = achievementRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _userQuestRepository = userQuestRepository;
         _userRepository = userRepository;
         _quartzService = qquartzService;
     }
 
     public async Task<APIResponse> Handle(CreateQuestCommand request, CancellationToken cancellationToken)
     {
+        #region Validation
         User? user = await _userRepository.GetById(request.UserId);
         if (user == null)
         {
@@ -47,7 +47,18 @@ public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, API
                 MessageCommon.Unauthorized, key, value);
         }
 
+        if(request.Quest.QuestType > (int)QuestType.STAGE ||
+           request.Quest.QuestType > (int)QuestType.STREAK ||
+           request.Quest.Type > (int)ResetType.OneTime ||
+           request.Quest.Type < (int)ResetType.Daily)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed,
+                MessageQuest.InvalidQuestTypeOrResetType, key, value);
+        }
+        #endregion
+
         var questEntity = _mapper.Map<Quest>(request.Quest);
+
         if (request.Quest.QuestValue != null && request.Quest.QuestValue.Any())
         {
             questEntity.QuestValues = ArrayToString(request.Quest.QuestValue);
@@ -62,6 +73,8 @@ public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, API
         {
             questEntity.RewardTypes = ArrayToString(request.Quest.RewardType);
         }
+
+
         questEntity.Id = Guid.NewGuid().ToString();
         questEntity.CreatedAt = DateTime.Now.ToUniversalTime();
         questEntity.CreatedBy = request.UserId;

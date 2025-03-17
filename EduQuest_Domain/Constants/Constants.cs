@@ -107,8 +107,11 @@ namespace EduQuest_Domain.Constants
 		{
 			public const string ExistedUser = "USERS HAVE USED";
 		}
-
-		public static class MessageError
+        public static class MessageQuest
+        {
+            public const string InvalidQuestTypeOrResetType = "QUESTTYPE_OR_TYPE_INVALID";
+        }
+        public static class MessageError
 		{
 			public const string FeedbackMaxLength = "MAX_LENGTH_REACHED";
 			public const string RatingLimit = "RATING_LIMIT_ERROR";
