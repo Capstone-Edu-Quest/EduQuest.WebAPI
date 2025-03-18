@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduQuest_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateForTransaction : Migration
+    public partial class UpdateTransactionAndSub : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -164,11 +164,12 @@ namespace EduQuest_Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    DurationDays = table.Column<int>(type: "integer", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    IsFree = table.Column<bool>(type: "boolean", nullable: false),
+                    Package = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: true),
+                    MonthlyPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    YearlyPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    Value = table.Column<decimal>(type: "numeric", nullable: true),
+                    BenefitsJson = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -623,6 +624,8 @@ namespace EduQuest_Infrastructure.Migrations
                     TotalReview = table.Column<int>(type: "integer", nullable: true),
                     TotalRevenue = table.Column<double>(type: "double precision", nullable: true),
                     LastActive = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    HeldAmount = table.Column<decimal>(type: "numeric", nullable: true),
+                    PaidAmount = table.Column<decimal>(type: "numeric", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -1189,6 +1192,36 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_QuizAttempt_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TransactionDetail",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    TransactionId = table.Column<string>(type: "text", nullable: false),
+                    InstructorId = table.Column<string>(type: "text", nullable: true),
+                    ItemType = table.Column<string>(type: "text", nullable: false),
+                    ItemId = table.Column<string>(type: "text", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    StripeFee = table.Column<decimal>(type: "numeric", nullable: true),
+                    NetAmount = table.Column<decimal>(type: "numeric", nullable: true),
+                    SystemShare = table.Column<decimal>(type: "numeric", nullable: true),
+                    InstructorShare = table.Column<decimal>(type: "numeric", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TransactionDetail_Transaction_TransactionId",
+                        column: x => x.TransactionId,
+                        principalTable: "Transaction",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1801,6 +1834,16 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TransactionDetail_DeletedAt",
+                table: "TransactionDetail",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionDetail_TransactionId",
+                table: "TransactionDetail",
+                column: "TransactionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_CourseLearnerId",
                 table: "User",
                 column: "CourseLearnerId");
@@ -1937,7 +1980,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "SystemConfig");
 
             migrationBuilder.DropTable(
-                name: "Transaction");
+                name: "TransactionDetail");
 
             migrationBuilder.DropTable(
                 name: "UserCoupon");
@@ -1986,6 +2029,9 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserMeta");
+
+            migrationBuilder.DropTable(
+                name: "Transaction");
 
             migrationBuilder.DropTable(
                 name: "Coupon");

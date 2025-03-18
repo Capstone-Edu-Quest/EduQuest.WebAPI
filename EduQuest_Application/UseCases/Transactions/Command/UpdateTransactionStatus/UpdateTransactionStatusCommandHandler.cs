@@ -20,9 +20,12 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         private readonly IUnitOfWork _unitOfWork;
 		private readonly StripeModel _stripeModel;
 
-		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, IOptions<StripeModel> stripeModel)
+		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICartRepository cartRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IOptions<StripeModel> stripeModel)
 		{
 			_transactionRepository = transactionRepository;
+			_transactionDetailRepository = transactionDetailRepository;
+			_cartRepository = cartRepository;
+			_systemConfigRepository = systemConfigRepository;
 			_unitOfWork = unitOfWork;
 			_stripeModel = stripeModel.Value;
 		}
@@ -89,11 +92,31 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             await _transactionRepository.Update(transactionExisted);
 
             //Update Trasaction Detail
-            var myCart = await _cartRepository.GetByUserId(request.UserId);
+           
 			var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
-            if (transactionDetailList.Any())
+            if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString()))
             {
-                foreach(var detail in transactionDetailList)
+				var myCart = await _cartRepository.GetByUserId(request.UserId);
+				if (myCart == null)
+				{
+					return new APIResponse
+					{
+						IsError = true,
+						Payload = null,
+						Errors = new ErrorResponse
+						{
+							StatusResponse = HttpStatusCode.NotFound,
+							StatusCode = (int)HttpStatusCode.NotFound,
+							Message = MessageCommon.NotFound,
+						},
+						Message = new MessageResponse
+						{
+							content = MessageCommon.NotFound,
+							values = new Dictionary<string, string> { { "name", "cart" } }
+						}
+					};
+				}
+				foreach (var detail in transactionDetailList)
                 {
 					var cartItem = myCart.CartItems.FirstOrDefault(c => c.CourseId == detail.ItemId);
 					decimal? systemShare, instructorShare;
@@ -121,7 +144,15 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 						} 
 					}
 				}
-            }
+            } else if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.ProAccount.ToString()))
+			{
+				foreach (var detail in transactionDetailList)
+				{
+					detail.StripeFee = transactionExisted.TotalAmount - netAmount;
+					detail.NetAmount = netAmount;
+					detail.SystemShare = netAmount;
+				}
+			}
             var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 

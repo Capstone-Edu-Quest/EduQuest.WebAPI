@@ -5,6 +5,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 using System.Net;
@@ -22,7 +23,16 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 		private readonly ICourseRepository _courseRepository;
 		private readonly ISubscriptionRepository _subscriptionRepository;
 
-
+		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IUnitOfWork unitOfWork, ICartRepository cartRepository, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICourseRepository courseRepository, ISubscriptionRepository subscriptionRepository)
+		{
+			_stripeModel = stripeModel.Value;
+			_unitOfWork = unitOfWork;
+			_cartRepository = cartRepository;
+			_transactionRepository = transactionRepository;
+			_transactionDetailRepository = transactionDetailRepository;
+			_courseRepository = courseRepository;
+			_subscriptionRepository = subscriptionRepository;
+		}
 
 		public async Task<APIResponse> Handle(CreateCheckoutCommand request, CancellationToken cancellationToken)
 		{
@@ -97,19 +107,19 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 					};
 				}
 				
-				options.LineItems.Add(new SessionLineItemOptions
-				{
-					Quantity = 1,
-					PriceData = new SessionLineItemPriceDataOptions
-					{
-						Currency = "usd",
-						UnitAmount = (long)subscription!.Price * 100, // Convert to cents for Stripe
-						ProductData = new SessionLineItemPriceDataProductDataOptions
-						{
-							Name = subscription.Name
-						}
-					}
-				});
+				//options.LineItems.Add(new SessionLineItemOptions
+				//{
+				//	Quantity = 1,
+				//	PriceData = new SessionLineItemPriceDataOptions
+				//	{
+				//		Currency = "usd",
+				//		UnitAmount = (long)subscription!.Price * 100, // Convert to cents for Stripe
+				//		ProductData = new SessionLineItemPriceDataProductDataOptions
+				//		{
+				//			Name = subscription.Name
+				//		}
+				//	}
+				//});
 			}
 
 			var service = new SessionService();
@@ -170,14 +180,14 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				}
 			} else
 			{
-				transaction.TotalAmount = subscription!.Price;
+				transaction.TotalAmount = (decimal)subscription!.MonthlyPrice; //Check Month or year
 				transactionDetails.Add(new TransactionDetail
 				{
 					Id = Guid.NewGuid().ToString(),
 					TransactionId = transaction.Id,
 					ItemId = subscription.Id,
 					ItemType = GeneralEnums.ItemTypeTransaction.ProAccount.ToString(),
-					Amount = subscription.Price
+					Amount = (decimal)subscription!.MonthlyPrice //Check Month or year
 				});
 			}
 			await _transactionRepository.Add(transaction);
