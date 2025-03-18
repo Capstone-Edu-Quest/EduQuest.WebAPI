@@ -31,12 +31,19 @@ namespace EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions
 			var subscriptionDtos = subscriptions.Select(sub => new SubscriptionDtoResponse
 			{
 				Package = sub.Package,
-				Monthly = (decimal)sub.MonthlyPrice!,
-				Yearly = (decimal)sub.YearlyPrice!,
+				Monthly = sub.MonthlyPrice.HasValue ? (decimal)sub.MonthlyPrice.Value : 0,
+				Yearly = sub.YearlyPrice.HasValue ? (decimal)sub.YearlyPrice.Value : 0,
 				Benefits = string.IsNullOrEmpty(sub.BenefitsJson)
-				? new List<BenefitDtoResponse>()
-				: JsonConvert.DeserializeObject<List<BenefitDtoResponse>>(sub.BenefitsJson)  // Giải mã JSON
+					? new List<BenefitDtoResponse>()
+					: JsonConvert.DeserializeObject<Dictionary<string, string>>(sub.BenefitsJson)
+						.Select(b => new BenefitDtoResponse
+						{
+							Benefit = b.Key,
+							Value = b.Value
+						}).ToList() // Chuyển đổi dictionary thành danh sách BenefitDtoResponse
 			}).ToList();
+
+
 
 			return new APIResponse
 			{

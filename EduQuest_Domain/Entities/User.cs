@@ -20,6 +20,8 @@ namespace EduQuest_Domain.Entities
         [JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
 		[JsonIgnore]
+		public virtual FavoriteList? FavoriteList { get; set; } = null!;
+		[JsonIgnore]
 		public virtual Cart? Carts { get; set; } = null!;
 
 		[JsonIgnore]

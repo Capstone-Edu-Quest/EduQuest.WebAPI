@@ -8,8 +8,10 @@ namespace EduQuest_Domain.Entities
 	{
 		public string UserId { get; set; }
 
+		[JsonIgnore]
 		public virtual User User { get; set; } = null;
 		[JsonIgnore]
-		public virtual ICollection<Course> Courses { get; set; }
+		public virtual ICollection<Course>? Courses { get; set; }
+		
 	}
 }

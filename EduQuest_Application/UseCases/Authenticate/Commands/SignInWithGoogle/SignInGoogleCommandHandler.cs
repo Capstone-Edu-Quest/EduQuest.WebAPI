@@ -75,8 +75,11 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                         LastActive = DateTime.UtcNow.ToUniversalTime(),
                         CreatedAt = DateTime.Now.ToUniversalTime(),
                         UpdatedAt = DateTime.Now.ToUniversalTime(),
+                    },
+                    FavoriteList = new FavoriteList
+                    {
+                        UserId = userId
                     }
-
                 };
 
                 await _userRepository.Add(newUser);

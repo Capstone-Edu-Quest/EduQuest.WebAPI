@@ -23,11 +23,11 @@ namespace EduQuest_API.Controllers
 		}
 
 		[HttpGet("")]
-		public async Task<IActionResult> Register([FromQuery] string? couponId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> Register(CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 
-			var result = await _mediator.Send(new GetCartByUserIdQuery(userId, couponId), cancellationToken);
+			var result = await _mediator.Send(new GetCartByUserIdQuery(userId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 

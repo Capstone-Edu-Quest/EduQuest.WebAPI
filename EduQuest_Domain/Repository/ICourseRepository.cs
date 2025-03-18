@@ -19,5 +19,6 @@ namespace EduQuest_Domain.Repository
         Task<bool> IsOwner(string courseId, string UserId);
 		Task<List<Tag>> GetTagByCourseIds(List<string> courseIds);
 		Task<List<Course>?> GetByListIds(List<string> courseIds);
+		Task<List<Course>> GetListCourse();
     }
 }

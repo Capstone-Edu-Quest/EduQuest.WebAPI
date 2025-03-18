@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
 {
-	public class AddFavoriteListCommand : IRequest<APIResponse>
+	public class UpdateFavoriteListCommand : IRequest<APIResponse>
 	{
 		public string UserId { get; set; }
-		public string CourseId { get; set; }
+		public List<string> CourseId { get; set; }
 
-		public AddFavoriteListCommand(string userId, string courseId)
+		public UpdateFavoriteListCommand(string userId, List<string> courseId)
 		{
 			UserId = userId;
 			CourseId = courseId;

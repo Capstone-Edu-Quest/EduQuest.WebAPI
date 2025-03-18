@@ -9,6 +9,6 @@ namespace EduQuest_Application.DTO.Response.Subscriptions
 	public class BenefitDtoResponse
 	{
 		public string Benefit { get; set; }
-		public decimal Value { get; set; }
+		public string Value { get; set; }
 	}
 }
