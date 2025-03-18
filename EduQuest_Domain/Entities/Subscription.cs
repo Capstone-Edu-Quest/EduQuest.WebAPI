@@ -6,11 +6,12 @@ namespace EduQuest_Domain.Entities
 	[Table("Subscription")]
 	public partial class Subscription : BaseEntity
 	{
-		public string Name { get; set; } = string.Empty;
-		public string? Description { get; set; }
-		public int DurationDays { get; set; }
-		public decimal Price { get; set; }
-		public bool IsFree { get; set; }
+		public string Package { get; set; }  
+		public string? Type { get; set; } 
+		public decimal? MonthlyPrice { get; set; } 
+		public decimal? YearlyPrice { get; set; }
+		public decimal? Value { get; set; }
+		public string? BenefitsJson { get; set; }
 
 		[JsonIgnore]
 		public virtual ICollection<User> Users { get; set; }

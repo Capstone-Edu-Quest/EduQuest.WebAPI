@@ -1,4 +1,5 @@
-﻿using EduQuest_Domain.Models.Payment;
+﻿using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -14,12 +15,17 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ITransactionDetailRepository _transactionDetailRepository;
+        private readonly ICartRepository _cartRepository;
+        private readonly ISystemConfigRepository _systemConfigRepository;
         private readonly IUnitOfWork _unitOfWork;
 		private readonly StripeModel _stripeModel;
 
-		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, IOptions<StripeModel> stripeModel)
+		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICartRepository cartRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IOptions<StripeModel> stripeModel)
 		{
 			_transactionRepository = transactionRepository;
+			_transactionDetailRepository = transactionDetailRepository;
+			_cartRepository = cartRepository;
+			_systemConfigRepository = systemConfigRepository;
 			_unitOfWork = unitOfWork;
 			_stripeModel = stripeModel.Value;
 		}
@@ -85,9 +91,68 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 			transactionExisted.Status = request.Status;
             await _transactionRepository.Update(transactionExisted);
 
-            //Trasaction Detail
-            var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
+            //Update Trasaction Detail
+           
+			var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
+            if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString()))
+            {
+				var myCart = await _cartRepository.GetByUserId(request.UserId);
+				if (myCart == null)
+				{
+					return new APIResponse
+					{
+						IsError = true,
+						Payload = null,
+						Errors = new ErrorResponse
+						{
+							StatusResponse = HttpStatusCode.NotFound,
+							StatusCode = (int)HttpStatusCode.NotFound,
+							Message = MessageCommon.NotFound,
+						},
+						Message = new MessageResponse
+						{
+							content = MessageCommon.NotFound,
+							values = new Dictionary<string, string> { { "name", "cart" } }
+						}
+					};
+				}
+				foreach (var detail in transactionDetailList)
+                {
+					var cartItem = myCart.CartItems.FirstOrDefault(c => c.CourseId == detail.ItemId);
+					decimal? systemShare, instructorShare;
+					if (cartItem != null)
+                    {
+                        //Calculate Stripe fee
+                        decimal? percentage = (cartItem.Price/myCart.Total) * 100;
+						decimal? stripeFeeForInstructor = (percentage / 100) * transactionExisted.StripeFee;
 
+                        //Calculate amount after fees
+						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
+                        
+
+						var courseFeeForPlatForm = await _systemConfigRepository.GetByName(GeneralEnums.Fee.CourseFee.ToString());
+                        if(detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
+                        {
+                            systemShare = courseNetAmount * (decimal)(courseFeeForPlatForm.Value);
+                            instructorShare = courseNetAmount - systemShare;
+
+                            //Update for transaction detail
+							detail.StripeFee = stripeFeeForInstructor;
+							detail.NetAmount = courseNetAmount;
+							detail.SystemShare = systemShare;
+							detail.InstructorShare = instructorShare;
+						} 
+					}
+				}
+            } else if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.ProAccount.ToString()))
+			{
+				foreach (var detail in transactionDetailList)
+				{
+					detail.StripeFee = transactionExisted.TotalAmount - netAmount;
+					detail.NetAmount = netAmount;
+					detail.SystemShare = netAmount;
+				}
+			}
             var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 

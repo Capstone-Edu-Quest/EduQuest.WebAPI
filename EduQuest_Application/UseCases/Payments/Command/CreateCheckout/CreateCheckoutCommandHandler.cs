@@ -5,9 +5,10 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
-
+using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
@@ -20,98 +21,189 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly ICourseRepository _courseRepository;
+		private readonly ISubscriptionRepository _subscriptionRepository;
 
-
+		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IUnitOfWork unitOfWork, ICartRepository cartRepository, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICourseRepository courseRepository, ISubscriptionRepository subscriptionRepository)
+		{
+			_stripeModel = stripeModel.Value;
+			_unitOfWork = unitOfWork;
+			_cartRepository = cartRepository;
+			_transactionRepository = transactionRepository;
+			_transactionDetailRepository = transactionDetailRepository;
+			_courseRepository = courseRepository;
+			_subscriptionRepository = subscriptionRepository;
+		}
 
 		public async Task<APIResponse> Handle(CreateCheckoutCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-			var cart = await _cartRepository.GetListCartItemByCartId(request.CartId);
-
+			Cart? cart = null;
 			var options = new SessionCreateOptions
 			{
 				Mode = "payment",
 				Currency = "usd",
 				SuccessUrl = _stripeModel.SuccessUrl,
 				CancelUrl = _stripeModel.CancelUrl,
-				LineItems = new List<SessionLineItemOptions>
+				LineItems = new List<SessionLineItemOptions>()
+			};
+			var subscription = await _subscriptionRepository.GetById(request.ProAccountType!);
+			if (request.CartId != null)
+			{
+				cart = await _cartRepository.GetListCartItemByCartId(request.CartId);
+				if (cart == null)
 				{
-					new SessionLineItemOptions
+					return new APIResponse
 					{
-						Quantity = 1,
-						PriceData = new SessionLineItemPriceDataOptions
+						IsError = true,
+						Payload = null,
+						Errors = new ErrorResponse
 						{
-							Currency = "usd",
-							UnitAmount = (long)(cart.Total * 100), // Đảm bảo nhân 100 vì Stripe dùng cents
-							ProductData = new SessionLineItemPriceDataProductDataOptions
-							{
-								Name = "Course"
-							}
+							StatusResponse = HttpStatusCode.NotFound,
+							StatusCode = (int)HttpStatusCode.NotFound,
+							Message = MessageCommon.NotFound,
+						},
+						Message = new MessageResponse
+						{
+							content = MessageCommon.NotFound,
+							values = new Dictionary<string, string> { { "name", "cart" } }
+						}
+					};
+				}
+
+				options.LineItems.Add(new SessionLineItemOptions
+				{
+					Quantity = 1,
+					PriceData = new SessionLineItemPriceDataOptions
+					{
+						Currency = "usd",
+						UnitAmount = (long)(cart.Total * 100), // Convert to cents
+						ProductData = new SessionLineItemPriceDataProductDataOptions
+						{
+							Name = GeneralEnums.Fee.CourseFee.ToString()
 						}
 					}
+				});
+			}
+			else
+			{
+				
+				if(subscription == null)
+				{
+					return new APIResponse
+					{
+						IsError = true,
+						Payload = null,
+						Errors = new ErrorResponse
+						{
+							StatusResponse = HttpStatusCode.NotFound,
+							StatusCode = (int)HttpStatusCode.NotFound,
+							Message = MessageCommon.NotFound,
+						},
+						Message = new MessageResponse
+						{
+							content = MessageCommon.NotFound,
+							values = new Dictionary<string, string> { { "name", "subscription" } }
+						}
+					};
 				}
-			};
+				
+				//options.LineItems.Add(new SessionLineItemOptions
+				//{
+				//	Quantity = 1,
+				//	PriceData = new SessionLineItemPriceDataOptions
+				//	{
+				//		Currency = "usd",
+				//		UnitAmount = (long)subscription!.Price * 100, // Convert to cents for Stripe
+				//		ProductData = new SessionLineItemPriceDataProductDataOptions
+				//		{
+				//			Name = subscription.Name
+				//		}
+				//	}
+				//});
+			}
+
 			var service = new SessionService();
 			Session session = service.Create(options);
 			var paymentIntentId = session.Id;
 
-			//Transaction
+			//Create Transaction
 			var transaction = new Transaction();
-			if (cart.Total > 0)
-			{
-				transaction.Id = Guid.NewGuid().ToString();
-				transaction.UserId = request.UserId;
-				transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
-				transaction.TotalAmount = (decimal)cart.Total;
-				transaction.Type = (request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : GeneralEnums.TypeTransaction.Account.ToString();
-				transaction.PaymentIntentId = paymentIntentId;
-				await _transactionRepository.Add(transaction);
-			}
+			transaction.Id = Guid.NewGuid().ToString();
+			transaction.UserId = request.UserId;
+			transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
+			transaction.PaymentIntentId = paymentIntentId;
+			transaction.Type = (request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : GeneralEnums.TypeTransaction.ProAccount.ToString();
 
 			//Transaction Detail
-			var cartItems = cart.CartItems;
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
-			if (cartItems.Any())
-			{
-				foreach (var item in cartItems)
-				{
-					var course = await _courseRepository.GetById(item.CourseId);
-					var transactionDetail = new TransactionDetail
-					{
-						Id = Guid.NewGuid().ToString(),
-						TransactionId = transaction.Id,
-						InstructorId = course.CreatedBy,
-						ItemId = item.CourseId,
-						ItemType = GeneralEnums.ItemTypeTransaction.Course.ToString(),
-						Amount = item.Price,
-					};
 
-					transactionDetails.Add(transactionDetail);
-				}
-				await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
-				//await _cartRepository.Delete(cart.Id);
-				await _unitOfWork.SaveChangesAsync();
-				return new APIResponse
+			if (request.CartId != null)
+			{
+				var cartItems = cart.CartItems;
+				if (cart.Total > 0)
 				{
-					IsError = false,
-					Payload = session.Url,
-					Errors = null,
-					Message = new MessageResponse
+					transaction.TotalAmount = (decimal)cart.Total;
+					if (cartItems.Any())
 					{
-						content = MessageCommon.CreateSuccesfully,
-						values = new Dictionary<string, string> { { "name", "payment" } }
+						foreach (var item in cartItems)
+						{
+							var course = await _courseRepository.GetById(item.CourseId);
+							transactionDetails.Add(new TransactionDetail
+							{
+								Id = Guid.NewGuid().ToString(),
+								TransactionId = transaction.Id,
+								InstructorId = course.CreatedBy,
+								ItemId = item.CourseId,
+								ItemType = GeneralEnums.ItemTypeTransaction.Course.ToString(),
+								Amount = item.Price
+							});
+						}
+					} else
+					{
+						return new APIResponse
+						{
+							IsError = true,
+							Payload = null,
+							Errors = new ErrorResponse
+							{
+								StatusResponse = HttpStatusCode.NotFound,
+								StatusCode = (int)HttpStatusCode.NotFound,
+								Message = MessageCommon.NotFound,
+							},
+							Message = new MessageResponse
+							{
+								content = MessageCommon.NotFound,
+								values = new Dictionary<string, string> { { "name", "cartitem" } }
+							}
+						};
 					}
-				};
+				}
+			} else
+			{
+				transaction.TotalAmount = (decimal)subscription!.MonthlyPrice; //Check Month or year
+				transactionDetails.Add(new TransactionDetail
+				{
+					Id = Guid.NewGuid().ToString(),
+					TransactionId = transaction.Id,
+					ItemId = subscription.Id,
+					ItemType = GeneralEnums.ItemTypeTransaction.ProAccount.ToString(),
+					Amount = (decimal)subscription!.MonthlyPrice //Check Month or year
+				});
 			}
+			await _transactionRepository.Add(transaction);
+			await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
+			//await _cartRepository.Delete(cart.Id);
+			await _unitOfWork.SaveChangesAsync();
+
 			return new APIResponse
 			{
-				IsError = true,
-				Payload = null,
+				IsError = false,
+				Payload = session.Url,
 				Errors = null,
 				Message = new MessageResponse
 				{
-					content = MessageCommon.NotFound,
-					values = new Dictionary<string, string> { { "name", "cartitem" } }
+					content = MessageCommon.CreateSuccesfully,
+					values = new Dictionary<string, string> { { "name", "payment" } }
 				}
 			};
 		}

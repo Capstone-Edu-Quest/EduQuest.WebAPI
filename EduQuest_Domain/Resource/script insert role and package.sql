@@ -15,16 +15,14 @@ VALUES
     ('1', 'Video', 1.0, 'Configuration for video', NOW(), NOW()),
     ('2', 'Document', 1.0, 'Configuration for document', NOW(), NOW()),
     ('3', 'Quiz', 0.8, 'Configuration for quiz', NOW(), NOW()),
-    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW()),
-	('5', 'CourseFee', 0.18, 'Configuration for course', NOW(), NOW());
+    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW());
 
 
 INSERT INTO "Subscription" ("Id", "Name", "Description", "DurationDays", "Price", "IsFree", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
 VALUES
-    ('1', 'Package 1', 'des1', 30, 4000, TRUE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
-    ('2', 'Package 2', 'des2', 60, 6000, FALSE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
-    ('3', 'Package 3', 'des3', 90, 8000, FALSE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
-    ('4', 'Package 4', 'des4', 120, 10000, TRUE, CURRENT_TIMESTAMP, NULL, NULL, NULL);
+    ('1', 'Pro Account Month', 'des1', 30, 10, TRUE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
+    ('2', 'Pro Account Year', 'des2', 365, 80, FALSE, CURRENT_TIMESTAMP, NULL, NULL, NULL);
+   
 
 INSERT INTO "User" ("Id", "Username", "AvatarUrl", "Email", "Phone", "Headline", "Status", "Description", "RoleId","SubscriptionId", "CreatedAt", "UpdatedBy", "UpdatedAt", "DeletedAt")
 VALUES
