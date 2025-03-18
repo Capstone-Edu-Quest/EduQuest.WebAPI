@@ -17,7 +17,7 @@ using System.Net;
 namespace EduQuest_API.Controllers;
 
 
-//[Authorize(Roles = "Staff, Admin")]
+[Authorize(Roles = "Staff, Admin")]
 [Route(Constants.Http.API_VERSION + "/coupon")]
 [ApiController]
 public class CouponController : ControllerBase
@@ -31,10 +31,10 @@ public class CouponController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> CreateCoupon([FromBody, Required] CreateCouponRequest coupon,
-        [FromQuery] string userId,
+        //[FromQuery] string userId,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new CreateCouponCommand(userId, coupon), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
@@ -42,10 +42,10 @@ public class CouponController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateCoupon([FromQuery, Required] string couponId,
         [FromBody, Required] UpdateCouponRequest coupon,
-        [FromQuery] string userId,
+        //[FromQuery] string userId,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new UpdateCouponCommand(userId, couponId, coupon), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
@@ -54,11 +54,11 @@ public class CouponController : ControllerBase
     public async Task<IActionResult> GetPlatformCoupons([FromQuery, AllowNull] string? code,
         [FromQuery, AllowNull] double discount,
         [FromQuery, AllowNull] DateTime expiredTime,
-        [FromQuery] string userId,
+        //[FromQuery] string userId,
         [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new GetPlatformCouponsQuery(userId, pageNo, eachPage, discount, code, expiredTime), token);
         if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
         {
