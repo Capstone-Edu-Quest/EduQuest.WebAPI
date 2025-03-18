@@ -11,21 +11,21 @@ namespace EduQuest_Application.DTO.Request.Quests
         public string? Title { get; set; } //change name to title
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public int? PointToComplete { get; set; }
-
-        [Required(ErrorMessage = MessageError.ValueRequired)]
-        public bool? IsDaily { get; set; }
-
-        [Required(ErrorMessage = MessageError.ValueRequired)]
         public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public string? Description { get; set; }
+        public int? QuestType { get; set; }// learning streak, complete courses,....
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public int? TimeToComplete { get; set; } //default value is minute
+        public int[] QuestValue { get; set; }
+
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public List<QuestRewardRequest> Rewards { get; set; }
+        public int[] RewardType { get; set; } 
+        [Required(ErrorMessage = MessageError.ValueRequired)]
+        public int[] RewardValue { get; set; }
+
+        /*[Required(ErrorMessage = MessageError.ValueRequired)]
+        public List<QuestRewardRequest> Rewards { get; set; }*/
     }
 }

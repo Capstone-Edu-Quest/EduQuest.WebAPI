@@ -30,6 +30,6 @@ public class CreateCouponRequest : IMapFrom<Coupon>, IMapTo<Coupon>
     [Required(ErrorMessage = MessageError.ValueRequired)]
     public int Limit { get; set; }
 
-    public List<string>? WhiteListCourseIds { get; set; }
-    public List<string>? WhiteListUserIds { get; set; }
+/*    public List<string>? WhiteListCourseIds { get; set; }
+    public List<string>? WhiteListUserIds { get; set; }*/
 }

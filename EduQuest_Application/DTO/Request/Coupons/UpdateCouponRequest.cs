@@ -10,6 +10,6 @@ public class UpdateCouponRequest
     public int AllowUsagePerUser { get; set; }
     public int Limit { get; set; }
 
-    public List<string>? WhiteListCourseIds { get; set; }
-    public List<string>? WhiteListUserIds { get; set; }
+/*    public List<string>? WhiteListCourseIds { get; set; }
+    public List<string>? WhiteListUserIds { get; set; }*/
 }

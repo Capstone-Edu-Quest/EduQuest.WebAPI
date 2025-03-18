@@ -74,7 +74,7 @@ public class UpdateCouponHandler : IRequestHandler<UpdateCouponCommand, APIRespo
             temp.UpdatedAt = DateTime.Now.ToUniversalTime();
             temp.UpdatedBy = request.UserId;
 
-            if (request.Coupon.WhiteListCourseIds != null)
+            /*if (request.Coupon.WhiteListCourseIds != null)
             {
                 List<Course>? existCourses = temp.Course.ToList();
                 List<Course> courses = await _courseRepository.GetByListIds(request.Coupon.WhiteListCourseIds);
@@ -116,16 +116,16 @@ public class UpdateCouponHandler : IRequestHandler<UpdateCouponCommand, APIRespo
                 {
                     temp.WhiteListUsers.Remove(user1);
                 }
-            }
+            }*/
 
             await _couponRepository.Update(temp);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 CouponResponse response = _mapper.Map<CouponResponse>(temp);
-                List<string>? UserIds = temp.WhiteListUsers != null ? temp.WhiteListUsers.Select(t => t.Id).ToList() : null;
+               /* List<string>? UserIds = temp.WhiteListUsers != null ? temp.WhiteListUsers.Select(t => t.Id).ToList() : null;
                 response.WhiteListUserIds = UserIds;
                 List<string>? CourseIds = temp.Course != null ? temp.Course.Select(t => t.Id).ToList() : null;
-                response.WhiteListCourseIds = CourseIds;
+                response.WhiteListCourseIds = CourseIds;*/
                 //response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, Key, value);
             }

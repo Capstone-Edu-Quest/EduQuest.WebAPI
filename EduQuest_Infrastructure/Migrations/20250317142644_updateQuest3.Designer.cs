@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317142644_updateQuest3")]
+    partial class updateQuest3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1475,36 +1478,33 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<string>("BenefitsJson")
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal?>("MonthlyPrice")
-                        .HasColumnType("numeric");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
-                    b.Property<string>("Package")
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsFree")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
-
-                    b.Property<decimal?>("Value")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("YearlyPrice")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -1644,6 +1644,7 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InstructorId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal?>("InstructorShare")

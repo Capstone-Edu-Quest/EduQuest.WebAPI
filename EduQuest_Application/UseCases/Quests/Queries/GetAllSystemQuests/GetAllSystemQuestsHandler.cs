@@ -5,15 +5,8 @@ using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
-using Google.Cloud.Firestore.V1;
-using Google.Protobuf.WellKnownTypes;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Quests.Queries.GetAllSystemQuests;
@@ -34,8 +27,8 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
     public async Task<APIResponse> Handle(GetAllSystemQuestsQuery request, CancellationToken cancellationToken)
     {
 
-        var result = await _questRepository.GetAllQuests(request.Title, request.Description, request.PointToComplete,
-            request.Type, request.TimeToComplete, request.Page, request.EachPage);
+        var result = await _questRepository.GetAllQuests(request.Title, request.QuestType, request.Type, request.QuestValue,
+            request.UserId, request.Page, request.EachPage);
 
         var temp = result.Items.ToList();
         List<QuestResponse> responseDto = new List<QuestResponse>();
@@ -43,6 +36,9 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
         {
             CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
             QuestResponse questResponse = _mapper.Map<QuestResponse>(item);
+            questResponse.QuestValue = ToArray(item.QuestValues!);
+            questResponse.RewardType = ToArray(item.RewardTypes!);
+            questResponse.RewardValue = ToArray(item.RewardValues!);
             questResponse.CreatedByUser = userResponse;
             responseDto.Add(questResponse);
         }
@@ -50,5 +46,15 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
 
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, key, value);
+    }
+    private int[] ToArray(string values)
+    {
+        string[] temp = values.Split(',');
+        int[] result = new int[temp.Length];
+        for (int i = 0; i < temp.Length; i++)
+        {
+            result[i] = Convert.ToInt32(temp[i]);
+        }
+        return result;
     }
 }

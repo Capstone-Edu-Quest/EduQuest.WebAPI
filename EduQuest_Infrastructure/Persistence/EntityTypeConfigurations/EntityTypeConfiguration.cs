@@ -17,7 +17,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<TransactionDetail>,
 		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
-		IEntityTypeConfiguration<Reward>, IEntityTypeConfiguration<Report>
+		IEntityTypeConfiguration<Report>
 
     {
 		#region Role
@@ -164,9 +164,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .WithMany(u => u.Coupons)
                 .HasForeignKey(c => c.CreatedBy)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(c => c.WhiteListUsers)
-        .WithMany()
-        .UsingEntity<Dictionary<string, object>>(
+
+            /*builder.HasMany(c => c.WhiteListUsers)
+			.WithMany()
+			.UsingEntity<Dictionary<string, object>>(
             "CouponUser", // Tên của bảng trung gian
             j => j
                 .HasOne<User>()
@@ -180,7 +181,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
             j =>
             {
                 j.HasKey("CouponId", "UserId"); // Khóa chính của bảng trung gian
-            });
+            });*/
         }
         #endregion
 
@@ -331,7 +332,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .OnDelete(DeleteBehavior.ClientSetNull);
         }
         #endregion
-
         #region UserQuest
         public void Configure(EntityTypeBuilder<UserQuest> builder)
         {
@@ -345,16 +345,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                     .OnDelete(DeleteBehavior.ClientSetNull);
         }
         #endregion
-        #region QuestReward
-        public void Configure(EntityTypeBuilder<Reward> builder)
-        {
-            builder.HasOne(qr => qr.Quest)
-                .WithMany(q => q.Rewards)
-                .HasForeignKey(qr => qr.QuestId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-        }
-        #endregion
-
         #region Question
         public void Configure(EntityTypeBuilder<Question> builder)
 		{

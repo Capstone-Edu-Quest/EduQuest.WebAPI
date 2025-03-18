@@ -5,66 +5,110 @@ using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Quests.Command.CreateQuest;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
+using System.Text;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.QuestEnum;
 
-namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement
+namespace EduQuest_Application.UseCases.Achievements.Commands.CreateAchievement;
+
+public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, APIResponse>
 {
-	public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, APIResponse>
-	{
-		private readonly IQuestRepository _achievementRepository;
-		private readonly IMapper _mapper;
-		private readonly IUnitOfWork _unitOfWork;
-		private readonly IUserQuestRepository _userQuestRepository;
-		private readonly IUserRepository _userRepository;
-		private readonly IQuartzService _quartzService;
-		private const string key = "name";
-		private const string value = "quest";
+    private readonly IQuestRepository _achievementRepository;
+    private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserRepository _userRepository;
+    private readonly IQuartzService _quartzService;
+    private const string key = "name";
+    private const string value = "quest";
 
-        public CreateQuestCommandHandler(IQuestRepository achievementRepository, IMapper mapper, IUnitOfWork unitOfWork,
-			IUserQuestRepository userQuestRepository, IUserRepository userRepository,
-            IQuartzService qquartzService)
-		{
-			_achievementRepository = achievementRepository;
-			_mapper = mapper;
-			_unitOfWork = unitOfWork;
-			_userQuestRepository = userQuestRepository;
-			_userRepository = userRepository;
-			_quartzService = qquartzService;
-		}
+    public CreateQuestCommandHandler(IQuestRepository achievementRepository, IMapper mapper, IUnitOfWork unitOfWork,
+        IUserRepository userRepository,IQuartzService qquartzService)
+    {
+        _achievementRepository = achievementRepository;
+        _mapper = mapper;
+        _unitOfWork = unitOfWork;
+        _userRepository = userRepository;
+        _quartzService = qquartzService;
+    }
 
-		public async Task<APIResponse> Handle(CreateQuestCommand request, CancellationToken cancellationToken)
-		{
-			User? user = await _userRepository.GetById(request.UserId);
-			if (user == null)
-			{
-				return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed, 
-					MessageCommon.Unauthorized, key, value);
-			}
-
-			var questEntity = _mapper.Map<Quest>(request.Quest);
-			questEntity.Id = Guid.NewGuid().ToString();
-			questEntity.CreatedAt = DateTime.Now.ToUniversalTime();
-			questEntity.CreatedBy = request.UserId;
-            await _achievementRepository.Add(questEntity);
-			var result = await _unitOfWork.SaveChangesAsync() > 0;
-			if(result)
-			{
-                //add quest to all user.
-				await _quartzService.AddNewQuestToAllUser(questEntity.Id);
-				//await _userQuestRepository.AddNewQuestToAllUseQuest(questEntity);
-
-				//Create response
-				QuestResponse response = _mapper.Map<QuestResponse>(questEntity);
-				response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
-				return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, key, value);
-            }
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, 
-				MessageCommon.CreateFailed, key, value);
+    public async Task<APIResponse> Handle(CreateQuestCommand request, CancellationToken cancellationToken)
+    {
+        #region Validation
+        User? user = await _userRepository.GetById(request.UserId);
+        if (user == null)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.CreateFailed,
+                MessageCommon.Unauthorized, key, value);
         }
-	}
+
+        if(request.Quest.QuestType > (int)QuestType.STAGE ||
+           request.Quest.QuestType > (int)QuestType.STREAK ||
+           request.Quest.Type > (int)ResetType.OneTime ||
+           request.Quest.Type < (int)ResetType.Daily)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed,
+                MessageQuest.InvalidQuestTypeOrResetType, key, value);
+        }
+        #endregion
+
+        var questEntity = _mapper.Map<Quest>(request.Quest);
+
+        if (request.Quest.QuestValue != null && request.Quest.QuestValue.Any())
+        {
+            questEntity.QuestValues = ArrayToString(request.Quest.QuestValue);
+        }
+
+        if (request.Quest.RewardValue != null && request.Quest.RewardValue.Any())
+        {
+            questEntity.RewardValues = ArrayToString(request.Quest.RewardValue);
+        }
+
+        if (request.Quest.RewardType != null && request.Quest.RewardType.Any())
+        {
+            questEntity.RewardTypes = ArrayToString(request.Quest.RewardType);
+        }
+
+
+        questEntity.Id = Guid.NewGuid().ToString();
+        questEntity.CreatedAt = DateTime.Now.ToUniversalTime();
+        questEntity.CreatedBy = request.UserId;
+
+        await _achievementRepository.Add(questEntity);
+        var result = await _unitOfWork.SaveChangesAsync() > 0;
+        if (result)
+        {
+            //add quest to all user.
+            await _quartzService.AddNewQuestToAllUser(questEntity.Id);
+            //await _userQuestRepository.AddNewQuestToAllUseQuest(questEntity);
+
+            //Create response
+            QuestResponse response = _mapper.Map<QuestResponse>(questEntity);
+            response.QuestValue = request.Quest.QuestValue!;
+            response.RewardValue = request.Quest.RewardValue!;
+            response.RewardType = request.Quest.RewardType!;
+            response.CreatedByUser = _mapper.Map<CommonUserResponse>(user);
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, response, key, value);
+        }
+        return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed,
+        MessageCommon.CreateFailed, key, value);
+    }
+
+    private string ArrayToString(int[] input)
+    {
+        StringBuilder valuesBuilder = new StringBuilder();
+        foreach (int value in input)
+        {
+            valuesBuilder.Append(value);
+            valuesBuilder.Append(",");
+        }
+        // remove the last comma
+        string values = valuesBuilder.ToString();
+        return values.Substring(0, values.Length - 1);
+    }
 }

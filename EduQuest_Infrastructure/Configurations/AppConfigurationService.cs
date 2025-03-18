@@ -54,8 +54,9 @@ namespace EduQuest_Infrastructure
 			{
 				options.UseNpgsql(
 					//configuration.GetConnectionString("test"),
-					configuration.GetConnectionString("production"),
-					b =>
+                    //configuration.GetConnectionString("local"),
+                    configuration.GetConnectionString("production"),
+                    b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
 						b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
