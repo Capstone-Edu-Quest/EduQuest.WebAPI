@@ -64,31 +64,40 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
     }
     public async Task<bool> ConsumeCoupon(string code, string userId)
     {
-        Coupon? coupon = await _context.Coupon.FirstOrDefaultAsync(c => c.Code == code);
+        Coupon? coupon = await _context.Coupon
+            .Include(c => c.UserCoupons)
+            .FirstOrDefaultAsync(c => c.Code == code);
 
         if (coupon == null || coupon.Usage >= coupon.Limit)
         {
             return false;
         }
-        var temp = coupon.UserCoupons!.FirstOrDefault(uc => uc.UserId == userId);
-        if (temp == null)
+
+        var userCoupon = coupon.UserCoupons?.FirstOrDefault(uc => uc.UserId == userId);
+        if (userCoupon == null)
         {
             UserCoupon newUserCoupon = new UserCoupon
             {
                 UserId = userId,
                 CouponId = coupon.Id,
-                AllowUsage = coupon.Limit,
-                RemainUsage = coupon.AllowUsagePerUser,
+                AllowUsage = coupon.AllowUsagePerUser,
+                RemainUsage = coupon.AllowUsagePerUser
             };
-            coupon.UserCoupons!.Add(newUserCoupon);
-            return true;
+            coupon.UserCoupons?.Add(newUserCoupon);
         }
         else
         {
-            int remain = temp.RemainUsage;
-            remain -= 1;
-            temp.RemainUsage = remain;
-            return true;
+            if (userCoupon.RemainUsage > 0)
+            {
+                userCoupon.RemainUsage -= 1;
+            }
+            else
+            {
+                return false;
+            }
         }
+
+        coupon.Usage += 1;
+        return await _context.SaveChangesAsync() > 0;
     }
 }
