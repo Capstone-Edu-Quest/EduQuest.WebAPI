@@ -12,7 +12,7 @@ namespace EduQuest_Domain.Entities
 	public partial class TransactionDetail : BaseEntity
 	{
         public string TransactionId { get; set; }
-        public string InstructorId { get; set; }
+        public string? InstructorId { get; set; }
         public string ItemType { get; set; }
         public string ItemId { get; set; }
         public decimal Amount { get; set; }

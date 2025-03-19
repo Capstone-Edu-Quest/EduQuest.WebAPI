@@ -22,9 +22,9 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.SaveChangesAsync() > 0;
 		}
 
-		public async Task<List<FavoriteList>> GetFavoriteListByUserId(string userId)
+		public async Task<FavoriteList> GetFavoriteListByUserId(string userId)
 		{
-			return await _context.FavoriteLists.Include(x => x.User).Where(x => x.UserId == userId).ToListAsync();
+			return await _context.FavoriteLists.Include(x => x.User).Include(x => x.Courses).FirstOrDefaultAsync(x => x.UserId == userId);
 		}
 	}
 }

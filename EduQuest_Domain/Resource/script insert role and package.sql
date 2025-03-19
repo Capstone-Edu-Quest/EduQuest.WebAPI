@@ -15,35 +15,32 @@ VALUES
     ('1', 'Video', 1.0, 'Configuration for video', NOW(), NOW()),
     ('2', 'Document', 1.0, 'Configuration for document', NOW(), NOW()),
     ('3', 'Quiz', 0.8, 'Configuration for quiz', NOW(), NOW()),
-    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW()),
-	('5', 'CourseFee', 0.18, 'Configuration for course', NOW(), NOW());
+    ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW());
 
 
-INSERT INTO "Subscription" ("Id", "Name", "Description", "DurationDays", "Price", "IsFree", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+INSERT INTO public."Course"(
+    "Id", "Title", "Description", "PhotoUrl", "Color", "Price", 
+    "Requirement", "Feature", "IsRequired", "Status", "CreatedBy", 
+    "AdvertiseId", "CourseLearnerId", "SettingId", "CreatedAt", 
+    "UpdatedBy", "UpdatedAt", "DeletedAt"
+)
 VALUES
-    ('1', 'Package 1', 'des1', 30, 4000, TRUE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
-    ('2', 'Package 2', 'des2', 60, 6000, FALSE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
-    ('3', 'Package 3', 'des3', 90, 8000, FALSE, CURRENT_TIMESTAMP, NULL, NULL, NULL),
-    ('4', 'Package 4', 'des4', 120, 10000, TRUE, CURRENT_TIMESTAMP, NULL, NULL, NULL);
+    ('3', 'Course 1', 'Description of Course 1', 'https://example.com/photo1.jpg', 'Red', 199.99, 'Basic knowledge of programming', 'Feature 1', true, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
+    ('4', 'Course 2', 'Description of Course 2', 'https://example.com/photo2.jpg', 'Blue', 299.99, 'Intermediate level knowledge of programming', 'Feature 2', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
+    ('5', 'Course 3', 'Description of Course 3', 'https://example.com/photo3.jpg', 'Green', 149.99, 'No prior knowledge required', 'Feature 3', true, 'Inactive', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
+    ('6', 'Course 4', 'Description of Course 4', 'https://example.com/photo4.jpg', 'Yellow', 249.99, 'Basic knowledge of web development', 'Feature 4', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
+    ('7', 'Course 5', 'Description of Course 5', 'https://example.com/photo5.jpg', 'Purple', 349.99, 'Advanced level knowledge of data science', 'Feature 5', true, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
+    ('8', 'Course 6', 'Description of Course 6', 'https://example.com/photo6.jpg', 'Orange', 399.99, 'Expert knowledge of machine learning', 'Feature 6', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL);
 
-INSERT INTO "User" ("Id", "Username", "AvatarUrl", "Email", "Phone", "Headline", "Status", "Description", "RoleId","SubscriptionId", "CreatedAt", "UpdatedBy", "UpdatedAt", "DeletedAt")
+INSERT INTO public."Subscription"(
+    "Id", "Package", "Type", "MonthlyPrice", "YearlyPrice", 
+    "Value", "BenefitsJson", "CreatedAt", "UpdatedBy", "UpdatedAt", "DeletedAt"
+)
 VALUES
-    (1, 'user1', 'avatar1.png', 'user1@example.com', '1234567890', 'Headline 1', 'Active', 'Description 1', 1, 1, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
-    (2, 'user2', 'avatar2.png', 'user2@example.com', '1234567891', 'Headline 2', 'Active', 'Description 2', 2, 2, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
-    (3, 'user3', 'avatar3.png', 'user3@example.com', '1234567892', 'Headline 3', 'Active', 'Description 3', 3, 3, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
-    (4, 'user4', 'avatar4.png', 'user4@example.com', '1234567893', 'Headline 4', 'Active', 'Description 4', 4, 4, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
-    (5, 'user5', 'avatar5.png', 'user5@example.com', '1234567894', 'Headline 5', 'Active', 'Description 5', 5, 3, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
-    (6, 'user6', 'avatar6.png', 'user6@example.com', '1234567895', 'Headline 6', 'Active', 'Description 6', 6, 2, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL);
-
-
-
-
-
-INSERT INTO "Course" ("Id", "Title", "Description", "PhotoUrl", "Color", "Price", "Requirement", "Feature", "IsRequired", "CreatedBy",
-                      "CreatedAt", "UpdatedBy", "UpdatedAt", "DeletedAt", "Status")
-VALUES
-    (1, 'Course Title 1', 'Description for Course 1', 'photo1.png', '#FF5733', 99.99, 'Requirement for Course 1', 'Feature for Course 1', TRUE, 2,
-     CURRENT_TIMESTAMP, NULL, null, NULL, 'Published'),
-
-    (2, 'Course Title 2', 'Description for Course 2', 'photo2.png', '#33FF57', 149.99, 'Requirement for Course 2', 'Feature for Course 2', FALSE, 2,
-     CURRENT_TIMESTAMP, NULL, null, NULL, 'Published');
+    (1, 'Instructor Pro', 'Pro', 10, 95, 18, 
+     '{"Commision Fee": "$18", "Marketing Email Per Month": "$3"}'::json, NOW(), 'Admin', NOW(), NULL),
+    (2, 'Learner Pro', 'Pro', 5, 50, 12, 
+     '{"Coupon Per Month": "$3", "Coupon Discount Upto": "$90", "Extra Gold and Exp": "$10", "Trial Course Percentage": "$15", "Course Trial Per Month": "$5"}'::json, 
+     NOW(), 'Admin', NOW(), NULL),
+    (3, 'Instructor Free', 'Free', 0, 0, 0, 
+     '{"Commision Fee": "$12"}'::json, NOW(), 'Admin', NOW(), NULL);

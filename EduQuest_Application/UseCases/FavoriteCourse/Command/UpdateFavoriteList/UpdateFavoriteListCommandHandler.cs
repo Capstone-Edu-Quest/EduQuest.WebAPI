@@ -9,36 +9,40 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.FavoriteCourse.Command.AddFavoriteList
 {
-	public class AddFavoriteListCommandHandler : IRequestHandler<AddFavoriteListCommand, APIResponse>
+	public class UpdateFavoriteListCommandHandler : IRequestHandler<UpdateFavoriteListCommand, APIResponse>
 	{
 		private readonly IFavoriteListRepository _favoriteListRepository;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly ICourseRepository _courseRepository;
 
-		public AddFavoriteListCommandHandler(IFavoriteListRepository favoriteListRepository, IUnitOfWork unitOfWork)
+		public UpdateFavoriteListCommandHandler(IFavoriteListRepository favoriteListRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository)
 		{
 			_favoriteListRepository = favoriteListRepository;
 			_unitOfWork = unitOfWork;
+			_courseRepository = courseRepository;
 		}
 
-		public async Task<APIResponse> Handle(AddFavoriteListCommand request, CancellationToken cancellationToken)
+		public async Task<APIResponse> Handle(UpdateFavoriteListCommand request, CancellationToken cancellationToken)
 		{
-			var newFavCourse = new FavoriteList();
-			newFavCourse.UserId = request.UserId;
-			await _favoriteListRepository.Add(newFavCourse);
+			var fav = await _favoriteListRepository.GetFavoriteListByUserId(request.UserId);
+			var listCourse = await _courseRepository.GetByListIds(request.CourseId);
+			fav.Courses.Clear();
+			fav.Courses = listCourse;
+			await _favoriteListRepository.Update(fav);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse
 			{
 				IsError = !result,
-				Payload = result ? newFavCourse : null,
+				Payload = result ? fav : null,
 				Errors = result ? null : new ErrorResponse
 				{
 					StatusResponse = HttpStatusCode.BadRequest,
 					StatusCode = (int)HttpStatusCode.BadRequest,
-					Message = MessageCommon.SavingFailed,
+					Message = MessageCommon.UpdateFailed,
 				},
 				Message = new MessageResponse
 				{
-					content = result ? MessageCommon.CreateSuccesfully : MessageCommon.CreateFailed,
+					content = result ? MessageCommon.UpdateSuccesfully : MessageCommon.UpdateFailed,
 					values = new Dictionary<string, string> { { "name", "favorite course" } }
 				}
 			};

@@ -75,5 +75,10 @@ namespace EduQuest_Infrastructure.Repository
 				.ToListAsync();
 			return result;
 		}
-    }
+
+		public async Task<List<Course>> GetListCourse()
+		{
+			return await _context.Courses.Include(x => x.User).ToListAsync();
+		}
+	}
 }

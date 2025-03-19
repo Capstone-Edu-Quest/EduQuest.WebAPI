@@ -35,45 +35,45 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 
 		public async Task<APIResponse> Handle(SearchCourseQuery request, CancellationToken cancellationToken)
 		{
-			var cacheKey = $"searchCourse_{request.UserId}_{request.SearchRequest!.KeywordName}";
-			var cacheSearchKey = $"searchHistory_{request.UserId}_{request.SearchRequest!.KeywordName}";
+			//var cacheKey = $"searchCourse_{request.UserId}_{request.SearchRequest!.KeywordName}";
+			//var cacheSearchKey = $"searchHistory_{request.UserId}_{request.SearchRequest!.KeywordName}";
 
-			var cachedDataString = await _redisCaching.GetAsync<PagedList<CourseSearchResponse>>(cacheKey);
+			//var cachedDataString = await _redisCaching.GetAsync<PagedList<CourseSearchResponse>>(cacheKey);
 
-			if (cachedDataString != null)
-			{
-				return new APIResponse
-				{
-					IsError = false,
-					Payload = cachedDataString,
-					Errors = null,
-					Message = new MessageResponse
-					{
-						content = MessageCommon.GetSuccesfully,
-						values = new Dictionary<string, string>() { { "name", "courses" } }
-					}
-				};
-			}
+			//if (cachedDataString != null)
+			//{
+			//	return new APIResponse
+			//	{
+			//		IsError = false,
+			//		Payload = cachedDataString,
+			//		Errors = null,
+			//		Message = new MessageResponse
+			//		{
+			//			content = MessageCommon.GetSuccesfully,
+			//			values = new Dictionary<string, string>() { { "name", "courses" } }
+			//		}
+			//	};
+			//}
 
-			var listCourse = await _courseRepository.GetAll();
+			var listCourse = await _courseRepository.GetListCourse();
 			if(request.SearchRequest.KeywordName != null)
 			{
-				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower())));
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower()))).ToList();
 			} else if(request.SearchRequest.DateTo != null)
 			{
-				listCourse = listCourse.Where(x => x.UpdatedAt <= request.SearchRequest.DateTo);
+				listCourse = listCourse.Where(x => x.UpdatedAt <= request.SearchRequest.DateTo).ToList();
 			}
 			else if (request.SearchRequest.DateFrom != null)
 			{
-				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom);
+				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom).ToList();
 			}
 			else if (request.SearchRequest.DateFrom != null && request.SearchRequest.DateTo != null)
 			{
-				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom && x.UpdatedAt <= request.SearchRequest.DateTo);
+				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom && x.UpdatedAt <= request.SearchRequest.DateTo).ToList();
 			}
 			else if (request.SearchRequest.Author != null)
 			{
-				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.CreatedBy.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.Author)));
+				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.User.Username.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.Author))).ToList();
 			} else if (request.SearchRequest.Rating != null)
 			{
 				listCourse = listCourse.Where(x => x.CourseStatistic.Rating >= request.SearchRequest.Rating).ToList();
@@ -120,8 +120,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				}
 			}
 
-
-
 			int totalItem = listCourseResponse.Count;
 			var listPaged = listCourseResponse.Skip((request.PageNo - 1) * request.EachPage)
 											.Take(request.EachPage)
@@ -132,8 +130,8 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				Items = listPaged
 			};
 
-			await _redisCaching.SetAsync(cacheKey, result, 60);
-			await _redisCaching.SetAsync(cacheSearchKey, request.SearchRequest.KeywordName, 4320);
+			//await _redisCaching.SetAsync(cacheKey, result, 60);
+			//await _redisCaching.SetAsync(cacheSearchKey, request.SearchRequest.KeywordName, 4320);
 
 			return new APIResponse
 			{

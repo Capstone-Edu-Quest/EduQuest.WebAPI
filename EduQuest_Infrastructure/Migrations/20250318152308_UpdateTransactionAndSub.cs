@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduQuest_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class updateCoupon3 : Migration
+    public partial class UpdateTransactionAndSub : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -164,11 +164,12 @@ namespace EduQuest_Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    DurationDays = table.Column<int>(type: "integer", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
-                    IsFree = table.Column<bool>(type: "boolean", nullable: false),
+                    Package = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: true),
+                    MonthlyPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    YearlyPrice = table.Column<decimal>(type: "numeric", nullable: true),
+                    Value = table.Column<decimal>(type: "numeric", nullable: true),
+                    BenefitsJson = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -211,6 +212,23 @@ namespace EduQuest_Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tag", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserQuestReward",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    UserQuestId = table.Column<string>(type: "text", nullable: true),
+                    RewardId = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserQuestReward", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -467,9 +485,11 @@ namespace EduQuest_Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: true),
+                    IsDaily = table.Column<bool>(type: "boolean", nullable: true),
                     Type = table.Column<int>(type: "integer", nullable: true),
-                    QuestType = table.Column<int>(type: "integer", nullable: true),
-                    QuestValues = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    PointToComplete = table.Column<int>(type: "integer", nullable: true),
+                    TimeToComplete = table.Column<int>(type: "integer", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -623,6 +643,30 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CouponUser",
+                columns: table => new
+                {
+                    CouponId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CouponUser", x => new { x.CouponId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_CouponUser_Coupon_CouponId",
+                        column: x => x.CouponId,
+                        principalTable: "Coupon",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CouponUser_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserCoupon",
                 columns: table => new
                 {
@@ -700,6 +744,30 @@ namespace EduQuest_Infrastructure.Migrations
                         column: x => x.CourseId,
                         principalTable: "Course",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CouponCourse",
+                columns: table => new
+                {
+                    CouponsId = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CouponCourse", x => new { x.CouponsId, x.CourseId });
+                    table.ForeignKey(
+                        name: "FK_CouponCourse_Coupon_CouponsId",
+                        column: x => x.CouponsId,
+                        principalTable: "Coupon",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CouponCourse_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -973,9 +1041,10 @@ namespace EduQuest_Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    RewardType = table.Column<int>(type: "integer", nullable: true),
-                    RewardValue = table.Column<int>(type: "integer", nullable: true),
+                    RewardType = table.Column<string>(type: "text", nullable: true),
+                    RewardValue = table.Column<string>(type: "text", nullable: true),
                     QuestId = table.Column<string>(type: "text", nullable: true),
+                    UserQuestRewardId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -988,8 +1057,12 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_QuestRewards_Quest_QuestId",
                         column: x => x.QuestId,
                         principalTable: "Quest",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_QuestRewards_UserQuestReward_UserQuestRewardId",
+                        column: x => x.UserQuestRewardId,
+                        principalTable: "UserQuestReward",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -999,15 +1072,16 @@ namespace EduQuest_Infrastructure.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: true),
                     Type = table.Column<int>(type: "integer", nullable: true),
-                    QuestType = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    QuestValues = table.Column<string>(type: "text", nullable: true),
-                    PointToComplete = table.Column<int>(type: "integer", nullable: false),
+                    PointToComplete = table.Column<int>(type: "integer", nullable: true),
                     CurrentPoint = table.Column<int>(type: "integer", nullable: true),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDaily = table.Column<bool>(type: "boolean", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     QuestId = table.Column<string>(type: "text", nullable: true),
+                    UserQuestRewardId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -1020,6 +1094,11 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_UserQuest_Quest_QuestId",
                         column: x => x.QuestId,
                         principalTable: "Quest",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserQuest_UserQuestReward_UserQuestRewardId",
+                        column: x => x.UserQuestRewardId,
+                        principalTable: "UserQuestReward",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserQuest_User_UserId",
@@ -1123,7 +1202,7 @@ namespace EduQuest_Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     TransactionId = table.Column<string>(type: "text", nullable: false),
-                    InstructorId = table.Column<string>(type: "text", nullable: false),
+                    InstructorId = table.Column<string>(type: "text", nullable: true),
                     ItemType = table.Column<string>(type: "text", nullable: false),
                     ItemId = table.Column<string>(type: "text", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
@@ -1269,35 +1348,6 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserQuestReward",
-                columns: table => new
-                {
-                    UserQuestId = table.Column<string>(type: "text", nullable: false),
-                    RewardId = table.Column<string>(type: "text", nullable: false),
-                    Id = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserQuestReward", x => new { x.UserQuestId, x.RewardId });
-                    table.ForeignKey(
-                        name: "FK_UserQuestReward_QuestRewards_RewardId",
-                        column: x => x.RewardId,
-                        principalTable: "QuestRewards",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserQuestReward_UserQuest_UserQuestId",
-                        column: x => x.UserQuestId,
-                        principalTable: "UserQuest",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "LessonMaterial",
                 columns: table => new
                 {
@@ -1424,6 +1474,16 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_Coupon_DeletedAt",
                 table: "Coupon",
                 column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CouponCourse_CourseId",
+                table: "CouponCourse",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CouponUser_UserId",
+                table: "CouponUser",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Course_AdvertiseId",
@@ -1639,6 +1699,11 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "QuestId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_QuestRewards_UserQuestRewardId",
+                table: "QuestRewards",
+                column: "UserQuestRewardId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Quiz_DeletedAt",
                 table: "Quiz",
                 column: "DeletedAt");
@@ -1835,15 +1900,14 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserQuest_UserQuestRewardId",
+                table: "UserQuest",
+                column: "UserQuestRewardId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserQuestReward_DeletedAt",
                 table: "UserQuestReward",
                 column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserQuestReward_RewardId",
-                table: "UserQuestReward",
-                column: "RewardId",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -1857,6 +1921,12 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CertificateUser");
+
+            migrationBuilder.DropTable(
+                name: "CouponCourse");
+
+            migrationBuilder.DropTable(
+                name: "CouponUser");
 
             migrationBuilder.DropTable(
                 name: "CourseFavoriteList");
@@ -1889,6 +1959,9 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "MascotShopItem");
 
             migrationBuilder.DropTable(
+                name: "QuestRewards");
+
+            migrationBuilder.DropTable(
                 name: "QuizAttempt");
 
             migrationBuilder.DropTable(
@@ -1913,7 +1986,7 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "UserCoupon");
 
             migrationBuilder.DropTable(
-                name: "UserQuestReward");
+                name: "UserQuest");
 
             migrationBuilder.DropTable(
                 name: "Question");
@@ -1964,10 +2037,10 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "Coupon");
 
             migrationBuilder.DropTable(
-                name: "QuestRewards");
+                name: "Quest");
 
             migrationBuilder.DropTable(
-                name: "UserQuest");
+                name: "UserQuestReward");
 
             migrationBuilder.DropTable(
                 name: "Assignment");
@@ -1977,9 +2050,6 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Course");
-
-            migrationBuilder.DropTable(
-                name: "Quest");
 
             migrationBuilder.DropTable(
                 name: "Advertise");

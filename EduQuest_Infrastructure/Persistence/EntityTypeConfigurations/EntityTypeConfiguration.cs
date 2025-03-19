@@ -205,15 +205,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		public void Configure(EntityTypeBuilder<FavoriteList> builder)
 		{
 			
-
-			// Define the relationship with User
-			builder.HasOne(fl => fl.User)
-				.WithMany(u => u.FavoriteLists)
-				.HasForeignKey(fl => fl.UserId)
-				.OnDelete(DeleteBehavior.Cascade);
-
-			
-
 		}
 		#endregion
 

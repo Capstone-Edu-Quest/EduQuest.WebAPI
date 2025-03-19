@@ -12,11 +12,14 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         public string TransactionId { get; set; }
         public string Status { get; set; }
+        public string UserId { get; set; }
         public UpdateTransactionStatusCommand() { }
-        public UpdateTransactionStatusCommand(string transactionId, string status)
-        {
-            TransactionId = transactionId;
-            Status = status;
-        }
-    }
+
+		public UpdateTransactionStatusCommand(string transactionId, string status, string userId)
+		{
+			TransactionId = transactionId;
+			Status = status;
+			UserId = userId;
+		}
+	}
 }

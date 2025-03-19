@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Payment;
 using MediatR;
@@ -26,6 +27,7 @@ namespace EduQuest_API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> StripeWebhook(CancellationToken cancellationToken)
 		{
+			string userId = User.GetUserIdFromToken().ToString();
 			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 			Event stripeEvent;
 
@@ -40,7 +42,8 @@ namespace EduQuest_API.Controllers
 					await _mediator.Send(new UpdateTransactionStatusCommand
 					{
 						TransactionId = session.Id,
-						Status = StatusPayment.Completed.ToString()
+						Status = StatusPayment.Completed.ToString(),
+						UserId = userId,
 					}, cancellationToken);
 				}
 			}
@@ -53,7 +56,8 @@ namespace EduQuest_API.Controllers
 					await _mediator.Send(new UpdateTransactionStatusCommand
 					{
 						TransactionId = session.Id,
-						Status = StatusPayment.Expired.ToString()
+						Status = StatusPayment.Expired.ToString(),
+						UserId = userId,
 					});
 				}
 			}
