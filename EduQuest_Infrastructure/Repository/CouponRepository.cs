@@ -47,4 +47,48 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         }
         return await result.Pagination(pageNo, pageSize).ToPagedListAsync(pageNo, pageSize);
     }
+    public async Task<bool> IsCouponAvailable(string code, string userId)
+    {
+        Coupon? coupon = await _context.Coupon.FirstOrDefaultAsync(c => c.Code == code);
+
+        if (coupon == null || coupon.Usage >= coupon.Limit)
+        {
+            return false;
+        }
+        var temp = coupon.UserCoupons!.FirstOrDefault(uc => uc.UserId == userId);
+        if(temp == null || temp.AllowUsage >= temp.RemainUsage)
+        {
+            return false;
+        }
+        return true;
+    }
+    public async Task<bool> ConsumeCoupon(string code, string userId)
+    {
+        Coupon? coupon = await _context.Coupon.FirstOrDefaultAsync(c => c.Code == code);
+
+        if (coupon == null || coupon.Usage >= coupon.Limit)
+        {
+            return false;
+        }
+        var temp = coupon.UserCoupons!.FirstOrDefault(uc => uc.UserId == userId);
+        if (temp == null)
+        {
+            UserCoupon newUserCoupon = new UserCoupon
+            {
+                UserId = userId,
+                CouponId = coupon.Id,
+                AllowUsage = coupon.Limit,
+                RemainUsage = coupon.AllowUsagePerUser,
+            };
+            coupon.UserCoupons!.Add(newUserCoupon);
+            return true;
+        }
+        else
+        {
+            int remain = temp.RemainUsage;
+            remain -= 1;
+            temp.RemainUsage = remain;
+            return true;
+        }
+    }
 }

@@ -9,4 +9,6 @@ public interface ICouponRepository : IGenericRepository<Coupon>
     Task<bool> ExistByCode(string code);
     Task<PagedList<Coupon>> GetAllPlatformCoupon(int pageNo, int pageSize,
         double? discountValue, string? couponCode, DateTime? expiredAt);
+    Task<bool> IsCouponAvailable(string code, string userId);
+    Task<bool> ConsumeCoupon(string code, string userId);
 }
