@@ -47,7 +47,7 @@ public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, API
                 MessageCommon.Unauthorized, key, value);
         }
 
-        if(request.Quest.QuestType > (int)QuestType.STAGE ||
+        if(request.Quest.QuestType < (int)QuestType.STAGE ||
            request.Quest.QuestType > (int)QuestType.STREAK ||
            request.Quest.Type > (int)ResetType.OneTime ||
            request.Quest.Type < (int)ResetType.Daily)
