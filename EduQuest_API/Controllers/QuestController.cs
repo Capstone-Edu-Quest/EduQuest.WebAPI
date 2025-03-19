@@ -76,7 +76,7 @@ namespace EduQuest_API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Learner")]
         [HttpGet("user")]
         public async Task<IActionResult> GetAllUserQuests(//[FromQuery] string userId,
             [FromQuery, AllowNull] string? title,
