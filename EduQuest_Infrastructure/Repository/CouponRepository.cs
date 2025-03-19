@@ -51,12 +51,16 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
     {
         Coupon? coupon = await _context.Coupon.FirstOrDefaultAsync(c => c.Code == code);
 
-        if (coupon == null || coupon.Usage >= coupon.Limit)
+        if (coupon == null)
+        {
+            return false;
+        }
+        if(coupon.Usage >= coupon.Limit || coupon.ExpireTime > DateTime.Now)
         {
             return false;
         }
         var temp = coupon.UserCoupons!.FirstOrDefault(uc => uc.UserId == userId);
-        if(temp == null || temp.AllowUsage >= temp.RemainUsage)
+        if(temp!.RemainUsage < 1)
         {
             return false;
         }
@@ -68,7 +72,7 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
             .Include(c => c.UserCoupons)
             .FirstOrDefaultAsync(c => c.Code == code);
 
-        if (coupon == null || coupon.Usage >= coupon.Limit)
+        if (coupon == null || coupon.Usage >= coupon.Limit || coupon.ExpireTime > DateTime.Now)
         {
             return false;
         }
