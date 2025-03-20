@@ -35,15 +35,15 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[HttpGet("recommendedCourse")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetRecommnededCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetRecommendedCourseQuery(userId, pageNo, eachPage), cancellationToken);
-			return Ok(result);
-		}
+		//[HttpGet("recommendedCourse")]
+		//[ProducesResponseType(StatusCodes.Status200OK)]
+		//[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		//public async Task<IActionResult> GetRecommnededCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		//{
+		//	string userId = User.GetUserIdFromToken().ToString();
+		//	var result = await _mediator.Send(new GetRecommendedCourseQuery(userId, pageNo, eachPage), cancellationToken);
+		//	return Ok(result);
+		//}
 
 		[HttpGet("byCourseId")]
 		[ProducesResponseType(StatusCodes.Status200OK)]

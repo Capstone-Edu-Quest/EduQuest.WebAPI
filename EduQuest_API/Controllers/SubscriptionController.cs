@@ -1,6 +1,4 @@
-﻿using EduQuest_Application.Helper;
-using EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions;
-using EduQuest_Domain.Constants;
+﻿using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +13,14 @@ namespace EduQuest_API.Controllers
 			_mediator = mediator;
 		}
 
-		[HttpGet("")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetAllSubscription(CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetSubscriptionsQuery(), cancellationToken);
-			return Ok(result);
-		}
+		//[HttpGet("")]
+		//[ProducesResponseType(StatusCodes.Status200OK)]
+		//[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		//public async Task<IActionResult> GetAllSubscription(CancellationToken cancellationToken = default)
+		//{
+		//	string userId = User.GetUserIdFromToken().ToString();
+		//	var result = await _mediator.Send(new GetSubscriptionsQuery(), cancellationToken);
+		//	return Ok(result);
+		//}
 	}
 }

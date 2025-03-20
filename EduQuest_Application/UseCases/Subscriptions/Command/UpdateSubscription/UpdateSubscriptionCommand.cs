@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions
+namespace EduQuest_Application.UseCases.Subscriptions.Command.UpdateSubscription
 {
-	public class GetSubscriptionsQuery : IRequest<APIResponse>
+	public class UpdateSubscriptionCommand : IRequest<APIResponse>
 	{
-
 	}
 }

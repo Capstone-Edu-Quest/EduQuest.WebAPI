@@ -32,15 +32,51 @@ VALUES
     ('7', 'Course 5', 'Description of Course 5', 'https://example.com/photo5.jpg', 'Purple', 349.99, 'Advanced level knowledge of data science', 'Feature 5', true, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
     ('8', 'Course 6', 'Description of Course 6', 'https://example.com/photo6.jpg', 'Orange', 399.99, 'Expert knowledge of machine learning', 'Feature 6', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL);
 
-INSERT INTO public."Subscription"(
-    "Id", "Package", "Type", "MonthlyPrice", "YearlyPrice", 
-    "Value", "BenefitsJson", "CreatedAt", "UpdatedBy", "UpdatedAt", "DeletedAt"
-)
-VALUES
-    (1, 'Instructor Pro', 'Pro', 10, 95, 18, 
-     '{"Commision Fee": "$18", "Marketing Email Per Month": "$3"}'::json, NOW(), 'Admin', NOW(), NULL),
-    (2, 'Learner Pro', 'Pro', 5, 50, 12, 
-     '{"Coupon Per Month": "$3", "Coupon Discount Upto": "$90", "Extra Gold and Exp": "$10", "Trial Course Percentage": "$15", "Course Trial Per Month": "$5"}'::json, 
-     NOW(), 'Admin', NOW(), NULL),
-    (3, 'Instructor Free', 'Free', 0, 0, 0, 
-     '{"Commision Fee": "$12"}'::json, NOW(), 'Admin', NOW(), NULL);
+
+-- Insert Instructor Pro - Price Monthly
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (3, '2', 'Pro', 'priceMonthly', 9, NOW(), NULL, NULL, NULL);
+
+-- Insert Instructor Pro - Price Yearly
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (4, '2', 'Pro', 'priceYearly', 90, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Price Monthly
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (5, '3', 'Pro', 'priceMonthly', 5, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Price Yearly
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (6, '3', 'Pro', 'priceYearly', 50, NOW(), NULL, NULL, NULL);
+
+-- Insert Instructor Free - Benefit Commission Fee
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (7, '2', 'Free', 'commisionFee', 18, NOW(), NULL, NULL, NULL);
+
+-- Insert Instructor Pro - Benefit Commission Fee
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (8, '2', 'Pro', 'commisionFee', 12, NOW(), NULL, NULL, NULL);
+
+-- Insert Instructor Pro - Benefit Marketing Email Per Month
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (9, '2', 'Pro', 'marketingEmailPerMonth', 3, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Benefit Coupon Per Month
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (10, '3', 'Pro', 'couponPerMonth', 3, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Benefit Coupon Discount Upto
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (11, '3', 'Pro', 'couponDiscountUpto', 90, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Benefit Extra Gold and Exp
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (12, '3', 'Pro', 'extraGoldAndExp', 10, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Benefit Trial Course Percentage
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (13, '3', 'Pro', 'trialCoursePercentage', 15, NOW(), NULL, NULL, NULL);
+
+-- Insert Learner Pro - Benefit Course Trial Per Month
+INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
+VALUES (14, '3', 'Pro', 'courseTrialPerMonth', 5, NOW(), NULL, NULL, NULL);

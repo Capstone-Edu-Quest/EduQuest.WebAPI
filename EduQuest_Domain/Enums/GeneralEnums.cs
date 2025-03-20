@@ -90,12 +90,29 @@ namespace EduQuest_Domain.Enums
 		}
 		#endregion
 
-		#region Platform
-		public enum Fee
+		#region Subscription
+		public enum PackageEnum
 		{
-			CourseFee = 1,
-			ProAccountMonth = 2,
-			ProAccountYear = 3,
+			Free = 1,
+			Pro = 2
+		}
+		public enum PackageName
+		{
+			APIsPackagePrice = 1,
+			APIsPackageNumbers = 2
+		}
+
+		public enum ConfigEnum
+		{
+			PriceMonthly = 1,
+			PriceYearly = 2,
+			CommissionFee = 3,
+			MarketingEmailPerMonth  = 4,
+			CouponPerMonth = 5, 
+			CouponDiscountUpto = 6,
+			ExtraGoldAndExp = 7,
+			TrialCoursePercentage = 8,
+			CourseTrialPerMonth = 9
 		}
 		#endregion
 	}

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Subscriptions
 {
-	public class BenefitDtoResponse
+	public class ConfigValueDto
 	{
-		public string Benefit { get; set; }
-		public string Value { get; set; }
-	}
+        public string Config { get; set; }
+        public decimal Value { get; set; }
+    }
 }

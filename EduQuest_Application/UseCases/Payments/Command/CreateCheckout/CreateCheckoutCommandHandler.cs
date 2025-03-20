@@ -180,14 +180,14 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				}
 			} else
 			{
-				transaction.TotalAmount = (decimal)subscription!.MonthlyPrice; //Check Month or year
+				//transaction.TotalAmount = (decimal)subscription!.MonthlyPrice; //Check Month or year
 				transactionDetails.Add(new TransactionDetail
 				{
 					Id = Guid.NewGuid().ToString(),
 					TransactionId = transaction.Id,
 					ItemId = subscription.Id,
 					ItemType = GeneralEnums.ItemTypeTransaction.ProAccount.ToString(),
-					Amount = (decimal)subscription!.MonthlyPrice //Check Month or year
+					//Amount = (decimal)subscription!.MonthlyPrice //Check Month or year
 				});
 			}
 			await _transactionRepository.Add(transaction);
