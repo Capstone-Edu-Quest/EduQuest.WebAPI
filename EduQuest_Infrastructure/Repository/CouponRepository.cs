@@ -47,4 +47,61 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         }
         return await result.Pagination(pageNo, pageSize).ToPagedListAsync(pageNo, pageSize);
     }
+    public async Task<bool> IsCouponAvailable(string code, string userId)
+    {
+        Coupon? coupon = await _context.Coupon.FirstOrDefaultAsync(c => c.Code == code);
+
+        if (coupon == null)
+        {
+            return false;
+        }
+        if(coupon.Usage >= coupon.Limit || coupon.ExpireTime > DateTime.Now)
+        {
+            return false;
+        }
+        var temp = coupon.UserCoupons!.FirstOrDefault(uc => uc.UserId == userId);
+        if(temp!.RemainUsage < 1)
+        {
+            return false;
+        }
+        return true;
+    }
+    public async Task<bool> ConsumeCoupon(string code, string userId)
+    {
+        Coupon? coupon = await _context.Coupon
+            .Include(c => c.UserCoupons)
+            .FirstOrDefaultAsync(c => c.Code == code);
+
+        if (coupon == null || coupon.Usage >= coupon.Limit || coupon.ExpireTime > DateTime.Now)
+        {
+            return false;
+        }
+
+        var userCoupon = coupon.UserCoupons?.FirstOrDefault(uc => uc.UserId == userId);
+        if (userCoupon == null)
+        {
+            UserCoupon newUserCoupon = new UserCoupon
+            {
+                UserId = userId,
+                CouponId = coupon.Id,
+                AllowUsage = coupon.AllowUsagePerUser,
+                RemainUsage = coupon.AllowUsagePerUser
+            };
+            coupon.UserCoupons?.Add(newUserCoupon);
+        }
+        else
+        {
+            if (userCoupon.RemainUsage > 0)
+            {
+                userCoupon.RemainUsage -= 1;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        coupon.Usage += 1;
+        return await _context.SaveChangesAsync() > 0;
+    }
 }
