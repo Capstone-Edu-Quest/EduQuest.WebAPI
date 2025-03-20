@@ -79,7 +79,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						UnitAmount = (long)(cart.Total * 100), // Convert to cents
 						ProductData = new SessionLineItemPriceDataProductDataOptions
 						{
-							Name = GeneralEnums.Fee.CourseFee.ToString()
+							//Name = GeneralEnums.Fee.CourseFee.ToString()
 						}
 					}
 				});

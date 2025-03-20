@@ -12,6 +12,6 @@ namespace EduQuest_Application.DTO.Response.Subscriptions
     public class SubscriptionDtoResponse
 	{
         public string Name { get; set; }
-        public Dictionary<int, RolePackageDto> Data { get; set; }
+        public Dictionary<string, object> Data { get; set; }
     }
 }

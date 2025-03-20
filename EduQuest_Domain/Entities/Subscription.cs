@@ -7,7 +7,7 @@ namespace EduQuest_Domain.Entities
 	public partial class Subscription : BaseEntity
 	{
 		
-        public int RoleId { get; set; }
+        public string RoleId { get; set; }
 		public string PackageType { get; set; }
         public string Config { get; set; }
         public decimal Value { get; set; }

@@ -130,18 +130,18 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
                         
 
-						var courseFeeForPlatForm = await _systemConfigRepository.GetByName(GeneralEnums.Fee.CourseFee.ToString());
-                        if(detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
-                        {
-                            systemShare = courseNetAmount * (decimal)(courseFeeForPlatForm.Value);
-                            instructorShare = courseNetAmount - systemShare;
+						//var courseFeeForPlatForm = await _systemConfigRepository.GetByName(GeneralEnums.Fee.CourseFee.ToString());
+      //                  if(detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
+      //                  {
+      //                      systemShare = courseNetAmount * (decimal)(courseFeeForPlatForm.Value);
+      //                      instructorShare = courseNetAmount - systemShare;
 
-                            //Update for transaction detail
-							detail.StripeFee = stripeFeeForInstructor;
-							detail.NetAmount = courseNetAmount;
-							detail.SystemShare = systemShare;
-							detail.InstructorShare = instructorShare;
-						} 
+      //                      //Update for transaction detail
+						//	detail.StripeFee = stripeFeeForInstructor;
+						//	detail.NetAmount = courseNetAmount;
+						//	detail.SystemShare = systemShare;
+						//	detail.InstructorShare = instructorShare;
+						//} 
 					}
 				}
             } else if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.ProAccount.ToString()))

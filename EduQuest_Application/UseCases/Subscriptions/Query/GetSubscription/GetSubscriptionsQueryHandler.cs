@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Subscriptions;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Models.Subscriptions;
 using EduQuest_Domain.Repository;
 using MediatR;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Subscription.Query.GetSubscriptions
@@ -32,16 +26,43 @@ namespace EduQuest_Application.UseCases.Subscription.Query.GetSubscriptions
 			var packagePrice = new SubscriptionDtoResponse
 			{
 				Name = GeneralEnums.PackageName.APIsPackagePrice.ToString(),
-				Data = new Dictionary<int, RolePackageDto>(),
+				Data = new Dictionary<string, object>(),
 			};
 			var priceforInstructor = await _subscriptionRepository.GetPackgaePriceByRole((int)GeneralEnums.UserRole.Instructor);
 			var priceforLearner = await _subscriptionRepository.GetPackgaePriceByRole((int)GeneralEnums.UserRole.Learner);
 
-			packagePrice.Data.Add((int)GeneralEnums.UserRole.Instructor, priceforInstructor);
-			packagePrice.Data.Add((int)GeneralEnums.UserRole.Learner, priceforLearner);
+			packagePrice.Data.Add(GeneralEnums.UserRole.Instructor.ToString(), priceforInstructor);
+			packagePrice.Data.Add(GeneralEnums.UserRole.Learner.ToString(), priceforLearner);
 
 			listResult.Add(packagePrice);
 
+			var packageNumber = new SubscriptionDtoResponse
+			{
+				Name = GeneralEnums.PackageName.APIsPackageNumbers.ToString(),
+				Data = new Dictionary<string, object>(),
+			};
+
+			var packageNumberForInstructor = await _subscriptionRepository.GetPackageNumbersByRole((int)GeneralEnums.UserRole.Instructor);
+			var packageNumberForLearner = await _subscriptionRepository.GetPackageNumbersByRole((int)GeneralEnums.UserRole.Learner);
+
+			packageNumber.Data.Add(GeneralEnums.UserRole.Instructor.ToString(), packageNumberForInstructor);
+			packageNumber.Data.Add(GeneralEnums.UserRole.Learner.ToString(), packageNumberForLearner);
+
+			listResult.Add(packageNumber);
+			return new APIResponse()
+			{
+				IsError = false,
+				Payload = listResult,
+				Errors = null,
+				Message = new MessageResponse
+				{
+					content = MessageCommon.GetSuccesfully,
+					values = new
+					{
+						name = "subscription"
+					}
+				}
+			};
 
 
 		}

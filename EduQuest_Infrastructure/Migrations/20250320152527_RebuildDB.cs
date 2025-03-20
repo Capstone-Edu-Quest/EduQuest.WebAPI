@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduQuest_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ReBuildDb : Migration
+    public partial class RebuildDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -160,27 +160,6 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subscription",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Package = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<string>(type: "text", nullable: true),
-                    MonthlyPrice = table.Column<decimal>(type: "numeric", nullable: true),
-                    YearlyPrice = table.Column<decimal>(type: "numeric", nullable: true),
-                    Value = table.Column<decimal>(type: "numeric", nullable: true),
-                    BenefitsJson = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subscription", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SystemConfig",
                 columns: table => new
                 {
@@ -212,6 +191,31 @@ namespace EduQuest_Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tag", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscription",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    PackageType = table.Column<string>(type: "text", nullable: false),
+                    Config = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscription", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscription_Role_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Role",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1703,6 +1707,11 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Subscription_RoleId",
+                table: "Subscription",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SystemConfig_DeletedAt",
                 table: "SystemConfig",
                 column: "DeletedAt");
@@ -1934,10 +1943,10 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "Levels");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "Subscription");
 
             migrationBuilder.DropTable(
-                name: "Subscription");
+                name: "Role");
         }
     }
 }
