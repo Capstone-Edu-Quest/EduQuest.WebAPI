@@ -1,5 +1,5 @@
 ﻿using EduQuest_Application.Helper;
-using EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions;
+using EduQuest_Application.UseCases.Subscription.Query.GetSubscriptions;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

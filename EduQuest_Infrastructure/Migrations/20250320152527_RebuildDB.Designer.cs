@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250319164717_ReBuildDb")]
-    partial class ReBuildDb
+    [Migration("20250320152527_RebuildDB")]
+    partial class RebuildDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1484,7 +1484,8 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<string>("BenefitsJson")
+                    b.Property<string>("Config")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -1493,14 +1494,12 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal?>("MonthlyPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Package")
+                    b.Property<string>("PackageType")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("RoleId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1509,15 +1508,14 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<decimal?>("Value")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("YearlyPrice")
+                    b.Property<decimal>("Value")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Subscription");
                 });
@@ -2381,6 +2379,17 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("UserMeta");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.Subscription", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.Transaction", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
@@ -2418,7 +2427,7 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasForeignKey("RoleId");
 
                     b.HasOne("EduQuest_Domain.Entities.Subscription", "Subscription")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("SubscriptionId");
 
                     b.Navigation("Level");
@@ -2608,11 +2617,6 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.Setting", b =>
                 {
                     b.Navigation("Courses");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Subscription", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.User", b =>

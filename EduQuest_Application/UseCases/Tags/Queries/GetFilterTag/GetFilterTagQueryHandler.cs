@@ -29,6 +29,7 @@ public class GetFilterTagQueryHandler : IRequestHandler<GetFilterTagQuery, APIRe
         {
             IsError = false,
             Payload = certificates,
+            Errors = null,
             Message = new MessageResponse
             {
                 content = MessageCommon.GetSuccesfully,

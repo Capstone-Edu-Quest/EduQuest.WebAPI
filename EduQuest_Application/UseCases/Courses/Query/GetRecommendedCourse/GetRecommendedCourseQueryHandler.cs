@@ -48,13 +48,12 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetRecommendedCourse
 				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
 				if (courseSta != null)
 				{
-					course.TotalLesson = courseSta.TotalLesson;
-					course.TotalReview = courseSta.TotalReview;
+					course.TotalLesson = (int)courseSta.TotalLesson;
+					course.TotalReview = (int)courseSta.TotalReview;
 					course.Rating = courseSta.Rating;
-					course.TotalTime = courseSta.TotalTime;
+					course.TotalTime = (int)courseSta.TotalTime;
 				}
 			}
-
 
 
 			int totalItem = listCourseResponse.Count;

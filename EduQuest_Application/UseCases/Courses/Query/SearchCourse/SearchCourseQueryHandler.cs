@@ -113,10 +113,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
 				if(courseSta != null)
 				{
-					course.TotalLesson = courseSta.TotalLesson;
-					course.TotalReview = courseSta.TotalReview;
-					course.Rating = courseSta.Rating;
-					course.TotalTime = courseSta.TotalTime;
+					course.TotalLesson = (int)courseSta.TotalLesson;
+					course.TotalReview = (int)courseSta.TotalReview;
+					course.Rating = (int)courseSta.Rating;
+					course.TotalTime = (int)courseSta.TotalTime;
 				}
 			}
 
