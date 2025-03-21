@@ -7,7 +7,7 @@ using EduQuest_Domain.Repository;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Subscription.Query.GetSubscriptions
+namespace EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions
 {
 	public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuery, APIResponse>
 	{
