@@ -5,6 +5,8 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using Nest;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -33,16 +35,13 @@ namespace EduQuest_Infrastructure.Repository
 
 			foreach (var subscription in result)
 			{
-				// Phân loại dữ liệu theo loại gói Free hoặc Pro
 				if (subscription.PackageType.ToLower() == GeneralEnums.PackageEnum.Free.ToString().ToLower())
 				{
-					// Gán các giá trị vào gói Free
 					if (subscription.Config.ToLower() == GeneralEnums.ConfigEnum.CommissionFee.ToString().ToLower())
 						rolePackageNumbersDto.Free[GeneralEnums.ConfigEnum.CommissionFee] = subscription.Value;
 				}
 				else if (subscription.PackageType.ToLower() == GeneralEnums.PackageEnum.Pro.ToString().ToLower())
 				{
-					// Gán các giá trị vào gói Pro
 					if (subscription.Config.ToLower() == GeneralEnums.ConfigEnum.CommissionFee.ToString().ToLower())
 						rolePackageNumbersDto.Pro[GeneralEnums.ConfigEnum.CommissionFee] = subscription.Value;
 					else if (subscription.Config.ToLower() == GeneralEnums.ConfigEnum.CouponDiscountUpto.ToString().ToLower())
@@ -91,6 +90,11 @@ namespace EduQuest_Infrastructure.Repository
 			}
 
 			return rolePackageDto;
+		}
+
+		public async Task<Subscription> GetSubscriptionByRoleIPackageConfig(int roleId, int packageEnum, int configEnum)
+		{
+			return await _context.Subscriptions.FirstOrDefaultAsync(s => s.RoleId == roleId.ToString() && (Enum.GetName(typeof(PackageEnum), packageEnum).ToLower()) == s.PackageType.ToLower() && (Enum.GetName(typeof(ConfigEnum), configEnum).ToLower()) == s.Config.ToLower());
 		}
 	}
 }

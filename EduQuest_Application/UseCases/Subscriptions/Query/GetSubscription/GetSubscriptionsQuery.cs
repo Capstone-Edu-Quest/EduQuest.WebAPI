@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.UseCases.Subscription.Query.GetSubscriptions
+namespace EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions
 {
 	public class GetSubscriptionsQuery : IRequest<APIResponse>
 	{
