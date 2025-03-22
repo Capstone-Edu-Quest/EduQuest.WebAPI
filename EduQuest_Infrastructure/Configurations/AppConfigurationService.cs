@@ -55,9 +55,9 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					//configuration.GetConnectionString("test"),
+					configuration.GetConnectionString("test"),
                     //configuration.GetConnectionString("local"),
-                    configuration.GetConnectionString("production"),
+                    //configuration.GetConnectionString("production"),
                     b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -199,24 +199,18 @@ namespace EduQuest_Infrastructure
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
-                    .WithSchedule(CronScheduleBuilder.CronSchedule(cronExpression))
-                    /*.StartNow()
-                    .WithSimpleSchedule(x => x
-                        .WithIntervalInMinutes(1)  // Run every 1 minute
-                        .RepeatForever())*/
+					//.WithCronSchedule(cronExpression)
+					.StartNow()
+					.WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
                     .WithDescription("Reset Daily Quests!")
                 );
                 q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
-                    .WithSchedule(CronScheduleBuilder.CronSchedule(cronExpression))
-                    /*.StartNow()
-                    .WithSimpleSchedule(x => x
-                        .WithIntervalInMinutes(1)  // Run every 1 minute
-                        .RepeatForever())*/
+                    //.WithCronSchedule(cronExpression)
+                    .StartNow()
+                    .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
                     .WithDescription("Reset Quests Progress!")
                 );
-            }
-				
-			);
+            });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             #endregion
 

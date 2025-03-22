@@ -6,6 +6,7 @@ using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using static EduQuest_Domain.Enums.GeneralEnums;
 using static EduQuest_Domain.Enums.QuestEnum;
 
@@ -39,6 +40,16 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
 
         return null;
     }
+    private double? GetTimeToComplete(string input)
+    {
+        string[] temp = input.Split(",");
+        if(temp.Length > 1)
+        {
+            return double.Parse(temp[1]);
+        }
+        return null;
+    }
+
     public async Task<bool> AddNewQuestToAllUserQuest(Quest newQuest)
     {
         string roleId = ((int)UserRole.Learner).ToString();
@@ -76,10 +87,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
 
     public async Task<bool> UpdateAllUserQuest(Quest updatedQuest)
     {
-        string roleId = ((int)UserRole.Learner).ToString();
-        List<string> UserIds = new List<string>();
-        UserIds = await _context.Users.Where(u => u.RoleId == roleId).Select(u => u.Id).ToListAsync();
-        List<UserQuest> userQuests = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id).ToListAsync();
+        /*List<UserQuest> userQuests = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id).ToListAsync();
 
         foreach(var userQuest in  userQuests)
         {
@@ -96,7 +104,20 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         }
         _context.UserQuests.UpdateRange(userQuests);
         int result = await _context.SaveChangesAsync();
-        return result > 0;
+        return result > 0;*/
+        int affectedRow = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id)
+            .ExecuteUpdateAsync(q => q
+            .SetProperty(uq => uq.Title, updatedQuest.Title)
+            .SetProperty(uq => uq.Type, updatedQuest.Type)
+            .SetProperty(uq => uq.QuestType, updatedQuest.QuestType)
+            .SetProperty(uq => uq.PointToComplete, GetPointToComplete(updatedQuest))
+            .SetProperty(uq => uq.QuestValues, updatedQuest.QuestValues)
+            .SetProperty(uq => uq.RewardValues, updatedQuest.RewardValues)
+            .SetProperty(uq => uq.RewardTypes, updatedQuest.RewardTypes)
+            .SetProperty(uq => uq.DueDate, uq => GetTimeToComplete(updatedQuest.QuestValues!) != null ? 
+            uq.StartDate!.Value.AddMinutes(GetTimeToComplete(uq.QuestValues!)!.Value).ToUniversalTime() : null)
+            );
+        return affectedRow > 0;
     }
 
 
@@ -158,7 +179,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     }
     public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint)
     {
-        var userQuests = await _context.UserQuests
+        /*var userQuests = await _context.UserQuests
         .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
         .ToListAsync();
 
@@ -172,40 +193,43 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
             }
         }
 
-        return await _context.SaveChangesAsync() > 0;
-    }
-    public async Task<bool> ResetQuestProgress()
-    {
-        /*var quests = await _context.UserQuests
-            .Where(q => q.DueDate <= DateTime.UtcNow && q.IsCompleted == false && q.Type == (int)ResetType.OneTime)
-            .ToListAsync();
-
-        foreach(var quest in quests)
-        {
-            quest.PointToComplete = 0;
-        }
-
         return await _context.SaveChangesAsync() > 0;*/
         int affectedRows = await _context.UserQuests
-        .Where(q => q.DueDate <= DateTime.Now.ToUniversalTime() && q.QuestType == (int)ResetType.OneTime && q.IsCompleted == false)
-        .ExecuteUpdateAsync(q => q.SetProperty(uq => uq.PointToComplete, 0));
+        .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
+        .ExecuteUpdateAsync(q => q
+            .SetProperty(uq => uq.CurrentPoint, uq => uq.CurrentPoint + addedPoint)
+            .SetProperty(uq => uq.IsCompleted, uq => uq.CurrentPoint + addedPoint >= uq.PointToComplete));
 
         return affectedRows > 0;
     }
-    public async Task<bool> ResetDailyQuests()
+    public async Task<bool> ResetQuestProgress()
     {
-        /*var quests = await _context.UserQuests
-            .Where(q => q.Type == (int) ResetType.Daily)
+        var quests = await _context.UserQuests
+            .Where(q => q.DueDate.HasValue && q.DueDate <= DateTime.UtcNow && q.IsCompleted == false && q.Type == (int)ResetType.OneTime)
             .ToListAsync();
 
         foreach (var quest in quests)
         {
             quest.PointToComplete = 0;
             quest.StartDate = DateTime.Now.ToUniversalTime();
-            quest.DueDate = DateTime.Now.AddDays(1).ToUniversalTime();
+            quest.DueDate = DateTime.Now.AddMinutes(GetTimeToComplete(quest.QuestValues!).Value).ToUniversalTime();
+
         }
 
-        return await _context.SaveChangesAsync() > 0;*/
+        return await _context.SaveChangesAsync() > 0;
+        /*int affectedRows = await _context.UserQuests
+        .Where(q => q.DueDate.HasValue && q.DueDate <= DateTime.Now.ToUniversalTime() && q.QuestType == (int)ResetType.OneTime && q.IsCompleted == false)
+        .ExecuteUpdateAsync(q => q
+        .SetProperty(uq => uq.PointToComplete, 0)
+        .SetProperty(uq => uq.StartDate, DateTime.Now.ToUniversalTime())
+        .SetProperty(uq => uq.DueDate, uq => uq.StartDate!.Value.
+            AddMinutes(GetTimeToComplete(uq.QuestValues!)!.Value).ToUniversalTime())
+        );
+
+        return affectedRows > 0;*/
+    }
+    public async Task<bool> ResetDailyQuests()
+    {
         int affectedRows = await _context.UserQuests
         .Where(q => q.Type == (int)ResetType.Daily)
         .ExecuteUpdateAsync(q => q
