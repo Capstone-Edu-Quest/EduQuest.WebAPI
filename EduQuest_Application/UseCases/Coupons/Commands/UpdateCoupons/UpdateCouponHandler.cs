@@ -59,7 +59,8 @@ public class UpdateCouponHandler : IRequestHandler<UpdateCouponCommand, APIRespo
             temp.StartTime = request.Coupon.StartTime;
             temp.Description = request.Coupon.Description;
             temp.Limit = request.Coupon.Limit;
-            temp.AllowUsagePerUser = request.Coupon.AllowUsagePerUser;
+            int AllowUsage = request.Coupon.AllowUsagePerUser;
+            temp.AllowUsagePerUser = AllowUsage;
             #region Validate coupon code
             if (!string.IsNullOrWhiteSpace(request.Coupon.Code))
             {
@@ -69,6 +70,12 @@ public class UpdateCouponHandler : IRequestHandler<UpdateCouponCommand, APIRespo
                     return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.CouponCodeExist, Key, value);
                 }
                 temp.Code = request.Coupon.Code;
+            }
+            ICollection<UserCoupon> userCoupons = temp.UserCoupons!;
+            foreach(UserCoupon userCoupon in userCoupons)
+            {
+                userCoupon.RemainUsage += (AllowUsage - userCoupon.AllowUsage);
+                userCoupon.AllowUsage = temp.AllowUsagePerUser;
             }
             #endregion
             temp.UpdatedAt = DateTime.Now.ToUniversalTime();
