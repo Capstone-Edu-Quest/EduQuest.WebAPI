@@ -24,7 +24,7 @@ public class CouponController : ControllerBase
 {
     private ISender _mediator;
     //private readonly ICouponRepository _couponRepository;
-    public CouponController(ISender mediator, /*ICouponRepository couponRepository*/)
+    public CouponController(ISender mediator /*ICouponRepository couponRepository*/)
     {
         _mediator = mediator;
         //_couponRepository = couponRepository;
