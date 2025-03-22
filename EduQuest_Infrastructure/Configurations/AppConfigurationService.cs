@@ -37,6 +37,8 @@ using Stripe;
 using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Infrastructure.ExternalServices.Quartz;
 using Quartz;
+using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Infrastructure
 {
@@ -173,10 +175,6 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IUserQuestRepository, UserQuestRepository>();
 			services.AddScoped<IQuartzService, QuartzService>();
 
-			services.AddQuartz();
-            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-
-
             services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials
@@ -190,10 +188,40 @@ namespace EduQuest_Infrastructure
 				}.Build());
 			});
 
-			#endregion
+            #endregion
 
-			#region Swagger
-			services.AddSwaggerGen(swagger =>
+            #region Quartz
+            services.AddQuartz( q =>
+			{
+                string cronExpression = "0 0 5 * * ?";
+                var resetDailyQuests = new JobKey("resetDailyQuests");
+                var resetQuestsProgress = new JobKey("resetQuestsProgress");
+                q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
+                q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
+                q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
+                    .WithSchedule(CronScheduleBuilder.CronSchedule(cronExpression))
+                    /*.StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInMinutes(1)  // Run every 1 minute
+                        .RepeatForever())*/
+                    .WithDescription("Reset Daily Quests!")
+                );
+                q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
+                    .WithSchedule(CronScheduleBuilder.CronSchedule(cronExpression))
+                    /*.StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInMinutes(1)  // Run every 1 minute
+                        .RepeatForever())*/
+                    .WithDescription("Reset Quests Progress!")
+                );
+            }
+				
+			);
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+            #endregion
+
+            #region Swagger
+            services.AddSwaggerGen(swagger =>
 			{
 				swagger.SwaggerDoc("v1", new() { Title = "Edu_Quest API", Version = $"{Constants.Http.API_VERSION}" });
 				swagger.EnableAnnotations();

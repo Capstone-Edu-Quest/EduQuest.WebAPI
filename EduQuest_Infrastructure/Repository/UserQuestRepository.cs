@@ -187,7 +187,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
 
         return await _context.SaveChangesAsync() > 0;*/
         int affectedRows = await _context.UserQuests
-        .Where(q => q.DueDate <= DateTime.UtcNow && q.IsCompleted == false)
+        .Where(q => q.DueDate <= DateTime.Now.ToUniversalTime() && q.QuestType == (int)ResetType.OneTime && q.IsCompleted == false)
         .ExecuteUpdateAsync(q => q.SetProperty(uq => uq.PointToComplete, 0));
 
         return affectedRows > 0;

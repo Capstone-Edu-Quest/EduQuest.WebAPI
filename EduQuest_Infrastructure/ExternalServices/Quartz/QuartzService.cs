@@ -20,15 +20,31 @@ public class QuartzService : IQuartzService
     {
         var jobKey = new JobKey(questId);
         IScheduler scheduler = await _schedulerFactory.GetScheduler();
+
+        DateTime now = DateTime.Now;
+        DateTime scheduleTime;
+
+        // current time is before 5.AM
+        if (now.TimeOfDay < new TimeSpan(5, 0, 0))
+        {
+            // schedule at  5.AM today
+            scheduleTime = new DateTime(now.Year, now.Month, now.Day, 5, 0, 0);
+        }
+        else
+        {
+            // schedule at  5.AM tomorrow
+            scheduleTime = new DateTime(now.Year, now.Month, now.Day, 5, 0, 0).AddDays(1);
+        }
+
         IJobDetail job = JobBuilder.Create<AddNewQuestToAllUserQuest>()
         .WithIdentity(jobKey)
         .Build();
         var newTrigger =
             TriggerBuilder.Create().ForJob(jobKey)
-            .WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(1))))
+            .WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(scheduleTime)))
             .Build();
         await scheduler.ScheduleJob(job, newTrigger);
-        Console.WriteLine($"ScheduleJob:  AddNewQuestToAllUser with id {jobKey}");
+        Console.WriteLine($"ScheduleJob: AddNewQuestToAllUser with id {jobKey} at {scheduleTime}.");
     }
 
     public async Task UpdateAllUserQuest(string questId)
@@ -43,6 +59,6 @@ public class QuartzService : IQuartzService
             .WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(1))))
             .Build();
         await scheduler.ScheduleJob(job, newTrigger);
-        Console.WriteLine($"ScheduleJob:  Update All UserQuests with id {jobKey}");
+        Console.WriteLine($"ScheduleJob: Update All UserQuests with id {jobKey}.");
     }
 }
