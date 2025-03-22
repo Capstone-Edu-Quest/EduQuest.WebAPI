@@ -23,11 +23,11 @@ namespace EduQuest_API.Controllers;
 public class CouponController : ControllerBase
 {
     private ISender _mediator;
-    private readonly ICouponRepository _couponRepository;
-    public CouponController(ISender mediator, ICouponRepository couponRepository)
+    //private readonly ICouponRepository _couponRepository;
+    public CouponController(ISender mediator, /*ICouponRepository couponRepository*/)
     {
         _mediator = mediator;
-        _couponRepository = couponRepository;
+        //_couponRepository = couponRepository;
     }
 
     [HttpPost]
@@ -72,19 +72,14 @@ public class CouponController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("test")]
+    /*[HttpPost("test")]
     public async Task<IActionResult> testconsumecoupon([FromQuery] string couponCode,
         [FromQuery] string userId)
     {
-        if (await _couponRepository.IsCouponAvailable(couponCode, userId))
-        {
-            bool flag = await _couponRepository.ConsumeCoupon(couponCode, userId);
-            if (flag)
-            {
+        if (await _couponRepository.ConsumeCoupon(couponCode, userId))
+        {           
                 return Ok("success!");
-            }
-            return BadRequest("Error");
         }
         return BadRequest("Error");
-    }
+    }*/
 }
