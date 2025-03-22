@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Helper;
+﻿using EduQuest_Application.DTO.Request.Subscriptions;
+using EduQuest_Application.UseCases.Subscriptions.Command.UpdateSubscription;
 using EduQuest_Application.UseCases.Subscriptions.Query.GetSubscriptions;
 using EduQuest_Domain.Constants;
 using MediatR;
@@ -20,8 +21,19 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetAllSubscription(CancellationToken cancellationToken = default)
 		{
-			string userId = User.GetUserIdFromToken().ToString();
+			//string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetSubscriptionsQuery(), cancellationToken);
+			return Ok(result);
+		}
+
+		//[Authorize]
+		[HttpPut("")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> UpdateAllSubscription([FromBody] List<SubscriptionRequest> subscriptions, CancellationToken cancellationToken = default)
+		{
+			//string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new UpdateSubscriptionCommand(subscriptions), cancellationToken);
 			return Ok(result);
 		}
 	}

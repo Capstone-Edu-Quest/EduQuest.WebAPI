@@ -1,14 +1,13 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Subscriptions;
 using EduQuest_Domain.Repository.Generic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
 	public interface ISubscriptionRepository : IGenericRepository<Subscription>
 	{
+		Task<RolePackageDto> GetPackgaePriceByRole(int roleId);
+		Task<RolePackageNumbersDto> GetPackageNumbersByRole(int roleId);
+		Task<Subscription> GetSubscriptionByRoleIPackageConfig(int roleId, int packageEnum, int configEnum);
 	}
 }

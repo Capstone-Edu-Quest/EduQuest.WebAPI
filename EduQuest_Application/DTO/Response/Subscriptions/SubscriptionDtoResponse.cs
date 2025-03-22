@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Subscriptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,9 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Subscriptions
 {
-	public class SubscriptionDtoResponse: IMapFrom<Subscription>, IMapTo<Subscription>
+    public class SubscriptionDtoResponse
 	{
-		public string Package { get; set; }
-		public decimal Monthly { get; set; }
-		public decimal Yearly { get; set; }
-		public List<BenefitDtoResponse> Benefits { get; set; }
-	}
+        public string Name { get; set; }
+        public Dictionary<string, object> Data { get; set; }
+    }
 }

@@ -21,7 +21,6 @@
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />
     <Folder Include="UseCases\Authenticate\Queries\" />
-    <Folder Include="UseCases\Subscriptions\Command\" />
     <Folder Include="UseCases\Tags\Commands\UpdateTag\" />
     <Folder Include="UseCases\WebStatistics\Queries\WebUsersStatistics\" />
     <Folder Include="UseCases\WebStatistics\Queries\OverallStatistics\" />
