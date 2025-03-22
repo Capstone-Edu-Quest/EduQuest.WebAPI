@@ -31,5 +31,8 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return result;
     }
 
-
+	public async Task<User> GetUserById(string userId)
+	{
+        return await _context.Users.Include(x => x.Subscriptions).FirstOrDefaultAsync(x => x.Id == userId);
+	}
 }

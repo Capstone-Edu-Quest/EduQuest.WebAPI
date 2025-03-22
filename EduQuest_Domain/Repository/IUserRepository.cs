@@ -7,4 +7,5 @@ public interface IUserRepository : IGenericRepository<User>
 {
     Task<User?> GetUserByEmailAsync(string email);
     Task<List<User>?> GetByUserIds(List<string> ids);
+    Task<User> GetUserById(string userId);
 }

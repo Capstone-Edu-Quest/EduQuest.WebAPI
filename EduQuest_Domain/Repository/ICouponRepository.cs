@@ -20,4 +20,5 @@ public interface ICouponRepository : IGenericRepository<Coupon>
     //in the UserCoupon entity: AllowUsage = Coupon.AllowUsagePerUser, RemainUsage = AllowUsage, when consume
     //RemainUsage is reduced by 1.
     Task<bool> ConsumeCoupon(string code, string userId);
+    Task<Coupon> GetCouponByCode(string code);
 }

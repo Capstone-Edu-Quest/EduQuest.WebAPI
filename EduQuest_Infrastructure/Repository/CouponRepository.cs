@@ -104,4 +104,9 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         coupon.Usage += 1;
         return await _context.SaveChangesAsync() > 0;
     }
+
+	public async Task<Coupon> GetCouponByCode(string code)
+	{
+        return await _context.Coupon.FirstOrDefaultAsync(x => x.Code == code);
+	}
 }

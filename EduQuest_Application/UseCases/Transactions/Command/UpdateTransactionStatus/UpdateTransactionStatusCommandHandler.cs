@@ -15,17 +15,24 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ITransactionDetailRepository _transactionDetailRepository;
+        private readonly IUserRepository _userRepository;
         private readonly ICartRepository _cartRepository;
-        private readonly ISystemConfigRepository _systemConfigRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IUnitOfWork _unitOfWork;
 		private readonly StripeModel _stripeModel;
 
-		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICartRepository cartRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IOptions<StripeModel> stripeModel)
+		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, 
+			ITransactionDetailRepository transactionDetailRepository, 
+			IUserRepository userRepository, 
+			ICartRepository cartRepository, 
+			ISubscriptionRepository subscriptionRepository, 
+			IUnitOfWork unitOfWork,IOptions<StripeModel> stripeModel)
 		{
 			_transactionRepository = transactionRepository;
 			_transactionDetailRepository = transactionDetailRepository;
+			_userRepository = userRepository;
 			_cartRepository = cartRepository;
-			_systemConfigRepository = systemConfigRepository;
+			_subscriptionRepository = subscriptionRepository;
 			_unitOfWork = unitOfWork;
 			_stripeModel = stripeModel.Value;
 		}
@@ -34,7 +41,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         {
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
 			var transactionExisted = await _transactionRepository.GetByPaymentIntentId(request.TransactionId);
-            if (transactionExisted == null)
+			var user = await _userRepository.GetUserById(request.UserId);
+			if (transactionExisted == null)
             {
                 return new APIResponse
                 {
@@ -128,23 +136,23 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 
                         //Calculate amount after fees
 						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
-                        
 
-						//var courseFeeForPlatForm = await _systemConfigRepository.GetByName(GeneralEnums.Fee.CourseFee.ToString());
-      //                  if(detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
-      //                  {
-      //                      systemShare = courseNetAmount * (decimal)(courseFeeForPlatForm.Value);
-      //                      instructorShare = courseNetAmount - systemShare;
 
-      //                      //Update for transaction detail
-						//	detail.StripeFee = stripeFeeForInstructor;
-						//	detail.NetAmount = courseNetAmount;
-						//	detail.SystemShare = systemShare;
-						//	detail.InstructorShare = instructorShare;
-						//} 
+						var courseFeeForPlatForm = user.Subscriptions.FirstOrDefault(x => x.Config == GeneralEnums.ConfigEnum.CommissionFee.ToString());
+						if (detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
+						{
+							systemShare = courseNetAmount * (decimal)(courseFeeForPlatForm.Value);
+							instructorShare = courseNetAmount - systemShare;
+
+							//Update for transaction detail
+							detail.StripeFee = stripeFeeForInstructor;
+							detail.NetAmount = courseNetAmount;
+							detail.SystemShare = systemShare;
+							detail.InstructorShare = instructorShare;
+						}
 					}
 				}
-            } else if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.ProAccount.ToString()))
+            } else
 			{
 				foreach (var detail in transactionDetailList)
 				{
@@ -154,7 +162,6 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 				}
 			}
             var result = await _unitOfWork.SaveChangesAsync() > 0;
-
 
             return new APIResponse
             {

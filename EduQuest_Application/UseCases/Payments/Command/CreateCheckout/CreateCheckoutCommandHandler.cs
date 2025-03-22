@@ -22,8 +22,18 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly ICourseRepository _courseRepository;
 		private readonly ISubscriptionRepository _subscriptionRepository;
+		private readonly IUserRepository _userRepository;
+		private readonly ICouponRepository _couponRepository;
 
-		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IUnitOfWork unitOfWork, ICartRepository cartRepository, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICourseRepository courseRepository, ISubscriptionRepository subscriptionRepository)
+		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, 
+			IUnitOfWork unitOfWork, 
+			ICartRepository cartRepository, 
+			ITransactionRepository transactionRepository, 
+			ITransactionDetailRepository transactionDetailRepository, 
+			ICourseRepository courseRepository, 
+			ISubscriptionRepository subscriptionRepository, 
+			IUserRepository userRepository, 
+			ICouponRepository couponRepository)
 		{
 			_stripeModel = stripeModel.Value;
 			_unitOfWork = unitOfWork;
@@ -32,6 +42,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			_transactionDetailRepository = transactionDetailRepository;
 			_courseRepository = courseRepository;
 			_subscriptionRepository = subscriptionRepository;
+			_userRepository = userRepository;
+			_couponRepository = couponRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCheckoutCommand request, CancellationToken cancellationToken)
@@ -46,7 +58,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				CancelUrl = _stripeModel.CancelUrl,
 				LineItems = new List<SessionLineItemOptions>()
 			};
-			var subscription = await _subscriptionRepository.GetById(request.ProAccountType!);
+			var user = await _userRepository.GetById(request.UserId);
+			if (request.PackageEnum != (int)GeneralEnums.PackageEnum.Free)
+			{
+				request.PackageEnum = (int)GeneralEnums.PackageEnum.Pro;
+			}
+			var subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)request.PackageEnum, (int)request.ConfigEnum!);
 			if (request.CartId != null)
 			{
 				cart = await _cartRepository.GetListCartItemByCartId(request.CartId);
@@ -69,7 +86,33 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						}
 					};
 				}
-
+				if (request.CouponCode != null)
+				{
+					var IsCouponAvai = await _couponRepository.IsCouponAvailable(request.CouponCode, request.UserId);
+					if (IsCouponAvai)
+					{
+						var isConsumeCoupon = await _couponRepository.ConsumeCoupon(request.CouponCode, request.UserId);
+						if (isConsumeCoupon)
+						{
+							var coupon = await _couponRepository.GetCouponByCode(request.CouponCode);
+							var disCount = coupon.Discount * cart.Total;
+							options.LineItems.Add(new SessionLineItemOptions
+							{
+								Quantity = 1,
+								PriceData = new SessionLineItemPriceDataOptions
+								{
+									Currency = "usd",
+									UnitAmount = (long)((cart.Total - disCount) * 100), // Convert to cents
+									ProductData = new SessionLineItemPriceDataProductDataOptions
+									{
+										Name = subscription.Config
+									}
+								}
+							});
+						}
+					}
+				}
+				
 				options.LineItems.Add(new SessionLineItemOptions
 				{
 					Quantity = 1,
@@ -79,14 +122,13 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						UnitAmount = (long)(cart.Total * 100), // Convert to cents
 						ProductData = new SessionLineItemPriceDataProductDataOptions
 						{
-							//Name = GeneralEnums.Fee.CourseFee.ToString()
+							Name = subscription.Config
 						}
 					}
 				});
 			}
 			else
 			{
-				
 				if(subscription == null)
 				{
 					return new APIResponse
@@ -106,20 +148,20 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						}
 					};
 				}
-				
-				//options.LineItems.Add(new SessionLineItemOptions
-				//{
-				//	Quantity = 1,
-				//	PriceData = new SessionLineItemPriceDataOptions
-				//	{
-				//		Currency = "usd",
-				//		UnitAmount = (long)subscription!.Price * 100, // Convert to cents for Stripe
-				//		ProductData = new SessionLineItemPriceDataProductDataOptions
-				//		{
-				//			Name = subscription.Name
-				//		}
-				//	}
-				//});
+
+				options.LineItems.Add(new SessionLineItemOptions
+				{
+					Quantity = 1,
+					PriceData = new SessionLineItemPriceDataOptions
+					{
+						Currency = "usd",
+						UnitAmount = (long)subscription!.Value * 100, // Convert to cents for Stripe
+						ProductData = new SessionLineItemPriceDataProductDataOptions
+						{
+							Name = subscription.Config
+						}
+					}
+				});
 			}
 
 			var service = new SessionService();
@@ -132,7 +174,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			transaction.UserId = request.UserId;
 			transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
 			transaction.PaymentIntentId = paymentIntentId;
-			transaction.Type = (request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : GeneralEnums.TypeTransaction.ProAccount.ToString();
+			transaction.Type = (request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : subscription.Config;
 
 			//Transaction Detail
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
@@ -180,15 +222,17 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				}
 			} else
 			{
-				//transaction.TotalAmount = (decimal)subscription!.MonthlyPrice; //Check Month or year
+				transaction.TotalAmount = subscription!.Value; 
 				transactionDetails.Add(new TransactionDetail
 				{
 					Id = Guid.NewGuid().ToString(),
 					TransactionId = transaction.Id,
 					ItemId = subscription.Id,
-					ItemType = GeneralEnums.ItemTypeTransaction.ProAccount.ToString(),
-					//Amount = (decimal)subscription!.MonthlyPrice //Check Month or year
+					ItemType = subscription.Config,
+					Amount = subscription!.Value 
 				});
+				user.Subscriptions.Add(subscription);
+				await _userRepository.Update(user);
 			}
 			await _transactionRepository.Add(transaction);
 			await _transactionDetailRepository.CreateRangeAsync(transactionDetails);

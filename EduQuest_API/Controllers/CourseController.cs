@@ -58,8 +58,9 @@ namespace EduQuest_API.Controllers
 		[HttpGet("createdByMe")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetCourseCreatedByMe([FromQuery] string userId, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> GetCourseCreatedByMe([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
 		{
+			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetCourseCreatedByMeQuery(userId, pageNo, eachPage), cancellationToken);
 			return Ok(result);
 		}

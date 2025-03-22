@@ -77,7 +77,6 @@ namespace EduQuest_Domain.Enums
 		public enum ItemTypeTransaction
 		{
 			Course = 1,
-			ProAccount = 2,
 			
 		}
 		#endregion
