@@ -11,13 +11,18 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Infrastructure.Repository
 {
-	public class LearningMaterialRepository : GenericRepository<Material>, ILearningMaterialRepository
+	public class MaterialRepository : GenericRepository<Material>, IMaterialRepository
 	{
 		private readonly ApplicationDbContext _context;
 
-		public LearningMaterialRepository(ApplicationDbContext context) : base(context)
+		public MaterialRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<Material> GetMataterialQuizAssById(string materialId)
+		{
+			return await _context.Materials.Include(x => x.Quiz).Include(x => x.Assignment).FirstOrDefaultAsync(x => x.Id == materialId);
 		}
 
 		public async Task<List<Material>> GetMaterialsByIds(List<string> materialIds)

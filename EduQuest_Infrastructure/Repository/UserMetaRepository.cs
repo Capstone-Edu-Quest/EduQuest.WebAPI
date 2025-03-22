@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository;
 
-    public class UserStatisticRepository : GenericRepository<UserMeta>, IUserStatisticRepository
+    public class UserMetaRepository : GenericRepository<UserMeta>, IUserMetaRepository
 {
 	private readonly ApplicationDbContext _context;
 
-	public UserStatisticRepository(ApplicationDbContext context) : base(context)
+	public UserMetaRepository(ApplicationDbContext context) : base(context)
 	{
 		_context = context;
 	}

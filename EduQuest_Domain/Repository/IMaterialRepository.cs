@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
-	public interface IUserStatisticRepository : IGenericRepository<UserMeta>
+	public interface IMaterialRepository : IGenericRepository<Material>
 	{
-		Task<UserMeta> GetByUserId(string userId);
+		Task<List<Material>> GetMaterialsByIds(List<string> materialIds);
+		Task<Material> GetMataterialQuizAssById(string materialId);
 	}
 }

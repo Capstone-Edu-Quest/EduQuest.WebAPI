@@ -51,8 +51,16 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
             newFeedback.UserId = request.UserId;
             newFeedback.Id = Guid.NewGuid().ToString();
             await _feedbackRepository.Add(newFeedback);
+            await _unitOfWork.SaveChangesAsync();
+
+			//Update Course Statistic
 			var courseStatistic = await _courseRepository.GetCourseById(request.Feedback.CourseId);
 			courseStatistic.CourseStatistic.TotalReview++;
+
+			var feedbacks = await _feedbackRepository.GetByCourseId(request.Feedback.CourseId, 1, 10, null, null);
+			var averageRating = feedbacks.Any() ? feedbacks.Average(f => f.Rating) : 0;
+			courseStatistic.CourseStatistic.Rating = averageRating;
+
 			await _courseRepository.Update(courseStatistic);
 
 			if (await _unitOfWork.SaveChangesAsync() > 0)

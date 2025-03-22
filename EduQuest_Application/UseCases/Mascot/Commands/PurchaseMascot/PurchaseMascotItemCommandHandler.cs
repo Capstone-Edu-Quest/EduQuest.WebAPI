@@ -15,14 +15,14 @@ namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot
     {
         private readonly IShopItemRepository _shopItemRepository;
         private readonly IMascotInventoryRepository _mascotInventoryRepository;
-        private readonly IUserStatisticRepository _userStatisticRepository;
+        private readonly IUserMetaRepository _userStatisticRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
         public PurchaseMascotItemCommandHandler(
             IShopItemRepository shopItemRepository,
             IMascotInventoryRepository mascotInventoryRepository,
-            IUserStatisticRepository userStatisticRepository,
+            IUserMetaRepository userStatisticRepository,
             IMapper mapper,
             IUnitOfWork unitOfWork)
         {

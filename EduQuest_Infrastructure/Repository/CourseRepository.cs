@@ -80,5 +80,10 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Courses.Include(x => x.User).ToListAsync();
 		}
+
+		public async Task<Course> GetCourseLearnerByCourseId(string courseId)
+		{
+			return await _context.Courses.Include(x => x.CourseLearners).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == courseId);
+		}
 	}
 }

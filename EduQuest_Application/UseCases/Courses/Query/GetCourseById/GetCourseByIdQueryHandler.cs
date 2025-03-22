@@ -11,9 +11,9 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 		private readonly ICourseRepository _courseRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
-		private readonly IUserStatisticRepository _userStatisticRepository;
+		private readonly IUserMetaRepository _userStatisticRepository;
 
-		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IUserRepository userRepository, IMapper mapper, IUserStatisticRepository userStatisticRepository)
+		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IUserRepository userRepository, IMapper mapper, IUserMetaRepository userStatisticRepository)
 		{
 			_courseRepository = courseRepository;
 			_userRepository = userRepository;

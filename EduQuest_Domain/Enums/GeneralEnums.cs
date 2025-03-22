@@ -44,7 +44,7 @@ namespace EduQuest_Domain.Enums
 			Public = 3
 		}
 
-		public enum TypeOfLearningMetarial
+		public enum TypeOfMaterial
 		{
 			Video = 1,
 			Document = 2,

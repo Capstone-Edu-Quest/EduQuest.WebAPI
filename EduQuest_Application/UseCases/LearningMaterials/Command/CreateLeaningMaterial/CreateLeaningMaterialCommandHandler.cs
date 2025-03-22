@@ -13,7 +13,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 {
     public class CreateLeaningMaterialCommandHandler : IRequestHandler<CreateLeaningMaterialCommand, APIResponse>
     {
-        private readonly ILearningMaterialRepository _learningMaterialRepository;
+        private readonly IMaterialRepository _learningMaterialRepository;
         private readonly ISystemConfigRepository _systemConfigRepository;
         private readonly IStageRepository _stageRepository;
         private readonly IAssignmentRepository _assignmentRepository;
@@ -23,7 +23,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 		private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-		public CreateLeaningMaterialCommandHandler(ILearningMaterialRepository learningMaterialRepository, 
+		public CreateLeaningMaterialCommandHandler(IMaterialRepository learningMaterialRepository, 
 			ISystemConfigRepository systemConfigRepository, 
 			IStageRepository stageRepository, 
 			IAssignmentRepository assignmentRepository, 
@@ -58,21 +58,21 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
             {
 				var material = _mapper.Map<Material>(item);
 				material.Id = Guid.NewGuid().ToString();
-				material.Type = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type);
+				material.Type = Enum.GetName(typeof(TypeOfMaterial), item.Type);
 
 				var value = await _systemConfigRepository.GetByName(material.Type!);
-				switch ((TypeOfLearningMetarial)item.Type!)
+				switch ((TypeOfMaterial)item.Type!)
 				{
-					case TypeOfLearningMetarial.Document:
+					case TypeOfMaterial.Document:
 						material.Duration = (int)value.Value!;
                         material.Content = item.Content;
 						break;
-					case TypeOfLearningMetarial.Video:
+					case TypeOfMaterial.Video:
 						material.Duration = item.VideoRequest!.Duration;
                         material.UrlMaterial = item.VideoRequest.UrlMaterial;
                         material.Thumbnail = item.VideoRequest.Thumbnail;
 						break;
-					case TypeOfLearningMetarial.Quiz:
+					case TypeOfMaterial.Quiz:
 						material.Duration = (int)(item.QuizRequest!.TimeLimit! * value.Value!);
 
                         //Add new Quiz
@@ -111,7 +111,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 						await _answerRepository.CreateRangeAsync(newAnswers);
 						await _unitOfWork.SaveChangesAsync();
 						break;
-					case TypeOfLearningMetarial.Assignment:
+					case TypeOfMaterial.Assignment:
 						material.Duration = (int)(item.AssignmentRequest!.TimeLimit! * value.Value!);
                         var newAssignment = _mapper.Map<Assignment>(item.AssignmentRequest);
                         newAssignment.Id = Guid.NewGuid().ToString();

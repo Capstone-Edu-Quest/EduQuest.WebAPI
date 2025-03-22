@@ -16,10 +16,10 @@ public class CourseUnitTests
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IStageRepository> _stageRepositoryMock;
-    private readonly Mock<IUserStatisticRepository> _userStatisticsMock;
-    private readonly Mock<ILearningMaterialRepository> _learningMaterialRepositoryMock;
+    private readonly Mock<IUserMetaRepository> _userStatisticsMock;
+    private readonly Mock<IMaterialRepository> _learningMaterialRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<IUserStatisticRepository> _userStatisticRepositoryMock;
+    private readonly Mock<IUserMetaRepository> _userStatisticRepositoryMock;
     private readonly CreateCourseCommandHandler _handler;
     private readonly UpdateCourseCommandHandler _updateCourseHandler;
 
@@ -28,11 +28,11 @@ public class CourseUnitTests
         _courseRepositoryMock = new Mock<ICourseRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _userStatisticsMock = new Mock<IUserStatisticRepository>();
+        _userStatisticsMock = new Mock<IUserMetaRepository>();
         _stageRepositoryMock = new Mock<IStageRepository>();
-        _learningMaterialRepositoryMock = new Mock<ILearningMaterialRepository>();
+        _learningMaterialRepositoryMock = new Mock<IMaterialRepository>();
         _mapperMock = new Mock<IMapper>();
-        _userStatisticRepositoryMock = new Mock<IUserStatisticRepository>();
+        _userStatisticRepositoryMock = new Mock<IUserMetaRepository>();
 
         _handler = new CreateCourseCommandHandler(
             _courseRepositoryMock.Object,

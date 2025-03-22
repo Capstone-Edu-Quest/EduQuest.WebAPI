@@ -9,7 +9,8 @@ namespace EduQuest_Domain.Entities
 		public string UserId { get; set; }
 		public string CourseId { get; set; }
         public bool IsActive { get; set; }
-		public int ProgressPercentage { get; set; }
+        public int? TotalTime { get; set; }
+        public int? ProgressPercentage { get; set; }
 
 		public virtual ICollection<User> Users { get; set; } 
 		public virtual ICollection<Course> Courses { get; set; } 

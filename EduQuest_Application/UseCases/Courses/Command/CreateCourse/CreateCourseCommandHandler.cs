@@ -16,14 +16,14 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
-		private readonly IUserStatisticRepository _userStatisticRepository;
+		private readonly IUserMetaRepository _userStatisticRepository;
 		
 
 		public CreateCourseCommandHandler(ICourseRepository courseRepository, 
 			IMapper mapper, 
 			IUnitOfWork unitOfWork, 
 			IUserRepository userRepository, 
-			IUserStatisticRepository userStatisticRepository 
+			IUserMetaRepository userStatisticRepository 
 			)
 		{
 			_courseRepository = courseRepository;

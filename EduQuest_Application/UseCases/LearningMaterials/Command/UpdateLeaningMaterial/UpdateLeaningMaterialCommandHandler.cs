@@ -17,12 +17,12 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.UpdateLeaningM
 {
 	public class UpdateLeaningMaterialCommandHandler : IRequestHandler<UpdateLeaningMaterialCommand, APIResponse>
 	{
-		private readonly ILearningMaterialRepository _learningMaterialRepository;
+		private readonly IMaterialRepository _learningMaterialRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
-		public UpdateLeaningMaterialCommandHandler(ILearningMaterialRepository learningMaterialRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IMapper mapper)
+		public UpdateLeaningMaterialCommandHandler(IMaterialRepository learningMaterialRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IMapper mapper)
 		{
 			_learningMaterialRepository = learningMaterialRepository;
 			_systemConfigRepository = systemConfigRepository;
@@ -58,21 +58,21 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.UpdateLeaningM
 				if (materialExisted != null)
 				{
 					var materialUpdate = _mapper.Map<Material>(item);
-					var typeToUpdate = Enum.GetName(typeof(TypeOfLearningMetarial), item.Type!);
+					var typeToUpdate = Enum.GetName(typeof(TypeOfMaterial), item.Type!);
 
 					if (materialExisted.Type != typeToUpdate)
 					{
 						materialExisted.Type = typeToUpdate!;
 						var value = await _systemConfigRepository.GetByName(typeToUpdate!);
-						switch ((TypeOfLearningMetarial)item.Type!)
+						switch ((TypeOfMaterial)item.Type!)
 						{
-							case TypeOfLearningMetarial.Document:
+							case TypeOfMaterial.Document:
 								materialUpdate.Duration = (int)value.Value!;
 								break;
-							case TypeOfLearningMetarial.Video:
+							case TypeOfMaterial.Video:
 								materialUpdate.Duration = item.EstimateTime;
 								break;
-							case TypeOfLearningMetarial.Quiz:
+							case TypeOfMaterial.Quiz:
 								materialUpdate.Duration = (int)(item.EstimateTime! * value.Value!);
 								break;
 							default:

@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.UseCases.UserStatistics.Commands.UpdateUsersStreak;
+﻿using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.Generic;
 using EduQuest_Domain.Repository.UnitOfWork;

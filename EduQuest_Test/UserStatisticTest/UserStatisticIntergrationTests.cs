@@ -1,4 +1,4 @@
-﻿using EduQuest_Application.UseCases.UserStatistics.Commands.UpdateUsersStreak;
+﻿using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 using EduQuest_Domain.Models.Response;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
