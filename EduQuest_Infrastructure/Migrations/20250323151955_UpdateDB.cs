@@ -36,15 +36,14 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseLearner",
+                name: "Assignment",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    CourseId = table.Column<string>(type: "text", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    TotalTime = table.Column<int>(type: "integer", nullable: true),
-                    ProgressPercentage = table.Column<int>(type: "integer", nullable: true),
+                    TimeLimit = table.Column<int>(type: "integer", nullable: true),
+                    Question = table.Column<string>(type: "text", nullable: true),
+                    AnswerLanguage = table.Column<string>(type: "text", nullable: true),
+                    ExpectedAnswer = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -52,7 +51,7 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CourseLearner", x => x.Id);
+                    table.PrimaryKey("PK_Assignment", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -108,6 +107,23 @@ namespace EduQuest_Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Levels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Quiz",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    TimeLimit = table.Column<int>(type: "integer", nullable: false),
+                    PassingPercentage = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quiz", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -195,6 +211,30 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    QuizId = table.Column<string>(type: "text", nullable: false),
+                    QuestionTitle = table.Column<string>(type: "text", nullable: false),
+                    MultipleAnswers = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Question_Quiz_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Subscription",
                 columns: table => new
                 {
@@ -234,7 +274,6 @@ namespace EduQuest_Infrastructure.Migrations
                     RoleId = table.Column<string>(type: "text", nullable: true),
                     BankAccountId = table.Column<string>(type: "text", nullable: true),
                     LevelId = table.Column<string>(type: "text", nullable: true),
-                    CourseLearnerId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -243,11 +282,6 @@ namespace EduQuest_Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_User_CourseLearner_CourseLearnerId",
-                        column: x => x.CourseLearnerId,
-                        principalTable: "CourseLearner",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_User_Levels_LevelId",
                         column: x => x.LevelId,
@@ -261,15 +295,13 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Assignment",
+                name: "Answer",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    TimeLimit = table.Column<int>(type: "integer", nullable: true),
-                    Question = table.Column<string>(type: "text", nullable: true),
-                    AnswerLanguage = table.Column<string>(type: "text", nullable: true),
-                    ExpectedAnswer = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    QuestionId = table.Column<string>(type: "text", nullable: false),
+                    AnswerContent = table.Column<string>(type: "text", nullable: false),
+                    IsCorrect = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -277,11 +309,11 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Assignment", x => x.Id);
+                    table.PrimaryKey("PK_Answer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Assignment_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
+                        name: "FK_Answer_Question_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "Question",
                         principalColumn: "Id");
                 });
 
@@ -327,7 +359,6 @@ namespace EduQuest_Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "numeric", nullable: true),
                     Requirement = table.Column<string>(type: "text", nullable: true),
                     Feature = table.Column<string>(type: "text", nullable: true),
-                    IsRequired = table.Column<bool>(type: "boolean", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     AdvertiseId = table.Column<string>(type: "text", nullable: true),
@@ -462,6 +493,47 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Material",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Duration = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UrlMaterial = table.Column<string>(type: "text", nullable: true),
+                    Thumbnail = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    AssignmentId = table.Column<string>(type: "text", nullable: true),
+                    QuizId = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Material", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Material_Assignment_AssignmentId",
+                        column: x => x.AssignmentId,
+                        principalTable: "Assignment",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Material_Quiz_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Material_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Quest",
                 columns: table => new
                 {
@@ -490,14 +562,14 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Quiz",
+                name: "QuizAttempt",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    TimeLimit = table.Column<int>(type: "integer", nullable: false),
-                    PassingPercentage = table.Column<decimal>(type: "numeric", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    QuizId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CorrectAnswers = table.Column<int>(type: "integer", nullable: false),
+                    IncorrectAnswers = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -505,12 +577,19 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Quiz", x => x.Id);
+                    table.PrimaryKey("PK_QuizAttempt", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Quiz_User_UserId",
+                        name: "FK_QuizAttempt_Quiz_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quiz",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuizAttempt_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -729,30 +808,6 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseCourseLearner",
-                columns: table => new
-                {
-                    CourseLearnersId = table.Column<string>(type: "text", nullable: false),
-                    CoursesId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CourseCourseLearner", x => new { x.CourseLearnersId, x.CoursesId });
-                    table.ForeignKey(
-                        name: "FK_CourseCourseLearner_CourseLearner_CourseLearnersId",
-                        column: x => x.CourseLearnersId,
-                        principalTable: "CourseLearner",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CourseCourseLearner_Course_CoursesId",
-                        column: x => x.CoursesId,
-                        principalTable: "Course",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CourseItem",
                 columns: table => new
                 {
@@ -772,6 +827,38 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_CourseItem_Item_ItemsId",
                         column: x => x.ItemsId,
                         principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseLearner",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    TotalTime = table.Column<int>(type: "integer", nullable: true),
+                    ProgressPercentage = table.Column<decimal>(type: "numeric", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseLearner", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseLearner_Course_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Course",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseLearner_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1057,95 +1144,6 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Material",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Duration = table.Column<int>(type: "integer", nullable: true),
-                    UrlMaterial = table.Column<string>(type: "text", nullable: true),
-                    Thumbnail = table.Column<string>(type: "text", nullable: true),
-                    Content = table.Column<string>(type: "text", nullable: true),
-                    AssignmentId = table.Column<string>(type: "text", nullable: true),
-                    QuizId = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Material", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Material_Assignment_AssignmentId",
-                        column: x => x.AssignmentId,
-                        principalTable: "Assignment",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Material_Quiz_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quiz",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Question",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    QuizId = table.Column<string>(type: "text", nullable: false),
-                    QuestionTitle = table.Column<string>(type: "text", nullable: false),
-                    MultipleAnswers = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Question", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Question_Quiz_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quiz",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "QuizAttempt",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    QuizId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    CorrectAnswers = table.Column<int>(type: "integer", nullable: false),
-                    IncorrectAnswers = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QuizAttempt", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_QuizAttempt_Quiz_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quiz",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_QuizAttempt_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TransactionDetail",
                 columns: table => new
                 {
@@ -1300,15 +1298,15 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "LessonMaterial",
                 columns: table => new
                 {
-                    MaterialsId = table.Column<string>(type: "text", nullable: false),
-                    StagesId = table.Column<string>(type: "text", nullable: false)
+                    LessonsId = table.Column<string>(type: "text", nullable: false),
+                    MaterialsId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LessonMaterial", x => new { x.MaterialsId, x.StagesId });
+                    table.PrimaryKey("PK_LessonMaterial", x => new { x.LessonsId, x.MaterialsId });
                     table.ForeignKey(
-                        name: "FK_LessonMaterial_Lesson_StagesId",
-                        column: x => x.StagesId,
+                        name: "FK_LessonMaterial_Lesson_LessonsId",
+                        column: x => x.LessonsId,
                         principalTable: "Lesson",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -1318,29 +1316,6 @@ namespace EduQuest_Infrastructure.Migrations
                         principalTable: "Material",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Answer",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    QuestionId = table.Column<string>(type: "text", nullable: false),
-                    AnswerContent = table.Column<string>(type: "text", nullable: false),
-                    IsCorrect = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Answer", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Answer_Question_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "Question",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -1362,11 +1337,6 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_Assignment_DeletedAt",
                 table: "Assignment",
                 column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Assignment_UserId",
-                table: "Assignment",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cart_CourseId",
@@ -1445,11 +1415,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "SettingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseCourseLearner_CoursesId",
-                table: "CourseCourseLearner",
-                column: "CoursesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CourseFavoriteList_FavoriteListsId",
                 table: "CourseFavoriteList",
                 column: "FavoriteListsId");
@@ -1460,9 +1425,19 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "ItemsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseLearner_CourseId",
+                table: "CourseLearner",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseLearner_DeletedAt",
                 table: "CourseLearner",
                 column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseLearner_UserId",
+                table: "CourseLearner",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseStatistic_CourseId",
@@ -1582,9 +1557,9 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LessonMaterial_StagesId",
+                name: "IX_LessonMaterial_MaterialsId",
                 table: "LessonMaterial",
-                column: "StagesId");
+                column: "MaterialsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Levels_DeletedAt",
@@ -1624,6 +1599,11 @@ namespace EduQuest_Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Material_UserId",
+                table: "Material",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Quest_DeletedAt",
                 table: "Quest",
                 column: "DeletedAt");
@@ -1647,11 +1627,6 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_Quiz_DeletedAt",
                 table: "Quiz",
                 column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Quiz_UserId",
-                table: "Quiz",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizAttempt_DeletedAt",
@@ -1784,11 +1759,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "TransactionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_CourseLearnerId",
-                table: "User",
-                column: "CourseLearnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_User_DeletedAt",
                 table: "User",
                 column: "DeletedAt");
@@ -1848,13 +1818,13 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "CertificateUser");
 
             migrationBuilder.DropTable(
-                name: "CourseCourseLearner");
-
-            migrationBuilder.DropTable(
                 name: "CourseFavoriteList");
 
             migrationBuilder.DropTable(
                 name: "CourseItem");
+
+            migrationBuilder.DropTable(
+                name: "CourseLearner");
 
             migrationBuilder.DropTable(
                 name: "CourseStatistic");
@@ -1981,9 +1951,6 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
-
-            migrationBuilder.DropTable(
-                name: "CourseLearner");
 
             migrationBuilder.DropTable(
                 name: "Levels");

@@ -13,7 +13,6 @@ namespace EduQuest_Domain.Entities
 		public decimal? Price { get; set; }
         public string? Requirement { get; set; }
         public string? Feature { get; set; }
-        public bool IsRequired { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
        

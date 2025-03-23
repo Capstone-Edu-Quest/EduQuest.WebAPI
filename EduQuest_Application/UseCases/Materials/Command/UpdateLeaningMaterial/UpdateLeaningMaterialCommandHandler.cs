@@ -4,16 +4,11 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
-namespace EduQuest_Application.UseCases.LearningMaterials.Command.UpdateLeaningMaterial
+namespace EduQuest_Application.UseCases.Materials.Command.UpdateLeaningMaterial
 {
 	public class UpdateLeaningMaterialCommandHandler : IRequestHandler<UpdateLeaningMaterialCommand, APIResponse>
 	{

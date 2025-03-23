@@ -274,7 +274,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region LearningMaterial
+		#region Material
 		public void Configure(EntityTypeBuilder<Material> builder)
 		{
             builder

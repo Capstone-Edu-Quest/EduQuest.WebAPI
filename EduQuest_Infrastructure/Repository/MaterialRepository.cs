@@ -20,6 +20,11 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
+		public async Task<List<Material>> GetByUserId(string userId)
+		{
+			return await _context.Materials.Include(x => x.Quiz.Questions).Include(x => x.Assignment).Where(x => x.UserId == userId).ToListAsync();	
+		}
+
 		public async Task<Material> GetMataterialQuizAssById(string materialId)
 		{
 			return await _context.Materials.Include(x => x.Quiz).Include(x => x.Assignment).FirstOrDefaultAsync(x => x.Id == materialId);

@@ -44,7 +44,6 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			course.Id = Guid.NewGuid().ToString();
 			//course.LastUpdated = DateTime.Now.ToUniversalTime();
 			course.Status = GeneralEnums.StatusCourse.Draft.ToString();
-			course.IsRequired = false;
 			course.CourseStatistic = new CourseStatistic
 			{
 				Id = Guid.NewGuid().ToString(),
