@@ -44,7 +44,7 @@ namespace EduQuest_Domain.Enums
 			Public = 3
 		}
 
-		public enum TypeOfLearningMetarial
+		public enum TypeOfMaterial
 		{
 			Video = 1,
 			Document = 2,
@@ -77,7 +77,6 @@ namespace EduQuest_Domain.Enums
 		public enum ItemTypeTransaction
 		{
 			Course = 1,
-			ProAccount = 2,
 			
 		}
 		#endregion

@@ -55,9 +55,8 @@ namespace EduQuest_Infrastructure
 			services.AddDbContext<ApplicationDbContext>((sp, options) =>
 			{
 				options.UseNpgsql(
-					configuration.GetConnectionString("test"),
-                    //configuration.GetConnectionString("local"),
-                    //configuration.GetConnectionString("production"),
+					//configuration.GetConnectionString("test"),
+                    configuration.GetConnectionString("production"),
                     b =>
 					{
 						b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -138,7 +137,7 @@ namespace EduQuest_Infrastructure
             services.AddScoped<IUserRepository, UserRepository>();
 			services.AddScoped<ICourseRepository, CourseRepository>();
 			services.AddScoped<ITagRepository, TagRepository>();
-			services.AddScoped<ILearningMaterialRepository, LearningMaterialRepository>();
+			services.AddScoped<IMaterialRepository, MaterialRepository>();
 			services.AddScoped<IStageRepository, StageRepository>();
 			services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IJwtProvider, JwtProvider>();
@@ -147,11 +146,11 @@ namespace EduQuest_Infrastructure
             services.AddScoped<IFavoriteListRepository, FavoriteListRepository>();
             services.AddScoped<ITransactionDetailRepository, TransactionDetailRepository>();
             services.AddScoped<ICourseStatisticRepository, CourseStatisticRepository>();
-            services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
+            services.AddScoped<IUserMetaRepository, UserMetaRepository>();
             services.AddScoped<ISystemConfigRepository, SystemConfigRepository>();
 			services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
 			services.AddScoped<IFirebaseFirestoreService, FirebaseFirestoreService>();
-			services.AddScoped<IUserStatisticRepository, UserStatisticRepository>();
+			services.AddScoped<IUserMetaRepository, UserMetaRepository>();
 			services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();

@@ -9,10 +9,10 @@ namespace EduQuest_Application.UseCases.Users.Queries.GetUserGameInfo;
 
 public class GetUserGameInfoQueryHandler : IRequestHandler<GetUserGameInfoQuery, APIResponse>
 {
-    private readonly IUserStatisticRepository _userStatistic;
+    private readonly IUserMetaRepository _userStatistic;
     private readonly IMapper _mapper;
 
-    public GetUserGameInfoQueryHandler(IUserStatisticRepository userStatistic, IMapper mapper)
+    public GetUserGameInfoQueryHandler(IUserMetaRepository userStatistic, IMapper mapper)
     {
         _userStatistic = userStatistic;
         _mapper = mapper;

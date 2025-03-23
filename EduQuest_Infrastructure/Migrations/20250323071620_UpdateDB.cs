@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EduQuest_Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class RebuildDB : Migration
+    public partial class UpdateDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,8 @@ namespace EduQuest_Infrastructure.Migrations
                     UserId = table.Column<string>(type: "text", nullable: false),
                     CourseId = table.Column<string>(type: "text", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    ProgressPercentage = table.Column<int>(type: "integer", nullable: false),
+                    TotalTime = table.Column<int>(type: "integer", nullable: true),
+                    ProgressPercentage = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -233,7 +234,6 @@ namespace EduQuest_Infrastructure.Migrations
                     RoleId = table.Column<string>(type: "text", nullable: true),
                     BankAccountId = table.Column<string>(type: "text", nullable: true),
                     LevelId = table.Column<string>(type: "text", nullable: true),
-                    SubscriptionId = table.Column<string>(type: "text", nullable: true),
                     CourseLearnerId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
@@ -257,11 +257,6 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_User_Role_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Role",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_User_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscription",
                         principalColumn: "Id");
                 });
 
@@ -336,7 +331,6 @@ namespace EduQuest_Infrastructure.Migrations
                     Status = table.Column<string>(type: "text", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     AdvertiseId = table.Column<string>(type: "text", nullable: true),
-                    CourseLearnerId = table.Column<string>(type: "text", nullable: true),
                     SettingId = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedBy = table.Column<string>(type: "text", nullable: true),
@@ -350,11 +344,6 @@ namespace EduQuest_Infrastructure.Migrations
                         name: "FK_Course_Advertise_AdvertiseId",
                         column: x => x.AdvertiseId,
                         principalTable: "Advertise",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Course_CourseLearner_CourseLearnerId",
-                        column: x => x.CourseLearnerId,
-                        principalTable: "CourseLearner",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Course_Setting_SettingId",
@@ -571,6 +560,30 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SubscriptionUser",
+                columns: table => new
+                {
+                    SubscriptionsId = table.Column<string>(type: "text", nullable: false),
+                    UsersId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionUser", x => new { x.SubscriptionsId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_SubscriptionUser_Subscription_SubscriptionsId",
+                        column: x => x.SubscriptionsId,
+                        principalTable: "Subscription",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionUser_User_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transaction",
                 columns: table => new
                 {
@@ -716,6 +729,30 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CourseCourseLearner",
+                columns: table => new
+                {
+                    CourseLearnersId = table.Column<string>(type: "text", nullable: false),
+                    CoursesId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseCourseLearner", x => new { x.CourseLearnersId, x.CoursesId });
+                    table.ForeignKey(
+                        name: "FK_CourseCourseLearner_CourseLearner_CourseLearnersId",
+                        column: x => x.CourseLearnersId,
+                        principalTable: "CourseLearner",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseCourseLearner_Course_CoursesId",
+                        column: x => x.CoursesId,
+                        principalTable: "Course",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CourseItem",
                 columns: table => new
                 {
@@ -854,7 +891,7 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stage",
+                name: "Lesson",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -870,9 +907,9 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stage", x => x.Id);
+                    table.PrimaryKey("PK_Lesson", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stage_Course_CourseId",
+                        name: "FK_Lesson_Course_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Course",
                         principalColumn: "Id",
@@ -1020,7 +1057,7 @@ namespace EduQuest_Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LearningMaterial",
+                name: "Material",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -1040,14 +1077,14 @@ namespace EduQuest_Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LearningMaterial", x => x.Id);
+                    table.PrimaryKey("PK_Material", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LearningMaterial_Assignment_AssignmentId",
+                        name: "FK_Material_Assignment_AssignmentId",
                         column: x => x.AssignmentId,
                         principalTable: "Assignment",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LearningMaterial_Quiz_QuizId",
+                        name: "FK_Material_Quiz_QuizId",
                         column: x => x.QuizId,
                         principalTable: "Quiz",
                         principalColumn: "Id");
@@ -1270,15 +1307,15 @@ namespace EduQuest_Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_LessonMaterial", x => new { x.MaterialsId, x.StagesId });
                     table.ForeignKey(
-                        name: "FK_LessonMaterial_LearningMaterial_MaterialsId",
-                        column: x => x.MaterialsId,
-                        principalTable: "LearningMaterial",
+                        name: "FK_LessonMaterial_Lesson_StagesId",
+                        column: x => x.StagesId,
+                        principalTable: "Lesson",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LessonMaterial_Stage_StagesId",
-                        column: x => x.StagesId,
-                        principalTable: "Stage",
+                        name: "FK_LessonMaterial_Material_MaterialsId",
+                        column: x => x.MaterialsId,
+                        principalTable: "Material",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1393,11 +1430,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "AdvertiseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Course_CourseLearnerId",
-                table: "Course",
-                column: "CourseLearnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Course_CreatedBy",
                 table: "Course",
                 column: "CreatedBy");
@@ -1411,6 +1443,11 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_Course_SettingId",
                 table: "Course",
                 column: "SettingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseCourseLearner_CoursesId",
+                table: "CourseCourseLearner",
+                column: "CoursesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseFavoriteList_FavoriteListsId",
@@ -1505,23 +1542,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LearningMaterial_AssignmentId",
-                table: "LearningMaterial",
-                column: "AssignmentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LearningMaterial_DeletedAt",
-                table: "LearningMaterial",
-                column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LearningMaterial_QuizId",
-                table: "LearningMaterial",
-                column: "QuizId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_LearningPath_DeletedAt",
                 table: "LearningPath",
                 column: "DeletedAt");
@@ -1552,6 +1572,16 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Lesson_CourseId",
+                table: "Lesson",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lesson_DeletedAt",
+                table: "Lesson",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LessonMaterial_StagesId",
                 table: "LessonMaterial",
                 column: "StagesId");
@@ -1575,6 +1605,23 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_MascotShopItem_ShopItemId",
                 table: "MascotShopItem",
                 column: "ShopItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Material_AssignmentId",
+                table: "Material",
+                column: "AssignmentId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Material_DeletedAt",
+                table: "Material",
+                column: "DeletedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Material_QuizId",
+                table: "Material",
+                column: "QuizId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quest_DeletedAt",
@@ -1682,16 +1729,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "DeletedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stage_CourseId",
-                table: "Stage",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stage_DeletedAt",
-                table: "Stage",
-                column: "DeletedAt");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_StudyTimes_DeletedAt",
                 table: "StudyTimes",
                 column: "DeletedAt");
@@ -1710,6 +1747,11 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "IX_Subscription_RoleId",
                 table: "Subscription",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionUser_UsersId",
+                table: "SubscriptionUser",
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SystemConfig_DeletedAt",
@@ -1762,11 +1804,6 @@ namespace EduQuest_Infrastructure.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_SubscriptionId",
-                table: "User",
-                column: "SubscriptionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserCoupon_CouponId",
                 table: "UserCoupon",
                 column: "CouponId");
@@ -1809,6 +1846,9 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CertificateUser");
+
+            migrationBuilder.DropTable(
+                name: "CourseCourseLearner");
 
             migrationBuilder.DropTable(
                 name: "CourseFavoriteList");
@@ -1856,6 +1896,9 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "StudyTimes");
 
             migrationBuilder.DropTable(
+                name: "SubscriptionUser");
+
+            migrationBuilder.DropTable(
                 name: "SystemConfig");
 
             migrationBuilder.DropTable(
@@ -1892,10 +1935,10 @@ namespace EduQuest_Infrastructure.Migrations
                 name: "Tag");
 
             migrationBuilder.DropTable(
-                name: "LearningMaterial");
+                name: "Lesson");
 
             migrationBuilder.DropTable(
-                name: "Stage");
+                name: "Material");
 
             migrationBuilder.DropTable(
                 name: "Mascot");
@@ -1908,6 +1951,9 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserMeta");
+
+            migrationBuilder.DropTable(
+                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "Transaction");
@@ -1941,9 +1987,6 @@ namespace EduQuest_Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Levels");
-
-            migrationBuilder.DropTable(
-                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "Role");

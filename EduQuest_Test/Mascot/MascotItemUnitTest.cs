@@ -16,7 +16,7 @@ public class MascotItemUnitTest
 {
     private readonly Mock<IShopItemRepository> _mockShopItemRepo;
     private readonly Mock<IMascotInventoryRepository> _mockMascotInventoryRepo;
-    private readonly Mock<IUserStatisticRepository> _mockUserStatisticRepo;
+    private readonly Mock<IUserMetaRepository> _mockUserStatisticRepo;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IMapper> _mockMapper;
     private readonly PurchaseMascotItemCommandHandler _handler;
@@ -26,7 +26,7 @@ public class MascotItemUnitTest
     {
         _mockShopItemRepo = new Mock<IShopItemRepository>();
         _mockMascotInventoryRepo = new Mock<IMascotInventoryRepository>();
-        _mockUserStatisticRepo = new Mock<IUserStatisticRepository>();
+        _mockUserStatisticRepo = new Mock<IUserMetaRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockMapper = new Mock<IMapper>();
 

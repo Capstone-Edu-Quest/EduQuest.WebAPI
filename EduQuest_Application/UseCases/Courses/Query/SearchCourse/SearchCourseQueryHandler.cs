@@ -7,6 +7,8 @@ using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
@@ -35,25 +37,39 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 
 		public async Task<APIResponse> Handle(SearchCourseQuery request, CancellationToken cancellationToken)
 		{
-			//var cacheKey = $"searchCourse_{request.UserId}_{request.SearchRequest!.KeywordName}";
-			//var cacheSearchKey = $"searchHistory_{request.UserId}_{request.SearchRequest!.KeywordName}";
+			string cacheKeyForRecommend = CourseHelper.GenerateCacheKeySearchCourse(request.SearchRequest, request.PageNo, request.EachPage);
+			string cacheKeyForSearch = CourseHelper.GenerateCacheKeySearchCourse(request.SearchRequest, request.PageNo, request.EachPage);
+			var cachedDataString = await _redisCaching.GetAsync<string>(cacheKeyForSearch);
+			if (cachedDataString != null)
+			{
+				// Deserialize into a helper object first (using List<T> for Items)
+				var jsonObject = JsonConvert.DeserializeObject<JObject>(cachedDataString);
 
-			//var cachedDataString = await _redisCaching.GetAsync<PagedList<CourseSearchResponse>>(cacheKey);
+				// Manually extract properties from the cached data
+				var items = jsonObject["Items"].ToObject<List<CourseSearchResponse>>();
+				var totalItems = jsonObject["TotalItems"].Value<int>();
+				var currentPage = jsonObject["CurrentPage"].Value<int>();
+				var eachPage = jsonObject["EachPage"].Value<int>();
 
-			//if (cachedDataString != null)
-			//{
-			//	return new APIResponse
-			//	{
-			//		IsError = false,
-			//		Payload = cachedDataString,
-			//		Errors = null,
-			//		Message = new MessageResponse
-			//		{
-			//			content = MessageCommon.GetSuccesfully,
-			//			values = new Dictionary<string, string>() { { "name", "courses" } }
-			//		}
-			//	};
-			//}
+				// Create the PagedList<EventResponseDto> manually
+				var listData =  new PagedList<CourseSearchResponse>(
+					items: items,
+					totalItems: totalItems,
+					currentPage: currentPage,
+					eachPage: eachPage
+				);
+				return new APIResponse
+				{
+					IsError = false,
+					Payload = listData,
+					Errors = null,
+					Message = new MessageResponse
+					{
+						content = MessageCommon.GetSuccesfully,
+						values = new Dictionary<string, string>() { { "name", "courses" } }
+					}
+				};
+			}
 
 			var listCourse = await _courseRepository.GetListCourse();
 			if(request.SearchRequest.KeywordName != null)
@@ -129,9 +145,17 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 				TotalItems = totalItem,
 				Items = listPaged
 			};
+			var serializedPagedList = JsonConvert.SerializeObject(new
+			{
+				Items = listPaged,
+				TotalItems = totalItem,
+				CurrentPage = request.PageNo,
+				EachPage = request.EachPage
+			});
 
-			//await _redisCaching.SetAsync(cacheKey, result, 60);
-			//await _redisCaching.SetAsync(cacheSearchKey, request.SearchRequest.KeywordName, 4320);
+			await _redisCaching.SetAsync(cacheKeyForSearch, serializedPagedList, 30);
+			await _redisCaching.SetAsync(cacheKeyForRecommend, serializedPagedList, 4320);
+			
 
 			return new APIResponse
 			{

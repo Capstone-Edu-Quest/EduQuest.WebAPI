@@ -12,12 +12,12 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
     public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, APIResponse>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserStatisticRepository _userStatisticRepository;
+        private readonly IUserMetaRepository _userStatisticRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtProvider _jwtProvider;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RefreshTokenQueryHandler(IUserRepository userRepository, IUserStatisticRepository userStatisticRepository, IRefreshTokenRepository refreshTokenRepository, IJwtProvider jwtProvider, IUnitOfWork unitOfWork)
+        public RefreshTokenQueryHandler(IUserRepository userRepository, IUserMetaRepository userStatisticRepository, IRefreshTokenRepository refreshTokenRepository, IJwtProvider jwtProvider, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _userStatisticRepository = userStatisticRepository;

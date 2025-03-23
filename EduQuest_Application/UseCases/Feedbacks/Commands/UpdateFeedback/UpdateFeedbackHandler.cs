@@ -15,17 +15,19 @@ internal class UpdateFeedbackHandler : IRequestHandler<UpdateFeedbackCommand, AP
     private readonly IFeedbackRepository _feedbackRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private const string Key = "name";
+	private readonly ICourseRepository _courseRepository;
+	private const string Key = "name";
     private const string value = "feedback";
-    public UpdateFeedbackHandler(IFeedbackRepository feedbackRepository, 
-        IMapper mapper, IUnitOfWork unitOfWork)
-    {
-        _feedbackRepository = feedbackRepository;
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
-    }
 
-    public async Task<APIResponse> Handle(UpdateFeedbackCommand request, CancellationToken cancellationToken)
+	public UpdateFeedbackHandler(IFeedbackRepository feedbackRepository, IMapper mapper, IUnitOfWork unitOfWork, ICourseRepository courseRepository)
+	{
+		_feedbackRepository = feedbackRepository;
+		_mapper = mapper;
+		_unitOfWork = unitOfWork;
+		_courseRepository = courseRepository;
+	}
+
+	public async Task<APIResponse> Handle(UpdateFeedbackCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -49,8 +51,19 @@ internal class UpdateFeedbackHandler : IRequestHandler<UpdateFeedbackCommand, AP
             feedback.UpdatedBy = request.UserId;
 
             await _feedbackRepository.Update(feedback);
-            #region return value
-            if (await _unitOfWork.SaveChangesAsync() > 0)
+            await _unitOfWork.SaveChangesAsync();
+
+			//Update Course Statistic
+			var courseStatistic = await _courseRepository.GetCourseById(feedback.CourseId);
+
+			var feedbacks = await _feedbackRepository.GetByCourseId(feedback.CourseId, 1, 10, null, null);
+			var averageRating = feedbacks.Any() ? feedbacks.Average(f => f.Rating) : 0;
+			courseStatistic.CourseStatistic.Rating = averageRating;
+
+			await _courseRepository.Update(courseStatistic);
+
+			#region return value
+			if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully,
                     _mapper.Map<FeedbackResponse>(feedback), Key, value);

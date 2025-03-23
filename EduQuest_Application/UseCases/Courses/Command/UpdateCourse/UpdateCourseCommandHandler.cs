@@ -19,9 +19,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		private readonly ICourseRepository _courseRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IStageRepository _stageRepository;
-		private readonly ILearningMaterialRepository _learningMaterialRepository;
+		private readonly IMaterialRepository _learningMaterialRepository;
 
-		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IStageRepository stageRepository, ILearningMaterialRepository learningMaterialRepository)
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IStageRepository stageRepository, IMaterialRepository learningMaterialRepository)
 		{
 			_courseRepository = courseRepository;
 			_unitOfWork = unitOfWork;

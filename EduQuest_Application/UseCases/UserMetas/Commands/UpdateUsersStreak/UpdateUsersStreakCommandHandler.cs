@@ -6,7 +6,7 @@ using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.UserStatistics.Commands.UpdateUsersStreak;
+namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 
 public class UpdateUsersStreakCommandHandler : IRequestHandler<UpdateUsersStreakCommand, APIResponse>
 {

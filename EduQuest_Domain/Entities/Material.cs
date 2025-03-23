@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace EduQuest_Domain.Entities
 {
-	[Table("LearningMaterial")]
+	[Table("Material")]
 	public partial class Material : BaseEntity
 	{
 		//public string StageId { get; set; }

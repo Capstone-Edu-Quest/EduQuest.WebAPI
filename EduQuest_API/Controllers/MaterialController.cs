@@ -9,11 +9,11 @@ using System.Net;
 
 namespace EduQuest_API.Controllers
 {
-	[Route(Constants.Http.API_VERSION + "/learningmaterial")]
-	public class LearningMaterialController : BaseController
+	[Route(Constants.Http.API_VERSION + "/material")]
+	public class MaterialController : BaseController
 	{
 		private ISender _mediator;
-		public LearningMaterialController(ISender mediator)
+		public MaterialController(ISender mediator)
 		{
 			_mediator = mediator;
 		}

@@ -1,7 +1,7 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.UserStatistics.Commands.UpdateUsersStreak;
+namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 
 public class UpdateUsersStreakCommand : IRequest<APIResponse>
 {

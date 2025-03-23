@@ -22,10 +22,10 @@ namespace EduQuest_API.Controllers
 		[HttpPost("checkout")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> Checkout([FromBody] string cartId, int proAccountType, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> Checkout([FromBody] CreateCheckoutCommand command, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new CreateCheckoutCommand(userId, cartId, proAccountType), cancellationToken);
+			var result = await _mediator.Send(new CreateCheckoutCommand(userId, command.CartId, command.CouponCode, command.PackageEnum, command.ConfigEnum), cancellationToken);
 			return Ok(result);
 		}
 
