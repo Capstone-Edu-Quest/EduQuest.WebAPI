@@ -22,7 +22,7 @@ namespace EduQuest_Domain.Entities
 
 
 		[JsonIgnore]
-		public virtual ICollection<Lesson>? Stages { get; set; }
+		public virtual ICollection<Lesson>? Lessons { get; set; }
 		[JsonIgnore]
 		public virtual Quiz? Quiz { get; set; } = null;
 		[JsonIgnore]

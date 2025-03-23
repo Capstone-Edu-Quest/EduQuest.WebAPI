@@ -10,10 +10,12 @@ namespace EduQuest_Domain.Entities
 		public string CourseId { get; set; }
         public bool IsActive { get; set; }
         public int? TotalTime { get; set; }
-        public int? ProgressPercentage { get; set; }
+        public decimal? ProgressPercentage { get; set; }
 
-		public virtual ICollection<User> Users { get; set; } 
-		public virtual ICollection<Course> Courses { get; set; } 
+		[JsonIgnore]
+		public virtual User Users { get; set; } = null!;
+		[JsonIgnore]
+		public virtual Course Courses { get; set; } = null!;
 
 		/*[JsonIgnore]
 		public virtual ICollection<Feedback>? Feedbacks { get; set; }*/

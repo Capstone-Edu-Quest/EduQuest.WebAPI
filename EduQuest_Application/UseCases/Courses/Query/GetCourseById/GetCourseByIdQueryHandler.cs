@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Application.DTO.Response.Lessons;
+using EduQuest_Application.DTO.Response.Materials;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -9,13 +12,15 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 	public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, APIResponse>
 	{
 		private readonly ICourseRepository _courseRepository;
+		private readonly ILessonRepository _lessonRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
 		private readonly IUserMetaRepository _userStatisticRepository;
 
-		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, IUserRepository userRepository, IMapper mapper, IUserMetaRepository userStatisticRepository)
+		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, ILessonRepository lessonRepository, IUserRepository userRepository, IMapper mapper, IUserMetaRepository userStatisticRepository)
 		{
 			_courseRepository = courseRepository;
+			_lessonRepository = lessonRepository;
 			_userRepository = userRepository;
 			_mapper = mapper;
 			_userStatisticRepository = userStatisticRepository;
@@ -24,11 +29,15 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 		public async Task<APIResponse> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
 		{
 			var course = await _courseRepository.GetCourseById(request.CourseId);
-			
+			var courseWithLearner = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
+			var courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
+
+
 			var courseResponse = _mapper.Map<CourseDetailResponse>(course);
 			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
 			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
 			courseResponse.Rating = course.CourseStatistic.Rating;
+			courseResponse.Progress = courseLearner!.ProgressPercentage;
 			
 			courseResponse.Author = course.User! != null ? new AuthorCourseResponse
 			{
@@ -46,15 +55,29 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				courseResponse.Author.TotalLearner = userSta.TotalLearner;
 			}
 
-			courseResponse.ListStage = course.Stages?
-				.Select(stage => new StageCourseResponse
+			var lessonResponses = new List<LessonCourseResponse>();
+
+			foreach (var lesson in course.Lessons!)
+			{
+				var lessonInCourse = await _lessonRepository.GetByLessonIdAsync(lesson.Id);
+
+				lessonResponses.Add(new LessonCourseResponse
 				{
-					Id = stage.Id,
-					Level = stage.Level,
-					Name = stage.Name,
-					TotalTime = stage.TotalTime,
-				})
-				.ToList() ?? new List<StageCourseResponse>();
+					Id = lesson.Id,
+					Level = lesson.Level,
+					Name = lesson.Name,
+					TotalTime = lesson.TotalTime,
+					Materials = lessonInCourse.Materials?.Select(material => new MaterialInLessonResponse
+					{
+						Id = material.Id,
+						Type = material.Type,
+						Duration = material.Duration,
+						Title = material.Title,
+						Description = material.Description,
+					}).ToList() ?? new List<MaterialInLessonResponse>()
+				});
+			}
+			courseResponse.ListLesson = lessonResponses;
 
 			courseResponse.ListTag = course.Tags?.Select(tag => new TagResponse
 			{

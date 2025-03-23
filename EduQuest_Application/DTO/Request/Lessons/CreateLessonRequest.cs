@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduQuest_Application.DTO.Request.Stages
+namespace EduQuest_Application.DTO.Request.Lessons
 {
-    public class CreateStageRequest : IMapFrom<Lesson>, IMapTo<Lesson>
+    public class CreateLessonRequest : IMapFrom<Lesson>, IMapTo<Lesson>
     {
         public string? Name { get; set; }
         public string? Description { get; set; }

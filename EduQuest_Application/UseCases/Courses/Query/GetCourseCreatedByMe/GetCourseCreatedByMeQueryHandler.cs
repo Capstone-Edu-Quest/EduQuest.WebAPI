@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -24,13 +26,13 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe
 			var courseResponse = courseList.Select(course =>
 			{
 				var response = _mapper.Map<CourseDetailResponse>(course);
-				response.ListStage = course.Stages?
-					.Select(stage => new StageCourseResponse
+				response.ListLesson = course.Lessons?
+					.Select(stage => new LessonCourseResponse
 					{
 						Level = stage.Level,
 						Name = stage.Name
 					})
-					.ToList() ?? new List<StageCourseResponse>();
+					.ToList() ?? new List<LessonCourseResponse>();
 
 
 				response.ListTag = course.Tags?

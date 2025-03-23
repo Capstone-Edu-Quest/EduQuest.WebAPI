@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Infrastructure.Repository
 {
-	public class StageRepository : GenericRepository<Lesson>, IStageRepository
+	public class LessonRepository : GenericRepository<Lesson>, ILessonRepository
 	{
 		private readonly ApplicationDbContext _context;
 
-		public StageRepository(ApplicationDbContext context) : base(context)
+		public LessonRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
 		}
@@ -36,6 +36,11 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<List<Lesson>> GetByCourseId(string id)
 		{
 			return await _context.Lessons.Where(x => x.CourseId.Equals(id)).ToListAsync();
+		}
+
+		public async Task<Lesson> GetByLessonIdAsync(string lessonId)
+		{
+			return await _context.Lessons.Include(x => x.Materials).FirstOrDefaultAsync(x => x.Id == lessonId);
 		}
 
 		public async Task<int?> GetMaxLevelInThisCourse(string id)

@@ -10,10 +10,10 @@ namespace EduQuest_Application.UseCases.Stages.Command.UpdateStage
 {
 	public class UpdateStageCommandHandler : IRequestHandler<UpdateStageCommand, APIResponse>
 	{
-		private readonly IStageRepository _stageRepository;
+		private readonly ILessonRepository _stageRepository;
 		private readonly IUnitOfWork _unitOfWork;
 
-		public UpdateStageCommandHandler(IStageRepository stageRepository, IUnitOfWork unitOfWork)
+		public UpdateStageCommandHandler(ILessonRepository stageRepository, IUnitOfWork unitOfWork)
 		{
 			_stageRepository = stageRepository;
 			_unitOfWork = unitOfWork;

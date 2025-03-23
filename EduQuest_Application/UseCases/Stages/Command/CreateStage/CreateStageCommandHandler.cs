@@ -13,10 +13,10 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 	{
 		
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly IStageRepository _stageRepository;
+		private readonly ILessonRepository _stageRepository;
 		private readonly ICourseRepository _courseRepository;
 
-		public CreateStageCommandHandler(IUnitOfWork unitOfWork, IStageRepository stageRepository, ICourseRepository courseRepository)
+		public CreateStageCommandHandler(IUnitOfWork unitOfWork, ILessonRepository stageRepository, ICourseRepository courseRepository)
 		{
 			_unitOfWork = unitOfWork;
 			_stageRepository = stageRepository;
@@ -64,7 +64,7 @@ namespace EduQuest_Application.UseCases.Stages.Command.CreateStage
 			}
 			var stages = new List<Lesson>();
 			int level = 1;
-			if (courseExisted.Stages!.Any() && courseExisted.Stages != null)
+			if (courseExisted.Lessons!.Any() && courseExisted.Lessons != null)
 			{
 				var maxLevel = await _stageRepository.GetMaxLevelInThisCourse(request.CourseId);
 				level = (int)++maxLevel;

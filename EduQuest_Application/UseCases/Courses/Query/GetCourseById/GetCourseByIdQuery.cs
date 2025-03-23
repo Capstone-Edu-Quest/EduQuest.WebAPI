@@ -10,10 +10,12 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 {
 	public class GetCourseByIdQuery : IRequest<APIResponse>
 	{
+        public string UserId { get; set; }
         public string CourseId { get; set; }
 
-		public GetCourseByIdQuery(string courseId)
+		public GetCourseByIdQuery(string userId, string courseId)
 		{
+			UserId = userId;
 			CourseId = courseId;
 		}
 	}

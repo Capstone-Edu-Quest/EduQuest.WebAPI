@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.Abstractions.Redis;
-using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
@@ -14,7 +14,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 {
-	public class SearchCourseQueryHandler : IRequestHandler<SearchCourseQuery, APIResponse>
+    public class SearchCourseQueryHandler : IRequestHandler<SearchCourseQuery, APIResponse>
 	{
 		private readonly ICourseRepository _courseRepository;
 		private readonly ICourseStatisticRepository _courseStatisticRepository;

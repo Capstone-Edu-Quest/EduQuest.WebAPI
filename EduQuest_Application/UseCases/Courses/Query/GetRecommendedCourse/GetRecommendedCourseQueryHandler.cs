@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.Abstractions.Redis;
-using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
@@ -15,7 +15,7 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetRecommendedCourse
 {
-	public class GetRecommendedCourseQueryHandler : IRequestHandler<GetRecommendedCourseQuery, APIResponse>
+    public class GetRecommendedCourseQueryHandler : IRequestHandler<GetRecommendedCourseQuery, APIResponse>
 	{
 		private readonly IRedisCaching _redisCaching;
 		private readonly ICourseRepository _courseRepository;

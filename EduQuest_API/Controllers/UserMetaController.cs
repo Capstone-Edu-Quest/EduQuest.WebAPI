@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Helper;
+﻿using EduQuest_Application.DTO.Request.UserMetas;
+using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress;
 using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 using EduQuest_Domain.Constants;
@@ -30,10 +31,10 @@ public class UserMetaController : BaseController
 	[HttpPut("userProgress")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> UpdateUserProgress([FromBody] UpdateUserProgressCommand command, CancellationToken cancellationToken = default)
+	public async Task<IActionResult> UpdateUserProgress([FromBody] UpdateUserProgressRequest command, CancellationToken cancellationToken = default)
 	{
 		string userId = User.GetUserIdFromToken().ToString();
-		var result = await _mediator.Send(new UpdateUserProgressCommand(userId, command.CourseId, command.MaterialId, command.Time), cancellationToken);
+		var result = await _mediator.Send(new UpdateUserProgressCommand(userId, command), cancellationToken);
 		return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 	}
 
