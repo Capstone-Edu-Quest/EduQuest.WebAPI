@@ -3,7 +3,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningMaterial
+namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
 {
     public class CreateLeaningMaterialCommand : IRequest<APIResponse>
 	{

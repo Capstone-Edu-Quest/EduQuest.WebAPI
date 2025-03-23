@@ -37,7 +37,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
 			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
 			courseResponse.Rating = course.CourseStatistic.Rating;
-			if (courseWithLearner != null)
+			if (courseLearner != null)
 			{
 				courseResponse.Progress = courseLearner!.ProgressPercentage;
 			}

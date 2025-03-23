@@ -209,14 +209,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Assignment");
                 });
@@ -429,9 +424,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Feature")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("text");
 
@@ -490,8 +482,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("ProgressPercentage")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("ProgressPercentage")
+                        .HasColumnType("numeric");
 
                     b.Property<int?>("TotalTime")
                         .HasColumnType("integer");
@@ -1026,6 +1018,10 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UrlMaterial")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssignmentId")
@@ -1035,6 +1031,8 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasIndex("QuizId")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Material");
                 });
@@ -1137,10 +1135,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1156,14 +1150,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Quiz");
                 });
@@ -2062,15 +2051,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Assignment", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.Cart", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.Course", null)
@@ -2289,9 +2269,17 @@ namespace EduQuest_Infrastructure.Migrations
                         .WithOne("Material")
                         .HasForeignKey("EduQuest_Domain.Entities.Material", "QuizId");
 
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Assignment");
 
                     b.Navigation("Quiz");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quest", b =>
@@ -2312,15 +2300,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Quiz");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Quiz", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.QuizAttempt", b =>

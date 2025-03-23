@@ -18,20 +18,6 @@ VALUES
     ('4', 'Assignment', 1.0, 'Configuration for assignment', NOW(), NOW());
 
 
-INSERT INTO public."Course"(
-    "Id", "Title", "Description", "PhotoUrl", "Color", "Price", 
-    "Requirement", "Feature", "IsRequired", "Status", "CreatedBy", 
-    "AdvertiseId", "CourseLearnerId", "SettingId", "CreatedAt", 
-    "UpdatedBy", "UpdatedAt", "DeletedAt"
-)
-VALUES
-    ('3', 'Course 1', 'Description of Course 1', 'https://example.com/photo1.jpg', 'Red', 199.99, 'Basic knowledge of programming', 'Feature 1', true, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
-    ('4', 'Course 2', 'Description of Course 2', 'https://example.com/photo2.jpg', 'Blue', 299.99, 'Intermediate level knowledge of programming', 'Feature 2', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
-    ('5', 'Course 3', 'Description of Course 3', 'https://example.com/photo3.jpg', 'Green', 149.99, 'No prior knowledge required', 'Feature 3', true, 'Inactive', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
-    ('6', 'Course 4', 'Description of Course 4', 'https://example.com/photo4.jpg', 'Yellow', 249.99, 'Basic knowledge of web development', 'Feature 4', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
-    ('7', 'Course 5', 'Description of Course 5', 'https://example.com/photo5.jpg', 'Purple', 349.99, 'Advanced level knowledge of data science', 'Feature 5', true, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL),
-    ('8', 'Course 6', 'Description of Course 6', 'https://example.com/photo6.jpg', 'Orange', 399.99, 'Expert knowledge of machine learning', 'Feature 6', false, 'Active', '98dd3a59-a722-4d2d-822b-2a967cc08df6', NULL, NULL, NULL, NOW(), 'Admin', NOW(), NULL);
-
 
 -- Insert Instructor Pro - Price Monthly
 INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
