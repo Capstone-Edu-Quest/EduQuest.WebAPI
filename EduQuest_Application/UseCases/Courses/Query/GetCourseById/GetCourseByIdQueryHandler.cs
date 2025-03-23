@@ -49,6 +49,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.ListStage = course.Stages?
 				.Select(stage => new StageCourseResponse
 				{
+					Id = stage.Id,
 					Level = stage.Level,
 					Name = stage.Name,
 					TotalTime = stage.TotalTime,

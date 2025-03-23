@@ -13,7 +13,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 {
     public class CreateLeaningMaterialCommandHandler : IRequestHandler<CreateLeaningMaterialCommand, APIResponse>
     {
-        private readonly IMaterialRepository _learningMaterialRepository;
+        private readonly IMaterialRepository _materialRepository;
         private readonly ISystemConfigRepository _systemConfigRepository;
         private readonly IStageRepository _stageRepository;
         private readonly IAssignmentRepository _assignmentRepository;
@@ -23,7 +23,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 		private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-		public CreateLeaningMaterialCommandHandler(IMaterialRepository learningMaterialRepository, 
+		public CreateLeaningMaterialCommandHandler(IMaterialRepository materialRepository, 
 			ISystemConfigRepository systemConfigRepository, 
 			IStageRepository stageRepository, 
 			IAssignmentRepository assignmentRepository, 
@@ -33,7 +33,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 			IMapper mapper, 
 			IUnitOfWork unitOfWork)
 		{
-			_learningMaterialRepository = learningMaterialRepository;
+			_materialRepository = materialRepository;
 			_systemConfigRepository = systemConfigRepository;
 			_stageRepository = stageRepository;
 			_assignmentRepository = assignmentRepository;
@@ -115,12 +115,13 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 						material.Duration = (int)(item.AssignmentRequest!.TimeLimit! * value.Value!);
                         var newAssignment = _mapper.Map<Assignment>(item.AssignmentRequest);
                         newAssignment.Id = Guid.NewGuid().ToString();
+						await _assignmentRepository.Add(newAssignment);
 						break;
 					default:
 						material.Duration = 0;
 						break;
 				}
-				await _learningMaterialRepository.Add(material);
+				await _materialRepository.Add(material);
 				listMaterial.Add(material);
 
             }
