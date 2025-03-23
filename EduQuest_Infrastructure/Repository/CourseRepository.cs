@@ -25,12 +25,12 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Course> GetCourseById(string Id)
 		{
-			return await _context.Courses.Include(x => x.Stages).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == Id);
+			return await _context.Courses.Include(x => x.Lessons).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == Id);
 		}
 
 		public async Task<IEnumerable<Course>> GetCourseByUserId(string Id)
 		{
-			return await _context.Courses.Include(x => x.Stages).Include(x => x.Tags).Where(x => x.CreatedBy == Id).ToListAsync();
+			return await _context.Courses.Include(x => x.Lessons).Include(x => x.Tags).Where(x => x.CreatedBy == Id).ToListAsync();
 		}
 
 		public Task<List<Course>> GetCoursesByKeywordsAsync(List<string> keywords)

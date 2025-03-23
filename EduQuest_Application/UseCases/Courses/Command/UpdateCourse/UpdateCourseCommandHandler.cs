@@ -18,10 +18,10 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 	{
 		private readonly ICourseRepository _courseRepository;
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly IStageRepository _stageRepository;
+		private readonly ILessonRepository _stageRepository;
 		private readonly IMaterialRepository _learningMaterialRepository;
 
-		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IStageRepository stageRepository, IMaterialRepository learningMaterialRepository)
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, ILessonRepository stageRepository, IMaterialRepository learningMaterialRepository)
 		{
 			_courseRepository = courseRepository;
 			_unitOfWork = unitOfWork;
@@ -46,14 +46,14 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			existingCourse.Price = request.CourseInfo.Price;
 
 			var newStages = new List<Lesson>();
-			if (request.CourseInfo.StageCourse != null && request.CourseInfo.StageCourse.Any())
+			if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 			{
 				
 				await _stageRepository.DeleteStagesByCourseId(existingCourse.Id);
 
-				for (int i = 0; i < request.CourseInfo.StageCourse.Count; i++)
+				for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
 				{
-					var stageRequest = request.CourseInfo.StageCourse[i];
+					var stageRequest = request.CourseInfo.LessonCourse[i];
 					var learningMaterials = await _learningMaterialRepository.GetMaterialsByIds(stageRequest.MaterialIds);
 					var stage = new Lesson
 					{

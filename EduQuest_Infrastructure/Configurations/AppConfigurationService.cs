@@ -138,7 +138,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ICourseRepository, CourseRepository>();
 			services.AddScoped<ITagRepository, TagRepository>();
 			services.AddScoped<IMaterialRepository, MaterialRepository>();
-			services.AddScoped<IStageRepository, StageRepository>();
+			services.AddScoped<ILessonRepository, LessonRepository>();
 			services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<ITokenValidation, TokenValidation>();

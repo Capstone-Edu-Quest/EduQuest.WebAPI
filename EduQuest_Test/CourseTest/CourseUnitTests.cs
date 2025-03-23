@@ -15,7 +15,7 @@ public class CourseUnitTests
     private readonly Mock<ICourseRepository> _courseRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-    private readonly Mock<IStageRepository> _stageRepositoryMock;
+    private readonly Mock<ILessonRepository> _stageRepositoryMock;
     private readonly Mock<IUserMetaRepository> _userStatisticsMock;
     private readonly Mock<IMaterialRepository> _learningMaterialRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
@@ -29,7 +29,7 @@ public class CourseUnitTests
         _userRepositoryMock = new Mock<IUserRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _userStatisticsMock = new Mock<IUserMetaRepository>();
-        _stageRepositoryMock = new Mock<IStageRepository>();
+        _stageRepositoryMock = new Mock<ILessonRepository>();
         _learningMaterialRepositoryMock = new Mock<IMaterialRepository>();
         _mapperMock = new Mock<IMapper>();
         _userStatisticRepositoryMock = new Mock<IUserMetaRepository>();

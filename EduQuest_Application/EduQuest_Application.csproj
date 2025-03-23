@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTO\Response\WebStatistics\**" />
     <Compile Remove="UseCases\Authentication\**" />
+    <EmbeddedResource Remove="DTO\Response\WebStatistics\**" />
     <EmbeddedResource Remove="UseCases\Authentication\**" />
+    <None Remove="DTO\Response\WebStatistics\**" />
     <None Remove="UseCases\Authentication\**" />
   </ItemGroup>
 
@@ -16,7 +19,6 @@
     <Folder Include="Abstractions\AvatarApi\" />
     <Folder Include="Abstractions\Email\" />
     <Folder Include="DTO\Request\WebStatistics\" />
-    <Folder Include="DTO\Response\WebStatistics\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />

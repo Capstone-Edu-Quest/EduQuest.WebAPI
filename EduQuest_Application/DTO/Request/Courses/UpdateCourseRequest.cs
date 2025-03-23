@@ -1,11 +1,6 @@
-﻿using EduQuest_Application.DTO.Request.Stages;
+﻿using EduQuest_Application.DTO.Request.Lessons;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Request.Courses
 {
@@ -20,6 +15,6 @@ namespace EduQuest_Application.DTO.Request.Courses
 		public decimal? Price { get; set; }
 		public bool? IsRequired { get; set; }
 
-		public List<CreateStageRequest>? StageCourse { get; set; }
+		public List<CreateLessonRequest>? LessonCourse { get; set; }
 	}
 }

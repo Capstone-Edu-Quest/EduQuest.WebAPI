@@ -15,7 +15,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
     {
         private readonly IMaterialRepository _materialRepository;
         private readonly ISystemConfigRepository _systemConfigRepository;
-        private readonly IStageRepository _stageRepository;
+        private readonly ILessonRepository _stageRepository;
         private readonly IAssignmentRepository _assignmentRepository;
 		private readonly IQuizRepository _quizRepository;
 		private readonly IQuestionRepository _questionRepository;
@@ -25,7 +25,7 @@ namespace EduQuest_Application.UseCases.LearningMaterials.Command.CreateLeaningM
 
 		public CreateLeaningMaterialCommandHandler(IMaterialRepository materialRepository, 
 			ISystemConfigRepository systemConfigRepository, 
-			IStageRepository stageRepository, 
+			ILessonRepository stageRepository, 
 			IAssignmentRepository assignmentRepository, 
 			IQuizRepository quizRepository, 
 			IQuestionRepository questionRepository, 

@@ -30,8 +30,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		public async Task<APIResponse> Handle(UpdateUserProgressCommand request, CancellationToken cancellationToken)
 		{
 			var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
-			var material = await _materialRepository.GetMataterialQuizAssById(request.MaterialId);
-			var course = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
+			var material = await _materialRepository.GetMataterialQuizAssById(request.Info.MaterialId);
+			var course = await _courseRepository.GetCourseLearnerByCourseId(request.Info.CourseId);
 			var courseLearner = course.CourseLearners.FirstOrDefault(x => x.UserId == request.UserId);
 
 			Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
@@ -39,8 +39,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			switch (typeEnum)
 			{
 				case GeneralEnums.TypeOfMaterial.Video:
-					courseLearner.TotalTime += request.Time;
-					userMeta.TotalStudyTime += request.Time;
+					courseLearner.TotalTime += request.Info.Time;
+					userMeta.TotalStudyTime += request.Info.Time;
 					break;
 				case GeneralEnums.TypeOfMaterial.Document:
 					systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Document.ToString());
@@ -61,7 +61,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 					break;
 			}
 
-			courseLearner.ProgressPercentage = (courseLearner.TotalTime / course.CourseStatistic.TotalTime) * 100;
+			courseLearner.ProgressPercentage = ((decimal)courseLearner.TotalTime / course.CourseStatistic.TotalTime) * 100;
 			await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
