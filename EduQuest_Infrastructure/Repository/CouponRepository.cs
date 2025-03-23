@@ -55,12 +55,12 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         {
             return false;
         }
-        if(coupon.Usage >= coupon.Limit || coupon.ExpireTime > DateTime.Now)
+        if(coupon.Usage >= coupon.Limit || coupon.ExpireTime < DateTime.Now)
         {
             return false;
         }
         var temp = coupon.UserCoupons!.FirstOrDefault(uc => uc.UserId == userId);
-        if(temp!.RemainUsage < 1)
+        if(temp!= null && temp!.RemainUsage < 1)
         {
             return false;
         }
@@ -69,38 +69,33 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
     public async Task<bool> ConsumeCoupon(string code, string userId)
     {
         Coupon? coupon = await _context.Coupon
-            .Include(c => c.UserCoupons)
-            .FirstOrDefaultAsync(c => c.Code == code);
+        .Include(c => c.UserCoupons)
+        .FirstOrDefaultAsync(c => c.Code == code);
 
-        if (coupon == null || coupon.Usage >= coupon.Limit || coupon.ExpireTime > DateTime.Now)
+        if (coupon == null || coupon.Usage >= coupon.Limit || coupon.ExpireTime < DateTime.UtcNow)
         {
             return false;
         }
-
         var userCoupon = coupon.UserCoupons?.FirstOrDefault(uc => uc.UserId == userId);
         if (userCoupon == null)
         {
-            UserCoupon newUserCoupon = new UserCoupon
+            userCoupon = new UserCoupon
             {
                 UserId = userId,
                 CouponId = coupon.Id,
                 AllowUsage = coupon.AllowUsagePerUser,
-                RemainUsage = coupon.AllowUsagePerUser
+                RemainUsage = coupon.AllowUsagePerUser - 1
             };
-            coupon.UserCoupons?.Add(newUserCoupon);
+            coupon.UserCoupons?.Add(userCoupon);
         }
         else
         {
-            if (userCoupon.RemainUsage > 0)
-            {
-                userCoupon.RemainUsage -= 1;
-            }
-            else
+            if (userCoupon.RemainUsage <= 0)
             {
                 return false;
             }
+            userCoupon.RemainUsage -= 1;
         }
-
         coupon.Usage += 1;
         return await _context.SaveChangesAsync() > 0;
     }

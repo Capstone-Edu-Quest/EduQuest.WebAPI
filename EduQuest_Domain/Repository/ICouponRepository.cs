@@ -12,6 +12,7 @@ public interface ICouponRepository : IGenericRepository<Coupon>
 
     // Counpon expire time < current time && usage < limit then return true.
     // Otherwise return false
+    [Obsolete("This method is deprecated. Use ConsumeCoupon instead.", false)]
     Task<bool> IsCouponAvailable(string code, string userId);
 
     //Summarize

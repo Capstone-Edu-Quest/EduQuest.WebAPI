@@ -6,6 +6,7 @@ using EduQuest_Application.UseCases.Coupons.Commands.UpdateCourseCoupons;
 using EduQuest_Application.UseCases.Coupons.Queries.GetPlatformCouponsQuery;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Pagination;
+using EduQuest_Domain.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,10 +23,11 @@ namespace EduQuest_API.Controllers;
 public class CouponController : ControllerBase
 {
     private ISender _mediator;
-
-    public CouponController(ISender mediator)
+    //private readonly ICouponRepository _couponRepository;
+    public CouponController(ISender mediator /*ICouponRepository couponRepository*/)
     {
         _mediator = mediator;
+        //_couponRepository = couponRepository;
     }
 
     [HttpPost]
@@ -69,4 +71,15 @@ public class CouponController : ControllerBase
         Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());
         return Ok(result);
     }
+
+    /*[HttpPost("test")]
+    public async Task<IActionResult> testconsumecoupon([FromQuery] string couponCode,
+        [FromQuery] string userId)
+    {
+        if (await _couponRepository.ConsumeCoupon(couponCode, userId))
+        {           
+                return Ok("success!");
+        }
+        return BadRequest("Error");
+    }*/
 }
