@@ -73,8 +73,9 @@ namespace EduQuest_Domain.Constants
 			public const string NotFound = "NOT_FOUND";
 			public const string Complete = "COMPLETE";
 			public const string NoProvided = "NO_PROVIDED";
+            public const string AlreadyExists = "ALREADY_EXISTS";
 
-			public const string ServerError = "Something when wrong";
+            public const string ServerError = "Something when wrong";
 			public const string SessionTimeout = "Your session has timeout";
 
 			public const string ReturnListHasValue = "User unauthorized";

@@ -55,6 +55,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<UserMeta> UserMetas { get; set; } = null!;
 		public virtual DbSet<UserQuest> UserQuests { get; set; } = null!;
 		public virtual DbSet<Report> Reports { get; set; } = null!;
+		public virtual DbSet<LevelReward> LevelRewards { get; set; } = null!;
 	
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
