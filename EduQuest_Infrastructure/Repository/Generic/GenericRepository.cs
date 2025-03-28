@@ -6,6 +6,7 @@ using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Infrastructure.Repository.Generic
 {
@@ -56,7 +57,16 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			_context.Set<TDomain>().Remove(entity);
 		}
 
-		public async Task Delete(params dynamic[] id)
+        public void DeleteRange(List<TDomain> entities)
+        {
+            if (entities == null || !entities.Any())
+            {
+                return;
+            }
+            _context.Set<TDomain>().RemoveRange(entities);
+        }
+
+        public async Task Delete(params dynamic[] id)
 		{
 			var entity = await _context.Set<TDomain>().FindAsync(id);
 			if (entity == null)
