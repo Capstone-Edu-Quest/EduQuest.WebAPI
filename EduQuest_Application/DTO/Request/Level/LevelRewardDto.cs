@@ -2,6 +2,6 @@
 
 public class LevelRewardDto
 {
-    public int RewardType { get; set; }
-    public string RewardValue { get; set; }
+    public int? RewardType { get; set; }
+    public string? RewardValue { get; set; }
 }

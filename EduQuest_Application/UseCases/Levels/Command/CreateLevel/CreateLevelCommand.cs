@@ -6,7 +6,7 @@ namespace EduQuest_Application.UseCases.Levels.Command.CreateLevel;
 
     public class CreateLevelCommand : IRequest<APIResponse>
     {
-        public int Level { get; set; }
+        public int LevelNumber { get; set; }
         public int Exp { get; set; }
         public List<LevelRewardDto> Reward { get; set; }
     }

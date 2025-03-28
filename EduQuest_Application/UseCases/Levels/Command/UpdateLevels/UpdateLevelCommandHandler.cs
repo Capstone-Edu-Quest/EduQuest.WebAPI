@@ -24,34 +24,32 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
 
     public async Task<APIResponse> Handle(UpdateLevelCommand request, CancellationToken cancellationToken)
     {
-        var updatedLevels = new List<Level>();
-        var exist = await _levelRepository.GetAll();
-        foreach (var eachLevel in request.Levels)
+        var listOfLevel = request.Levels.Select(a => a.LevelNumber).ToList();
+        var existOfLevel = await _levelRepository.GetByBatchLevelNumber(listOfLevel);
+        foreach (var eachLevel in existOfLevel)
         {
-            var existingLevel = exist.FirstOrDefault(x => x.LevelNumber == eachLevel.Level);
-            if (existingLevel == null)
+            var requestLevel = request.Levels.FirstOrDefault(x => x.LevelNumber == eachLevel.LevelNumber);
+            if (requestLevel == null) continue;
+
+            eachLevel.Exp = requestLevel.Exp;
+            var oldRewards = await _levelRewardRepository.GetByLevelIdAsync(eachLevel.Id);
+            if (oldRewards.Any())
             {
-                continue;
-            }
-            existingLevel.Exp = eachLevel.Exp;
-            if (existingLevel.LevelRewards != null && existingLevel.LevelRewards.Any())
-            {
-               _levelRewardRepository.DeleteRange(existingLevel.LevelRewards.ToList());
+                _levelRewardRepository.RemoveRangeAsync(oldRewards);
+                await _unitOfWork.SaveChangesAsync(); 
             }
 
-            var newRewards = eachLevel.Rewards.Select(r => new LevelReward
+            var newRewards = requestLevel.Rewards.Select(r => new LevelReward
             {
-                LevelId = existingLevel.ToString()!,
+                Id = Guid.NewGuid().ToString(),
+                LevelId = eachLevel.Id,
                 RewardType = r.RewardType,
                 RewardValue = r.RewardValue,
-                Level = existingLevel
+                Level = eachLevel
             }).ToList();
 
-            existingLevel.LevelRewards = newRewards;
-
-            updatedLevels.Add(existingLevel);
+            await _levelRewardRepository.CreateRangeAsync(newRewards);
         }
-        await _levelRepository.UpdateRangeAsync(updatedLevels);
         await _unitOfWork.SaveChangesAsync();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "level");
     }

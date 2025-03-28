@@ -2,9 +2,9 @@
 
 public class LevelReward : BaseEntity
 {
-    public string LevelId { get; set; }
+    public string? LevelId { get; set; }
     public virtual Level Level { get; set; }
 
-    public int RewardType { get; set; }
-    public string RewardValue { get; set; }
+    public int? RewardType { get; set; }
+    public string? RewardValue { get; set; }
 }

@@ -24,10 +24,15 @@ public class CreateLevelCommandHandler : IRequestHandler<CreateLevelCommand, API
 
     public async Task<APIResponse> Handle(CreateLevelCommand request, CancellationToken cancellationToken)
     {
+        var isExist = await _levelRepository.CheckByLevel(request.LevelNumber);
+        if (isExist)
+        {
+            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.Conflict, Constants.MessageCommon.AlreadyExists, null, "name", "level number");
+        }
         var newLevel = new Level
         {
             Id = Guid.NewGuid().ToString(),
-            LevelNumber = request.Level,
+            LevelNumber = request.LevelNumber,
             Exp = request.Exp,
             LevelRewards = new List<LevelReward>()
         };

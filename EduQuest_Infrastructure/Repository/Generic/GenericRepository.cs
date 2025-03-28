@@ -57,7 +57,7 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			_context.Set<TDomain>().Remove(entity);
 		}
 
-        public void DeleteRange(List<TDomain> entities)
+        public void DeleteRange(IEnumerable<TDomain> entities)
         {
             if (entities == null || !entities.Any())
             {
@@ -144,7 +144,9 @@ namespace EduQuest_Infrastructure.Repository.Generic
 			return await _context.Set<TDomain>().FindAsync(id);
 		}
 
-		public async Task<List<TDomain>> GetByIdsAsync<TKey>(IEnumerable<TKey> ids)
+   
+
+        public async Task<List<TDomain>> GetByIdsAsync<TKey>(IEnumerable<TKey> ids)
 		{
 			return await _context.Set<TDomain>()
 								 .Where(entity => ids.Contains(EF.Property<TKey>(entity, "Id")))

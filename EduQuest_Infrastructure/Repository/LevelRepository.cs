@@ -38,4 +38,17 @@ public class LevelRepository : GenericRepository<Level>, ILevelRepository
         return new PagedList<Level>(items, totalCount, (int)page, (int)eachPage);
     }
 
+    public async Task<bool> CheckByLevel(int level)
+    {
+        return await _context.Levels.AnyAsync(number => number.LevelNumber == level);
+    }
+
+    public async Task<IEnumerable<Level>> GetByBatchLevelNumber(IEnumerable<int> levelNumbers)
+    {
+        return await _context.Levels
+            .Where(level => levelNumbers.Contains(level.LevelNumber))
+            .ToListAsync();
+    }
+
+
 }
