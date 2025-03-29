@@ -36,9 +36,9 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
         {
             CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
             QuestResponse questResponse = _mapper.Map<QuestResponse>(item);
-            questResponse.QuestValue = ToArray(item.QuestValues!);
-            questResponse.RewardType = ToArray(item.RewardTypes!);
-            questResponse.RewardValue = ToArray(item.RewardValues!);
+            questResponse.QuestValue = GeneralHelper.ToArray(item.QuestValues!);
+            questResponse.RewardType = GeneralHelper.ToArray(item.RewardTypes!);
+            questResponse.RewardValue = GeneralHelper.ToArray(item.RewardValues!);
             questResponse.CreatedByUser = userResponse;
             responseDto.Add(questResponse);
         }
@@ -47,13 +47,29 @@ public class GetAllSystemQuestsHandler : IRequestHandler<GetAllSystemQuestsQuery
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, key, value);
     }
-    private int[] ToArray(string values)
+    /*private int[] ToArray(string values)
     {
         string[] temp = values.Split(',');
         int[] result = new int[temp.Length];
         for (int i = 0; i < temp.Length; i++)
         {
             result[i] = Convert.ToInt32(temp[i]);
+        }
+        return result;
+    }*/
+    private object[] ToArray(string values)
+    {
+        string[] temp = values.Split(',');
+        object[] result = new object[temp.Length];
+        for (int i = 0; i < temp.Length; i++)
+        {
+            try
+            {
+                result[i] = Convert.ToInt32(temp[i]);
+            }catch (Exception)
+            {
+                result[i] = temp[i];
+            }
         }
         return result;
     }

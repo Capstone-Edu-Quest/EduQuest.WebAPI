@@ -104,5 +104,8 @@ namespace EduQuest_Domain.Repository.Generic
 
 		Task<int> CountAsync();
 		Task CreateRangeAsync(IEnumerable<T> entities);
-	}
+
+		void DeleteRange(IEnumerable<T> entities);
+
+    }
 }

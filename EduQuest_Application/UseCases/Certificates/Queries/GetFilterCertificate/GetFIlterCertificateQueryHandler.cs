@@ -21,7 +21,7 @@ public class GetCertificatesQueryHandler : IRequestHandler<GetCertificatesQuery,
 
     public async Task<APIResponse> Handle(GetCertificatesQuery request, CancellationToken cancellationToken)
     {
-        var query = _certificateRepository.GetCertificatesWithFilters(request.Title, request.UserId, request.CourseId, request.Page, request.EachPage);
+        var query = await _certificateRepository.GetCertificatesWithFilters(request.Title, request.UserId, request.CourseId, request.Page, request.EachPage);
 
         var certificates = _mapper.Map<PagedList<CertificateDto>>(query);
 

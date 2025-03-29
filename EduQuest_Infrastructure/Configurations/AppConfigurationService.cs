@@ -39,6 +39,9 @@ using EduQuest_Infrastructure.ExternalServices.Quartz;
 using Quartz;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
 using EduQuest_Application.Helper;
+using Infrastructure.ExternalServices.Email.Setting;
+using EduQuest_Application.Abstractions.Email;
+using EduQuest_Infrastructure.ExternalServices.Email;
 
 namespace EduQuest_Infrastructure
 {
@@ -49,6 +52,7 @@ namespace EduQuest_Infrastructure
 			services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 			services.Configure<GoogleSetting>(configuration.GetSection("GoogleToken"));
 			services.Configure<StripeModel>(configuration.GetSection("Stripe"));
+			services.Configure<EmailSetting>(configuration.GetSection("SmtpSettings"));
 
 
 			#region DbContext
@@ -155,8 +159,9 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IShopItemRepository, ShopItemRepository>();
 			services.AddScoped<IMascotInventoryRepository, MascotInventoryRepository>();
 			services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<IEmailService, EmailServices>();
 
-			services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+            services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
 			
 			services.AddScoped<ICartRepository, CartRepository>();
@@ -173,6 +178,8 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<ILearnerRepository, LearnerRepository>();
 			services.AddScoped<IUserQuestRepository, UserQuestRepository>();
 			services.AddScoped<IQuartzService, QuartzService>();
+			services.AddScoped<ILevelRepository, LevelRepository>();
+			services.AddScoped<ILevelRewardRepository, LevelRewardRepository>();
 
             services.AddSingleton(provider =>
 			{
@@ -198,16 +205,16 @@ namespace EduQuest_Infrastructure
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
-					//.WithCronSchedule(cronExpression)
-					.StartNow()
+					.WithCronSchedule(cronExpression)
+					/*.StartNow()
 					.WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                    .WithDescription("Reset Daily Quests!")
+                    .WithDescription("Reset Daily Quests!")*/
                 );
                 q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
-                    //.WithCronSchedule(cronExpression)
-                    .StartNow()
+                    .WithCronSchedule(cronExpression)
+                    /*.StartNow()
                     .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                    .WithDescription("Reset Quests Progress!")
+                    .WithDescription("Reset Quests Progress!")*/
                 );
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

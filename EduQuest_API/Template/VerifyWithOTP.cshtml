@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
+          rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(to bottom, #c67130, #d36a2d, #FF6F3C);
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .email-header {
+            background: linear-gradient(to bottom, #c67130, #d36a2d, #FF6F3C);
+            /* Gradient background */
+            height: 105px; /* Fixed header height */
+            text-align: center; /* Center align text and image */
+            position: relative; /* To position the logo absolutely */
+            overflow: hidden; /* Prevent overflow of the image */
+        }
+
+
+        .email-header img {
+            width: 75px; /* Fixed width for the logo */
+            height: auto; /* Maintain aspect ratio */
+            position: absolute; /* Position the logo absolutely */
+            top: calc(50% - 10px); /* Move the logo up by 10 pixels */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust for exact centering */
+        }
+
+            
+
+        .email-body {
+            padding: 20px;
+            color: black;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        a {
+            color: #ffffff;
+            background-color: #ff4757;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            font-family: "Playfair Display", serif;
+        }
+
+            a:hover {
+                background-color: #e03e50;
+            }
+
+        .email-footer {
+            border-top: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+            .email-footer p {
+                font-size: 12px;
+                color: #999;
+                margin: 5px 0;
+            }
+
+        .title-verify,
+        .OTP {
+            background: linear-gradient(to bottom, #c67130, #d36a2d, #FF6F3C);
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <img src="cid:logo3" alt="Logo" />
+        </div>
+        <div class="email-body">
+            <h1 class="title-verify">Verify your email address</h1>
+            <p>
+                Please copy this code and paste it in the sign-in website or your mobile app to activate
+                your account.
+            </p>
+            <h1 class="OTP">@Model.OTP</h1>
+            <p>This is an automated email. Please do not reply to this email.</p>
+        </div>
+        <div class="email-footer">
+            <p>Copyright © 2025, EduQuest group</p>
+            <p>If you do not wish to receive these emails, simply ignore it.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -12,6 +12,8 @@ namespace EduQuest_Domain.Entities
 		public string? Email { get; set; } = string.Empty;
 		public string? Phone { get; set; } = string.Empty;
 		public string? Headline { get; set; }
+		public string? PasswordHash { get; set; }
+		public string? PasswordSalt { get; set; }
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
 		public string? RoleId { get; set; }

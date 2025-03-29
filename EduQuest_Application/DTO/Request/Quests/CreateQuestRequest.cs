@@ -17,13 +17,13 @@ namespace EduQuest_Application.DTO.Request.Quests
         public int? QuestType { get; set; }// learning streak, complete courses,....
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public int[] QuestValue { get; set; }
+        public object[] QuestValue { get; set; }
 
 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public int[] RewardType { get; set; } 
+        public object[] RewardType { get; set; } 
         [Required(ErrorMessage = MessageError.ValueRequired)]
-        public int[] RewardValue { get; set; }
+        public object[] RewardValue { get; set; }
 
         /*[Required(ErrorMessage = MessageError.ValueRequired)]
         public List<QuestRewardRequest> Rewards { get; set; }*/

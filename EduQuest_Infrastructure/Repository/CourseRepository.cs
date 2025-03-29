@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Helper;
+﻿using System.Collections;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
@@ -26,6 +27,11 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<Course> GetCourseById(string Id)
 		{
 			return await _context.Courses.Include(x => x.Lessons).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == Id);
+		}
+
+		public async Task<IEnumerable<Course>> GetCourseByStatus(string status)
+		{
+			return await _context.Courses.Include(x => x.Lessons).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).Where(x => x.Status.ToUpper().Equals(status.ToUpper())).ToListAsync();
 		}
 
 		public async Task<IEnumerable<Course>> GetCourseByUserId(string Id)

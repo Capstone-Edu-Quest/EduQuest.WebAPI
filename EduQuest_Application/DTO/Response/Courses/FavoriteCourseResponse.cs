@@ -1,5 +1,8 @@
-﻿using EduQuest_Application.Mappings;
+﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Certificates;
+using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +15,29 @@ namespace EduQuest_Application.DTO.Response.Courses
     {
         public string Id { get; set; }
         public string Title { get; set; } = string.Empty;
-        //public string? Description { get; set; }
+        public string? Description { get; set; }
         public string? PhotoUrl { get; set; }
-        public decimal Price { get; set; }
-        public decimal? DiscountPrice { get; set; }
-        public string Author { get; set; }
+        public string? Color { get; set; }
+        public decimal? Price { get; set; }
+        public string? Requirement { get; set; }
+        public string? Feature { get; set; }
+        public string Status { get; set; }
         public string CreatedBy { get; set; }
         public double? Rating { get; set; }
         public int? TotalLesson { get; set; }
         public int? TotalTime { get; set; }
         public int? TotalReview { get; set; }
 
+        public void MappingFrom(Profile profile)
+        {
+            profile.CreateMap<Course, FavoriteCourseResponse>()
+            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.CourseStatistic.Rating))
+            .ForMember(dest => dest.TotalLesson, opt => opt.MapFrom(src => src.CourseStatistic.TotalLesson))
+            .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))
+            .ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview));
+            //profile.CreateMap<PagedList<Course>, PagedList<FavoriteCourseResponse>>().ReverseMap();
+        }
+
     }
+
 }
