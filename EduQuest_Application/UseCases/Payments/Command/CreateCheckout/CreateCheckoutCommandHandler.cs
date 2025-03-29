@@ -59,11 +59,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				LineItems = new List<SessionLineItemOptions>()
 			};
 			var user = await _userRepository.GetById(request.UserId);
-			if (request.Request.PackageEnum != (int)GeneralEnums.PackageEnum.Free)
-			{
-				request.Request.PackageEnum = (int)GeneralEnums.PackageEnum.Pro;
-			}
-			var subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)request.Request.PackageEnum, (int)request.Request.ConfigEnum!);
+			var subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)GeneralEnums.PackageEnum.Pro, (int)request.Request.ConfigEnum!);
 			if (request.Request.CartId != null)
 			{
 				cart = await _cartRepository.GetListCartItemByCartId(request.Request.CartId);
@@ -166,11 +162,11 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 
 			var service = new SessionService();
 			Session session = service.Create(options);
-			var paymentIntentId = session.Id;
+			var paymentIntentId = session.PaymentIntentId;
 
 			//Create Transaction
 			var transaction = new Transaction();
-			transaction.Id = Guid.NewGuid().ToString();
+			transaction.Id = session.Id;
 			transaction.UserId = request.UserId;
 			transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
 			transaction.PaymentIntentId = paymentIntentId;
@@ -179,7 +175,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			//Transaction Detail
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
 
-			if (request.Request.CartId != null)
+			if (request.Request.CartId != null || string.IsNullOrEmpty(request.Request.CartId))
 			{
 				var cartItems = cart.CartItems;
 				if (cart.Total > 0)
@@ -231,7 +227,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 					ItemType = subscription.Config,
 					Amount = subscription!.Value 
 				});
-				user.Subscriptions.Add(subscription);
+				user.Package = subscription.PackageType;
 				await _userRepository.Update(user);
 			}
 			await _transactionRepository.Add(transaction);

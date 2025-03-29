@@ -10,7 +10,6 @@ namespace EduQuest_Application.DTO.Request.Payment
 	{
 		public string? CartId { get; set; }
 		public string? CouponCode { get; set; }
-		public int? PackageEnum { get; set; }
 		public int? ConfigEnum { get; set; }
 	}
 }

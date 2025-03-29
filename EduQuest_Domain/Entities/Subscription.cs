@@ -14,7 +14,6 @@ namespace EduQuest_Domain.Entities
 
         [JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
-		[JsonIgnore]
-		public virtual ICollection<User?> Users { get; set; }
+		
 	}
 }

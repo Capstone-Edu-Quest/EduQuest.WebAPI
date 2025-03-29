@@ -58,6 +58,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                     AvatarUrl = tokenInfo.picture,
                     Status = AccountStatus.Active.ToString(),
                     RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
+                    Package = GeneralEnums.PackageEnum.Free.ToString(),
                     UserMeta = new UserMeta
                     {
                         Id = Guid.NewGuid().ToString(),

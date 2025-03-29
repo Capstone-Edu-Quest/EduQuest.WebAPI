@@ -3,6 +3,7 @@
 using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
+using EduQuest_Infrastructure.ExternalServices.Quartz.Users;
 using Quartz;
 
 namespace EduQuest_Infrastructure.ExternalServices.Quartz;
@@ -61,4 +62,19 @@ public class QuartzService : IQuartzService
         await scheduler.ScheduleJob(job, newTrigger);
         Console.WriteLine($"ScheduleJob: Update All UserQuests with id {jobKey}.");
     }
+
+	public async Task UpdateUserPackageAccountType(string userId)
+	{
+		var jobKey = new JobKey(userId);
+		IScheduler scheduler = await _schedulerFactory.GetScheduler();
+		IJobDetail job = JobBuilder.Create<UpdateUserPackageAccountType>()
+		.WithIdentity(jobKey)
+		.Build();
+		var newTrigger =
+			TriggerBuilder.Create().ForJob(jobKey)
+			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(5))))
+			.Build();
+		await scheduler.ScheduleJob(job, newTrigger);
+		Console.WriteLine($"ScheduleJob: Update user package account type with id {jobKey}.");
+	}
 }
