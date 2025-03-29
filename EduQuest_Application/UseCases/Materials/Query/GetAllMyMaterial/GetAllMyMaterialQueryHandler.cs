@@ -32,9 +32,9 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 				{
 					Total = listMaterial.Count(m => m.Type == TypeOfMaterial.Video.ToString()),
 					Items = listMaterial.Where(m => m.Type == TypeOfMaterial.Video.ToString())
-				.Take(3)
 				.Select(m => new
 				{
+					m.Id,
 					m.Title,
 					m.Description,
 					Duration = m.Duration // Duration for each video
@@ -44,9 +44,9 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 				{
 					Total = listMaterial.Count(m => m.Type == TypeOfMaterial.Document.ToString()),
 					Items = listMaterial.Where(m => m.Type == TypeOfMaterial.Document.ToString())
-					.Take(3)
 					.Select(m => new
 					{
+						m.Id,
 						m.Title,
 						m.Description,
 					})
@@ -55,9 +55,9 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 				{
 					Total = listMaterial.Count(m => m.Type == TypeOfMaterial.Quiz.ToString()),
 					Items = listMaterial.Where(m => m.Type == TypeOfMaterial.Quiz.ToString())
-					.Take(3)
 					.Select(m => new
 					{
+						m.Id,
 						m.Title,
 						m.Description,
 						QuestionCount = m.Quiz.Questions.Count() // Duration for each video
@@ -67,9 +67,9 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 				{
 					Total = listMaterial.Count(m => m.Type == TypeOfMaterial.Assignment.ToString()),
 					Items = listMaterial.Where(m => m.Type == TypeOfMaterial.Assignment.ToString())
-					.Take(3)
 					.Select(m => new
 					{
+						m.Id,
 						m.Title,
 						m.Description,
 						Language = m.Assignment!.AnswerLanguage
