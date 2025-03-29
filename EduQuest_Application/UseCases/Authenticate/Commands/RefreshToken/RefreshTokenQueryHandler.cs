@@ -6,6 +6,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using System.Security.Claims;
 using static EduQuest_Domain.Constants.Constants;
 namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
 {
@@ -32,7 +33,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
                 return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.InvalidToken, MessageCommon.InvalidToken, "name", "token");
             }
             var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == UserClaimType.UserId);
-            var userEmailClaim = principal.Claims.FirstOrDefault(c => c.Type == UserClaimType.Email);
+            var userEmailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
             if (userIdClaim == null || userEmailClaim == null)
             {
                 return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.InvalidToken, MessageCommon.InvalidToken, "name", "token");
@@ -60,7 +61,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken
 
             //generate new access token, refresh token with rotation
             var tokens = await _jwtProvider.GenerateTokensForUser(userId, email, existUserToken.Id);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync();
 
             return new APIResponse
             {

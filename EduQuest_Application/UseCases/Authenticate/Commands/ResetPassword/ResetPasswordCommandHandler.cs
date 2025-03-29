@@ -50,7 +50,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
             user.Email,
             otp,
             "./template/VerifyWithOTP.cshtml",
-            "./template/LOGO.png"
+            "./template/LOGO 3.png"
         );
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

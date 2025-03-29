@@ -89,6 +89,8 @@ namespace EduQuest_Domain.Constants
             public const string LogOutSuccessfully = "SIGN_OUT_SUCCESSFULLY";
             public const string invalidEmailOrPassword = "INVALID_EMAIL_OR_PASSWORD";
             public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
+            public const string ResetPasswordSuccessfully = "RESET_PASSWORD_SUCCESSFULLY";
+            public const string VerifyOtp = "VERIFY_OTP_SUCCESSFULLY";
 
             public const string AlreadyOwnThisItem = "ALREADY_OWN_THIS_ITEM";
             public const string PurchaseItemSuccessfully = "PURCHASE_ITEM_SUCCESSFULLY";

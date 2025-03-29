@@ -11,11 +11,9 @@ namespace EduQuest_Application.Helper
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
 
-            // Encode deviceId thành Base64 trước
             string encodedDeviceId = Convert.ToBase64String(Encoding.UTF8.GetBytes(id));
             string randomToken = Convert.ToBase64String(randomNumber);
 
-            // Kết hợp và encode lại một lần nữa
             string combinedToken = $"{encodedDeviceId}.{randomToken}";
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(combinedToken));
         }
@@ -57,7 +55,7 @@ namespace EduQuest_Application.Helper
             }
         }
 
-        public bool VerifyPasswordHash(string password, string passwordHashBase64, string passwordSaltBase64)
+        public static bool VerifyPasswordHash(string password, string passwordHashBase64, string passwordSaltBase64)
         {
             byte[] passwordHash = Convert.FromBase64String(passwordHashBase64);
             byte[] passwordSalt = Convert.FromBase64String(passwordSaltBase64);

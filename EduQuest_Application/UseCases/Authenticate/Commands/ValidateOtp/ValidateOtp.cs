@@ -7,10 +7,5 @@ public class ValidateOtp : IRequest<APIResponse>
 {
     public string? Email { get; set; }
     public string? Otp { get; set; }
-
-    public ValidateOtp(string? email, string? otp)
-    {
-        Email = email;
-        Otp = otp;
-    }
+   
 }

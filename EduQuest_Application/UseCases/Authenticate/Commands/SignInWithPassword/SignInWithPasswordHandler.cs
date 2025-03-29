@@ -3,7 +3,6 @@ using EduQuest_Application.Abstractions.Authentication;
 using EduQuest_Application.DTO.Response;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -19,7 +18,6 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtProvider _jwtProvider;
         private readonly IMapper _mapper;
-        private readonly AuthenHelper _authenHelper;
 
         public SignInWithPasswordHandler(IUserRepository userRepository,
             IRefreshTokenRepository refreshTokenRepository,
@@ -32,7 +30,6 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
             _unitOfWork = unitOfWork;
             _jwtProvider = jwtProvider;
             _mapper = mapper;
-            _authenHelper = new AuthenHelper();
         }
 
         public async Task<APIResponse> Handle(SignInWithPassword request, CancellationToken cancellationToken)
@@ -43,7 +40,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
                 return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", "user");
             }
 
-            if (!_authenHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (!AuthenHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.invalidEmailOrPassword, MessageCommon.invalidEmailOrPassword, "name", "");
             }

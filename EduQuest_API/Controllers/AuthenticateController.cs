@@ -1,6 +1,7 @@
 ﻿using Application.UseCases.Authenticate.Commands.SignInWithGoogle;
 using EduQuest_Application.DTO.Request.Authenticate;
 using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Authenticate.Commands.ChangePassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 using EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken;
 using EduQuest_Application.UseCases.Authenticate.Commands.ResetPassword;
@@ -39,7 +40,7 @@ public class AuthenticateController : BaseController
         return Ok(result);
     }
 
-    [HttpPost("reset")]
+    [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> SignOut([FromBody] ResetPasswordCommand request, CancellationToken cancellationToken)
@@ -48,7 +49,16 @@ public class AuthenticateController : BaseController
         return Ok(result);
     }
 
-    [HttpPost("validate")]
+    [HttpPost("change-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOut([FromBody] ChangePasswordCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("validate-otp")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> SignOut([FromBody] ValidateOtp request, CancellationToken cancellationToken)

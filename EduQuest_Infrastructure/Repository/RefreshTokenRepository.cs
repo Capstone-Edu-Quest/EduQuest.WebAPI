@@ -28,4 +28,15 @@ public class RefreshTokenRepository : GenericRepository<RefreshToken>, IRefreshT
     {
         return await _context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == refreshToken);
     }
+
+
+    public async Task RemoveRefreshTokenAsync(string id)
+    {
+        var token = await _context.RefreshTokens.FindAsync(id);
+        if (token != null)
+        {
+            _context.RefreshTokens.Remove(token);
+        }
+    }
+
 }
