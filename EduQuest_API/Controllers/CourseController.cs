@@ -5,7 +5,9 @@ using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
+using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetRecommendedCourse;
+using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +27,34 @@ namespace EduQuest_API.Controllers
 
 		}
 
-		[HttpGet("searchCourse")]
+        [HttpPut("approve")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ApprovePendingCourse([FromBody] ApproveCourseCommand command, CancellationToken cancellationToken = default)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
+        }
+
+        //[HttpPut("assign")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<IActionResult> ApprovePendingCourse([FromBody] AssignToCommand command, CancellationToken cancellationToken = default)
+        //{
+        //    var result = await _mediator.Send(command, cancellationToken);
+        //    return Ok(result);
+        //}
+
+        [HttpGet("status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetCourseByStatus([FromQuery] GetCourseByStatusQuery query, CancellationToken cancellationToken = default)
+        {
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("searchCourse")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
