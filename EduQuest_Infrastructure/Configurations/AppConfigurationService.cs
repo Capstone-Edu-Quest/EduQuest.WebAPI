@@ -200,16 +200,16 @@ namespace EduQuest_Infrastructure
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
-					//.WithCronSchedule(cronExpression)
-					.StartNow()
+					.WithCronSchedule(cronExpression)
+					/*.StartNow()
 					.WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                    .WithDescription("Reset Daily Quests!")
+                    .WithDescription("Reset Daily Quests!")*/
                 );
                 q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
-                    //.WithCronSchedule(cronExpression)
-                    .StartNow()
+                    .WithCronSchedule(cronExpression)
+                    /*.StartNow()
                     .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                    .WithDescription("Reset Quests Progress!")
+                    .WithDescription("Reset Quests Progress!")*/
                 );
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
