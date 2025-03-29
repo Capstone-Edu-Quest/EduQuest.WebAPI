@@ -9,6 +9,7 @@ using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -17,7 +18,7 @@ using System.Threading;
 
 namespace EduQuest_API.Controllers
 {
-
+	[Authorize(Roles = "Learner")]
 	[Route(Constants.Http.API_VERSION + "/favoriteList")]
 	public class FavoriteListController : BaseController
 	{
@@ -58,7 +59,7 @@ namespace EduQuest_API.Controllers
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 		[HttpGet]
-		public async Task<IActionResult> GetUserFavoriteList([FromQuery] string userId,
+		public async Task<IActionResult> GetUserFavoriteList(//[FromQuery] string userId,
 			[FromQuery, AllowNull] string? title,
 			[FromQuery, AllowNull] string? description,
 			[FromQuery, AllowNull] string? requirement, 
@@ -67,7 +68,7 @@ namespace EduQuest_API.Controllers
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
             CancellationToken token = default)
 		{
-            //string userId = User.GetUserIdFromToken().ToString();
+            string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetUserFavoriteListQuery(userId, title, description, price, 
 				requirement, feature, pageNo, eachPage), token);
             if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
