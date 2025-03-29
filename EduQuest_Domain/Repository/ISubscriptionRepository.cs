@@ -8,6 +8,6 @@ namespace EduQuest_Domain.Repository
 	{
 		Task<RolePackageDto> GetPackgaePriceByRole(int roleId);
 		Task<RolePackageNumbersDto> GetPackageNumbersByRole(int roleId);
-		Task<Subscription> GetSubscriptionByRoleIPackageConfig(string roleId, int packageEnum, int configEnum);
+		Task<Subscription?> GetSubscriptionByRoleIPackageConfig(string roleId, int packageEnum, int configEnum);
 	}
 }

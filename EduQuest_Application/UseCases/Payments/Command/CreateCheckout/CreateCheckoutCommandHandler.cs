@@ -59,14 +59,14 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				LineItems = new List<SessionLineItemOptions>()
 			};
 			var user = await _userRepository.GetById(request.UserId);
-			if (request.PackageEnum != (int)GeneralEnums.PackageEnum.Free)
+			if (request.Request.PackageEnum != (int)GeneralEnums.PackageEnum.Free)
 			{
-				request.PackageEnum = (int)GeneralEnums.PackageEnum.Pro;
+				request.Request.PackageEnum = (int)GeneralEnums.PackageEnum.Pro;
 			}
-			var subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)request.PackageEnum, (int)request.ConfigEnum!);
-			if (request.CartId != null)
+			var subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)request.Request.PackageEnum, (int)request.Request.ConfigEnum!);
+			if (request.Request.CartId != null)
 			{
-				cart = await _cartRepository.GetListCartItemByCartId(request.CartId);
+				cart = await _cartRepository.GetListCartItemByCartId(request.Request.CartId);
 				if (cart == null)
 				{
 					return new APIResponse
@@ -86,15 +86,15 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						}
 					};
 				}
-				if (request.CouponCode != null)
+				if (request.Request.CouponCode != null)
 				{
-					var IsCouponAvai = await _couponRepository.IsCouponAvailable(request.CouponCode, request.UserId);
+					var IsCouponAvai = await _couponRepository.IsCouponAvailable(request.Request.CouponCode, request.UserId);
 					if (IsCouponAvai)
 					{
-						var isConsumeCoupon = await _couponRepository.ConsumeCoupon(request.CouponCode, request.UserId);
+						var isConsumeCoupon = await _couponRepository.ConsumeCoupon(request.Request.CouponCode, request.UserId);
 						if (isConsumeCoupon)
 						{
-							var coupon = await _couponRepository.GetCouponByCode(request.CouponCode);
+							var coupon = await _couponRepository.GetCouponByCode(request.Request.CouponCode);
 							var disCount = coupon.Discount * cart.Total;
 							options.LineItems.Add(new SessionLineItemOptions
 							{
@@ -105,7 +105,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 									UnitAmount = (long)((cart.Total - disCount) * 100), // Convert to cents
 									ProductData = new SessionLineItemPriceDataProductDataOptions
 									{
-										Name = subscription.Config
+										Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
 									}
 								}
 							});
@@ -122,7 +122,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						UnitAmount = (long)(cart.Total * 100), // Convert to cents
 						ProductData = new SessionLineItemPriceDataProductDataOptions
 						{
-							Name = subscription.Config
+							Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
 						}
 					}
 				});
@@ -174,12 +174,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			transaction.UserId = request.UserId;
 			transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
 			transaction.PaymentIntentId = paymentIntentId;
-			transaction.Type = (request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : subscription.Config;
+			transaction.Type = (request.Request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : subscription.Config;
 
 			//Transaction Detail
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
 
-			if (request.CartId != null)
+			if (request.Request.CartId != null)
 			{
 				var cartItems = cart.CartItems;
 				if (cart.Total > 0)

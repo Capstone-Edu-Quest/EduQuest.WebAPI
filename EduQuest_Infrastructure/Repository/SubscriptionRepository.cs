@@ -92,9 +92,15 @@ namespace EduQuest_Infrastructure.Repository
 			return rolePackageDto;
 		}
 
-		public async Task<Subscription> GetSubscriptionByRoleIPackageConfig(string roleId, int packageEnum, int configEnum)
+		public async Task<Subscription?> GetSubscriptionByRoleIPackageConfig(string roleId, int packageEnum, int configEnum)
 		{
-			return await _context.Subscriptions.FirstOrDefaultAsync(s => s.RoleId == roleId && (Enum.GetName(typeof(PackageEnum), packageEnum).ToLower()) == s.PackageType.ToLower() && (Enum.GetName(typeof(ConfigEnum), configEnum).ToLower()) == s.Config.ToLower());
+			string packageName = Enum.GetName(typeof(PackageEnum), packageEnum)?.ToLower();
+			string configName = Enum.GetName(typeof(ConfigEnum), configEnum)?.ToLower();
+
+			return await _context.Subscriptions
+				.FirstOrDefaultAsync(s => s.RoleId == roleId
+										   && packageName == s.PackageType.ToLower()
+										   && configName == s.Config.ToLower());
 		}
 	}
 }
