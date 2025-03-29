@@ -6,6 +6,7 @@ namespace EduQuest_Application.DTO.Response.Courses
 {
 	public class CourseDetailResponse : IMapFrom<Course>, IMapTo<Course>
     {
+        public string Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? PhotoUrl { get; set; }
