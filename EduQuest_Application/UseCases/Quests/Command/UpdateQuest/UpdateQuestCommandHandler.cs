@@ -10,6 +10,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
@@ -55,9 +56,9 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
         updatedQuest.Title = request.Quest.Title;
         updatedQuest.Type = request.Quest.Type;
 
-        updatedQuest.QuestValues = ArrayToString(request.Quest.QuestValue);
-        updatedQuest.RewardValues = ArrayToString(request.Quest.RewardValue);
-        updatedQuest.RewardTypes = ArrayToString(request.Quest.RewardType);
+        updatedQuest.QuestValues = GeneralHelper.ArrayToString(request.Quest.QuestValue);
+        updatedQuest.RewardValues = GeneralHelper.ArrayToString(request.Quest.RewardValue);
+        updatedQuest.RewardTypes = GeneralHelper.ArrayToString(request.Quest.RewardType);
 
         await _achievementRepository.Update(updatedQuest);
         if(await _unitOfWork.SaveChangesAsync() > 0)
@@ -76,16 +77,4 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
                 MessageCommon.CreateFailed, key, value);
     }
 
-    private string ArrayToString(int[] input)
-    {
-        StringBuilder valuesBuilder = new StringBuilder();
-        foreach (int value in input)
-        {
-            valuesBuilder.Append(value);
-            valuesBuilder.Append(",");
-        }
-        // remove the last comma
-        string values = valuesBuilder.ToString();
-        return values.Substring(0, values.Length - 1);
-    }
 }

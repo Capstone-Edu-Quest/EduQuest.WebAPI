@@ -12,6 +12,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.QuestEnum;
 
@@ -61,17 +62,17 @@ public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, API
 
         if (request.Quest.QuestValue != null && request.Quest.QuestValue.Any())
         {
-            questEntity.QuestValues = ArrayToString(request.Quest.QuestValue);
+            questEntity.QuestValues = GeneralHelper.ArrayToString(request.Quest.QuestValue);
         }
 
         if (request.Quest.RewardValue != null && request.Quest.RewardValue.Any())
         {
-            questEntity.RewardValues = ArrayToString(request.Quest.RewardValue);
+            questEntity.RewardValues = GeneralHelper.ArrayToString(request.Quest.RewardValue);
         }
 
         if (request.Quest.RewardType != null && request.Quest.RewardType.Any())
         {
-            questEntity.RewardTypes = ArrayToString(request.Quest.RewardType);
+            questEntity.RewardTypes = GeneralHelper.ArrayToString(request.Quest.RewardType);
         }
 
 
@@ -99,16 +100,5 @@ public class CreateQuestCommandHandler : IRequestHandler<CreateQuestCommand, API
         MessageCommon.CreateFailed, key, value);
     }
 
-    private string ArrayToString(int[] input)
-    {
-        StringBuilder valuesBuilder = new StringBuilder();
-        foreach (int value in input)
-        {
-            valuesBuilder.Append(value);
-            valuesBuilder.Append(",");
-        }
-        // remove the last comma
-        string values = valuesBuilder.ToString();
-        return values.Substring(0, values.Length - 1);
-    }
+    
 }
