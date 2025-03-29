@@ -15,6 +15,7 @@ namespace EduQuest_Domain.Entities
         public string? Feature { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
+        public string AssignTo { get; set; }
        
         //public DateTime? LastUpdated { get; set; }
 

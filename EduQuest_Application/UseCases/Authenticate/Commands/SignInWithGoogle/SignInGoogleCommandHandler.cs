@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using EduQuest_Application.Abstractions.Authentication;
+using EduQuest_Application.Abstractions.Email;
 using EduQuest_Application.Abstractions.Oauth2;
 using EduQuest_Application.DTO.Response;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Oauth2;
@@ -20,13 +22,9 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
         private readonly ITokenValidation _googleTokenValidation;
         private readonly IMapper _mapper;
         private readonly IJwtProvider _jwtProvider;
+        private readonly IEmailService _emailService;
 
-        public SignInGoogleCommandHandler(IUserRepository userRepository,
-            IRefreshTokenRepository refreshTokenRepository,
-            IUnitOfWork unitOfWork,
-            ITokenValidation googleTokenValidation,
-            IMapper mapper,
-            IJwtProvider jwtProvider)
+        public SignInGoogleCommandHandler(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IUnitOfWork unitOfWork, ITokenValidation googleTokenValidation, IMapper mapper, IJwtProvider jwtProvider, IEmailService emailService)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -34,6 +32,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             _googleTokenValidation = googleTokenValidation;
             _mapper = mapper;
             _jwtProvider = jwtProvider;
+            _emailService = emailService;
         }
 
         public async Task<APIResponse> Handle(SignInGoogleCommand request, CancellationToken cancellationToken)
@@ -45,7 +44,8 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             }
 
             var tokenInfo = tokenValidationResponse.Payload as GoogleTokenInfo;
-
+            var newPassword = AuthenHelper.GenerateRandomPassword();
+            AuthenHelper.CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
             var user = await _userRepository.GetUserByEmailAsync(tokenInfo!.Email!);
             if (user == null)
             {
@@ -58,6 +58,8 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                     AvatarUrl = tokenInfo.picture,
                     Status = AccountStatus.Active.ToString(),
                     RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
+                    PasswordHash = Convert.ToBase64String(passwordHash), 
+                    PasswordSalt = Convert.ToBase64String(passwordSalt),
                     UserMeta = new UserMeta
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -86,9 +88,18 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
 
                 await _unitOfWork.SaveChangesAsync();
 
-                var response = await _jwtProvider.GenerateAccessRefreshTokens(newUser.Id, newUser.Email!);
+                var response = await _jwtProvider.GenerateTokensForUser(newUser.Id, newUser.Email!, Guid.NewGuid().ToString());
 
                 await _unitOfWork.SaveChangesAsync();
+
+                var backgroundTask = _emailService.SendEmailVerifyAsync(
+                                    "YOUR PASSWORD ON EDUQUEST",
+                                    tokenInfo!.Email,
+                                    tokenInfo!.Email,
+                                    newPassword,
+                                    "./template/VerifyWithOTP.cshtml",
+                                    "./template/LOGO.png"
+                                );
 
                 var data = _mapper.Map<UserResponseDto>(newUser);
                 return new APIResponse
@@ -105,14 +116,8 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             };
 
 
-            //check if the refresh token exists, then remove it to create new refresh token
-            var existingRefreshTokens = await _refreshTokenRepository.GetUserByIdAsync(user.Id);
-            if (existingRefreshTokens != null)
-            {
-                await _refreshTokenRepository.Delete(existingRefreshTokens.Id);
-            }
             //create new refresh token
-            var tokenResponse = await _jwtProvider.GenerateAccessRefreshTokens(user.Id, user.Email!);
+            var tokenResponse = await _jwtProvider.GenerateTokensForUser(user.Id, user.Email!, Guid.NewGuid().ToString());
             await _unitOfWork.SaveChangesAsync();
 
             var userDTO = _mapper.Map<UserResponseDto>(user);

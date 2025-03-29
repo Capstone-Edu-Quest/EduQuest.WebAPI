@@ -3,6 +3,7 @@ using EduQuest_Application.DTO.Response;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.ExternalServices.Authentication.Setting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +19,7 @@ public class JwtProvider : IJwtProvider
     private readonly JwtSettings _jwtSettings;
     private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IUnitOfWork unitOfWork;
 
     public JwtProvider(IOptions<JwtSettings> jwtSettings,
         IUserRepository userRepository,
@@ -173,23 +175,37 @@ public class JwtProvider : IJwtProvider
     //    };
     //}
 
-    public async Task<TokenResponseDTO> GenerateAccessRefreshTokens(string userId, string email)
+    public async Task<TokenResponseDTO> GenerateTokensForUser(string userId, string email, string tokenId)
     {
         var accessToken = await GenerateAccessToken(email);
-        var refreshToken = AuthenHelper.GenerateRefreshToken();
-        var refreshTokenEntity = new RefreshToken
-        {
-            UserId = userId,
-            Token = refreshToken,
-            CreatedAt = DateTime.UtcNow,
-            ExpireAt = DateTime.UtcNow.AddMonths(Convert.ToInt32(_jwtSettings.TokenExpirationInMinutes))
-        };
 
-        await _refreshTokenRepository.Add(refreshTokenEntity);
+        var newRefreshToken = AuthenHelper.GenerateRefreshToken(tokenId);
+
+        // Kiểm tra và cập nhật token hiện có hoặc tạo mới
+        var existingToken = await _refreshTokenRepository.GetById(tokenId);
+
+        if (existingToken != null)
+        {
+            existingToken.Token = newRefreshToken;
+            await _refreshTokenRepository.Update(existingToken);
+        }
+        else
+        {
+            var refreshTokenEntity = new RefreshToken
+            {
+                Id = tokenId,
+                UserId = userId,
+                Token = newRefreshToken,
+                CreatedAt = DateTime.UtcNow,
+                ExpireAt = DateTime.UtcNow.AddMonths(3)
+            };
+            await _refreshTokenRepository.Add(refreshTokenEntity);
+        }
+
         return new TokenResponseDTO
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = newRefreshToken
         };
     }
 

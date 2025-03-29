@@ -5,7 +5,8 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 
 public class SignOutCommand : IRequest<APIResponse>
 {
-    public string userId { get; set; }
+    //public string userId { get; set; }
     public string accessToken { get; set; }
+    public string refreshToken { get; set; }
 
 }
