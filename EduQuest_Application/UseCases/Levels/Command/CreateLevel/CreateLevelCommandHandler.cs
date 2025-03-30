@@ -13,13 +13,11 @@ public class CreateLevelCommandHandler : IRequestHandler<CreateLevelCommand, API
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILevelRepository _levelRepository;
-    private readonly ILevelRewardRepository _levelRewardRepository;
 
-    public CreateLevelCommandHandler(IUnitOfWork unitOfWork, ILevelRepository levelRepository, ILevelRewardRepository levelRewardRepository)
+    public CreateLevelCommandHandler(IUnitOfWork unitOfWork, ILevelRepository levelRepository)
     {
         _unitOfWork = unitOfWork;
         _levelRepository = levelRepository;
-        _levelRewardRepository = levelRewardRepository;
     }
 
     public async Task<APIResponse> Handle(CreateLevelCommand request, CancellationToken cancellationToken)
@@ -34,18 +32,11 @@ public class CreateLevelCommandHandler : IRequestHandler<CreateLevelCommand, API
             Id = Guid.NewGuid().ToString(),
             LevelNumber = request.LevelNumber,
             Exp = request.Exp,
-            LevelRewards = new List<LevelReward>()
+            RewardTypes = GeneralHelper.ArrayToString(request.RewardType),
+            RewardValues = GeneralHelper.ArrayToString(request.RewardValue),
         };
 
-        foreach (var item in request.Reward)
-        {
-            newLevel.LevelRewards.Add(new LevelReward
-            {
-                RewardType = item.RewardType,
-                RewardValue = item.RewardValue,
-                Level = newLevel
-            });
-        }
+        
 
         await _levelRepository.Add(newLevel);
         await _unitOfWork.SaveChangesAsync();

@@ -12,13 +12,11 @@ namespace EduQuest_Application.UseCases.Levels.Command.UpdateLevels;
 public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, APIResponse>
 {
     private readonly ILevelRepository _levelRepository;
-    private readonly ILevelRewardRepository _levelRewardRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdateLevelCommandHandler(ILevelRepository levelRepository, ILevelRewardRepository levelRewardRepository, IUnitOfWork unitOfWork)
+    public UpdateLevelCommandHandler(ILevelRepository levelRepository, IUnitOfWork unitOfWork)
     {
         _levelRepository = levelRepository;
-        _levelRewardRepository = levelRewardRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -32,23 +30,8 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
             if (requestLevel == null) continue;
 
             eachLevel.Exp = requestLevel.Exp;
-            var oldRewards = await _levelRewardRepository.GetByLevelIdAsync(eachLevel.Id);
-            if (oldRewards.Any())
-            {
-                _levelRewardRepository.RemoveRangeAsync(oldRewards);
-                await _unitOfWork.SaveChangesAsync(); 
-            }
-
-            var newRewards = requestLevel.Rewards.Select(r => new LevelReward
-            {
-                Id = Guid.NewGuid().ToString(),
-                LevelId = eachLevel.Id,
-                RewardType = r.RewardType,
-                RewardValue = r.RewardValue,
-                Level = eachLevel
-            }).ToList();
-
-            await _levelRewardRepository.CreateRangeAsync(newRewards);
+            eachLevel.RewardTypes = GeneralHelper.ArrayToString(requestLevel.RewardType);
+            eachLevel.RewardValues = GeneralHelper.ArrayToString(requestLevel.RewardValue);
         }
         await _unitOfWork.SaveChangesAsync();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "level");

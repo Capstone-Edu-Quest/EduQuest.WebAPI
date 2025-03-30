@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Levels;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -21,13 +22,24 @@ public class GetFilterLevelQueryHandler : IRequestHandler<GetFilterLevelQuery, A
     public async Task<APIResponse> Handle(GetFilterLevelQuery request, CancellationToken cancellationToken)
     {
         var query = await _levelRepository.GetLevelWithFiltersAsync(request.LevelNumber, request.Exp, request.Page, request.EachPage);
+        List<LevelResponseDto> responseDtos = new List<LevelResponseDto>();
+        
 
-        var certificates = _mapper.Map<PagedList<LevelResponseDto>>(query);
-
+        var items = query.Items.ToList();
+        foreach (var item in items)
+        {
+            LevelResponseDto response = new LevelResponseDto();
+            response.LevelNumber = item.LevelNumber;
+            response.Exp = item.Exp;
+            response.RewardValue = GeneralHelper.ToArray(item.RewardValues!);
+            response.RewardType = GeneralHelper.ToArray(item.RewardTypes!);
+            responseDtos.Add(response); 
+        }
+        PagedList<LevelResponseDto> responses = new PagedList<LevelResponseDto>(responseDtos, query.Count(), query.CurrentPage, query.EachPage);
         return new APIResponse
         {
             IsError = false,
-            Payload = certificates,
+            Payload = responses,
             Message = new MessageResponse
             {
                 content = MessageCommon.GetSuccesfully,

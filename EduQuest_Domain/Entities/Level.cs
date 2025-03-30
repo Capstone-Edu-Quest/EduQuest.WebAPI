@@ -12,7 +12,8 @@ namespace EduQuest_Domain.Entities
 	{
         public int LevelNumber { get; set; } 
         public int Exp { get; set; }
-        public virtual ICollection<LevelReward> LevelRewards { get; set; }
+        public string? RewardTypes { get; set; }
+        public string? RewardValues { get; set; }
         public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
 
     }
