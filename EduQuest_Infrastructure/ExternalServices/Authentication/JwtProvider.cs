@@ -181,19 +181,12 @@ public class JwtProvider : IJwtProvider
 
         var existingValidTokens = await _refreshTokenRepository.GetValidTokensByUserIdAsync(userId);
 
-        //Delete old refresh token if needed (whenever user has more than 3 refresh token)
-        int maxTokensToKeep = 3;
-        if (existingValidTokens.Count > maxTokensToKeep)
+
+        if (existingValidTokens.Any())
         {
-            var sortedTokens = existingValidTokens.OrderByDescending(t => t.CreatedAt).ToList();
-
-            var tokensToDelete = sortedTokens.Skip(maxTokensToKeep).Select(t => t.Token).ToList();
-
-            if (tokensToDelete.Any())
-            {
-                await _refreshTokenRepository.DeleteTokensBulkAsync(tokensToDelete);
-            }
+            await _refreshTokenRepository.DeleteTokensBulkAsync(existingValidTokens);
         }
+
 
         var newRefreshToken = AuthenHelper.GenerateRefreshToken(tokenId);
 

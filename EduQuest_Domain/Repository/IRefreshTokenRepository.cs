@@ -10,6 +10,6 @@ public interface IRefreshTokenRepository : IGenericRepository<RefreshToken>
     Task<IEnumerable<RefreshToken?>> GetRefreshTokenByUserId(string id);
     Task RemoveRefreshTokenAsync(string id);
 
-    Task<List<RefreshToken>> GetValidTokensByUserIdAsync(string userId);
+    Task<List<string>> GetValidTokensByUserIdAsync(string userId);
     Task DeleteTokensBulkAsync(List<string> tokens);
 }
