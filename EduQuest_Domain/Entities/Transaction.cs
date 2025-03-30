@@ -12,9 +12,11 @@ namespace EduQuest_Domain.Entities
         public decimal? StripeFee { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
-        public string PaymentIntentId { get; set; }
+        public string? PaymentIntentId { get; set; }
+		public string? CustomerEmail { get; set; }
+		public string? CustomerName { get; set; }
 
-        [JsonIgnore]
+		[JsonIgnore]
 		public virtual User User { get; set; } = null;
 		
 		

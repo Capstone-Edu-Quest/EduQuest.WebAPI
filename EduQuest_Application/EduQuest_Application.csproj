@@ -8,21 +8,22 @@
 
   <ItemGroup>
     <Compile Remove="DTO\Response\WebStatistics\**" />
+    <Compile Remove="UseCases\Authenticate\Queries\**" />
     <Compile Remove="UseCases\Authentication\**" />
     <EmbeddedResource Remove="DTO\Response\WebStatistics\**" />
+    <EmbeddedResource Remove="UseCases\Authenticate\Queries\**" />
     <EmbeddedResource Remove="UseCases\Authentication\**" />
     <None Remove="DTO\Response\WebStatistics\**" />
+    <None Remove="UseCases\Authenticate\Queries\**" />
     <None Remove="UseCases\Authentication\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
-    <Folder Include="Abstractions\Email\" />
     <Folder Include="DTO\Request\WebStatistics\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />
     <Folder Include="UseCases\Mascot\Queries\" />
-    <Folder Include="UseCases\Authenticate\Queries\" />
     <Folder Include="UseCases\Tags\Commands\UpdateTag\" />
     <Folder Include="UseCases\WebStatistics\Queries\WebUsersStatistics\" />
     <Folder Include="UseCases\WebStatistics\Queries\OverallStatistics\" />

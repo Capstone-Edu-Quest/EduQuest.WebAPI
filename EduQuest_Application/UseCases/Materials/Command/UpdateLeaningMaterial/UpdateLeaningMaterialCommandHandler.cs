@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Request.Materials;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -12,97 +14,95 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateLeaningMaterial
 {
 	public class UpdateLeaningMaterialCommandHandler : IRequestHandler<UpdateLeaningMaterialCommand, APIResponse>
 	{
-		private readonly IMaterialRepository _learningMaterialRepository;
+		private readonly IMaterialRepository _materialRepository;
+		private readonly ICourseRepository _courseRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
+		private readonly IAssignmentRepository _assignmentRepository;
+		private readonly IQuizRepository _quizRepository;
+		private readonly IQuestionRepository _questionRepository;
+		private readonly IAnswerRepository _answerRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
-		public UpdateLeaningMaterialCommandHandler(IMaterialRepository learningMaterialRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IMapper mapper)
-		{
-			_learningMaterialRepository = learningMaterialRepository;
-			_systemConfigRepository = systemConfigRepository;
-			_unitOfWork = unitOfWork;
-			_mapper = mapper;
-		}
+	
 
 		public async Task<APIResponse> Handle(UpdateLeaningMaterialCommand request, CancellationToken cancellationToken)
 		{
-			if (request.Material == null || !request.Material.Any())
+			var isOwner = await _materialRepository.IsOwnerThisMaterial(request.UserId, request.Material.Id);
+			if (isOwner == false)
 			{
-				return new APIResponse
-				{
-					IsError = true,
-					Errors = new ErrorResponse
-					{
-						StatusResponse = HttpStatusCode.NotFound,
-						StatusCode = (int)HttpStatusCode.NotFound,
-						Message = MessageCommon.UpdateFailed,
-					},
-					Message = new MessageResponse
-					{
-						content = MessageCommon.NoProvided,
-						values = new Dictionary<string, string> { { "name", "learning material" } }
-					}
-				};
+				return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, "Not owner", MessageCommon.NotOwner, "name", "material");
 			}
 
-			var listUpdated = new List<Material>();
-			foreach(var item in request.Material)
+			var oldMaterial = await _materialRepository.GetMaterialWithLesson(request.Material.Id);
+			var value = await _systemConfigRepository.GetByName(oldMaterial.Type!);  
+
+			//Check hasLearners
+			var lessons = oldMaterial.Lessons;
+			var listCourse = new List<Course>();
+			bool hasLearners = false;
+			var courseIds = lessons.Select(l => l.CourseId).Distinct();
+			foreach (var courseId in courseIds)
 			{
-				var materialExisted = await _learningMaterialRepository.GetById(item.Id);
-				if (materialExisted != null)
-				{
-					var materialUpdate = _mapper.Map<Material>(item);
-					var typeToUpdate = Enum.GetName(typeof(TypeOfMaterial), item.Type!);
-
-					if (materialExisted.Type != typeToUpdate)
-					{
-						materialExisted.Type = typeToUpdate!;
-						var value = await _systemConfigRepository.GetByName(typeToUpdate!);
-						switch ((TypeOfMaterial)item.Type!)
-						{
-							case TypeOfMaterial.Document:
-								materialUpdate.Duration = (int)value.Value!;
-								break;
-							case TypeOfMaterial.Video:
-								materialUpdate.Duration = item.EstimateTime;
-								break;
-							case TypeOfMaterial.Quiz:
-								materialUpdate.Duration = (int)(item.EstimateTime! * value.Value!);
-								break;
-							default:
-								materialUpdate.Duration = 0;
-								break;
-						}
-					}
-
-					await _learningMaterialRepository.Update(materialUpdate);
-					listUpdated.Add(materialUpdate);
-				} else
-				{
-					return new APIResponse
-					{
-						IsError = true,
-						Errors = new ErrorResponse
-						{
-							StatusResponse = HttpStatusCode.NotFound,
-							StatusCode = (int)HttpStatusCode.NotFound,
-							Message = MessageCommon.NotFound,
-						},
-						Message = new MessageResponse
-						{
-							content = MessageCommon.NotFound,
-							values = new Dictionary<string, string> { { "name", $"Learning meterial ID {item.Id}" } }
-						}
-					};
-				}
+				var course = await _courseRepository.GetCourseLearnerByCourseId(courseId);
+				hasLearners = course.CourseLearners != null && course.CourseLearners.Any();
+				if (hasLearners) continue;
 			}
+			Material newMaterial = null;
+			if (hasLearners)
+			{
+				newMaterial.Id = Guid.NewGuid().ToString();
+				newMaterial.Title = request.Material.Title;
+				newMaterial.Description = request.Material.Description;
+				newMaterial.Type = oldMaterial.Type;
+				newMaterial.Duration = 0;
+				newMaterial.OriginalMaterialId = oldMaterial.Id;
+				newMaterial.Version = oldMaterial.Version++;
+				await _materialRepository.Add(newMaterial);
+			}
+			switch (Enum.Parse(typeof(TypeOfMaterial), oldMaterial.Type))
+			{
+				case TypeOfMaterial.Document:
+					if (hasLearners)
+					{
+						newMaterial = await ProcessDocumentMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
+					} else
+					{
+						oldMaterial = await ProcessDocumentMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
+					}
+					
+					break;
+
+				//case TypeOfMaterial.Video:
+				//	material = await ProcessVideoMaterialAsync(request, value, material, userId);
+				//	break;
+
+				//case TypeOfMaterial.Quiz:
+				//	material = await ProcessQuizMaterialAsync(request, value, material, userId);
+				//	break;
+
+				//case TypeOfMaterial.Assignment:
+				//	material = await ProcessAssignmentMaterialAsync(request, value, material);
+				//	break;
+
+				default:
+					break;
+			}
+			if (hasLearners)
+			{
+				await _materialRepository.Update(newMaterial);
+			} else
+			{
+				await _materialRepository.Update(oldMaterial);
+			}
+			
+
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 			return new APIResponse
 			{
 				IsError = !result,
-				Payload = result ? listUpdated : null,
+				Payload = result ? (hasLearners ? newMaterial : oldMaterial) : null,
 				Errors = result ? null : new ErrorResponse
 				{
 					StatusResponse = HttpStatusCode.BadRequest,
@@ -116,5 +116,35 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateLeaningMaterial
 				}
 			};
 		}
+
+		private async Task<Material> ProcessDocumentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig systemConfig, Material oldMaterial, Material? newMaterial, bool hasLearners)
+		{
+			if (!hasLearners)
+			{
+				oldMaterial.Content = item.Content;
+				return oldMaterial;
+			} else {
+				newMaterial.Content = item.Content;
+				newMaterial.Duration = (int)systemConfig.Value!;
+				return newMaterial;
+			}
+		}
+
+		//private async Task<Material> ProcessQuizMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig systemConfig, Material oldMaterial, Material? newMaterial, bool hasLearners, string userId)
+		//{
+		//	if (!hasLearners)
+		//	{
+		//		oldMaterial.Duration = (int)(item.QuizRequest!.TimeLimit! * (systemConfig?.Value ?? 1));
+
+		//		var quiz = await _quizRepository.GetQuizById(oldMaterial.QuizId);
+		//		if (quiz != null)
+		//		{
+		//			quiz = _mapper.Map<Quiz>(item.QuizRequest);
+					
+		//			await _quizRepository.Update(quiz);
+		//		}
+		//	}
+		//}
+
 	}
 }

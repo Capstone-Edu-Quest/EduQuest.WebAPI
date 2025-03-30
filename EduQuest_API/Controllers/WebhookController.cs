@@ -27,7 +27,6 @@ namespace EduQuest_API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> StripeWebhook(CancellationToken cancellationToken)
 		{
-			string userId = User.GetUserIdFromToken().ToString();
 			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 			Event stripeEvent;
 
@@ -43,7 +42,9 @@ namespace EduQuest_API.Controllers
 					{
 						TransactionId = session.Id,
 						Status = StatusPayment.Completed.ToString(),
-						UserId = userId,
+						PaymentIntentId = session.PaymentIntentId,
+						CustomerEmail = session.CustomerDetails.Email,
+						CustomerName = session.CustomerDetails.Name,
 					}, cancellationToken);
 				}
 			}
@@ -57,7 +58,9 @@ namespace EduQuest_API.Controllers
 					{
 						TransactionId = session.Id,
 						Status = StatusPayment.Expired.ToString(),
-						UserId = userId,
+						PaymentIntentId = session.PaymentIntentId,
+						CustomerEmail = session.CustomerDetails.Email,
+						CustomerName = session.CustomerDetails.Name,
 					});
 				}
 			}

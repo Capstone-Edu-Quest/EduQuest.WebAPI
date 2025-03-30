@@ -87,7 +87,10 @@ namespace EduQuest_Domain.Constants
 			public const string TokenExpired = "TOKEN_EXPIRED";
             public const string TokenBlackListed = "TOKEN_BLACKLIST";
             public const string LogOutSuccessfully = "SIGN_OUT_SUCCESSFULLY";
+            public const string invalidEmailOrPassword = "INVALID_EMAIL_OR_PASSWORD";
             public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
+            public const string ResetPasswordSuccessfully = "RESET_PASSWORD_SUCCESSFULLY";
+            public const string VerifyOtp = "VERIFY_OTP_SUCCESSFULLY";
 
             public const string AlreadyOwnThisItem = "ALREADY_OWN_THIS_ITEM";
             public const string PurchaseItemSuccessfully = "PURCHASE_ITEM_SUCCESSFULLY";
@@ -96,6 +99,9 @@ namespace EduQuest_Domain.Constants
 			public const string UserDontHavePer = "Permission denied";
 
 			public const string CourseShouldBePending = "COURSE_SHOULD_BE_PENDING";
+
+			public const string SentOtpSuccessfully = "SENT_OTP_SUCCESSFULLY";
+			public const string NotOwner = "YOU ARE NOT OWNER OF THIS MATERIAL";
 
 		}
 

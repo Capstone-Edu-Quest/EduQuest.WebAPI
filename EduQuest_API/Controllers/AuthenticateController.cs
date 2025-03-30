@@ -1,8 +1,12 @@
 ﻿using Application.UseCases.Authenticate.Commands.SignInWithGoogle;
 using EduQuest_Application.DTO.Request.Authenticate;
 using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Authenticate.Commands.ChangePassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 using EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken;
+using EduQuest_Application.UseCases.Authenticate.Commands.ResetPassword;
+using EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword;
+using EduQuest_Application.UseCases.Authenticate.Commands.VerifyPassword;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +31,42 @@ public class AuthenticateController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("sign-in/password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOut([FromBody] SignInWithPassword request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOut([FromBody] ResetPasswordCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("change-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOut([FromBody] ChangePasswordCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("validate-otp")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOut([FromBody] ValidateOtp request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
     //[HttpPost("sign-in/test")]
     //[ProducesResponseType(StatusCodes.Status200OK)]
     //[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,10 +88,9 @@ public class AuthenticateController : BaseController
     [HttpPost("sign-out")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> SignOut([FromBody] SignOutRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignOut([FromBody] SignOutCommand request, CancellationToken cancellationToken)
     {
-        string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new SignOutCommand { userId = userId, accessToken = request.AccessToken }, cancellationToken);
+        var result = await _mediator.Send(request, cancellationToken);
         return Ok(result);
     }
 }

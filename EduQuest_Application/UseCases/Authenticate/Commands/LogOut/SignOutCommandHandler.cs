@@ -1,4 +1,6 @@
 ﻿using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -23,9 +25,10 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
 
     public async Task<APIResponse> Handle(SignOutCommand request, CancellationToken cancellationToken)
     {
-        var accessTokenHashKey = $"Token_{request.accessToken}";
-        await _redisCaching.SetAsync(accessTokenHashKey, true, 5);
-        var tokenEntity = await _refreshTokenRepository.GetUserByIdAsync(request.userId);
+        //var accessTokenHashKey = $"Token_{request.accessToken}";
+        //await _redisCaching.SetAsync(accessTokenHashKey, true, 5);
+        var tokenId = AuthenHelper.ExtractIdFromRefreshToken(request.refreshToken);
+        var tokenEntity = await _refreshTokenRepository.GetById(tokenId);
         if (tokenEntity == null)
         {
             return new APIResponse

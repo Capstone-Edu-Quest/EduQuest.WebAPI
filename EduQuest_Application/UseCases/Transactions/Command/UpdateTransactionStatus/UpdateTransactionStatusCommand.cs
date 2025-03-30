@@ -12,14 +12,18 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         public string TransactionId { get; set; }
         public string Status { get; set; }
-        public string UserId { get; set; }
+        public string PaymentIntentId { get; set; }
+        public string CustomerEmail { get; set; }
+        public string CustomerName { get; set; }
         public UpdateTransactionStatusCommand() { }
 
-		public UpdateTransactionStatusCommand(string transactionId, string status, string userId)
+		public UpdateTransactionStatusCommand(string transactionId, string status, string paymentIntentId, string customerEmail, string customerName)
 		{
 			TransactionId = transactionId;
 			Status = status;
-			UserId = userId;
+			PaymentIntentId = paymentIntentId;
+			CustomerEmail = customerEmail;
+			CustomerName = customerName;
 		}
 	}
 }

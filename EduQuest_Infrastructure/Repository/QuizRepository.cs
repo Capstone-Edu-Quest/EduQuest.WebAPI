@@ -3,6 +3,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,11 @@ namespace EduQuest_Infrastructure.Repository
 		public QuizRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<Quiz> GetQuizById(string quizId)
+		{
+			return await _context.Quizzes.Include(x => x.Questions).FirstOrDefaultAsync(x => x.Id == quizId);
 		}
 	}
 }
