@@ -28,9 +28,8 @@ public class GetFilterLevelQueryHandler : IRequestHandler<GetFilterLevelQuery, A
         var items = query.Items.ToList();
         foreach (var item in items)
         {
-            LevelResponseDto response = new LevelResponseDto();
-            response.LevelNumber = item.LevelNumber;
-            response.Exp = item.Exp;
+            LevelResponseDto response = _mapper.Map<LevelResponseDto>(item);
+            response.Id = int.Parse(item.Id);
             response.RewardValue = GeneralHelper.ToArray(item.RewardValues!);
             response.RewardType = GeneralHelper.ToArray(item.RewardTypes!);
             responseDtos.Add(response); 

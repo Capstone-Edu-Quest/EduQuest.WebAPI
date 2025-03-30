@@ -22,16 +22,19 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
 
     public async Task<APIResponse> Handle(UpdateLevelCommand request, CancellationToken cancellationToken)
     {
-        var listOfLevel = request.Levels.Select(a => a.LevelNumber).ToList();
-        var existOfLevel = await _levelRepository.GetByBatchLevelNumber(listOfLevel);
+        var listOfLevel = request.Levels.Select(a => a.Id).ToList();
+        List<string> levelIds = listOfLevel.Select(level => level.ToString()).ToList(); 
+        var existOfLevel = await _levelRepository.GetByBatchLevelNumber(levelIds);
         foreach (var eachLevel in existOfLevel)
         {
-            var requestLevel = request.Levels.FirstOrDefault(x => x.LevelNumber == eachLevel.LevelNumber);
+            var requestLevel = request.Levels.FirstOrDefault(x => x.Id.ToString() == eachLevel.Id);
             if (requestLevel == null) continue;
 
             eachLevel.Exp = requestLevel.Exp;
             eachLevel.RewardTypes = GeneralHelper.ArrayToString(requestLevel.RewardType);
             eachLevel.RewardValues = GeneralHelper.ArrayToString(requestLevel.RewardValue);
+            eachLevel.UpdatedAt = DateTime.Now.ToUniversalTime();
+            eachLevel.UpdatedBy = request.UserId;
         }
         await _unitOfWork.SaveChangesAsync();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "level");

@@ -9,13 +9,13 @@ namespace EduQuest_Application.DTO.Response.Levels;
 
 public class LevelResponseDto : IMapFrom<Level>, IMapTo<Level>
 {
-    public int? LevelNumber { get; set; }
+    public int Id { get; set; }
     public int? Exp { get; set; }
     public object[] RewardType { get; set; } = Array.Empty<object>();
     public object[] RewardValue { get; set; } = Array.Empty<object>();
 
-    public void MappingFrom(Profile profile)
+    /*public void MappingFrom(Profile profile)
     {
         profile.CreateMap<PagedList<Level>, PagedList<LevelResponseDto>>().ReverseMap();
-    }
+    }*/
 }
