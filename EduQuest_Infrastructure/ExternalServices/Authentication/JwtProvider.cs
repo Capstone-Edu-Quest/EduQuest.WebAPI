@@ -179,6 +179,22 @@ public class JwtProvider : IJwtProvider
     {
         var accessToken = await GenerateAccessToken(email);
 
+        var existingValidTokens = await _refreshTokenRepository.GetValidTokensByUserIdAsync(userId);
+
+        //Delete old refresh token if needed (whenever user has more than 3 refresh token)
+        int maxTokensToKeep = 3;
+        if (existingValidTokens.Count > maxTokensToKeep)
+        {
+            var sortedTokens = existingValidTokens.OrderByDescending(t => t.CreatedAt).ToList();
+
+            var tokensToDelete = sortedTokens.Skip(maxTokensToKeep).Select(t => t.Token).ToList();
+
+            if (tokensToDelete.Any())
+            {
+                await _refreshTokenRepository.DeleteTokensBulkAsync(tokensToDelete);
+            }
+        }
+
         var newRefreshToken = AuthenHelper.GenerateRefreshToken(tokenId);
 
         // Kiểm tra và cập nhật token hiện có hoặc tạo mới

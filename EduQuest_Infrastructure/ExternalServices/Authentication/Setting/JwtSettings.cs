@@ -8,7 +8,7 @@ namespace EduQuest_Infrastructure.ExternalServices.Authentication.Setting
 {
     public class JwtSettings
     {
-        public const string SettingsKey = "Jwt";
+        //public const string SettingsKey = "Jwt";
 
         /// <summary>
         /// Gets or sets the issuer.
