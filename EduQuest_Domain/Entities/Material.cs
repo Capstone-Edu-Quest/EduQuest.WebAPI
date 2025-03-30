@@ -10,7 +10,9 @@ namespace EduQuest_Domain.Entities
 		public string Type { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
-		public int? Duration { get; set; }
+        public int? Version { get; set; }
+        public string? OriginalMaterialId { get; set; }
+        public int? Duration { get; set; }
         public string UserId { get; set; }
         //Video
         public string? UrlMaterial { get; set; }

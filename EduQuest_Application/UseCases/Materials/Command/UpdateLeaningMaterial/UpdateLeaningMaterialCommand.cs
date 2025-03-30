@@ -6,10 +6,12 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateLeaningMaterial
 {
 	public class UpdateLeaningMaterialCommand : IRequest<APIResponse>
 	{
-		public List<UpdateLearningMaterialRequest> Material { get; set; }
+		public string UserId { get; set; }
+		public UpdateLearningMaterialRequest Material { get; set; }
 
-		public UpdateLeaningMaterialCommand(List<UpdateLearningMaterialRequest> material)
+		public UpdateLeaningMaterialCommand(string userId, UpdateLearningMaterialRequest material)
 		{
+			UserId = userId;
 			Material = material;
 		}
 	}

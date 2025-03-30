@@ -96,6 +96,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
 			material.Id = Guid.NewGuid().ToString();
 			material.Type = Enum.GetName(typeof(TypeOfMaterial), item.Type);
 			material.UserId = userId;
+			material.Version = 1;
 
 			// Fetch system configuration for material type
 			var value = await _systemConfigRepository.GetByName(material.Type!);
