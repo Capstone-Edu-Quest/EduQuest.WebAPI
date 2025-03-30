@@ -18,6 +18,8 @@ namespace EduQuest_Domain.Entities
         public string? Description { get; set; }
 		public string? RoleId { get; set; }
         public string? BankAccountId { get; set; }
+		public string Package { get; set; }
+        public DateTime? PackageExperiedDate { get; set; }
 
         [JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
@@ -32,6 +34,8 @@ namespace EduQuest_Domain.Entities
 		
 		[JsonIgnore]
 		public virtual UserMeta? UserMeta { get; set; } = null!;
+		[JsonIgnore]
+		public virtual Subscription? Subscription { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<Mascot>? MascotItem { get; set; } = null!;
@@ -40,8 +44,7 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<UserQuest>? UserQuests { get; set; }
-		[JsonIgnore]
-		public virtual ICollection<Subscription?> Subscriptions { get; set; }
+		
 		
 		[JsonIgnore]
 		public virtual ICollection<Certificate>? Certificates { get; set; }

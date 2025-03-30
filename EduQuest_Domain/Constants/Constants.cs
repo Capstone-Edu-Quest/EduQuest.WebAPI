@@ -101,6 +101,7 @@ namespace EduQuest_Domain.Constants
 			public const string CourseShouldBePending = "COURSE_SHOULD_BE_PENDING";
 
 			public const string SentOtpSuccessfully = "SENT_OTP_SUCCESSFULLY";
+			public const string NotOwner = "YOU ARE NOT OWNER OF THIS MATERIAL";
 
 		}
 

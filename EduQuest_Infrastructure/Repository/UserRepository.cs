@@ -3,6 +3,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -33,6 +34,12 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
 	public async Task<User> GetUserById(string userId)
 	{
-        return await _context.Users.Include(x => x.Subscriptions).FirstOrDefaultAsync(x => x.Id == userId);
+        return await _context.Users.Include(x => x.Subscription).FirstOrDefaultAsync(x => x.Id == userId);
+	}
+
+	public async Task<bool> UpdateUserPackageAccountType(string userId)
+	{
+        int affectedRow = await _context.Users.Where(u => u.Id == userId).ExecuteUpdateAsync(u => u.SetProperty(u => u.Package, PackageEnum.Free.ToString()));
+		return affectedRow > 0;
 	}
 }

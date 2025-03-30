@@ -10,11 +10,12 @@ namespace EduQuest_Application.DTO.Request.Materials
 {
 	public class UpdateLearningMaterialRequest : IMapFrom<Material>, IMapTo<Material>
 	{
-		public string Id { get; set; }
-		public int? Type { get; set; }
-		public string? Title { get; set; }
+        public string Id { get; set; }
+        public string? Title { get; set; }
 		public string? Description { get; set; }
-		public string? UrlMaterial { get; set; }
-		public int? EstimateTime { get; set; }
+		public VideoRequest? VideoRequest { get; set; }
+		public string? Content { get; set; } //Document
+		public QuizRequest? QuizRequest { get; set; }
+		public AssignmentRequest? AssignmentRequest { get; set; }
 	}
 }

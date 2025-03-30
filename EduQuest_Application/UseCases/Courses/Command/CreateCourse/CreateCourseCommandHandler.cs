@@ -79,8 +79,6 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 				}
 			};
 
-		
-
 
 		}
 	}
