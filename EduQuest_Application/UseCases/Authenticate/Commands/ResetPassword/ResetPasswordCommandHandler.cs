@@ -48,8 +48,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
             request.Email,
             user.Email,
             otp,
-            "./template/VerifyWithOTP.cshtml",  // Cập nhật đường dẫn tuyệt đối
-            "./template/LOGO 3.png"
+            "./EduQuest_API/template/VerifyWithOTP.cshtml", 
+            "./EduQuest_API/template/LOGO 3.png"
         );
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
