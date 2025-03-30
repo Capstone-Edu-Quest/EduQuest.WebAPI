@@ -5,8 +5,9 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Levels.Command.CreateLevel;
+namespace EduQuest_Application.UseCases.Level.Command.CreateLevel;
 
 public class CreateLevelCommandHandler : IRequestHandler<CreateLevelCommand, APIResponse>
 {
@@ -22,10 +23,14 @@ public class CreateLevelCommandHandler : IRequestHandler<CreateLevelCommand, API
 
     public async Task<APIResponse> Handle(CreateLevelCommand request, CancellationToken cancellationToken)
     {
-        int newLevelId = await _levelRepository.CountAsync() + 1;
-        var newLevel = new Level
+        if(await _levelRepository.IsLevelExist(request.Level.Level))
         {
-            Id = newLevelId.ToString(),
+            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.LevelExist, "name", "level");
+        }
+        var newLevel = new EduQuest_Domain.Entities.Levels
+        {
+            Id = Guid.NewGuid().ToString(),
+            Level = request.Level.Level,
             Exp = request.Level.Exp,
             RewardTypes = GeneralHelper.ArrayToString(request.Level.RewardType),
             RewardValues = GeneralHelper.ArrayToString(request.Level.RewardValue),

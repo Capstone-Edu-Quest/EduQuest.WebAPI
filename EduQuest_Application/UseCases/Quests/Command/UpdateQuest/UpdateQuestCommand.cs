@@ -8,13 +8,11 @@ namespace EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement
     public class UpdateQuestCommand : IRequest<APIResponse>
 	{
 		public string UserId { get; set; }
-		public string QuestId { get; set; }
 		public UpdateQuestRequest Quest { get; set; }
 
-		public UpdateQuestCommand(string userId,string questId, UpdateQuestRequest quest)
+		public UpdateQuestCommand(string userId, UpdateQuestRequest quest)
 		{
 			UserId = userId;
-			QuestId = questId;
 			Quest = quest;
 		}
 	}

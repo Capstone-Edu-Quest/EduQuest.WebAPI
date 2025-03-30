@@ -77,4 +77,20 @@ public class QuartzService : IQuartzService
 		await scheduler.ScheduleJob(job, newTrigger);
 		Console.WriteLine($"ScheduleJob: Update user package account type with id {jobKey}.");
 	}
+
+    public async Task AddAllQuestsToNewUser(string userId)
+    {
+        var jobKey = new JobKey(userId);
+        IScheduler scheduler = await _schedulerFactory.GetScheduler();
+
+        IJobDetail job = JobBuilder.Create<AddAllQuestsToNewUser>()
+        .WithIdentity(jobKey)
+        .Build();
+        var newTrigger =
+            TriggerBuilder.Create().ForJob(jobKey)
+            .WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddSeconds(15))))
+            .Build();
+        await scheduler.ScheduleJob(job, newTrigger);
+        Console.WriteLine($"ScheduleJob: Add All Quests To New User with id {jobKey}.");
+    }
 }

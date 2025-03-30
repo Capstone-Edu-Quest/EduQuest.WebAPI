@@ -7,7 +7,7 @@ using EduQuest_Domain.Repository;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Levels.Query.GetFilterLevels;
+namespace EduQuest_Application.UseCases.Level.Query.GetFilterLevels;
 
 public class GetFilterLevelQueryHandler : IRequestHandler<GetFilterLevelQuery, APIResponse>
 {
@@ -29,7 +29,6 @@ public class GetFilterLevelQueryHandler : IRequestHandler<GetFilterLevelQuery, A
         foreach (var item in items)
         {
             LevelResponseDto response = _mapper.Map<LevelResponseDto>(item);
-            response.Id = int.Parse(item.Id);
             response.RewardValue = GeneralHelper.ToArray(item.RewardValues!);
             response.RewardType = GeneralHelper.ToArray(item.RewardTypes!);
             responseDtos.Add(response); 

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository;
 
-public class LevelRepository : GenericRepository<Level>, ILevelRepository 
+public class LevelRepository : GenericRepository<Levels>, ILevelRepository 
 {
     private readonly ApplicationDbContext _context;
 
@@ -16,7 +16,7 @@ public class LevelRepository : GenericRepository<Level>, ILevelRepository
         _context = context;
     }
 
-    public async Task<PagedList<Level>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage)
+    public async Task<PagedList<Levels>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage)
     {
         var query = _context.Levels.AsQueryable();
 
@@ -35,14 +35,25 @@ public class LevelRepository : GenericRepository<Level>, ILevelRepository
                                .Take((int)eachPage)
                                .ToListAsync();
 
-        return new PagedList<Level>(items, totalCount, (int)page, (int)eachPage);
+        return new PagedList<Levels>(items, totalCount, (int)page, (int)eachPage);
     }
 
 
-    public async Task<IEnumerable<Level>> GetByBatchLevelNumber(List<string> levelIds)
+    public async Task<IEnumerable<Levels>> GetByBatchLevelNumber(List<string> levelIds)
     {
         return await _context.Levels
             .Where(level => levelIds.Contains(level.Id))
             .ToListAsync();
+    }
+    public async Task<bool> IsLevelExist(int level)
+    {
+        return await _context.Levels.AnyAsync(l => l.Level == level);
+    }
+    public async Task ReArrangeLevelAfterDelete(int level)
+    {
+        int affectedRow = await _context.Levels
+            .Where(l => l.Level > level)
+            .ExecuteUpdateAsync(q =>
+            q.SetProperty(l => l.Level, l => l.Level - 1));
     }
 }
