@@ -25,4 +25,7 @@ RUN dotnet publish "./EduQuest_API.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+COPY EduQuest_API/Template /app/template
+
 ENTRYPOINT ["dotnet", "EduQuest_API.dll"]

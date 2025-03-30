@@ -94,11 +94,11 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
 
                 var backgroundTask = _emailService.SendEmailVerifyAsync(
                                     "YOUR PASSWORD ON EDUQUEST",
-                                    tokenInfo!.Email,
-                                    tokenInfo!.Email,
+                                    newUser.Email!,
+                                    "",
                                     newPassword,
                                     "./template/VerifyWithOTP.cshtml",
-                                    "./template/LOGO.png"
+                                    "./template/LOGO 3.png"
                                 );
 
                 var data = _mapper.Map<UserResponseDto>(newUser);
