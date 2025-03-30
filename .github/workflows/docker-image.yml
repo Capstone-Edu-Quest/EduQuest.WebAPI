@@ -29,7 +29,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
           platforms: linux/amd64  
           push: true                           
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/edu_quest:latest
