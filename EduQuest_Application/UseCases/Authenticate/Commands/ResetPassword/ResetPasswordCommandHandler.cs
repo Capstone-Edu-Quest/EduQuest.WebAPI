@@ -44,13 +44,13 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         await _redisCaching.SetAsync(redisDbKey, otp, 120);
 
         // send otp via email (asynchronous)
-        var backgroundTask = _emailService.SendEmailVerifyAsync(
+         await _emailService.SendEmailVerifyAsync(
             "RESET PASSWORD OTP",
             request.Email,
             user.Email,
             otp,
-            "./template/VerifyWithOTP.cshtml",
-            "./template/LOGO 3.png"
+            "/app/Template/VerifyWithOTP.cshtml",  // Cập nhật đường dẫn tuyệt đối
+            "/app/Template/LOGO 3.png"
         );
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
