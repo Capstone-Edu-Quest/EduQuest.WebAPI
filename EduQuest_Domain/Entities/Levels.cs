@@ -10,8 +10,9 @@ using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_Domain.Entities
 {
-	public partial class Level : BaseEntity
+	public partial class Levels : BaseEntity
 	{
+        public int Level {  get; set; }
         public int Exp { get; set; }
         public string? RewardTypes { get; set; }
         public string? RewardValues { get; set; }

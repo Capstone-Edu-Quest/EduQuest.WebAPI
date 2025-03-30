@@ -49,7 +49,7 @@ namespace EduQuest_API.Controllers
             CancellationToken cancellationToken = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new UpdateQuestCommand(userId, questId, achievement), cancellationToken);
+            var result = await _mediator.Send(new UpdateQuestCommand(userId, achievement), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
 

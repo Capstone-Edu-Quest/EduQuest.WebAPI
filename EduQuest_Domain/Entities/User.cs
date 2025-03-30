@@ -29,7 +29,7 @@ namespace EduQuest_Domain.Entities
 		public virtual Cart? Carts { get; set; } = null!;
 
 		[JsonIgnore]
-		public virtual Level? Level { get; set; } = null!;
+		public virtual Levels? Level { get; set; } = null!;
 		
 		
 		[JsonIgnore]

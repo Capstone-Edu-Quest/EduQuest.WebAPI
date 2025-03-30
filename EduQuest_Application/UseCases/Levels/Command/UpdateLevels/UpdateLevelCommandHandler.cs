@@ -7,7 +7,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Levels.Command.UpdateLevels;
+namespace EduQuest_Application.UseCases.Level.Command.UpdateLevels;
 
 public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, APIResponse>
 {
@@ -23,8 +23,8 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
     public async Task<APIResponse> Handle(UpdateLevelCommand request, CancellationToken cancellationToken)
     {
         var listOfLevel = request.Levels.Select(a => a.Id).ToList();
-        List<string> levelIds = listOfLevel.Select(level => level.ToString()).ToList(); 
-        var existOfLevel = await _levelRepository.GetByBatchLevelNumber(levelIds);
+         
+        var existOfLevel = await _levelRepository.GetByBatchLevelNumber(listOfLevel!);
         foreach (var eachLevel in existOfLevel)
         {
             var requestLevel = request.Levels.FirstOrDefault(x => x.Id.ToString() == eachLevel.Id);

@@ -9,6 +9,7 @@ namespace EduQuest_Domain.Repository;
 public interface IUserQuestRepository : IGenericRepository<UserQuest>
 {
     Task<bool> AddNewQuestToAllUserQuest(Quest newQuest);
+    Task<bool> AddQuestsToNewUser(string userId);
     Task<bool> UpdateAllUserQuest(Quest updatedQuest);
     Task<PagedList<UserQuest>> GetAllUserQuests(string? title, int? questType, int? type, int? pointToComplete,
         DateTime? startDate, DateTime? dueDate, bool? isComplete, string userId, int page, int eachPage);

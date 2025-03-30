@@ -2,7 +2,7 @@
 using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Levels.Command.UpdateLevels;
+namespace EduQuest_Application.UseCases.Level.Command.UpdateLevels;
 
 public class UpdateLevelCommand : IRequest<APIResponse>
 {

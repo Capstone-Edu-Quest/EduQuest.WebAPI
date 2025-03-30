@@ -307,7 +307,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         #endregion
 
         #region Level
-        public void Configure(EntityTypeBuilder<Level> builder)
+        public void Configure(EntityTypeBuilder<Levels> builder)
 		{
 			
 

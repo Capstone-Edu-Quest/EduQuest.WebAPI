@@ -3,6 +3,7 @@ using EduQuest_Application.Abstractions.Authentication;
 using EduQuest_Application.Abstractions.Email;
 using EduQuest_Application.Abstractions.Oauth2;
 using EduQuest_Application.DTO.Response;
+using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -23,8 +24,11 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
         private readonly IMapper _mapper;
         private readonly IJwtProvider _jwtProvider;
         private readonly IEmailService _emailService;
+        private readonly IQuartzService _quartzService;
 
-        public SignInGoogleCommandHandler(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IUnitOfWork unitOfWork, ITokenValidation googleTokenValidation, IMapper mapper, IJwtProvider jwtProvider, IEmailService emailService)
+        public SignInGoogleCommandHandler(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, 
+            IUnitOfWork unitOfWork, ITokenValidation googleTokenValidation, IMapper mapper, 
+            IJwtProvider jwtProvider, IEmailService emailService, IQuartzService quartzService)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -33,6 +37,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             _mapper = mapper;
             _jwtProvider = jwtProvider;
             _emailService = emailService;
+            _quartzService = quartzService;
         }
 
         public async Task<APIResponse> Handle(SignInGoogleCommand request, CancellationToken cancellationToken)
@@ -101,7 +106,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                                     "./template/VerifyWithOTP.cshtml",
                                     "./template/LOGO 3.png"
                                 );
-
+                await _quartzService.AddAllQuestsToNewUser(userId);
                 var data = _mapper.Map<UserResponseDto>(newUser);
                 return new APIResponse
                 {
