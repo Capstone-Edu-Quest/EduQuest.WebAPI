@@ -94,8 +94,8 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
 
                 var backgroundTask = _emailService.SendEmailVerifyAsync(
                                     "YOUR PASSWORD ON EDUQUEST",
-                                    tokenInfo!.Email,
-                                    tokenInfo!.Email,
+                                    newUser.Email!,
+                                    "",
                                     newPassword,
                                     "./template/VerifyWithOTP.cshtml",
                                     "./template/LOGO 3.png"
