@@ -26,6 +26,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-COPY EduQuest_API/Template ./Template
+COPY EduQuest_API/Template /app/Template
 
 ENTRYPOINT ["dotnet", "EduQuest_API.dll"]
