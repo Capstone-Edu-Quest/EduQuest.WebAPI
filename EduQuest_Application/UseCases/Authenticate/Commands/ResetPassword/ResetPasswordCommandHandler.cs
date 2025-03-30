@@ -1,7 +1,6 @@
 ﻿using EduQuest_Application.Abstractions.Email;
 using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -49,8 +48,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
             request.Email,
             user.Email,
             otp,
-            "/app/Template/VerifyWithOTP.cshtml",  // Cập nhật đường dẫn tuyệt đối
-            "/app/Template/LOGO 3.png"
+            "./template/VerifyWithOTP.cshtml",  // Cập nhật đường dẫn tuyệt đối
+            "./template/LOGO 3.png"
         );
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
