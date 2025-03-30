@@ -98,7 +98,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                                     tokenInfo!.Email,
                                     newPassword,
                                     "./template/VerifyWithOTP.cshtml",
-                                    "./template/LOGO.png"
+                                    "./template/LOGO 3.png"
                                 );
 
                 var data = _mapper.Map<UserResponseDto>(newUser);
