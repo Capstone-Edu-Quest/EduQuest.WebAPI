@@ -22,7 +22,7 @@ public class LevelRepository : GenericRepository<Level>, ILevelRepository
 
         if (level.HasValue)
         {
-            query = query.Where(l => l.LevelNumber == level.Value);
+            query = query.Where(l => l.Id == level.Value.ToString());
         }
         if (exp.HasValue)
         {
@@ -38,17 +38,11 @@ public class LevelRepository : GenericRepository<Level>, ILevelRepository
         return new PagedList<Level>(items, totalCount, (int)page, (int)eachPage);
     }
 
-    public async Task<bool> CheckByLevel(int level)
-    {
-        return await _context.Levels.AnyAsync(number => number.LevelNumber == level);
-    }
 
-    public async Task<IEnumerable<Level>> GetByBatchLevelNumber(IEnumerable<int> levelNumbers)
+    public async Task<IEnumerable<Level>> GetByBatchLevelNumber(List<string> levelIds)
     {
         return await _context.Levels
-            .Where(level => levelNumbers.Contains(level.LevelNumber))
+            .Where(level => levelIds.Contains(level.Id))
             .ToListAsync();
     }
-
-
 }
