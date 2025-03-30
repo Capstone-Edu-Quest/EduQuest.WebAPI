@@ -11,5 +11,9 @@ namespace EduQuest_Application.UseCases.Level.Command.DeleteLevel;
 public class DeleteLevelCommand : IRequest<APIResponse>
 {
     public string Id { get; set; }
-    public string UserId { get; set; }
+
+    public DeleteLevelCommand(string id)
+    {
+        Id = id;
+    }
 }

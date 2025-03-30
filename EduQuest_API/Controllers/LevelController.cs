@@ -4,15 +4,18 @@ using EduQuest_Application.DTO.Response.Levels;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Certificates.Commands.CreateCertificate;
 using EduQuest_Application.UseCases.Level.Command.CreateLevel;
+using EduQuest_Application.UseCases.Level.Command.DeleteLevel;
 using EduQuest_Application.UseCases.Level.Command.UpdateLevels;
 using EduQuest_Application.UseCases.Level.Query.GetFilterLevels;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Threading;
 
 namespace EduQuest_API.Controllers;
 
@@ -59,6 +62,16 @@ public class LevelController : ControllerBase
     {
         string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new UpdateLevelCommand(userId, levels), cancellationToken);
+        return Ok(result);
+    }
+
+
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteLevel([FromQuery] string levelId, CancellationToken token = default)
+    {
+        var result = await _mediator.Send(new DeleteLevelCommand(levelId), token);
         return Ok(result);
     }
 }

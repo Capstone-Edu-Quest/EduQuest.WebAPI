@@ -42,7 +42,7 @@ public class DeleteLevelHandler : IRequestHandler<DeleteLevelCommand, APIRespons
         if(await _unitOfWork.SaveChangesAsync() > 0)
         {
             await _levelRepository.ReArrangeLevelAfterDelete(level);
-            return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.DeleteSuccessfully,
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.DeleteSuccessfully,
             _mapper.Map<LevelResponseDto>(existLevel), "name", "level");
         }
         return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
