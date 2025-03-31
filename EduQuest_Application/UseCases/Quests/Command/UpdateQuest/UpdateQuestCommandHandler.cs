@@ -43,7 +43,7 @@ public class UpdateQuestCommandHandler : IRequestHandler<UpdateQuestCommand, API
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.Unauthorized, MessageCommon.UpdateFailed, 
                 MessageCommon.Unauthorized, key, value);
         }
-        Quest? updatedQuest = await _achievementRepository.GetById(request.QuestId);
+        Quest? updatedQuest = await _achievementRepository.GetById(request.Quest.Id);
         if (updatedQuest == null)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed,

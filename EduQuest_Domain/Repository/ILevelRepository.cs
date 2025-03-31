@@ -4,9 +4,10 @@ using EduQuest_Domain.Repository.Generic;
 
 namespace EduQuest_Domain.Repository;
 
-public interface ILevelRepository : IGenericRepository<Level>
+public interface ILevelRepository : IGenericRepository<Levels>
 {
-    Task<PagedList<Level>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage);
-    Task<bool> CheckByLevel(int level);
-    Task<IEnumerable<Level>> GetByBatchLevelNumber(IEnumerable<int> levelNumbers);
+    Task<bool> IsLevelExist(int level);
+    Task<PagedList<Levels>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage);
+    Task<IEnumerable<Levels>> GetByBatchLevelNumber(List<string> levelIds);
+    Task ReArrangeLevelAfterDelete(int level);
 }

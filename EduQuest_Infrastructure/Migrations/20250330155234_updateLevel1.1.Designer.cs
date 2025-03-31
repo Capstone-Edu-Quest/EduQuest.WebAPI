@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250330155234_updateLevel1.1")]
+    partial class updateLevel11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -895,7 +898,7 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("Lesson");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Levels", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Level", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -908,9 +911,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Exp")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Level")
                         .HasColumnType("integer");
 
                     b.Property<string>("RewardTypes")
@@ -2426,7 +2426,7 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.User", b =>
                 {
-                    b.HasOne("EduQuest_Domain.Entities.Levels", "Level")
+                    b.HasOne("EduQuest_Domain.Entities.Level", "Level")
                         .WithMany("Users")
                         .HasForeignKey("LevelId");
 
@@ -2599,7 +2599,7 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("LearningPathCourses");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Levels", b =>
+            modelBuilder.Entity("EduQuest_Domain.Entities.Level", b =>
                 {
                     b.Navigation("Users");
                 });

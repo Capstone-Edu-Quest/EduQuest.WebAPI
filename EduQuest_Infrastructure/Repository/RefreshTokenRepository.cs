@@ -39,4 +39,23 @@ public class RefreshTokenRepository : GenericRepository<RefreshToken>, IRefreshT
         }
     }
 
+    public async Task<List<string>> GetValidTokensByUserIdAsync(string userId)
+    {
+        return await _context.RefreshTokens
+            .Where(x => x.UserId == userId && x.ExpireAt > DateTime.UtcNow)
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip(3) 
+            .Select(x => x.Token) 
+            .AsNoTracking() 
+            .ToListAsync();
+    }
+
+
+
+    public async Task DeleteTokensBulkAsync(List<string> tokens)
+    {
+        await _context.RefreshTokens
+            .Where(rt => tokens.Contains(rt.Token))
+            .ExecuteDeleteAsync();
+    }
 }

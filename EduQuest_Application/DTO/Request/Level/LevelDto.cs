@@ -1,8 +1,13 @@
-﻿namespace EduQuest_Application.DTO.Request.Level;
+﻿using static EduQuest_Domain.Constants.Constants;
+using System.ComponentModel.DataAnnotations;
+
+namespace EduQuest_Application.DTO.Request.Level;
 
 public class LevelDto
 {
-    public int LevelNumber { get; set; }
+    public string? Id { get; set; }
+    public int Level { get; set; }
     public int Exp { get; set; }
-    public List<LevelRewardDto> Rewards { get; set; } = new List<LevelRewardDto>();
+    public object[] RewardType { get; set; }
+    public object[] RewardValue { get; set; }
 }

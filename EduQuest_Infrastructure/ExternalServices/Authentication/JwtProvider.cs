@@ -179,6 +179,15 @@ public class JwtProvider : IJwtProvider
     {
         var accessToken = await GenerateAccessToken(email);
 
+        var existingValidTokens = await _refreshTokenRepository.GetValidTokensByUserIdAsync(userId);
+
+
+        if (existingValidTokens.Any())
+        {
+            await _refreshTokenRepository.DeleteTokensBulkAsync(existingValidTokens);
+        }
+
+
         var newRefreshToken = AuthenHelper.GenerateRefreshToken(tokenId);
 
         // Kiểm tra và cập nhật token hiện có hoặc tạo mới
