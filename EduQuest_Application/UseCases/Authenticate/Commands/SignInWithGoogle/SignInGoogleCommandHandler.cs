@@ -18,7 +18,6 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
     public class SignInGoogleCommandHandler : IRequestHandler<SignInGoogleCommand, APIResponse>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenValidation _googleTokenValidation;
         private readonly IMapper _mapper;
@@ -26,12 +25,11 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
         private readonly IEmailService _emailService;
         private readonly IQuartzService _quartzService;
 
-        public SignInGoogleCommandHandler(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, 
+        public SignInGoogleCommandHandler(IUserRepository userRepository, 
             IUnitOfWork unitOfWork, ITokenValidation googleTokenValidation, IMapper mapper, 
             IJwtProvider jwtProvider, IEmailService emailService, IQuartzService quartzService)
         {
             _userRepository = userRepository;
-            _refreshTokenRepository = refreshTokenRepository;
             _unitOfWork = unitOfWork;
             _googleTokenValidation = googleTokenValidation;
             _mapper = mapper;
@@ -75,7 +73,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
                         TotalCompletedCourses = 0,
                         Gold = 0,
                         Exp = 0,
-                        Level = 0,
+                        Level = 1,
                         TotalStudyTime = 0,
                         TotalCourseCreated = 0,
                         TotalLearner = 0,

@@ -5,7 +5,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.ChangePassword;
 
 public class ChangePasswordCommand : IRequest<APIResponse>
 {
-    public string UserId { get; set; }
+    public string Email { get; set; }
     public string? OldPassword { get; set; }
     public string? NewPassword { get; set; }
 }

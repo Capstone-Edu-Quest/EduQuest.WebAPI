@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.Behaviour;
+using EduQuest_Application.Mappings;
 using EduQuest_Application.UseCases;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -22,8 +23,9 @@ namespace EduQuest_Application
 
 			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+            services.AddScoped<MaxExpLevelResolver>();
 
-			return services;
+            return services;
 		}
 	}
 }
