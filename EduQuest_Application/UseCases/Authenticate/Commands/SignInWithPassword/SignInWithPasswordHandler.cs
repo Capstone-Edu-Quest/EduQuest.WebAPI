@@ -42,7 +42,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
 
             if (!AuthenHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.invalidEmailOrPassword, MessageCommon.invalidEmailOrPassword, "name", "");
+                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.WrongPassword, MessageCommon.WrongPassword, "name", "");
             }
 
 
