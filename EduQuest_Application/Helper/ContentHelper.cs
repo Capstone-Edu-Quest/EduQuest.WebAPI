@@ -17,5 +17,17 @@ namespace EduQuest_Application.Helper
 			}
 			return message;
 		}
+
+		public static string JoinStrings(List<string> list, char separator)
+		{
+			return string.Join(separator, list);
+		}
+
+		public static List<string> SplitString(string input, char separator)
+		{
+			return string.IsNullOrEmpty(input) ? new List<string>() : input.Split(separator).ToList();
+		}
+
+
 	}
 }

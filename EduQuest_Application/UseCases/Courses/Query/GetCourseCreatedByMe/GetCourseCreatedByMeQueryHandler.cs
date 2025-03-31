@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Response;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Lessons;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -26,6 +27,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseCreatedByMe
 			var courseResponse = courseList.Select(course =>
 			{
 				var response = _mapper.Map<CourseDetailResponse>(course);
+				response.RequirementList = ContentHelper.SplitString(course.Requirement, '.');
 				response.ListLesson = course.Lessons?
 					.Select(stage => new LessonCourseResponse
 					{

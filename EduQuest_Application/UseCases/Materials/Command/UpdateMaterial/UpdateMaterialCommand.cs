@@ -2,14 +2,14 @@
 using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Materials.Command.UpdateLeaningMaterial
+namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 {
-	public class UpdateLeaningMaterialCommand : IRequest<APIResponse>
+	public class UpdateMaterialCommand : IRequest<APIResponse>
 	{
 		public string UserId { get; set; }
 		public UpdateLearningMaterialRequest Material { get; set; }
 
-		public UpdateLeaningMaterialCommand(string userId, UpdateLearningMaterialRequest material)
+		public UpdateMaterialCommand(string userId, UpdateLearningMaterialRequest material)
 		{
 			UserId = userId;
 			Material = material;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
@@ -37,6 +38,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
 		{
 			var course = _mapper.Map<Course>(request.CourseRequest);
+			course.Requirement = ContentHelper.JoinStrings(request.CourseRequest.RequirementList, '.');
 			
 			var user = await _userRepository.GetById(request.UserId);
 			
