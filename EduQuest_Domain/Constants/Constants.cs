@@ -91,6 +91,7 @@ namespace EduQuest_Domain.Constants
             public const string TokenRefreshSuccess = "REFRESH_SUCCESSFULLY";
             public const string ResetPasswordSuccessfully = "RESET_PASSWORD_SUCCESSFULLY";
             public const string VerifyOtp = "VERIFY_OTP_SUCCESSFULLY";
+            public const string AssignExpert = "ASSIGN_EXPERT_SUCCESSFULLY";
 
             public const string AlreadyOwnThisItem = "ALREADY_OWN_THIS_ITEM";
             public const string PurchaseItemSuccessfully = "PURCHASE_ITEM_SUCCESSFULLY";

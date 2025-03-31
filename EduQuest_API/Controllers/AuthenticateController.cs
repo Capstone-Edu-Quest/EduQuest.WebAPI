@@ -6,7 +6,7 @@ using EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 using EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken;
 using EduQuest_Application.UseCases.Authenticate.Commands.ResetPassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword;
-using EduQuest_Application.UseCases.Authenticate.Commands.VerifyPassword;
+using EduQuest_Application.UseCases.Authenticate.Commands.ValidateChangePassword;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
