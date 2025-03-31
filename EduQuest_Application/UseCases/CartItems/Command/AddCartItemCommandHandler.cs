@@ -49,7 +49,6 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 			{
 				Id = Guid.NewGuid().ToString(),
 				UserId = request.UserId,
-				OriginalPrice = 0 // Will update after adding items
 			};
 
 			await _cartRepository.Add(newCart);
@@ -71,10 +70,9 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 					Price = (decimal)course.Price
 				};
 
-				existedCart.OriginalPrice += cartItem.Price;
+				existedCart.Total += cartItem.Price;
 				cartItems.Add(cartItem);
 			}
-			existedCart.Total = existedCart.OriginalPrice;
 
 			await _cartItemRepository.CreateRangeAsync(cartItems);
 			if (await _unitOfWork.SaveChangesAsync() > 0)

@@ -32,7 +32,7 @@ namespace EduQuest_API.Controllers
 		}
 
 
-		[HttpPost("add-cartItem")]
+		[HttpPut("add-cartItem")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 

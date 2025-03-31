@@ -9,17 +9,17 @@ namespace EduQuest_Domain.Entities
 		public string Title { get; set; } = string.Empty;
 		public string? Description { get; set; }
         public string? PhotoUrl { get; set; }
-        public string? Color { get; set; }
 		public decimal? Price { get; set; }
         public string? Requirement { get; set; }
-        public string? Feature { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
         public string? AssignTo { get; set; }
-       
-        //public DateTime? LastUpdated { get; set; }
+		public int? Version { get; set; }
+		public string? OriginalCourseId { get; set; }
 
-        [JsonIgnore]
+		//public DateTime? LastUpdated { get; set; }
+
+		[JsonIgnore]
 		public virtual User User { get; set; } = null!;
 		[JsonIgnore]
 		public virtual CourseStatistic CourseStatistic { get; set; } = null!;
