@@ -36,7 +36,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
 
         if (user == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "user");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.EmailNotFound, MessageCommon.EmailNotFound, "name", request.Email ?? "");
         }
 
         var otp = AuthenHelper.GenerateOTP();
@@ -54,6 +54,6 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SentOtpSuccessfully, MessageCommon.SentOtpSuccessfully, "name", "user");
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SentOtpSuccessfully, MessageCommon.SentOtpSuccessfully, "name", request.Email ?? "");
     }
 }

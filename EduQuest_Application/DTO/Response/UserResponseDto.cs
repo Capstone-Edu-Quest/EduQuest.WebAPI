@@ -26,6 +26,7 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
         profile.CreateMap<User, UserResponseDto>()
             .ForMember(dest => dest.statistic, opt => opt.MapFrom(src => src.UserMeta))
             .ForMember(dest => dest.mascotItem, opt => opt.MapFrom(src => src.MascotItem));
+            
 
         profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();
     }

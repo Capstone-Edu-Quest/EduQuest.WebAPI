@@ -13,6 +13,7 @@ public class UserStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
     public int? TotalCompletedCourses { get; set; }
     public int? Gold { get; set; }
     public int? Exp { get; set; }
+    public int? MaxExpLevel { get; set; }
     public int? Level { get; set; }
     public int? TotalStudyTime { get; set; }
     public int? TotalCourseCreated { get; set; }
@@ -23,6 +24,8 @@ public class UserStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<UserMeta, UserStatisticDto>()
+            .ForMember(dest => dest.MaxExpLevel, opt => opt.MapFrom<MaxExpLevelResolver>())
             .ForAllMembers(opt => opt.Condition((src, dest, sourceMember) => sourceMember != null));
+            
     }
 }
