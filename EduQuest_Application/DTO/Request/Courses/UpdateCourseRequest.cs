@@ -10,7 +10,7 @@ namespace EduQuest_Application.DTO.Request.Courses
         public string Title { get; set; } = string.Empty;
 		public string? Description { get; set; }
 		public string? PhotoUrl { get; set; }
-		public string? Requirement { get; set; }
+		public List<string>? RequirementList { get; set; }
 		public string? Feature { get; set; }
 		public decimal? Price { get; set; }
 		public bool? IsRequired { get; set; }
