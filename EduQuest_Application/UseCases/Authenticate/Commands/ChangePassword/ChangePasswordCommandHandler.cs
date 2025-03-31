@@ -30,10 +30,10 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
     public async Task<APIResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetById(request.UserId);
+        var user = await _userRepository.GetUserByEmailAsync(request.Email);
         if (user == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "user");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.EmailNotFound, MessageCommon.EmailNotFound, "name", request.Email ?? "");
         }
 
         string redisDbKey = $"ResetPassword_{user.Email}";
