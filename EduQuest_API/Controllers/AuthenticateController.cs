@@ -6,6 +6,7 @@ using EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 using EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken;
 using EduQuest_Application.UseCases.Authenticate.Commands.ResetPassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword;
+using EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 using EduQuest_Application.UseCases.Authenticate.Commands.ValidateChangePassword;
 using EduQuest_Domain.Constants;
 using MediatR;
@@ -28,6 +29,15 @@ public class AuthenticateController : BaseController
     public async Task<IActionResult> SignInGoogle([FromBody] SignInGoogleCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("sign-up")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOut([FromBody] SignUpCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
         return Ok(result);
     }
 

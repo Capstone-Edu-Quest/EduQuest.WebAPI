@@ -7,6 +7,9 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Domain.Repository;
 using MediatR;
+using EduQuest_Application.Helper;
+using static EduQuest_Domain.Constants.Constants;
+using System.Net;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 
@@ -29,35 +32,60 @@ public class SignUpCommandHandler
     {
         if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password) || string.IsNullOrEmpty(request.ConfirmPassword))
         {
-            return new APIResponse { IsError = true, Errors = new List<string> { "All fields are required." } };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
         }
 
         if (request.Password != request.ConfirmPassword)
         {
-            return new APIResponse { IsError = true, Errors = new List<string> { "Passwords do not match." } };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
         }
 
         var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
         if (existingUser != null)
         {
-            return new APIResponse { IsError = true, Errors = new List<string> { "Email is already taken." } };
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
         }
 
-        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        AuthenHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
+        var userId = Guid.NewGuid().ToString();
         var newUser = new User
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = userId,
             Email = request.Email,
             Username = request.Username,
+            AvatarUrl = null,
             Status = AccountStatus.Active.ToString(),
             RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
+            Package = GeneralEnums.PackageEnum.Free.ToString(),
             PasswordHash = Convert.ToBase64String(passwordHash),
-            PasswordSalt = Convert.ToBase64String(passwordSalt)
+            PasswordSalt = Convert.ToBase64String(passwordSalt),
+            UserMeta = new UserMeta
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = userId,
+                CurrentStreak = 0,
+                LongestStreak = 0,
+                TotalCompletedCourses = 0,
+                Gold = 0,
+                Exp = 0,
+                Level = 0,
+                TotalStudyTime = 0,
+                TotalCourseCreated = 0,
+                TotalLearner = 0,
+                TotalReview = 0,
+                LastActive = DateTime.UtcNow.ToUniversalTime(),
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+                UpdatedAt = DateTime.Now.ToUniversalTime(),
+            },
+            FavoriteList = new FavoriteList
+            {
+                UserId = userId
+            }
         };
 
         await _userRepository.Add(newUser);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var tokenResponse = await _jwtProvider.GenerateTokensForUser(newUser.Id, newUser.Email, Guid.NewGuid().ToString());
 
