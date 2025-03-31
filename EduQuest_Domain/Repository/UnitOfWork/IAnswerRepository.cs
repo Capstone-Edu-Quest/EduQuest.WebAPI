@@ -10,6 +10,6 @@ namespace EduQuest_Domain.Repository.UnitOfWork
 {
 	public interface IAnswerRepository : IGenericRepository<Answer>
 	{
-
+		Task<List<Answer>> GetListAnswerByQuestionId(string questionId);
 	}
 }

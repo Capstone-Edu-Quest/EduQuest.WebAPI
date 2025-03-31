@@ -41,7 +41,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			existingCourse.Title = request.CourseInfo.Title;
 			existingCourse.Description = request.CourseInfo.Description;
 			existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
-			existingCourse.Requirement = request.CourseInfo.Requirement;
+			existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 			existingCourse.Feature = request.CourseInfo.Feature;
 			existingCourse.Price = request.CourseInfo.Price;
 

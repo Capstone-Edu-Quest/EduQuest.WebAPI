@@ -3,6 +3,7 @@ using EduQuest_Application.DTO.Response;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Application.DTO.Response.Materials;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -34,6 +35,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 
 			var courseResponse = _mapper.Map<CourseDetailResponse>(course);
+			courseResponse.RequirementList = ContentHelper.SplitString(course.Requirement, '.');
 			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
 			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
 			courseResponse.Rating = course.CourseStatistic.Rating;

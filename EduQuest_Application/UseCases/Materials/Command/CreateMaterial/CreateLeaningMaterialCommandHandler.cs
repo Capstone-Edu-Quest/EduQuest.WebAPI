@@ -10,7 +10,7 @@ using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
-namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
+namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 {
     public class CreateLeaningMaterialCommandHandler : IRequestHandler<CreateLeaningMaterialCommand, APIResponse>
     {
@@ -106,10 +106,10 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
 					return await ProcessDocumentMaterialAsync(item, value, material);
 
 				case TypeOfMaterial.Video:
-					return await ProcessVideoMaterialAsync(item, value, material, userId);
+					return await ProcessVideoMaterialAsync(item, value, material);
 
 				case TypeOfMaterial.Quiz:
-					return await ProcessQuizMaterialAsync(item, value, material, userId);
+					return await ProcessQuizMaterialAsync(item, value, material);
 
 				case TypeOfMaterial.Assignment:
 					return await ProcessAssignmentMaterialAsync(item, value, material);
@@ -129,7 +129,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessQuizMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material, string userId)
+		private async Task<Material> ProcessQuizMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
 			material.Duration = (int)(item.QuizRequest!.TimeLimit! * systemConfig.Value!);
 
@@ -168,7 +168,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessVideoMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material, string userId)
+		private async Task<Material> ProcessVideoMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
 			material.Duration = item.VideoRequest!.Duration;
 			material.UrlMaterial = item.VideoRequest.UrlMaterial;
@@ -176,7 +176,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLeaningMaterial
 
 			if (item.QuizRequest != null)
 			{
-				await ProcessQuizMaterialAsync(item, systemConfig, material, userId);
+				await ProcessQuizMaterialAsync(item, systemConfig, material);
 			}
 
 			return material;

@@ -10,5 +10,6 @@ namespace EduQuest_Domain.Repository.UnitOfWork
 {
 	public interface IQuestionRepository : IGenericRepository<Question>
 	{
+		
 	}
 }
