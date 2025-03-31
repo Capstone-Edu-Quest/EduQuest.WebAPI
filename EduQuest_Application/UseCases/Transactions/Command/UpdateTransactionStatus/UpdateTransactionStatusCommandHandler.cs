@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
@@ -169,7 +170,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 
                         //Calculate amount after fees
 						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
-						var	courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), (int)Enum.Parse(typeof(PackageEnum), user.Package), (int)GeneralEnums.ConfigEnum.CommissionFee);
+						int packageEnum = (int)Enum.Parse(typeof(PackageEnum), user.Package);
+						var	courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), packageEnum, (int)GeneralEnums.ConfigEnum.CommissionFee);
 						if (detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
 						{
 							systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value)/100);
@@ -180,6 +182,17 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 							detail.SystemShare = systemShare;
 							detail.InstructorShare = instructorShare;
 						}
+						var newLearner = new CourseLearner
+						{
+							CourseId = course.Id,
+							UserId = transactionExisted.UserId,
+							IsActive = true,
+							TotalTime = 0,
+							ProgressPercentage = 0
+						};
+						course.CourseLearners.Add(newLearner);
+						await _cartRepository.Delete(myCart.Id);
+						await _courseRepository.Update(course);
 					}
 				}
             } else
