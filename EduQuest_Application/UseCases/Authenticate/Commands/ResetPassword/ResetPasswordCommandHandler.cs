@@ -43,7 +43,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         await _redisCaching.SetAsync(redisDbKey, otp, 120);
 
         // send otp via email (asynchronous)
-         await _emailService.SendEmailVerifyAsync(
+        var a = _emailService.SendEmailVerifyAsync(
             "RESET PASSWORD OTP",
             request.Email,
             user.Email,
