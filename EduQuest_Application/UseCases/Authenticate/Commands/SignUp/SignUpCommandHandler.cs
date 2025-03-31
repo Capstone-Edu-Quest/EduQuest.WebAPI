@@ -30,7 +30,7 @@ public class SignUpCommandHandler
 
     public async Task<APIResponse> Handle(SignUpCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password) || string.IsNullOrEmpty(request.ConfirmPassword))
+        if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.FullName) || string.IsNullOrEmpty(request.Password) || string.IsNullOrEmpty(request.ConfirmPassword))
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
         }
@@ -53,7 +53,7 @@ public class SignUpCommandHandler
         {
             Id = userId,
             Email = request.Email,
-            Username = request.Username,
+            Username = request.FullName,
             AvatarUrl = null,
             Status = AccountStatus.Active.ToString(),
             RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
