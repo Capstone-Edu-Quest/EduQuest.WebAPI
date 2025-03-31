@@ -68,11 +68,11 @@ namespace EduQuest_Infrastructure.ExternalServices.Email
                 HtmlBody = hrml
             };
 
-            if (File.Exists(logoPath))
-            {
-                var logo = bodyBuilder.LinkedResources.Add(logoPath);
-                logo.ContentId = "logo3";
-            }
+            //if (File.Exists(logoPath))
+            //{
+            //    var logo = bodyBuilder.LinkedResources.Add(logoPath);
+            //    logo.ContentId = "logo3";
+            //}
             message.Body = bodyBuilder.ToMessageBody();
 
             // Send the email using an SMTP client

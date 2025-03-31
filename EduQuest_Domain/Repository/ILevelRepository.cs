@@ -10,4 +10,5 @@ public interface ILevelRepository : IGenericRepository<Levels>
     Task<PagedList<Levels>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage);
     Task<IEnumerable<Levels>> GetByBatchLevelNumber(List<string> levelIds);
     Task ReArrangeLevelAfterDelete(int level);
+    int GetExpByLevel(int level);
 }
