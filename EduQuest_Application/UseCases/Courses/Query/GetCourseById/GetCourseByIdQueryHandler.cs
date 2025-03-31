@@ -39,6 +39,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
 			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
 			courseResponse.Rating = course.CourseStatistic.Rating;
+			courseResponse.TotalTime = course.CourseStatistic.TotalTime;
 			if (courseLearner != null)
 			{
 				courseResponse.Progress = courseLearner!.ProgressPercentage;
@@ -69,7 +70,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				lessonResponses.Add(new LessonCourseResponse
 				{
 					Id = lesson.Id,
-					Level = lesson.Level,
+					Index = lesson.Index,
 					Name = lesson.Name,
 					TotalTime = lesson.TotalTime,
 					Materials = lessonInCourse.Materials?.Select(material => new MaterialInLessonResponse

@@ -52,10 +52,7 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
         {
             temp = temp.Where(c => c.Requirement.Contains(request.Requirement));
         }
-        if (!string.IsNullOrEmpty(request.Feature))
-        {
-            temp = temp.Where(c => c.Feature.Contains(request.Feature));
-        }
+       
         temp = temp.Skip((request.Page - 1) * request.EachPage)
                    .Take(request.EachPage);
         #endregion
@@ -64,8 +61,9 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
         foreach (var item in courses)
         {
             //CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
-            FavoriteCourseResponse myLearningPathResponse = _mapper.Map<FavoriteCourseResponse>(item);
-            responseDto.Add(myLearningPathResponse);
+            FavoriteCourseResponse myFavCourseResponse = _mapper.Map<FavoriteCourseResponse>(item);
+			myFavCourseResponse.RequirementList = ContentHelper.SplitString(item.Requirement, '.');
+			responseDto.Add(myFavCourseResponse);
         }
         PagedList<FavoriteCourseResponse> responses = new PagedList<FavoriteCourseResponse>(responseDto, responseDto.Count, request.Page,request.EachPage);
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, responses,"name", "favorite courses");

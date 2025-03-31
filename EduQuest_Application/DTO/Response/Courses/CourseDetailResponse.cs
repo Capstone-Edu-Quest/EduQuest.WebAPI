@@ -13,7 +13,6 @@ namespace EduQuest_Application.DTO.Response.Courses
         public string? Description { get; set; }
         public string? PhotoUrl { get; set; }
         public List<string>? RequirementList { get; set; } = new List<string>();
-        public string? Feature { get; set; }
         public DateTime? LastUpdated { get; set; }
         public decimal Price { get; set; }
         public decimal? DiscountPrice { get; set; }
@@ -23,6 +22,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public int? TotalLearner { get; set; }
         public double? Rating { get; set; }
         public int? TotalReview { get; set; }
+        public int? TotalTime { get; set; }
         public decimal? Progress { get; set; }
 
   //      public void Mapping(Profile profile)

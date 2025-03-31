@@ -26,7 +26,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Course> GetCourseById(string Id)
 		{
-			return await _context.Courses.Include(x => x.Lessons).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == Id);
+			return await _context.Courses.Include(x => x.Lessons).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).Include(x => x.CourseLearners).FirstOrDefaultAsync(x => x.Id == Id);
 		}
 
 		public async Task<IEnumerable<Course>> GetCourseByStatus(string status)
@@ -34,7 +34,7 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.Courses.Include(x => x.Lessons).Include(x => x.User).Include(x => x.Tags).Include(x => x.CourseStatistic).Where(x => x.Status.ToUpper().Equals(status.ToUpper())).ToListAsync();
 		}
 
-		public async Task<IEnumerable<Course>> GetCourseByUserId(string Id)
+		public async Task<List<Course>> GetCourseByUserId(string Id)
 		{
 			return await _context.Courses.Include(x => x.Lessons).Include(x => x.Tags).Where(x => x.CreatedBy == Id).ToListAsync();
 		}
