@@ -7,6 +7,7 @@ namespace EduQuest_Application.DTO.Request.Quests
 {
     public class CreateQuestRequest : IMapFrom<Quest>, IMapTo<Quest>
     {
+        public string? Id { get; set; }
         [Required(ErrorMessage = MessageError.ValueRequired)]
         public string? Title { get; set; } //change name to title
 

@@ -7,17 +7,16 @@ using EduQuest_Domain.Models.Pagination;
 
 namespace EduQuest_Application.DTO.Response.Levels;
 
-public class LevelResponseDto : IMapFrom<Level>, IMapTo<Level>
+public class LevelResponseDto : IMapFrom<EduQuest_Domain.Entities.Levels>, IMapTo<EduQuest_Domain.Entities.Levels>
 {
-    public int? LevelNumber { get; set; }
+    public string Id { get; set; }
+    public int Level {  get; set; }
     public int? Exp { get; set; }
-    public IEnumerable<LevelsRewardResponseDto> Rewards { get; set; }
+    public object[] RewardType { get; set; } = Array.Empty<object>();
+    public object[] RewardValue { get; set; } = Array.Empty<object>();
 
-    public void MappingFrom(Profile profile)
+    /*public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<Level, LevelResponseDto>()
-            .ForMember(dest => dest.Rewards, opt => opt.MapFrom(src => src.LevelRewards))
-            .ReverseMap();
         profile.CreateMap<PagedList<Level>, PagedList<LevelResponseDto>>().ReverseMap();
-    }
+    }*/
 }

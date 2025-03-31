@@ -7,6 +7,8 @@ namespace EduQuest_Application.DTO.Request.Quests
 {
     public class UpdateQuestRequest : IMapFrom<Quest>, IMapTo<Quest>
     {
+        //[Required(ErrorMessage = MessageError.ValueRequired)]
+        public string Id { get; set; } = string.Empty;
         public string? Title { get; set; } //change name to title
         public int? Type { get; set; }// daily, one time, dev định nghĩa sẵn trong enum, cố định
         public int? QuestType { get; set; }// learning streak, complete courses,....

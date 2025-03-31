@@ -1,7 +1,7 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Levels.Query.GetFilterLevels;
+namespace EduQuest_Application.UseCases.Level.Query.GetFilterLevels;
 
 public class GetFilterLevelQuery : IRequest<APIResponse>
 {

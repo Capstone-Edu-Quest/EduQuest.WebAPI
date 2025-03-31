@@ -1,14 +1,25 @@
-﻿using EduQuest_Application.UseCases.Certificates.Commands.CreateCertificate;
-using EduQuest_Application.UseCases.Levels.Command.CreateLevel;
-using EduQuest_Application.UseCases.Levels.Command.UpdateLevels;
-using EduQuest_Application.UseCases.Levels.Query.GetFilterLevels;
+﻿using EduQuest_Application.DTO.Request.Level;
+using EduQuest_Application.DTO.Response.Coupons;
+using EduQuest_Application.DTO.Response.Levels;
+using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Certificates.Commands.CreateCertificate;
+using EduQuest_Application.UseCases.Level.Command.CreateLevel;
+using EduQuest_Application.UseCases.Level.Command.DeleteLevel;
+using EduQuest_Application.UseCases.Level.Command.UpdateLevels;
+using EduQuest_Application.UseCases.Level.Query.GetFilterLevels;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Pagination;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Threading;
 
 namespace EduQuest_API.Controllers;
 
+[Authorize(Roles = "Staff, Admin")]
 [Route(Constants.Http.API_VERSION + "/level")]
 [ApiController]
 public class LevelController : ControllerBase
@@ -19,13 +30,17 @@ public class LevelController : ControllerBase
     {
         _mediator = mediator;
     }
-
+    
     [HttpGet("filter")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFilterLevel([FromQuery] GetFilterLevelQuery query, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(query, cancellationToken);
+        PagedList<LevelResponseDto> list = (PagedList<LevelResponseDto>)result.Payload!;
+        Response.Headers.Add("X-Total-Element", list.TotalItems.ToString());
+        Response.Headers.Add("X-Total-Page", list.TotalPages.ToString());
+        Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());
         return Ok(result);
     }
 
@@ -34,18 +49,29 @@ public class LevelController : ControllerBase
     [HttpPost()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateNewLevel([FromBody] CreateLevelCommand command, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateNewLevel([FromBody] LevelDto level, CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(new CreateLevelCommand(level), cancellationToken);
         return Ok(result);
     }
 
     [HttpPut()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateLevel([FromBody] UpdateLevelCommand command, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> UpdateLevel([FromBody] List<LevelDto> levels, CancellationToken cancellationToken = default)
     {
-        var result = await _mediator.Send(command, cancellationToken);
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new UpdateLevelCommand(userId, levels), cancellationToken);
+        return Ok(result);
+    }
+
+
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteLevel([FromQuery] string levelId, CancellationToken token = default)
+    {
+        var result = await _mediator.Send(new DeleteLevelCommand(levelId), token);
         return Ok(result);
     }
 }

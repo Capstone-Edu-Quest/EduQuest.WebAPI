@@ -85,6 +85,45 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         return result > 0;
     }
 
+    public async Task<bool> AddQuestsToNewUser(string userId)
+    {
+        var quests = await _context.Quests.ToListAsync();
+        DateTime now = DateTime.Now.ToUniversalTime();
+        DateTime StarDate;
+        if (now.TimeOfDay < new TimeSpan(5, 0, 0))
+        {
+            StarDate = new DateTime(now.Year, now.Month, now.Day, 5, 0, 0).AddDays(-1);
+        }
+        else
+        {
+            StarDate = new DateTime(now.Year, now.Month, now.Day, 5, 0, 0);
+        }
+        //List<UserQuest> userQuests = new List<UserQuest>();
+        var userQuests = quests.Select(quest => new UserQuest
+        {
+            Id = Guid.NewGuid().ToString(),
+            CreatedAt = now,
+            Title = quest.Title,
+            Type = quest.Type,
+            QuestType = quest.QuestType,
+            QuestValues = quest.QuestValues,
+            RewardTypes = quest.RewardTypes,
+            RewardValues = quest.RewardValues,
+            StartDate = StarDate.ToUniversalTime(),
+            DueDate = GetTimeToComplete(quest) != null
+            ? StarDate.AddMinutes(GetTimeToComplete(quest).Value).ToUniversalTime()
+            : null,
+            PointToComplete = GetPointToComplete(quest),
+            CurrentPoint = 0,
+            IsCompleted = false,
+            UserId = userId,
+            QuestId = quest.Id,
+        }).ToList();
+        await _context.UserQuests.AddRangeAsync(userQuests);
+        int result = await _context.SaveChangesAsync();
+        return result > 0;
+    }
+
     public async Task<bool> UpdateAllUserQuest(Quest updatedQuest)
     {
         /*List<UserQuest> userQuests = await _context.UserQuests.Where(ur => ur.QuestId == updatedQuest.Id).ToListAsync();

@@ -34,7 +34,7 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<Material> Materials { get; set; } = null!;
 		public virtual DbSet<LearningPath> LearningPaths { get; set; } = null!;
 		public virtual DbSet<LearningPathCourse> LearningPathCourses { get; set; } = null!;
-		public virtual DbSet<Level> Levels { get; set; } = null!;
+		public virtual DbSet<Levels> Levels { get; set; } = null!;
 		public virtual DbSet<Mascot> Mascots { get; set; } = null!;
 		public virtual DbSet<Quest> Quests { get; set; } = null!;
 		public virtual DbSet<Question> Questions { get; set; } = null!;
@@ -55,7 +55,6 @@ namespace EduQuest_Infrastructure.Persistence
 		public virtual DbSet<UserMeta> UserMetas { get; set; } = null!;
 		public virtual DbSet<UserQuest> UserQuests { get; set; } = null!;
 		public virtual DbSet<Report> Reports { get; set; } = null!;
-		public virtual DbSet<LevelReward> LevelRewards { get; set; } = null!;
 	
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
