@@ -49,6 +49,7 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 			{
 				Id = Guid.NewGuid().ToString(),
 				UserId = request.UserId,
+				Total = 0
 			};
 
 			await _cartRepository.Add(newCart);
@@ -67,7 +68,7 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 					Id = Guid.NewGuid().ToString(),
 					CartId = existedCart!.Id,
 					CourseId = item,
-					Price = (decimal)course.Price
+					Price = (decimal)course.Price,
 				};
 
 				existedCart.Total += cartItem.Price;

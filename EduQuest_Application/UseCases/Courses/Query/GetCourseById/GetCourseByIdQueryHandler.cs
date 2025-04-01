@@ -14,14 +14,16 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 	{
 		private readonly ICourseRepository _courseRepository;
 		private readonly ILessonRepository _lessonRepository;
+		private readonly IMaterialRepository _materialRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
 		private readonly IUserMetaRepository _userStatisticRepository;
 
-		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, ILessonRepository lessonRepository, IUserRepository userRepository, IMapper mapper, IUserMetaRepository userStatisticRepository)
+		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, ILessonRepository lessonRepository, IMaterialRepository materialRepository, IUserRepository userRepository, IMapper mapper, IUserMetaRepository userStatisticRepository)
 		{
 			_courseRepository = courseRepository;
 			_lessonRepository = lessonRepository;
+			_materialRepository = materialRepository;
 			_userRepository = userRepository;
 			_mapper = mapper;
 			_userStatisticRepository = userStatisticRepository;
@@ -67,20 +69,53 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			{
 				var lessonInCourse = await _lessonRepository.GetByLessonIdAsync(lesson.Id);
 
+				var materials = new List<MaterialInLessonResponse>();
+
+				
+					foreach (var material in lessonInCourse.Materials)
+					{
+						var currentMaterialResponse = new MaterialInLessonResponse
+						{
+							Id = material.Id,
+							Type = material.Type,
+							Duration = material.Duration,
+							Title = material.Title,
+							Description = material.Description,
+							Version = material.Version,
+							OriginalMaterialId = material.OriginalMaterialId,
+						};
+
+						materials.Add(currentMaterialResponse);
+
+						// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
+						if (material.OriginalMaterialId != null)
+						{
+							var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
+
+							if (originalMaterial != null)
+							{
+								var originalMaterialResponse = new MaterialInLessonResponse
+								{
+									Id = originalMaterial.Id,
+									Type = originalMaterial.Type,
+									Duration = originalMaterial.Duration,
+									Title = originalMaterial.Title,
+									Description = originalMaterial.Description,
+									Version = originalMaterial.Version,
+								};
+
+								materials.Add(originalMaterialResponse);
+							}
+						}
+					}
+				
 				lessonResponses.Add(new LessonCourseResponse
 				{
 					Id = lesson.Id,
 					Index = lesson.Index,
 					Name = lesson.Name,
 					TotalTime = lesson.TotalTime,
-					Materials = lessonInCourse.Materials?.Select(material => new MaterialInLessonResponse
-					{
-						Id = material.Id,
-						Type = material.Type,
-						Duration = material.Duration,
-						Title = material.Title,
-						Description = material.Description,
-					}).ToList() ?? new List<MaterialInLessonResponse>()
+					Materials = materials
 				});
 			}
 			courseResponse.ListLesson = lessonResponses;
