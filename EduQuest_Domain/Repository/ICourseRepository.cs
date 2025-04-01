@@ -22,5 +22,8 @@ namespace EduQuest_Domain.Repository
 		Task<List<Course>> GetListCourse();
 		Task<Course> GetCourseLearnerByCourseId(string courseId);
 		Task<IEnumerable<Course>> GetCourseByStatus(string status);
-    }
+		Task<Course> GetCourseByUserIdAndCourseId(string userId, string courseId);
+		Task<int> GetCourseCountByCourseIdAsync(string courseId);
+
+	}
 }

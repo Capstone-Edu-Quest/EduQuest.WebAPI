@@ -104,6 +104,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					TotalTime = 0
 				};
 				await _courseRepository.Add(newCourse);
+				await _unitOfWork.SaveChangesAsync();
 				//Add Lesson
 				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
@@ -118,7 +119,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							Id = Guid.NewGuid().ToString(),
 							Name = lessonRequest.Name,
 							Description = lessonRequest.Description,
-							CourseId = existingCourse.Id,
+							CourseId = newCourse.Id,
 							Index = i + 1,
 							Materials = materials, // Gán Material
 							TotalTime = materials?.Sum(m => m.Duration) ?? 0
@@ -131,9 +132,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					newCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
 					newCourse.CourseStatistic.TotalLesson = newLessons.Sum(stage => stage.Materials?.Count ?? 0);
 
-					await _courseRepository.Add(newCourse);
+					await _courseRepository.Update(newCourse);
 				}
-				await _unitOfWork.SaveChangesAsync();
+				var result = await _unitOfWork.SaveChangesAsync();
 				return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.CreateSuccesfully, newCourse, "name", $"New Version of Course ID {existingCourse.Id}");
 			}
 		}
