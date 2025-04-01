@@ -59,8 +59,6 @@ namespace EduQuest_Application.UseCases.Carts.Query
 					course.Rating = (int)courseSta.Rating;
 					course.TotalTime = (int)courseSta.TotalTime;
 				}
-
-				course.DiscountPrice = 0;
 			}
 			cartResponse.Courses = listCourseResponse;
 			return new APIResponse

@@ -1,4 +1,6 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.CourseStatistics;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Extensions;
@@ -38,7 +40,25 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
         return await result.Pagination(pageNo, pageSize).ToPagedListAsync(pageNo, pageSize);
     }
 
-     public async Task<bool> IsOnwer(string feedbackId, string UserId)
+	public async Task<List<CourseRatingOverTime>> GetCourseRatingOverTimeAsync(string courseId)
+	{
+		var query = from feedback in _context.Feedbacks
+					where feedback.CourseId == courseId
+					group feedback by new
+					{
+						Year = ((DateTime)feedback.UpdatedAt).Year,
+						Month = ((DateTime)feedback.UpdatedAt).Month
+					} into g
+					select new CourseRatingOverTime
+					{
+						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
+						Count = g.Count().ToString()
+					};
+
+		return await query.ToListAsync();
+	}
+
+	public async Task<bool> IsOnwer(string feedbackId, string UserId)
     {
         var result = await _context.Feedbacks.FindAsync(feedbackId);
         return UserId == result!.UserId ? true : false;

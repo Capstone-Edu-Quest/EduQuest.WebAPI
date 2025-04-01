@@ -1,4 +1,6 @@
-﻿namespace EduQuest_Application.Helper
+﻿using System.Globalization;
+
+namespace EduQuest_Application.Helper
 {
 	public static class DateTimeHelper
 	{
@@ -80,6 +82,12 @@
 		public static long GetTimeAsLong(DateTimeOffset dateTimeOffset)
 		{
 			return dateTimeOffset.ToUnixTimeMilliseconds();
+		}
+
+		public static string GetMonthName(int monthNumber)
+		{
+			var dateTime = new DateTime(1, monthNumber, 1);
+			return dateTime.ToString("MMMM", CultureInfo.InvariantCulture); // Trả về tên tháng bằng tiếng Anh
 		}
 	}
 }
