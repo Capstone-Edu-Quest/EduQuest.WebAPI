@@ -17,6 +17,6 @@ namespace EduQuest_Infrastructure.Repository;
 
 	public async Task<UserMeta> GetByUserId(string userId)
 	{
-		return await _context.UserMetas.FirstOrDefaultAsync(x => x.UserId.Equals(userId));
+		return await _context.UserMetas.AsNoTracking().FirstOrDefaultAsync(x => x.UserId.Equals(userId));
 	}
 }

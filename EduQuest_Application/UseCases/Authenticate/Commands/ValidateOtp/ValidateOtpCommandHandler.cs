@@ -28,12 +28,6 @@ public class ValidateOtpCommandHandler : IRequestHandler<ValidateOtp, APIRespons
 
     public async Task<APIResponse> Handle(ValidateOtp request, CancellationToken cancellationToken)
     {
-        var existOTP = await _redisCaching.GetAsync<string>($"ResetPassword_{request.Email}");
-        if (existOTP != request.Otp)
-        {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.VerifyOtpFailed, MessageCommon.VerifyOtpFailed, "name", "otp");
-        }
-
         var user = await _userRepository.GetUserByEmailAsync(request.Email!);
         if (user == null)
         {
@@ -42,6 +36,11 @@ public class ValidateOtpCommandHandler : IRequestHandler<ValidateOtp, APIRespons
 
         if (request.isChangePassword)
         {
+            var existChangePasswordOtp = await _redisCaching.HashGetSpecificKeyAsync($"ChangePassword_{user.Email}", "otp");
+            if (existChangePasswordOtp != request.Otp)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.VerifyOtpFailed, MessageCommon.VerifyOtpFailed, "name", "otp");
+            }
 
             var oldPassword = await _redisCaching.HashGetSpecificKeyAsync($"ChangePassword_{user.Email}", "oldpassword");
             var newpassword = await _redisCaching.HashGetSpecificKeyAsync($"ChangePassword_{user.Email}", "newpassword");
@@ -75,7 +74,11 @@ public class ValidateOtpCommandHandler : IRequestHandler<ValidateOtp, APIRespons
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.PasswordChanged, null, "name", user.Email ?? "");
         }
 
-  
+        var existOTP = await _redisCaching.GetAsync<string>($"ResetPassword_{request.Email}");
+        if (existOTP != request.Otp)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.VerifyOtpFailed, MessageCommon.VerifyOtpFailed, "name", "otp");
+        }
 
         var newPassword = AuthenHelper.GenerateRandomPassword();
         AuthenHelper.CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
