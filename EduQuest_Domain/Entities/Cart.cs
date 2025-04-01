@@ -7,9 +7,6 @@ namespace EduQuest_Domain.Entities
 	public partial class Cart : BaseEntity
 	{
 		public string UserId { get; set; }
-		
-		public decimal OriginalPrice { get; set; }
-        public decimal? CouponDiscount { get; set; }
         public decimal? Total { get; set; }
 
 		[JsonIgnore]

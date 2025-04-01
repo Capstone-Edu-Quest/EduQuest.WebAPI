@@ -53,10 +53,7 @@ namespace EduQuest_Infrastructure.Repository
 			{
                 result = result.Where(f => f.Courses!.Any(c => c.Requirement.Contains(requirement)));
             }
-            if (!string.IsNullOrEmpty(feature))
-            {
-                result = result.Where(f => f.Courses!.Any(c => c.Feature.Contains(feature)));
-            }
+          
             #endregion
             return await result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         }
