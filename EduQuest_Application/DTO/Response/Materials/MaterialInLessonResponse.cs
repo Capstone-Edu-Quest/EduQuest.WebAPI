@@ -15,5 +15,7 @@ namespace EduQuest_Application.DTO.Response.Materials
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public int? Duration { get; set; }
+		public int? Version { get; set; }
+		public string? OriginalMaterialId { get; set; }
 	}
 }

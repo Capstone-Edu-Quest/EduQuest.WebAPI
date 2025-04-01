@@ -59,7 +59,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 					course.TotalTime = (int)courseSta.TotalTime;
 				}
 
-				//Chua check discount price
+				course.DiscountPrice = 0;
 			}
 			cartResponse.Courses = listCourseResponse;
 			return new APIResponse
