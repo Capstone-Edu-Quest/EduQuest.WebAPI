@@ -13,6 +13,7 @@ namespace EduQuest_Application.DTO.Response.Carts
 	{
         public string Id { get; set; }
         public decimal? Total { get; set; }
+        public int? NumOfCourse { get; set; }
         public List<CourseSearchResponse>? Courses { get; set; }
     }
 }

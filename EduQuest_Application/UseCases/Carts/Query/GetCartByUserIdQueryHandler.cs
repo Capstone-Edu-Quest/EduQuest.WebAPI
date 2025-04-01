@@ -45,6 +45,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 			var listCourse = await _courseRepository.GetByListIds(listCourseId);
 
 			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse);
+			cartResponse.NumOfCourse = listCourse.Count();
 			foreach (var course in listCourseResponse)
 			{
 				var user = await _userRepository.GetById(course.CreatedBy);
