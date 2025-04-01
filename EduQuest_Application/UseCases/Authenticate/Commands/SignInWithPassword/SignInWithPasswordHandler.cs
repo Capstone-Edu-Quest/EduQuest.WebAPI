@@ -37,17 +37,17 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
             var user = await _userRepository.GetUserByEmailAsync(request.Email);
             if (user == null)
             {
-                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", "user");
+                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.EmailNotFound, MessageCommon.EmailNotFound, "name", request.Email ?? "");
             }
 
-            if (!AuthenHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (!AuthenHelper.VerifyPasswordHash(request.Password, user.PasswordHash!, user.PasswordSalt!))
             {
-                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.WrongPassword, MessageCommon.WrongPassword, "name", "");
+                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, Constants.MessageCommon.WrongPassword, MessageCommon.WrongPassword, "name", "password");
             }
 
 
             //var existingRefreshToken = await _refreshTokenRepository.GetByUserIdAndDevice(deviceId);
-            var tokens = await _jwtProvider.GenerateTokensForUser(user.Id, user.Email, Guid.NewGuid().ToString());
+            var tokens = await _jwtProvider.GenerateTokensForUser(user.Id, user.Email!, Guid.NewGuid().ToString());
 
             await _unitOfWork.SaveChangesAsync();
 

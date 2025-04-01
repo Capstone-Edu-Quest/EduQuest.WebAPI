@@ -18,7 +18,7 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
 
     public async Task<PagedList<Levels>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage)
     {
-        var query = _context.Levels.AsQueryable();
+        var query = _context.Levels.AsQueryable().AsNoTracking();
 
         if (level.HasValue)
         {
@@ -37,6 +37,15 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
 
         return new PagedList<Levels>(items, totalCount, (int)page, (int)eachPage);
     }
+
+    public int GetExpByLevel(int level)
+    {
+        return _context.Levels.AsNoTracking()
+            .Where(x => x.Level == level)
+            .Select(x => x.Exp)
+            .FirstOrDefault();
+    }
+
 
 
     public async Task<IEnumerable<Levels>> GetByBatchLevelNumber(List<string> levelIds)

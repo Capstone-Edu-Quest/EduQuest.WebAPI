@@ -20,6 +20,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _context.Users
             .Include(a => a.Role)
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Email!.ToLower().Equals(email.ToLower()));
     }
 

@@ -17,7 +17,7 @@ public class MascotInventoryRepository : GenericRepository<Mascot>, IMascotInven
 
     public async Task<Mascot?> GetByUserIdAndItemIdAsync(string userId, string shopItemId)
     {
-        return await _context.Mascots
+        return await _context.Mascots.AsNoTracking()
             .FirstOrDefaultAsync(i => i.UserId == userId && i.ShopItemId == shopItemId);
     }
 

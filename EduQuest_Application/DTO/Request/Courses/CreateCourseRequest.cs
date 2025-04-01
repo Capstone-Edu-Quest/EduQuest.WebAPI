@@ -15,7 +15,6 @@ namespace EduQuest_Application.DTO.Request.Courses
         public string? Description { get; set; }
         public string? PhotoUrl { get; set; }
         public List<string>? RequirementList { get; set; }
-        public string? Feature { get; set; }
 		public decimal? Price { get; set; }
         //public List<string> Tags { get; set; }
         //public List<StageCourseRequest>? StageCourse { get; set; }

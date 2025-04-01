@@ -45,7 +45,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<int?> GetMaxLevelInThisCourse(string id)
 		{
-			return await _context.Lessons.MaxAsync(s => (int?)s.Level);
+			return await _context.Lessons.MaxAsync(s => (int?)s.Index);
 		}
 	}
 }

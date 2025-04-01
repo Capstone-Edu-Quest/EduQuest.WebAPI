@@ -17,10 +17,8 @@ namespace EduQuest_Application.DTO.Response.Courses
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? PhotoUrl { get; set; }
-        public string? Color { get; set; }
         public decimal? Price { get; set; }
-        public string? Requirement { get; set; }
-        public string? Feature { get; set; }
+        public List<string>? RequirementList { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
         public double? Rating { get; set; }

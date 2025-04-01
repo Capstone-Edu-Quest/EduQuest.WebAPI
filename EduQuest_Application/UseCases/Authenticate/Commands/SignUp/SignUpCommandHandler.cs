@@ -10,6 +10,7 @@ using MediatR;
 using EduQuest_Application.Helper;
 using static EduQuest_Domain.Constants.Constants;
 using System.Net;
+using EduQuest_Application.ExternalServices.QuartzService;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 
@@ -19,31 +20,33 @@ public class SignUpCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtProvider _jwtProvider;
     private readonly IMapper _mapper;
+    private readonly IQuartzService _quartzService;
 
-    public SignUpCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IJwtProvider jwtProvider, IMapper mapper)
+    public SignUpCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IJwtProvider jwtProvider, IMapper mapper, IQuartzService quartzService)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _jwtProvider = jwtProvider;
         _mapper = mapper;
+        _quartzService = quartzService;
     }
 
     public async Task<APIResponse> Handle(SignUpCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.FullName) || string.IsNullOrEmpty(request.Password) || string.IsNullOrEmpty(request.ConfirmPassword))
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "name", "");
         }
 
         if (request.Password != request.ConfirmPassword)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.WrongPassword, MessageCommon.WrongPassword, "name", "password");
         }
 
         var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
         if (existingUser != null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", "user");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.Conflict, MessageCommon.EmailExisted, MessageCommon.EmailExisted, "name", request.Email ?? "");
         }
 
         AuthenHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -69,7 +72,7 @@ public class SignUpCommandHandler
                 TotalCompletedCourses = 0,
                 Gold = 0,
                 Exp = 0,
-                Level = 0,
+                Level = 1,
                 TotalStudyTime = 0,
                 TotalCourseCreated = 0,
                 TotalLearner = 0,
@@ -90,7 +93,7 @@ public class SignUpCommandHandler
         var tokenResponse = await _jwtProvider.GenerateTokensForUser(newUser.Id, newUser.Email, Guid.NewGuid().ToString());
 
         var userDTO = _mapper.Map<UserResponseDto>(newUser);
-
+        await _quartzService.AddAllQuestsToNewUser(userId);
         return new APIResponse
         {
             IsError = false,
