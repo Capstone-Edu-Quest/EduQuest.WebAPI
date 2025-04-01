@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Courses
 {
-    public class FavoriteCourseResponse : IMapFrom<Course>, IMapTo<Course>
+    public class OverviewCourseResponse : IMapFrom<Course>, IMapTo<Course>
     {
         public string Id { get; set; }
         public string Title { get; set; } = string.Empty;
@@ -19,7 +19,8 @@ namespace EduQuest_Application.DTO.Response.Courses
         public string? PhotoUrl { get; set; }
         public decimal? Price { get; set; }
         public List<string>? RequirementList { get; set; }
-        public string Status { get; set; }
+		public string Author { get; set; }
+		public string? Status { get; set; }
         public string CreatedBy { get; set; }
         public double? Rating { get; set; }
         public int? TotalLesson { get; set; }
@@ -28,7 +29,7 @@ namespace EduQuest_Application.DTO.Response.Courses
 
         public void MappingFrom(Profile profile)
         {
-            profile.CreateMap<Course, FavoriteCourseResponse>()
+            profile.CreateMap<Course, OverviewCourseResponse>()
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.CourseStatistic.Rating))
             .ForMember(dest => dest.TotalLesson, opt => opt.MapFrom(src => src.CourseStatistic.TotalLesson))
             .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))

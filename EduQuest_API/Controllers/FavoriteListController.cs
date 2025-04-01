@@ -75,7 +75,7 @@ namespace EduQuest_API.Controllers
             {
                 return BadRequest(result);
             }
-            PagedList<FavoriteCourseResponse> list = (PagedList<FavoriteCourseResponse>)result.Payload!;
+            PagedList<OverviewCourseResponse> list = (PagedList<OverviewCourseResponse>)result.Payload!;
             Response.Headers.Add("X-Total-Element", list.TotalItems.ToString());
             Response.Headers.Add("X-Total-Page", list.TotalPages.ToString());
             Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());

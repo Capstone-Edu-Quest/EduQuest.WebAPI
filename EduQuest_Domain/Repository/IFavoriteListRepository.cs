@@ -8,5 +8,6 @@ namespace EduQuest_Domain.Repository
 	{
 		Task<FavoriteList> GetFavoriteListByUserId(string userId);
         Task<bool> DeleteFavList(string userId, string courseId);
+		Task<int> GetCountByCourseId(string courseId);
 	}
 }

@@ -6,6 +6,7 @@ using EduQuest_Application.UseCases.Courses.Queries;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
+using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
@@ -63,6 +64,16 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
+		[HttpGet("courseDetailForInstructor")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> CourseDetailResponseForIntructor([FromQuery] string courseId, CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseDetailForIntructorQuery(userId, courseId), cancellationToken);
+			return Ok(result);
+		}
+
 		//[HttpGet("recommendedCourse")]
 		//[ProducesResponseType(StatusCodes.Status200OK)]
 		//[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -84,13 +95,13 @@ namespace EduQuest_API.Controllers
 		}
 
 		[Authorize]
-		[HttpGet("byUserId")]
+		[HttpGet("createdByMe")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetCourseByUserId([FromQuery] string intructorId, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> GetCourseByUserId([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseByUserIdQuery(userId, intructorId, pageNo, eachPage), cancellationToken);
+			var result = await _mediator.Send(new GetCourseCreatedByMeQuery(userId,pageNo, eachPage), cancellationToken);
 			return Ok(result);
 		}
 

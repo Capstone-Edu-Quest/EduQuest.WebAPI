@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -36,7 +37,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<List<Course>> GetCourseByUserId(string Id)
 		{
-			return await _context.Courses.Include(x => x.Lessons).Include(x => x.Tags).Where(x => x.CreatedBy == Id).ToListAsync();
+			return await _context.Courses.Include(x => x.Lessons).Include(x => x.Tags).Include(x => x.CourseStatistic).Where(x => x.CreatedBy == Id).ToListAsync();
 		}
 
 		public Task<List<Course>> GetCoursesByKeywordsAsync(List<string> keywords)
@@ -90,6 +91,27 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<Course> GetCourseLearnerByCourseId(string courseId)
 		{
 			return await _context.Courses.Include(x => x.CourseLearners).Include(x => x.CourseStatistic).FirstOrDefaultAsync(x => x.Id == courseId);
+		}
+
+		public async Task<Course> GetCourseByUserIdAndCourseId(string userId, string courseId)
+		{
+			return await _context.Courses.Include(x => x.CourseStatistic).Include(x => x.Lessons).Include(x => x.Tags).FirstOrDefaultAsync(x => x.CreatedBy == userId && x.Id == courseId);
+			
+		}
+
+		public async Task<int> GetCourseCountByCourseIdAsync(string courseId)
+		{
+			var cartCount = await _context.CartItems
+			.Where(cart => cart.CourseId == courseId)
+			.CountAsync();
+
+			var transactionCount = await _context.TransactionDetails
+				.Where(t => t.ItemType.ToLower() == GeneralEnums.ItemTypeTransaction.Course.ToString().ToLower() && t.ItemId == courseId)
+				.CountAsync();
+
+			var totalCount = cartCount + transactionCount;
+
+			return totalCount;
 		}
 	}
 }

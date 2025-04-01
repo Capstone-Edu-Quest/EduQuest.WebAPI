@@ -35,13 +35,13 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			var courseWithLearner = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
 			var courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
 
-
 			var courseResponse = _mapper.Map<CourseDetailResponse>(course);
 			courseResponse.RequirementList = ContentHelper.SplitString(course.Requirement, '.');
 			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
 			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
 			courseResponse.Rating = course.CourseStatistic.Rating;
 			courseResponse.TotalTime = course.CourseStatistic.TotalTime;
+			courseResponse.LastUpdated = course.UpdatedAt;
 			if (courseLearner != null)
 			{
 				courseResponse.Progress = courseLearner!.ProgressPercentage;
