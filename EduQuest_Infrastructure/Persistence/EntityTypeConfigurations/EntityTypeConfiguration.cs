@@ -17,7 +17,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<TransactionDetail>,
 		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
-		IEntityTypeConfiguration<Report>
+		IEntityTypeConfiguration<Report>, IEntityTypeConfiguration<Booster>
 
     {
 		#region Role
@@ -85,10 +85,20 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 			
 		}
 
-		#endregion
+        #endregion
 
-		#region Answer
-		public void Configure(EntityTypeBuilder<Answer> builder)
+        #region Booster
+        public void Configure(EntityTypeBuilder<Booster> builder)
+        {
+			builder.HasOne(c => c.User)
+				.WithMany(u => u.Boosters)
+				.HasForeignKey(c => c.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+        }
+        #endregion
+
+        #region Answer
+        public void Configure(EntityTypeBuilder<Answer> builder)
 		{
 
 			builder.HasOne(d => d.Question)
@@ -323,6 +333,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .OnDelete(DeleteBehavior.ClientSetNull);
         }
         #endregion
+
         #region UserQuest
         public void Configure(EntityTypeBuilder<UserQuest> builder)
         {
@@ -336,6 +347,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                     .OnDelete(DeleteBehavior.ClientSetNull);
         }
         #endregion
+
         #region Question
         public void Configure(EntityTypeBuilder<Question> builder)
 		{

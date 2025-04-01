@@ -44,7 +44,7 @@ namespace EduQuest_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement,
-            [FromQuery] string questId,
+            //[FromQuery] string questId,
             //[FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
