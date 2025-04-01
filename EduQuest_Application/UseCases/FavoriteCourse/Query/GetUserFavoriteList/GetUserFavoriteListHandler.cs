@@ -22,14 +22,16 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
 {
     private readonly IFavoriteListRepository _favoriteListRepository;
     private readonly IMapper _mapper;
+	private readonly IUserRepository _userRepository;
 
-    public GetUserFavoriteListHandler(IFavoriteListRepository favoriteListRepository, IMapper mapper)
-    {
-        _favoriteListRepository = favoriteListRepository;
-        _mapper = mapper;
-    }
+	public GetUserFavoriteListHandler(IFavoriteListRepository favoriteListRepository, IMapper mapper, IUserRepository userRepository)
+	{
+		_favoriteListRepository = favoriteListRepository;
+		_mapper = mapper;
+		_userRepository = userRepository;
+	}
 
-    public async Task<APIResponse> Handle(GetUserFavoriteListQuery request, CancellationToken cancellationToken)
+	public async Task<APIResponse> Handle(GetUserFavoriteListQuery request, CancellationToken cancellationToken)
     {
         var listCourses = await _favoriteListRepository.GetFavoriteListByUserId(request.UserId);
 
@@ -63,6 +65,8 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
             //CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
             OverviewCourseResponse myFavCourseResponse = _mapper.Map<OverviewCourseResponse>(item);
 			myFavCourseResponse.RequirementList = ContentHelper.SplitString(item.Requirement, '.');
+			var user = await _userRepository.GetById(item.CreatedBy);
+			myFavCourseResponse.Author = user!.Username!;
 			responseDto.Add(myFavCourseResponse);
         }
         PagedList<OverviewCourseResponse> responses = new PagedList<OverviewCourseResponse>(responseDto, responseDto.Count, request.Page,request.EachPage);
