@@ -26,8 +26,8 @@ public class CreateShopItemCommandHandler : IRequestHandler<CreateShopItemComman
     {
         var newShopItems = request.ShopItems.Select(item => new EduQuest_Domain.Entities.ShopItem
         {
-            Id = item.Id,
-            Name = item.Name,
+            Id = Guid.NewGuid().ToString(),
+            Name = item.Id,
             Price = item.Price
         }).ToList();
 

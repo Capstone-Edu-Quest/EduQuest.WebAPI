@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Mascot;
-using EduQuest_Application.UseCases.Mascot.Commands.EquipMacotItem;
 using EduQuest_Domain.Models.Response;
-using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
-using EduQuest_Application.DTO.Response;
-using System.Reflection.Metadata;
 using static EduQuest_Domain.Constants.Constants;
+
+
+namespace EduQuest_Application.UseCases.Mascot.Commands.EquipMacotItem;
 
 public class EquipMascotItemCommandHandler : IRequestHandler<EquipMascotItemCommand, APIResponse>
 {

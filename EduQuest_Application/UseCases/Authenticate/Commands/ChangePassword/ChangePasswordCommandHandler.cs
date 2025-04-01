@@ -36,9 +36,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.EmailNotFound, MessageCommon.EmailNotFound, "name", request.Email ?? "");
         }
 
-        string redisDbKey = $"ResetPassword_{user.Email}";
         var otp = AuthenHelper.GenerateOTP();
-        await _redisCaching.SetAsync(redisDbKey, otp, 30);
 
         // send otp via email (asynchronous)
         var a = _emailService.SendEmailVerifyAsync(
@@ -52,11 +50,12 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
         var hashEntries = new[]
                         {
+                            new HashEntry("otp", otp),
                             new HashEntry("oldpassword", request.OldPassword),
                             new HashEntry("newpassword", request.NewPassword)
                         };
 
-        await _redisCaching.HashSetAsync($"ChangePassword_{user.Email}", hashEntries, 30);
+        await _redisCaching.HashSetAsync($"ChangePassword_{user.Email}", hashEntries, 120);
 
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SentOtpSuccessfully, null, "name", "user");
     }

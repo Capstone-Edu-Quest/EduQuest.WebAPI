@@ -19,4 +19,8 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
     {
         return await _context.ShopItems.ToListAsync();
     }
+    public async Task<ShopItem?> GetItemByName(string name)
+    {
+        return await _context.ShopItems.AsNoTracking().Where(a => a.Name.Equals(name)).FirstOrDefaultAsync();
+    }
 }

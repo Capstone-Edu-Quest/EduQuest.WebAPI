@@ -19,13 +19,18 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
     public UserStatisticDto statistic { get; set; }
-    public List<UserMascotDto> mascotItem { get; set; }
+    //public List<UserMascotDto> mascotItem { get; set; }
+    public List<string> equippedItems { get; set; }
 
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<User, UserResponseDto>()
             .ForMember(dest => dest.statistic, opt => opt.MapFrom(src => src.UserMeta))
-            .ForMember(dest => dest.mascotItem, opt => opt.MapFrom(src => src.MascotItem));
+            .ForMember(dest => dest.equippedItems, opt => opt.MapFrom(src => src.MascotItem
+                .Where(m => m.IsEquipped)
+                .Select(s => s.ShopItemId)
+                .ToList()
+            ));
             
 
         profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();

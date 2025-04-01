@@ -18,7 +18,7 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
 
     public async Task<PagedList<Levels>> GetLevelWithFiltersAsync(int? level, int? exp, int page, int eachPage)
     {
-        var query = _context.Levels.AsQueryable();
+        var query = _context.Levels.AsQueryable().AsNoTracking();
 
         if (level.HasValue)
         {
