@@ -179,6 +179,8 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IUserQuestRepository, UserQuestRepository>();
 			services.AddScoped<IQuartzService, QuartzService>();
 			services.AddScoped<ILevelRepository, LevelRepository>();
+			services.AddScoped<IBoosterRepository, BoosterRepository>();
+
 
             services.AddSingleton(provider =>
 			{

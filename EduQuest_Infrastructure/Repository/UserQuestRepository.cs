@@ -1,4 +1,5 @@
 ﻿
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
@@ -20,7 +21,11 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     {
         _context = context;
     }
-
+    private int[] GetRewardType(string input)
+    {
+        int[] result = input.Split(',').Select(int.Parse).ToArray();
+        return result;
+    }
     private int GetPointToComplete(Quest newQuest)
     {
         string[] temp = newQuest.QuestValues!.Split(",");
@@ -218,7 +223,8 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     }
     public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint)
     {
-        /*var userQuests = await _context.UserQuests
+        
+        var userQuests = await _context.UserQuests
         .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
         .ToListAsync();
 
@@ -229,17 +235,76 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
             {
                 userQuest.IsCompleted = true;
                 userQuest.CurrentPoint = userQuest.PointToComplete;
+                int[] rewardType= GetRewardType(userQuest.RewardTypes!);
+                string[] rewardValue = userQuest.RewardValues!.Split(',');
+                for(int i = 0; i < rewardType.Length; i++)
+                {
+                    
+                }
             }
         }
 
-        return await _context.SaveChangesAsync() > 0;*/
-        int affectedRows = await _context.UserQuests
+        return await _context.SaveChangesAsync() > 0;
+        /*int affectedRows = await _context.UserQuests
         .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
         .ExecuteUpdateAsync(q => q
             .SetProperty(uq => uq.CurrentPoint, uq => uq.CurrentPoint + addedPoint)
             .SetProperty(uq => uq.IsCompleted, uq => uq.CurrentPoint + addedPoint >= uq.PointToComplete));
 
-        return affectedRows > 0;
+        return affectedRows > 0;*/
+    }
+    private async Task HandleReward(int rewardType, string userId, string[] rewardValue, int arrayIndex)
+    {
+        DateTime now = DateTime.Now;
+        var user = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+        switch (rewardType)
+        {
+            case (int)RewardType.Gold:
+                int addedGold = int.Parse(rewardValue[arrayIndex]);
+                user!.UserMeta!.Gold += addedGold;
+                break;
+
+            case (int)RewardType.Exp:
+                int addedExp = int.Parse(rewardValue[arrayIndex]);
+                user!.UserMeta!.Exp += addedExp;
+                break;
+
+            case (int)RewardType.Item:
+                user.MascotItem.Add(new Mascot
+                {
+                    UserId = userId,
+                    ShopItemId = rewardValue[arrayIndex],
+                    CreatedAt = now.ToUniversalTime(),
+                    IsEquipped = false,
+                });
+                break;
+
+            case (int)RewardType.Coupon:
+                Coupon coupon = new Coupon
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = now.ToUniversalTime(),
+                    Discount = decimal.Parse(rewardValue[arrayIndex]),
+                    Description = "Personal Coupon",
+                    Code = CodeGenerator.GenerateRandomCouponCode(),
+                    StartTime = now.ToUniversalTime(),
+                    ExpireTime = now.AddDays(90).ToUniversalTime(),
+                    AllowUsagePerUser = 1,
+                    Limit = 1,
+                    Usage = 0,
+                    CreatedBy = userId,
+                };
+                _context.Coupon.Add(coupon);
+                break;
+
+            case (int)RewardType.Booster:
+                // Xử lý phần thưởng Booster
+                Console.WriteLine("Phần thưởng: Booster");
+                break;
+
+            default:
+                break;
+        }
     }
     public async Task<bool> ResetQuestProgress()
     {
