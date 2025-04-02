@@ -16,10 +16,12 @@ public class UserQuestResponse : IMapFrom<UserQuest>
     public int? QuestType { get; set; }// learning streak, complete courses,....
     public DateTime? StartDate { get; set; }
     public DateTime? DueDate { get; set; }
+    public DateTime? CompleteDate { get; set; }
     public object[] QuestValue { get; set; } = Array.Empty<object>();
     public int PointToComplete { get; set; }
     public int? CurrentPoint { get; set; }
     public bool IsCompleted { get; set; }
+    public bool IsRewardClaimed { get; set; } = false;
     public object[] RewardType { get; set; } = Array.Empty<object>();
     public object[] RewardValue { get; set; } = Array.Empty<object>();
 }
