@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
+using EduQuest_Application.UseCases.Quests.Command.ClaimReward;
 using EduQuest_Application.UseCases.Quests.Command.CreateQuest;
 using EduQuest_Application.UseCases.Quests.Queries.GetAllSystemQuests;
 using EduQuest_Application.UseCases.Quests.Queries.GetAllUserQuests;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Threading;
 
 namespace EduQuest_API.Controllers
 {
@@ -110,7 +112,8 @@ namespace EduQuest_API.Controllers
             CancellationToken token = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
-            throw new NotImplementedException();
+            var result = await _mediator.Send(new ClaimRewardCommand(userQuestId, userId), token);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }
 }
