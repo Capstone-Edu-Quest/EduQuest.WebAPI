@@ -1,7 +1,6 @@
 ﻿using EduQuest_Application.Mappings;
-using EduQuest_Domain.Entities;
 
-namespace EduQuest_Application.DTO;
+namespace EduQuest_Application.DTO.Response.ShopItems;
 
 public class ShopItemResponseDto : IMapFrom<ShopItem>, IMapTo<ShopItem>
 {

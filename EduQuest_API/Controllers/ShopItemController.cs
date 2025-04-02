@@ -1,4 +1,6 @@
 ﻿using EduQuest_Application.UseCases.Shop.Commands;
+using EduQuest_Application.UseCases.Shop.Commands.UpdateShopItem;
+using EduQuest_Application.UseCases.Shop.Queries.GetItemWithFilterl;
 using EduQuest_Application.UseCases.ShopItem.Queries;
 using EduQuest_Domain.Constants;
 using MediatR;
@@ -31,6 +33,26 @@ public class ShopItemController : BaseController
     public async Task<IActionResult> CreateNewItems([FromBody] CreateShopItemCommand command, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+
+    [HttpGet("/filter")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetShopItemByFilter([FromQuery] GetShopItemWithFilter request, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+
+    [HttpPut("")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateShopItem([FromBody] UpdateShopItemCommand request, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
         return Ok(result);
     }
 }

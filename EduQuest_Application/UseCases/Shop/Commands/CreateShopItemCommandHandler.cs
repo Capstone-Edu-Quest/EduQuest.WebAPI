@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO;
+using EduQuest_Application.DTO.Response.ShopItems;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
