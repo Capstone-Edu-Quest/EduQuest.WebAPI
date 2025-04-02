@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Response.Quest;
+using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
