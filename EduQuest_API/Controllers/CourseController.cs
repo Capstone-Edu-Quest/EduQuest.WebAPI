@@ -7,6 +7,7 @@ using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
+using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
@@ -91,6 +92,16 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetCourseByIdQuery(userId, courseId), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("studying")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetCourseStudying(CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseStudyingQuery(userId), cancellationToken);
 			return Ok(result);
 		}
 
