@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.Mappings;
+using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Response.ShopItems;
 

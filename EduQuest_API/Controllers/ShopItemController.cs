@@ -37,7 +37,7 @@ public class ShopItemController : BaseController
     }
 
 
-    [HttpGet("/filter")]
+    [HttpGet("filter")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetShopItemByFilter([FromQuery] GetShopItemWithFilter request, CancellationToken cancellationToken = default)

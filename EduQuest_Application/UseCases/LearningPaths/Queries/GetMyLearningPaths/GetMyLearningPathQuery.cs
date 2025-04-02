@@ -7,15 +7,21 @@ public class GetMyLearningPathQuery: IRequest<APIResponse>
 {
     public string UserId { get; set; }
     public string? KeyWord { get; set; }
-    public string? Type { get; set; }
+    public bool? IsPublic { get; set; }
+    public bool? IsEnrolled { get; set; }
+    public bool? CreatedByExpert { get; set; }
     public int Page {  get; set; }
     public int EachPage { get; set; }
-    public GetMyLearningPathQuery(string userId, string? keyword, string? type, int page, int eachPage)
+
+    public GetMyLearningPathQuery(string userId, string? keyWord, bool? isPublic, bool? isEnrolled, 
+        bool? createdByExpert, int page, int eachPage)
     {
         UserId = userId;
+        KeyWord = keyWord;
+        IsPublic = isPublic;
+        IsEnrolled = isEnrolled;
+        CreatedByExpert = createdByExpert;
         Page = page;
         EachPage = eachPage;
-        Type = type;
-        KeyWord = keyword;
     }
 }

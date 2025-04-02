@@ -34,7 +34,8 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         return await result.ToListAsync();
     }
 
-    public Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, string? type, int page, int eachPage)
+    public Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, bool? isPulic, bool? isEnrolled,
+        bool? CreatedByExpert, int page, int eachPage)
     {
         var result = _context.LearningPaths.Include(l => l.User).Include(l => l.LearningPathCourses)
             .Where(l => l.UserId.Equals(UserId));
@@ -46,24 +47,25 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
                      select r;
         }
 
-        if (type == "public")
+        if (isPulic.HasValue)
         {
             result = from r in result
-                     where r.IsPublic == true
+                     where r.IsPublic == isPulic
                      select r;
         }
-        if(type == "private")
+        if(isEnrolled.HasValue)
         {
             result = from r in result
-                     where r.IsPublic == false
+                     where r.IsEnrolled == isEnrolled
                      select r;
         }
-        if(type == "enrolled")
+        if(CreatedByExpert.HasValue)
         {
             result = from r in result
-                     where r.IsEnrolled == true
+                     where r.CreatedByExpert == CreatedByExpert
                      select r;
         }
+        
         var response = result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
@@ -88,4 +90,9 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         var result = await _context.LearningPaths.FindAsync(learningPathId);
         return UserId == result!.UserId ? true : false;
     }
+
+	public async Task<LearningPath> GetMySpecificLearningPath(string userId, string learningId)
+	{
+        return await _context.LearningPaths.Include(x => x.LearningPathCourses).FirstOrDefaultAsync(x => x.UserId == userId && x.Id == learningId);
+	}
 }

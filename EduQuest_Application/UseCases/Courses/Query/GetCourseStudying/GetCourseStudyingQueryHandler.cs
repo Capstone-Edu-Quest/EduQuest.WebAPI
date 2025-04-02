@@ -4,11 +4,6 @@ using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStudying
@@ -50,6 +45,16 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStudying
 					course.TotalReview = (int)courseSta.TotalReview;
 					course.Rating = (int)courseSta.Rating;
 					course.TotalTime = (int)courseSta.TotalTime;
+				}
+
+				var courseLeanrer = await _learnerRepository.GetByUserIdAndCourseId(request.UserId, course.Id);
+				if (courseLeanrer != null)
+				{
+					course.ProgressPercentage = courseLeanrer.ProgressPercentage;
+				}
+				else
+				{
+					course.ProgressPercentage = null;
 				}
 			}
 			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, listCourseResponse, "name", "course studying");

@@ -35,52 +35,57 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 		public async Task<APIResponse> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
 		{
 			var response = new APIResponse();
+			var newCart = new Cart();
 			var cart = await _cartRepository.GetByUserId(request.UserId);
 
-			if (cart != null)
+			if (cart != null && cart.CartItems.Any())
 			{
 				await _cartItemRepository.DeleteCartItemByCartId(cart.Id);
 				await _cartRepository.Delete(cart.Id);
+
+				newCart = new Cart
+				{
+					Id = Guid.NewGuid().ToString(),
+					UserId = request.UserId,
+					Total = 0
+				};
+
+				await _cartRepository.Add(newCart);
 				await _unitOfWork.SaveChangesAsync();
 			} 
-
-
-			var newCart = new Cart
-			{
-				Id = Guid.NewGuid().ToString(),
-				UserId = request.UserId,
-				Total = 0
-			};
-
-			await _cartRepository.Add(newCart);
-			await _unitOfWork.SaveChangesAsync();
-
 
 			var cartItems = new List<CartItem>();
 			var existedCart = await _cartRepository.GetByUserId(request.UserId);
 
-
-			foreach (var item in request.CourseIds)
+			if(request.CourseIds == null || !request.CourseIds.Any())
 			{
-				var course = await _courseRepository.GetById(item);
-				var cartItem = new CartItem
+				existedCart.CartItems = new List<CartItem>();
+				await _cartRepository.Update(existedCart);
+			} else
+			{
+				foreach (var item in request.CourseIds)
 				{
-					Id = Guid.NewGuid().ToString(),
-					CartId = existedCart!.Id,
-					CourseId = item,
-					Price = (decimal)course.Price,
-				};
+					var course = await _courseRepository.GetById(item);
+					var cartItem = new CartItem
+					{
+						Id = Guid.NewGuid().ToString(),
+						CartId = existedCart!.Id,
+						CourseId = item,
+						Price = (decimal)course.Price,
+					};
 
-				existedCart.Total += cartItem.Price;
-				cartItems.Add(cartItem);
+					existedCart.Total += cartItem.Price;
+					cartItems.Add(cartItem);
+				}
+
+				await _cartItemRepository.CreateRangeAsync(cartItems);
 			}
-
-			await _cartItemRepository.CreateRangeAsync(cartItems);
+			
 			if (await _unitOfWork.SaveChangesAsync() > 0)
 			{
 				return GeneralHelper.CreateSuccessResponse(
 					HttpStatusCode.OK,
-					MessageCommon.CreateSuccesfully,
+					MessageCommon.UpdateSuccesfully,
 					cartItems,
 					"name",
 					"Add to cart"
@@ -89,7 +94,7 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 
 			return GeneralHelper.CreateErrorResponse(
 				HttpStatusCode.BadRequest,
-				MessageCommon.CreateFailed,
+				MessageCommon.UpdateFailed,
 				"Saving Failed",
 				"name",
 				"Add to cart"

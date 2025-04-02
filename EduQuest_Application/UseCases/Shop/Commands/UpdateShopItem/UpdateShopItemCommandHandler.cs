@@ -20,11 +20,11 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
 
     public async Task<APIResponse> Handle(UpdateShopItemCommand request, CancellationToken cancellationToken)
     {
-        var existingShopItem = await _shopItemRepository.GetItemByName(request.Id);
+        var existingShopItem = await _shopItemRepository.GetItemByName(request.Name);
 
         if (existingShopItem == null)
         {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", request.Id);
+            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", request.Name);
         }
 
         // Cập nhật giá của món hàng
@@ -34,6 +34,6 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
         await _shopItemRepository.Update(existingShopItem);
         await _unitOfWork.SaveChangesAsync();
 
-        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", request.Id);
+        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", request.Name);
     }
 }
