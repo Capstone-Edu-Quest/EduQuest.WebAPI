@@ -35,26 +35,24 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 		public async Task<APIResponse> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
 		{
 			var response = new APIResponse();
+			var newCart = new Cart();
 			var cart = await _cartRepository.GetByUserId(request.UserId);
 
-			if (cart != null)
+			if (cart != null && cart.CartItems.Any())
 			{
 				await _cartItemRepository.DeleteCartItemByCartId(cart.Id);
 				await _cartRepository.Delete(cart.Id);
+
+				newCart = new Cart
+				{
+					Id = Guid.NewGuid().ToString(),
+					UserId = request.UserId,
+					Total = 0
+				};
+
+				await _cartRepository.Add(newCart);
 				await _unitOfWork.SaveChangesAsync();
 			} 
-
-
-			var newCart = new Cart
-			{
-				Id = Guid.NewGuid().ToString(),
-				UserId = request.UserId,
-				Total = 0
-			};
-
-			await _cartRepository.Add(newCart);
-			await _unitOfWork.SaveChangesAsync();
-
 
 			var cartItems = new List<CartItem>();
 			var existedCart = await _cartRepository.GetByUserId(request.UserId);

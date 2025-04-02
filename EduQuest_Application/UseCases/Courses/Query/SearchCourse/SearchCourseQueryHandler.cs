@@ -18,18 +18,16 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 	{
 		private readonly ICourseRepository _courseRepository;
 		private readonly ICourseStatisticRepository _courseStatisticRepository;
+		private readonly ILearnerRepository _learnerRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IMapper _mapper;
 		private readonly IRedisCaching _redisCaching;
 
-		public SearchCourseQueryHandler(ICourseRepository courseRepository, 
-			ICourseStatisticRepository courseStatisticRepository, 
-			IUserRepository userRepository, 
-			IMapper mapper, 
-			IRedisCaching redisCaching)
+		public SearchCourseQueryHandler(ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, ILearnerRepository learnerRepository, IUserRepository userRepository, IMapper mapper, IRedisCaching redisCaching)
 		{
 			_courseRepository = courseRepository;
 			_courseStatisticRepository = courseStatisticRepository;
+			_learnerRepository = learnerRepository;
 			_userRepository = userRepository;
 			_mapper = mapper;
 			_redisCaching = redisCaching;
@@ -133,6 +131,16 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 					course.TotalReview = (int)courseSta.TotalReview;
 					course.Rating = (int)courseSta.Rating;
 					course.TotalTime = (int)courseSta.TotalTime;
+				}
+
+				var courseLeanrer = await _learnerRepository.GetByUserIdAndCourseId(request.UserId, course.Id);
+				if (courseLeanrer != null)
+				{
+					course.ProgressPercentage = courseLeanrer.ProgressPercentage;
+				}
+				else
+				{
+					course.ProgressPercentage = null;
 				}
 			}
 

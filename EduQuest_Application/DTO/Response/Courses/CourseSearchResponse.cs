@@ -21,5 +21,6 @@ namespace EduQuest_Application.DTO.Response.Courses
         public int TotalLesson { get; set; }
         public int TotalTime { get; set; }
         public int TotalReview { get; set; }
+        public decimal? ProgressPercentage { get; set; }
     }
 }
