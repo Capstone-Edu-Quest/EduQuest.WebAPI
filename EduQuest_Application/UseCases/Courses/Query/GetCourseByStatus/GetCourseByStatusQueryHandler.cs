@@ -43,7 +43,8 @@ public class GetCourseByStatusQueryHandler : IRequestHandler<GetCourseByStatusQu
                 course.Rating = (int)courseSta.Rating;
                 course.TotalTime = (int)courseSta.TotalTime;
             }
-        }
+
+		}
 
         int totalItem = listCourseResponse.Count;
         var listPaged = listCourseResponse.Skip((request.PageNo - 1) * request.EachPage)

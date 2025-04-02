@@ -60,6 +60,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 					course.Rating = (int)courseSta.Rating;
 					course.TotalTime = (int)courseSta.TotalTime;
 				}
+				course.ProgressPercentage = null;
 			}
 			cartResponse.Courses = listCourseResponse;
 			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, cartResponse, "name", "cart");
