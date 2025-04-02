@@ -71,8 +71,8 @@ public class LearningPathController : Controller
     }
 
 
-    [HttpGet("my/public")]
-    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery, Required] string userId, CancellationToken token = default)
+    [HttpGet("public")]
+    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery] string? userId, CancellationToken token = default)
     {
         var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
