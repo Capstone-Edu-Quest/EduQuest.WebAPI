@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Achievements.Commands.UpdateAchievement;
+using EduQuest_Application.UseCases.Quests.Command.ClaimReward;
 using EduQuest_Application.UseCases.Quests.Command.CreateQuest;
 using EduQuest_Application.UseCases.Quests.Queries.GetAllSystemQuests;
 using EduQuest_Application.UseCases.Quests.Queries.GetAllUserQuests;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Threading;
 
 namespace EduQuest_API.Controllers
 {
@@ -26,15 +28,15 @@ namespace EduQuest_API.Controllers
 
         }
 
-        [Authorize(Roles ="Staff, Admin")]
+        //[Authorize(Roles ="Staff, Admin")]
         [HttpPost("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddQuest([FromBody] CreateQuestRequest quest,
-            //[FromQuery] string userId,
+            [FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
+            //string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new CreateQuestCommand(userId, quest), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
@@ -101,6 +103,17 @@ namespace EduQuest_API.Controllers
             Response.Headers.Add("X-Total-Page", list.TotalPages.ToString());
             Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());
             return Ok(result);
+        }
+
+        [Authorize(Roles = "Learner")]
+        [HttpPost("user")]
+        public async Task<IActionResult> ClaimReward([FromQuery] string userQuestId, 
+            //[FromQuery] string userId,
+            CancellationToken token = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new ClaimRewardCommand(userQuestId, userId), token);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }
 }

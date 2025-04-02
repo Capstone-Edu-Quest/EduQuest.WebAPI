@@ -30,13 +30,17 @@ public class LearningPathController : Controller
 
     
     [Authorize]
-    [HttpGet("me")]
-    public async Task<IActionResult> GetAllUserLearningPath([FromQuery, AllowNull] string keyWord, [FromQuery, AllowNull] string type,
+    [HttpGet("my")]
+    public async Task<IActionResult> GetAllUserLearningPath(
+        [FromQuery, AllowNull] string? keyWord, 
+        [FromQuery, AllowNull] bool? isPublic,
+        [FromQuery, AllowNull] bool? isEnrolled,
+        [FromQuery, AllowNull] bool? createdByExpert,
         //[FromQuery] string UserId,
         [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new GetMyLearningPathQuery(userId, keyWord, type, pageNo, eachPage), cancellationToken);
+        var result = await _mediator.Send(new GetMyLearningPathQuery(userId, keyWord, isPublic, isEnrolled, createdByExpert, pageNo, eachPage), cancellationToken);
         if((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
         {
             return BadRequest(result);
@@ -67,7 +71,7 @@ public class LearningPathController : Controller
     }
 
 
-    [HttpGet]
+    [HttpGet("my/public")]
     public async Task<IActionResult> GetMyPublicLearningPath([FromQuery, Required] string userId, CancellationToken token = default)
     {
         var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId), token);

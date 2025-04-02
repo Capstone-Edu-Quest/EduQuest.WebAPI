@@ -26,7 +26,9 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
     {
         try
         {
-            var result = await _learningPathRepository.GetMyLearningPaths(request.UserId,request.KeyWord, request.Type, request.Page, request.EachPage);
+            var result = await _learningPathRepository.GetMyLearningPaths(request.UserId, request.KeyWord, request.IsPublic, 
+                request.IsEnrolled, request.CreatedByExpert, request.Page, request.EachPage);
+
             var temp = result.Items.ToList();
             List<MyLearningPathResponse> responseDto = new List<MyLearningPathResponse>();
             foreach (var item in temp)

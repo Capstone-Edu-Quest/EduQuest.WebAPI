@@ -140,6 +140,8 @@ namespace EduQuest_Domain.Constants
 			public const string CannotUpdateCoupon = "START_TIME_PASSED_ERROR";
 
 			public const string LevelExist = "LEVEL_EXISTED";
+
+			public const string QuestAlreadyClaimed = "QUEST_ALREADY_CLAIMED";
         }
 		#endregion
 

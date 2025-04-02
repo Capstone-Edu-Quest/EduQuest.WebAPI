@@ -6,7 +6,8 @@ namespace EduQuest_Domain.Repository;
 public interface ILearningPathRepository: IGenericRepository<LearningPath>
 {
     Task<List<LearningPath>> GetMyLearningPaths(string UserId);
-    Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, string? type, int page, int eachPage);
+    Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, bool? isPulic, bool? isEnrolled,
+        bool? CreatedByExpert, int page, int eachPage);
     Task<List<LearningPath>> GetMyPublicLearningPaths(string UserId);
     Task<LearningPath?> GetLearningPathDetail(string LearningPathId);
     Task<List<Course>> GetLearningPathCourse(string learningPathId);
