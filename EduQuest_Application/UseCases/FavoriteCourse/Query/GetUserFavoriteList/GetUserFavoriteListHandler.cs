@@ -22,14 +22,16 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
 {
     private readonly IFavoriteListRepository _favoriteListRepository;
     private readonly IMapper _mapper;
+	private readonly IUserRepository _userRepository;
 
-    public GetUserFavoriteListHandler(IFavoriteListRepository favoriteListRepository, IMapper mapper)
-    {
-        _favoriteListRepository = favoriteListRepository;
-        _mapper = mapper;
-    }
+	public GetUserFavoriteListHandler(IFavoriteListRepository favoriteListRepository, IMapper mapper, IUserRepository userRepository)
+	{
+		_favoriteListRepository = favoriteListRepository;
+		_mapper = mapper;
+		_userRepository = userRepository;
+	}
 
-    public async Task<APIResponse> Handle(GetUserFavoriteListQuery request, CancellationToken cancellationToken)
+	public async Task<APIResponse> Handle(GetUserFavoriteListQuery request, CancellationToken cancellationToken)
     {
         var listCourses = await _favoriteListRepository.GetFavoriteListByUserId(request.UserId);
 
@@ -57,15 +59,17 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
                    .Take(request.EachPage);
         #endregion
         List<Course> courses = temp.ToList();
-        List<FavoriteCourseResponse> responseDto = new List<FavoriteCourseResponse>();
+        List<OverviewCourseResponse> responseDto = new List<OverviewCourseResponse>();
         foreach (var item in courses)
         {
             //CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
-            FavoriteCourseResponse myFavCourseResponse = _mapper.Map<FavoriteCourseResponse>(item);
+            OverviewCourseResponse myFavCourseResponse = _mapper.Map<OverviewCourseResponse>(item);
 			myFavCourseResponse.RequirementList = ContentHelper.SplitString(item.Requirement, '.');
+			var user = await _userRepository.GetById(item.CreatedBy);
+			myFavCourseResponse.Author = user!.Username!;
 			responseDto.Add(myFavCourseResponse);
         }
-        PagedList<FavoriteCourseResponse> responses = new PagedList<FavoriteCourseResponse>(responseDto, responseDto.Count, request.Page,request.EachPage);
+        PagedList<OverviewCourseResponse> responses = new PagedList<OverviewCourseResponse>(responseDto, responseDto.Count, request.Page,request.EachPage);
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, responses,"name", "favorite courses");
     }
 }

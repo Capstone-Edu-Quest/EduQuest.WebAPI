@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Boosters;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 
@@ -11,6 +12,8 @@ public class UserStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
     public int? LongestStreak { get; set; }
     public DateTime? LastLearningDay { get; set; }
     public int? TotalCompletedCourses { get; set; }
+    public int? Rank { get; set; } = 0;
+    public BoosterResponseDto Booster { get; set; }
     public int? Gold { get; set; }
     public int? Exp { get; set; }
     public int? MaxExpLevel { get; set; }
@@ -25,6 +28,17 @@ public class UserStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
     {
         profile.CreateMap<UserMeta, UserStatisticDto>()
             .ForMember(dest => dest.MaxExpLevel, opt => opt.MapFrom<MaxExpLevelResolver>())
+            .ForMember(dest => dest.Booster, opt => opt.MapFrom(src =>
+            src.User.Boosters
+                .Where(b => b.DueDate >= DateTime.UtcNow) 
+                .OrderByDescending(b => b.BoostValue)
+                .Select(b => new BoosterResponseDto
+                {
+                    BoostExp = b.BoostValue,
+                    BoostGold = b.BoostValue 
+                })
+                .FirstOrDefault() ?? new BoosterResponseDto { BoostExp = 0.0, BoostGold = 0.0 } 
+        ))
             .ForAllMembers(opt => opt.Condition((src, dest, sourceMember) => sourceMember != null));
             
     }

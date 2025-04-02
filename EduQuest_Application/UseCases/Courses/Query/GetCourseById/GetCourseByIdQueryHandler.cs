@@ -7,6 +7,7 @@ using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 {
@@ -31,10 +32,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 		public async Task<APIResponse> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
 		{
+			var apiResponse = new APIResponse();
 			var course = await _courseRepository.GetCourseById(request.CourseId);
 			var courseWithLearner = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
 			var courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
-
 
 			var courseResponse = _mapper.Map<CourseDetailResponse>(course);
 			courseResponse.RequirementList = ContentHelper.SplitString(course.Requirement, '.');
@@ -42,6 +43,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.TotalReview = course.CourseStatistic.TotalReview;
 			courseResponse.Rating = course.CourseStatistic.Rating;
 			courseResponse.TotalTime = course.CourseStatistic.TotalTime;
+			courseResponse.LastUpdated = course.UpdatedAt;
 			if (courseLearner != null)
 			{
 				courseResponse.Progress = courseLearner!.ProgressPercentage;
@@ -128,12 +130,8 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			//Chưa có data fb
 			//Hoàn tiền
 
-			return new APIResponse
-			{
-				IsError = false,
-				Payload = courseResponse,
-				Errors = null,
-			};
+
+			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, courseResponse, "name", $"course ID {request.CourseId}");
 		}
 	}
 }

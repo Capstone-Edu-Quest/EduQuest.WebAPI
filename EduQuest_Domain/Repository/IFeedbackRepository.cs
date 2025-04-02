@@ -1,4 +1,5 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.CourseStatistics;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository.Generic;
 
@@ -8,4 +9,5 @@ public interface IFeedbackRepository : IGenericRepository<Feedback>
 {
     Task<PagedList<Feedback>> GetByCourseId(string courseId, int pageNo, int pageSize, int? rating, string? feedback);
     Task<bool> IsOnwer(string feedbackId, string UserId);
+    Task<List<CourseRatingOverTime>> GetCourseRatingOverTimeAsync(string courseId);
 }

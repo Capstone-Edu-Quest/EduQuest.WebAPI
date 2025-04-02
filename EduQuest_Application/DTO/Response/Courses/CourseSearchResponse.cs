@@ -17,10 +17,10 @@ namespace EduQuest_Application.DTO.Response.Courses
         public string Author { get; set; }
         public string CreatedBy { get; set; }
         public decimal Price { get; set; }
-        public decimal? DiscountPrice { get; set; }
         public double? Rating { get; set; }
         public int TotalLesson { get; set; }
         public int TotalTime { get; set; }
         public int TotalReview { get; set; }
+        public decimal? ProgressPercentage { get; set; }
     }
 }

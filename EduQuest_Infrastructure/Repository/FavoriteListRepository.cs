@@ -24,6 +24,13 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.SaveChangesAsync() > 0;
 		}
 
+		public async Task<int> GetCountByCourseId(string courseId)
+		{
+			return await _context.FavoriteLists
+						.Where(x => x.Courses.Any(c => c.Id == courseId))
+						.CountAsync();
+		}
+
 		public async Task<FavoriteList> GetFavoriteListByUserId(string userId)
 		{
 			return await _context.FavoriteLists

@@ -37,7 +37,7 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, APIResp
             return new APIResponse
             {
                 IsError = false,
-                Payload = null,
+                Payload = tagEntity,
                 Message = new MessageResponse
                 {
                     content = MessageCommon.CreateSuccesfully,
@@ -55,7 +55,7 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, APIResp
             Payload = null,
             Message = new MessageResponse
             {
-                content = MessageCommon.CreateFailed,
+                content = MessageCommon.AlreadyExists,
                 values = new
                 {
                     name = "tag"
