@@ -9,4 +9,6 @@ public interface ILearnerRepository : IGenericRepository<CourseLearner>
     Task<CourseLearner?> GetByUserIdAndCourseId(string userId, string courseId);
     Task<bool> RegisteredCourse(string courseId, string userId);
     Task<List<CourseEnrollOverTime>> GetCourseEnrollOverTimeAsync(string courseId);
+    Task<List<CourseLearner>> GetCoursesByUserId(string userId);
+
 }
