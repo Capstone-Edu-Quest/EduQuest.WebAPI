@@ -7,4 +7,5 @@ public interface IShopItemRepository : IGenericRepository<ShopItem>
 {
     Task<IEnumerable<ShopItem>> GetAllItemAsync();
     Task<ShopItem?> GetItemByName(string name);
+    Task<IEnumerable<ShopItem?>> GetItemWithFilter(string name);
 }

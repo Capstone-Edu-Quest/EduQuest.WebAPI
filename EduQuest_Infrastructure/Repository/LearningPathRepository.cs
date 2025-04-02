@@ -96,4 +96,9 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         var result = await _context.LearningPaths.FindAsync(learningPathId);
         return UserId == result!.UserId ? true : false;
     }
+
+	public async Task<LearningPath> GetMySpecificLearningPath(string userId, string learningId)
+	{
+        return await _context.LearningPaths.Include(x => x.LearningPathCourses).FirstOrDefaultAsync(x => x.UserId == userId && x.Id == learningId);
+	}
 }
