@@ -5,7 +5,6 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -39,6 +38,11 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 					};
 
 		return await query.ToListAsync();
+	}
+
+	public async Task<List<CourseLearner>> GetCoursesByUserId(string userId)
+	{
+		return await _context.Learners.Where(x => x.UserId == userId && x.ProgressPercentage != null && x.TotalTime >= 0).ToListAsync();
 	}
 
 	public async Task<bool> RegisteredCourse(string courseId, string userId)

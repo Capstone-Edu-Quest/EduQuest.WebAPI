@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Carts;
 using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -37,7 +38,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 
 		public async Task<APIResponse> Handle(GetCartByUserIdQuery request, CancellationToken cancellationToken)
 		{
-
+			var apiResponse = new APIResponse();
 			var cart = await _cartRepository.GetByUserId(request.UserId);
 
 			var cartResponse = _mapper.Map<MyCartReponse>(cart);
@@ -61,17 +62,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 				}
 			}
 			cartResponse.Courses = listCourseResponse;
-			return new APIResponse
-			{
-				IsError = false,
-				Payload = cartResponse,
-				Errors = null,
-				Message = new MessageResponse
-				{
-					content = MessageCommon.GetSuccesfully,
-					values = new Dictionary<string, string> { { "name", "cart" } }
-				}
-			};
+			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, cartResponse, "name", "cart");
 
 		}
 	}
