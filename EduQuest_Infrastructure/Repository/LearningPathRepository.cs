@@ -70,11 +70,17 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         return response;
     }
 
-    public async Task<List<LearningPath>> GetMyPublicLearningPaths(string UserId)
+    public async Task<List<LearningPath>> GetMyPublicLearningPaths(string? UserId)
     {
-        var result = await _context.LearningPaths.Include(l => l.User).Include(l => l.LearningPathCourses)
-            .Where(l => l.UserId.Equals(UserId) && l.IsPublic == true).ToListAsync();
-        return result;
+        var result = _context.LearningPaths.Include(l => l.User).Include(l => l.LearningPathCourses)
+            .Where(l => l.IsPublic == true);
+        if (!string.IsNullOrEmpty(UserId))
+        {
+            result = from r in result
+                     where r.UserId == UserId
+                     select r;
+        }
+        return await result.ToListAsync();
     }
     public async Task<List<Course>> GetLearningPathCourse(string learningPathId)
     {
