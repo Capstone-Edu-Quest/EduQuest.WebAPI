@@ -49,4 +49,22 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
     {
         return await _context.Learners.AnyAsync(l => l.UserId == userId && l.CourseId == courseId);
     }
+
+
+    public async Task<IList<CourseLearner>> GetRecentCourseByUserId(string userId)
+    {
+        return await _context.Learners
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.TotalTime) 
+            .Take(5)  
+            .ToListAsync();
+    }
+
+
+    public async Task<int> CountNumberOfCourseByUserId(string userId)
+    {
+        return await _context.Learners.AsNoTracking().Where(a => a.UserId.Equals(userId)).CountAsync();
+    }
+
 }
