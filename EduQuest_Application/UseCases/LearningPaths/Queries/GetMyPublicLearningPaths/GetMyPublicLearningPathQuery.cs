@@ -7,9 +7,10 @@ namespace EduQuest_Application.UseCases.LearningPaths.Queries.GetMyPublicLearnin
 public class GetMyPublicLearningPathQuery: IRequest<APIResponse>
 {
     public string? UserId { get; set; }
-
-    public GetMyPublicLearningPathQuery(string? userId)
+    public string? KeyWord { get; set; }
+    public GetMyPublicLearningPathQuery(string? userId, string? keyWord)
     {
         UserId = userId;
+        KeyWord = keyWord;
     }
 }

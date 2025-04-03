@@ -72,9 +72,11 @@ public class LearningPathController : Controller
 
 
     [HttpGet("public")]
-    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery] string? userId, CancellationToken token = default)
+    public async Task<IActionResult> GetMyPublicLearningPath([FromQuery, AllowNull] string? userId,
+        [FromQuery, AllowNull] string? keyWord,
+        CancellationToken token = default)
     {
-        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId), token);
+        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId, keyWord), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
@@ -95,13 +97,13 @@ public class LearningPathController : Controller
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPut]
     public async Task<IActionResult> UpdateLearningPath([FromQuery, Required] string learningPathId, 
-        //[FromQuery] string UserId,
+        [FromQuery] string userId,
         [FromBody] UpdateLearningPathRequest request, CancellationToken token = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
+        //string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new UpdateLearningPathCommand(learningPathId, userId, request), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
