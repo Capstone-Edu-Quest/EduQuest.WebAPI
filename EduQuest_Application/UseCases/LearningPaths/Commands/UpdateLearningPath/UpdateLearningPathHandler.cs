@@ -81,6 +81,8 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 if (updatecourse.Action == "add")
                 {
                     updatecourse.CourseOrder = courses.Count;
+                    bool isExist = courses.Any(c => c.CourseId == updatecourse.CourseId);
+                    if (isExist) continue;
                     LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseOrder == updatecourse.CourseOrder)!;
                     if (temp != null) updatecourse.CourseOrder += Flag;
                     learingPath.LearningPathCourses.Add(_mapper.Map<LearningPathCourse>(updatecourse));
@@ -90,7 +92,8 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 }
                 if (updatecourse.Action == "delete")
                 {
-                    LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
+                    LearningPathCourse? temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId);
+                    if(temp == null) continue;
                     learingPath.LearningPathCourses.Remove(temp);
                     var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
                     learingPath.TotalTimes -= cs.TotalTime!.Value;

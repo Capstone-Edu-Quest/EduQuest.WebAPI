@@ -25,7 +25,7 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
     {
         try
         {
-            var result = await _learningPathRepository.GetMyPublicLearningPaths(request.UserId);
+            var result = await _learningPathRepository.GetMyPublicLearningPaths(request.UserId, request.KeyWord);
             List<MyPublicLearningPathResponse> responseDto = new List<MyPublicLearningPathResponse>();
             foreach (var item in result)
             {
@@ -37,17 +37,6 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
             }
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.GetSuccesfully,
                 responseDto, Key, value);
-            return new APIResponse
-            {
-                IsError = false,
-                Payload = responseDto,
-                Errors = null,
-                Message = new MessageResponse
-                {
-                    content = MessageCommon.GetSuccesfully,
-                    values = new Dictionary<string, string> { { "name", "learning path" } }
-                }
-            };
         }catch (Exception ex)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, ex.Message, Key, value);
