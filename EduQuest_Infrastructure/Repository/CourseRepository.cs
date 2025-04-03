@@ -113,5 +113,6 @@ namespace EduQuest_Infrastructure.Repository
 
 			return totalCount;
 		}
+
 	}
 }
