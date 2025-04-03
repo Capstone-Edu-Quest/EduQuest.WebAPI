@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.DTO.Request.Courses;
 using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Courses.Command.AssignCourseToExpert;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
 using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries;
@@ -37,16 +38,16 @@ namespace EduQuest_API.Controllers
             return Ok(result);
         }
 
-        //[HttpPut("assign")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public async Task<IActionResult> ApprovePendingCourse([FromBody] AssignToCommand command, CancellationToken cancellationToken = default)
-        //{
-        //    var result = await _mediator.Send(command, cancellationToken);
-        //    return Ok(result);
-        //}
+		[HttpPut("assign")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> ApprovePendingCourse([FromBody] AssignExpertCommand command, CancellationToken cancellationToken = default)
+		{
+			var result = await _mediator.Send(command, cancellationToken);
+			return Ok(result);
+		}
 
-        [HttpGet("status")]
+		[HttpGet("status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCourseByStatus([FromQuery] GetCourseByStatusQuery query, CancellationToken cancellationToken = default)
