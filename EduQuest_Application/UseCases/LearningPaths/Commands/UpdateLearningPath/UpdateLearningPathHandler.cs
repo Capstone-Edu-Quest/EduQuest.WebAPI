@@ -66,9 +66,12 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             }
             #endregion
 
-            learingPath.Name = request.LearningPathRequest.Name;
-            learingPath.Description = request.LearningPathRequest.Description;
-            learingPath.IsPublic = request.LearningPathRequest.IsPublic;
+            learingPath.Name = !string.IsNullOrEmpty(request.LearningPathRequest.Name) ? request.LearningPathRequest.Name : learingPath.Name;
+            learingPath.Description = !string.IsNullOrEmpty(request.LearningPathRequest.Description) ? request.LearningPathRequest.Description : learingPath.Description;
+            if (request.LearningPathRequest.IsPublic.HasValue)
+            {
+                learingPath.IsPublic = request.LearningPathRequest.IsPublic.Value;
+            }
             learingPath.UpdatedAt = DateTime.Now.ToUniversalTime();
             learingPath.UpdatedBy = request.UserId;
 
