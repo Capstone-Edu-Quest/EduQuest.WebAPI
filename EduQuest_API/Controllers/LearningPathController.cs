@@ -4,6 +4,7 @@ using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.LearningPaths.Commands.CreateLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Commands.DeleteLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Commands.DuplicateLearningPath;
+using EduQuest_Application.UseCases.LearningPaths.Commands.EnrollLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetLearningPathDetail;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
@@ -119,5 +120,14 @@ public class LearningPathController : Controller
         var result = await _mediator.Send(new DeleteLearningPathCommand(learningPathId, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
-
+    [Authorize]
+    [HttpPost("enroll")]
+    public async Task<IActionResult> EnrollLearningpath([FromQuery, Required] string learningPathId,
+                                                        //[FromQuery] string userId,
+                                                        CancellationToken token = default)
+    {
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new EnrollLearningPathCommand(learningPathId, userId), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
 }
