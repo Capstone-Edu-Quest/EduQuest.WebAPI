@@ -13,4 +13,6 @@ public interface ILearningPathRepository: IGenericRepository<LearningPath>
     Task<List<Course>> GetLearningPathCourse(string learningPathId);
     Task<bool> IsOwner (string UserId, string learningPathId);
     Task<LearningPath> GetMySpecificLearningPath(string userId, string learningId);
+
+    Task<LearningPath?> EnrollLearningPath(string  learningPathId);
 }

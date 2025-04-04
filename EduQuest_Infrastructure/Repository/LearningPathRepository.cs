@@ -107,4 +107,21 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
 	{
         return await _context.LearningPaths.Include(x => x.LearningPathCourses).FirstOrDefaultAsync(x => x.UserId == userId && x.Id == learningId);
 	}
+
+    public async Task<LearningPath?> EnrollLearningPath(string learningPathId)
+    {
+        var learningPath = await _context.LearningPaths.Where(l => l.Id == learningPathId).FirstOrDefaultAsync();
+        if(learningPath != null)
+        {
+            learningPath.IsEnrolled = true;
+
+            await _context.LearningPaths
+                .Where(l => l.Id != learningPathId)
+                .ExecuteUpdateAsync(g => g.SetProperty(l => l.IsEnrolled, false));
+
+            await _context.SaveChangesAsync();
+            return learningPath;
+        }
+        return null;
+    }
 }
