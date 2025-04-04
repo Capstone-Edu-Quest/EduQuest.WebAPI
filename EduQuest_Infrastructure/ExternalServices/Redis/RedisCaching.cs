@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace EduQuest_Infrastructure.ExternalServices.Redis;
 
@@ -144,6 +145,36 @@ public class RedisCaching : IRedisCaching
         foreach (var entry in hashEntries)
         {
             result[entry.Name!] = entry.Value!;
+        }
+
+        return result;
+    }
+
+
+    //Add or update member's score
+    public async Task AddToSortedSetAsync(string key, string member, int score)
+    {
+        await _database.SortedSetAddAsync(key, member, score);
+    }
+
+    //Get rank of a  member
+    public async Task<long?> GetSortSetRankAsync(string key, string member)
+    {
+        var rank = await _database.SortedSetRankAsync(key, member, Order.Descending);
+        return rank.HasValue ? rank.Value : 0;
+    }
+
+    //Get top member in leaderboard
+    public async Task<List<(string member, double score, long rank)>> GetTopSortedSetAsync(string key, int topN)
+    {
+        var result = new List<(string, double, long)>();
+
+        var entries = await _database.SortedSetRangeByRankWithScoresAsync(key, 0, topN - 1, Order.Descending);
+
+        for (int i = 0; i < entries.Length; i++)
+        {
+            var entry = entries[i];
+            result.Add((entry.Element.ToString(), entry.Score, i + 1));
         }
 
         return result;

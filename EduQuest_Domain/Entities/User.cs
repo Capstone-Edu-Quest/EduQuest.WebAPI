@@ -69,8 +69,6 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<LearningPath> LearningPaths { get; set; }
 		[JsonIgnore]
-		public virtual ICollection<Leaderboard> Leaderboards { get; set; }
-		[JsonIgnore]
 		public virtual ICollection<Booster> Boosters { get; set; }
 
 	}

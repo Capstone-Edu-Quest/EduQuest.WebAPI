@@ -3,6 +3,7 @@ using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
+using EduQuest_Application.UseCases.Users.Queries.GetLearnerProfile;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using MediatR;
@@ -40,6 +41,16 @@ public class UserController : BaseController
     {
         string email = User.GetEmailFromToken().ToString();
         var result = await _mediator.Send(new GetCurrentUserQuery(email), cancellationToken);
+        return Ok(result);
+    }
+
+
+    [HttpGet("learner-profile")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> GetMyProfile([FromQuery] GetLearnerProfileQuery request , CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
         return Ok(result);
     }
 

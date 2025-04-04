@@ -10,7 +10,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>, IEntityTypeConfiguration<Advertise>,
 		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<CartItem>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
-		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<Leaderboard>, IEntityTypeConfiguration<CourseLearner>,
+		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<CourseLearner>,
 		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<Material>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
 		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
@@ -234,13 +234,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region Leaderboard
-		public void Configure(EntityTypeBuilder<Leaderboard> builder)
-		{
-
-
-		}
-		#endregion
+	
 
 		#region Learner
 		public void Configure(EntityTypeBuilder<CourseLearner> builder)
