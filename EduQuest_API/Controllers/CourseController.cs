@@ -8,6 +8,7 @@ using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
+using EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
@@ -74,6 +75,16 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetCourseDetailForIntructorQuery(userId, courseId), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("courseStatisticOverview")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetCourseStatisticForInstructor(CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery(userId), cancellationToken);
 			return Ok(result);
 		}
 
