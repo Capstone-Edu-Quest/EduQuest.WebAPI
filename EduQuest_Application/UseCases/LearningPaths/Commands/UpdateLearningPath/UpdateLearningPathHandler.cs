@@ -85,7 +85,10 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 {
                     updatecourse.CourseOrder = courses.Count;
                     bool isExist = courses.Any(c => c.CourseId == updatecourse.CourseId);
-                    if (isExist) continue;
+                    if (isExist)
+                    {
+                        return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.AlreadyExists, Key, value);
+                    }
                     LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseOrder == updatecourse.CourseOrder)!;
                     if (temp != null) updatecourse.CourseOrder += Flag;
                     learingPath.LearningPathCourses.Add(_mapper.Map<LearningPathCourse>(updatecourse));
@@ -96,7 +99,10 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 if (updatecourse.Action == "delete")
                 {
                     LearningPathCourse? temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId);
-                    if(temp == null) continue;
+                    if(temp == null)
+                    {
+                        return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
+                    }
                     learingPath.LearningPathCourses.Remove(temp);
                     var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
                     learingPath.TotalTimes -= cs.TotalTime!.Value;
