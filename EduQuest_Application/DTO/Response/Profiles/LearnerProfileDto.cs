@@ -20,6 +20,8 @@ public class LearnerProfileDto : IMapFrom<User>, IMapTo<User>
     public string AvatarUrl { get; set; }
     public LeanerProfileStatisticDto statistics { get; set; }
     public List<string> equippedItems { get; set; }
+    public int? TotalDays {  get; set; }
+    public int? TotalMinutes {  get; set; }
     public List<LearningHeatmap> learningData { get; set; }
     //public List<LearningHeatmap> RecentAchieveMent { get; set; }
     public List<CourseProfileDto> RecentCourses { get; set; }
