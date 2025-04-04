@@ -123,5 +123,15 @@ namespace EduQuest_Domain.Enums
 		}
 		
 		#endregion
-	}
+
+        #region ReportType
+		public enum ReportStatus
+        {
+            // 1 = resolved, 2 = pending, 3 = rejected
+			Resolved = 1,
+			Pending = 2,
+			Rejected = 3
+        }
+        #endregion
+    }
 }

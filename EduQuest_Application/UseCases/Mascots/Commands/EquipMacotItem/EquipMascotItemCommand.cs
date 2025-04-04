@@ -1,7 +1,7 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Mascot.Commands.EquipMacotItem;
+namespace EduQuest_Application.UseCases.Mascots.Commands.EquipMacotItem;
 
 public class EquipMascotItemCommand : IRequest<APIResponse>
 {

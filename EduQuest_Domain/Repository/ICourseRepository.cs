@@ -1,4 +1,5 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.Generic;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,10 @@ namespace EduQuest_Domain.Repository
 		Task<IEnumerable<Course>> GetCourseByStatus(string status);
 		Task<Course> GetCourseByUserIdAndCourseId(string userId, string courseId);
 		Task<int> GetCourseCountByCourseIdAsync(string courseId);
+		Task<List<Course>> GetCoursesByInstructorIdAsync(string instructorId);
 
-	}
+        //admin dashboard
+        Task<AdminDashboardCourses> GetAdminDashBoardStatistic();
+
+    }
 }

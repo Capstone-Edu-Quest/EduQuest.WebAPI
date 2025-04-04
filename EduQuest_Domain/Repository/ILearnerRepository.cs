@@ -13,5 +13,7 @@ public interface ILearnerRepository : IGenericRepository<CourseLearner>
     Task<List<ChartInfo>> GetMyCoursesEnrollOverTimeAsync(List<string> courseIds);
     Task<List<LearnerStatus>> GetLearnerStatusAsync(List<string> courseIds);
     Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds);
+    Task<IList<CourseLearner>> GetRecentCourseByUserId(string userId);
+    Task<int> CountNumberOfCourseByUserId(string userId);
 
 }

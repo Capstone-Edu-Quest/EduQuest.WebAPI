@@ -180,7 +180,8 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IQuartzService, QuartzService>();
 			services.AddScoped<ILevelRepository, LevelRepository>();
 			services.AddScoped<IBoosterRepository, BoosterRepository>();
-
+			services.AddScoped<IStudyTimeRepository, StudyTimeRepository>();
+			services.AddScoped<IReportRepository, ReportRepository>();
 
             services.AddSingleton(provider =>
 			{

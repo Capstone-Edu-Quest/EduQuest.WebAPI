@@ -1,4 +1,6 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.DTO.Response.UserStatistics;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Coupons;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Extensions;
@@ -6,6 +8,7 @@ using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -104,4 +107,42 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
 	{
         return await _context.Coupon.FirstOrDefaultAsync(x => x.Code == code);
 	}
+    public async Task<CouponStatistics> CouponStatistics()
+    {
+        CouponStatistics result = new CouponStatistics();
+        var coupons = _context.Coupon.Include(c => c.UserCoupons).AsQueryable();
+        result.CreatedCoupons = await coupons.CountAsync();
+        result.ExpiredCoupons = await coupons.Where(c => c.ExpireTime <= DateTime.Now.ToUniversalTime()).CountAsync();
+        result.RedeemedTimes = await coupons.SumAsync(c => c.Usage);
+        result.GraphData = await CreateGraphDataCoupon(coupons);
+        
+        return result;
+    }
+    private async Task<List<CouponGraph>> CreateGraphDataCoupon(IQueryable<Coupon> coupons)
+    {
+        DateTime dateTemp = DateTime.Now;
+        DateTime end = new DateTime(dateTemp.Year, dateTemp.Month + 1, 1);
+        DateTime start = end.AddMonths(-7);
+        var coupon = await coupons
+            .Where(u => u.CreatedAt >= start.ToUniversalTime() && u.CreatedAt <= end.ToUniversalTime())
+            .ToListAsync();
+
+        //Month Group
+        var result = Enumerable.Range(0, 6)
+            .Select(i => new CouponGraph
+            {
+                Date = start.AddMonths(i).ToString("MMM yyyy"),
+                
+                NewCoupons = coupon.Count(c => c.CreatedAt.Value.Year == start.AddMonths(i).Year && c.CreatedAt.Value.Month == start.AddMonths(i).Month),
+                
+                ExpiredCoupons = coupon.Count(c => c.CreatedAt.Value.Year == start.AddMonths(i).Year && c.CreatedAt.Value.Month == start.AddMonths(i).Month 
+                && c.ExpireTime.Value.Year == start.AddMonths(i).Year && c.ExpireTime.Value.Month == start.AddMonths(i).Month),
+                
+                RedeemTimes = coupon.Where(c => c.CreatedAt.Value.Year == start.AddMonths(i).Year && c.CreatedAt.Value.Month == start.AddMonths(i).Month)
+                .Sum(c => c.UserCoupons.Sum(uc => uc.AllowUsage) - c.UserCoupons.Sum(uc => uc.RemainUsage))
+            })
+            .ToList();
+
+        return result;
+    }
 }

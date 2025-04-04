@@ -1470,9 +1470,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("StudyTimes")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("StudyTimes")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
