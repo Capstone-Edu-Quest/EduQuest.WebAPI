@@ -11,15 +11,13 @@ namespace EduQuest_API.Controllers;
 
 [Route("api/webStatistic")]
 [ApiController]
-//[Authorize(Roles ="Admin")]
+[Authorize(Roles ="Admin")]
 public class WebStatisticController : ControllerBase
 {
     private ISender _mediator;
-    private ICouponRepository _couponRepository;
-    public WebStatisticController(ISender mediator, ICouponRepository couponRepository)
+    public WebStatisticController(ISender mediator)
     {
         _mediator = mediator;
-        _couponRepository = couponRepository;
 
     }
     [HttpGet("user")]
@@ -42,10 +40,5 @@ public class WebStatisticController : ControllerBase
         var result = await _mediator.Send(new AdminHomeDashboardQuery(), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
-    [HttpGet("TestCoupon")]
-    public async Task<IActionResult> TestCouponStatistic(CancellationToken token = default)
-    {
-        var result = await _couponRepository.CouponStatistics();
-        return Ok(result);
-    }
+    
 }
