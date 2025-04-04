@@ -24,7 +24,7 @@ namespace EduQuest_Application.DTO.Response.Courses
 		public int? TotalLesson { get; set; }
 		public int? TotalInCart { get; set; }
 		public int? TotalInWishList { get; set; }
-        public List<CourseEnrollOverTime> CourseEnrollOverTime { get; set; }
-        public List<CourseRatingOverTime> CourseRatingOverTime { get; set; }
+        public List<ChartInfo> CourseEnrollOverTime { get; set; }
+        public List<ChartInfo> CourseRatingOverTime { get; set; }
     }
 }
