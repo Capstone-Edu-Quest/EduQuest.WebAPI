@@ -114,5 +114,14 @@ namespace EduQuest_Domain.Enums
 			CourseTrialPerMonth = 9
 		}
 		#endregion
+
+		#region Learner
+		public enum LearnerStatus
+		{
+			InProgress = 1,
+			Completed = 2
+		}
+		
+		#endregion
 	}
 }

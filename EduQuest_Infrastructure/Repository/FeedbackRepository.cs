@@ -40,7 +40,7 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
         return await result.Pagination(pageNo, pageSize).ToPagedListAsync(pageNo, pageSize);
     }
 
-	public async Task<List<CourseRatingOverTime>> GetCourseRatingOverTimeAsync(string courseId)
+	public async Task<List<ChartInfo>> GetCourseRatingOverTimeAsync(string courseId)
 	{
 		var query = from feedback in _context.Feedbacks
 					where feedback.CourseId == courseId
@@ -49,7 +49,25 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
 						Year = ((DateTime)feedback.UpdatedAt).Year,
 						Month = ((DateTime)feedback.UpdatedAt).Month
 					} into g
-					select new CourseRatingOverTime
+					select new ChartInfo
+					{
+						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
+						Count = g.Count().ToString()
+					};
+
+		return await query.ToListAsync();
+	}
+
+	public async Task<List<ChartInfo>> GetMyCoursesRatingOverTimeAsync(List<string> courseIds)
+	{
+		var query = from feedback in _context.Feedbacks
+					where courseIds.Contains(feedback.CourseId)
+					group feedback by new
+					{
+						Year = feedback.UpdatedAt.Value.Year,
+						Month = feedback.UpdatedAt.Value.Month
+					} into g
+					select new ChartInfo
 					{
 						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 						Count = g.Count().ToString()
