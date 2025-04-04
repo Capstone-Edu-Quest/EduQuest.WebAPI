@@ -1,7 +1,7 @@
 ﻿using EduQuest_Domain.Models.Response;
 using MediatR;
 
-namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot;
+namespace EduQuest_Application.UseCases.Mascots.Commands.PurchaseMascot;
 
 public class PurchaseMascotItemCommand : IRequest<APIResponse>
 {
