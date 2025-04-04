@@ -97,6 +97,7 @@ namespace EduQuest_Domain.Constants
             public const string EmailExisted = "EMAIL_EXISTED";
             public const string WrongPassword = "WRONG_PASSWORD";
             public const string PasswordChanged = "PASSWORD_CHANGED_SUCCESSFULLY";
+            public const string InvalidRole = "INVALID_ROLE";
 
             public const string AlreadyOwnThisItem = "ALREADY_OWN_THIS_ITEM";
             public const string PurchaseItemSuccessfully = "PURCHASE_ITEM_SUCCESSFULLY";
