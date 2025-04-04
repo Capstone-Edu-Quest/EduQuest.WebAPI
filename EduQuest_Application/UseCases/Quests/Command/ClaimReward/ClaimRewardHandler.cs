@@ -80,35 +80,38 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
         {
             throw new IndexOutOfRangeException("Invalid array index.");
         }
-
+        double? BoostValue = user.Boosters
+            .Where(b => b.DueDate >= now)
+            .OrderByDescending(b => b.BoostValue)
+            .FirstOrDefault().BoostValue;
         switch (rewardType)
         {
             case (int)RewardType.Gold:
                 if (int.TryParse(rewardValue[arrayIndex], out int addedGold))
                 {
-                    user.UserMeta.Gold += addedGold;
-                    response.Gold = addedGold;
+                    user.UserMeta.Gold += BoostValue != null ? Convert.ToInt32(addedGold * BoostValue / 100) : addedGold;
+                    response.Gold = BoostValue != null ? Convert.ToInt32(addedGold * BoostValue / 100) : addedGold;
                 }
                 break;
 
             case (int)RewardType.Exp:
                 if (int.TryParse(rewardValue[arrayIndex], out int addedExp))
                 {
-                    user.UserMeta.Exp += addedExp;
-                    response.Exp = addedExp;
+                    user.UserMeta.Exp += BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
+                    response.Exp = BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
                 }
                 break;
 
             case (int)RewardType.Item:
-                Console.WriteLine("Not implemented!");
-                /*user.MascotItem.Add(new Mascot
+                
+                user.MascotItem.Add(new Mascot
                 {
                     UserId = userId,
                     ShopItemId = rewardValue[arrayIndex],
                     CreatedAt = now.ToUniversalTime(),
                     IsEquipped = false,
                 });
-                response.Item = rewardValue[arrayIndex];*/
+                response.Item = rewardValue[arrayIndex];
                 break;
 
             case (int)RewardType.Coupon:
@@ -138,7 +141,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                         BoostValue = booster,
                         DueDate = now.AddDays(7).ToUniversalTime()
                     });
-                    response.Booster = (int?)booster;
+                    response.Booster = Convert.ToInt32(booster);
                 }
                 break;
 

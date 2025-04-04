@@ -8,7 +8,7 @@ using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
 
-namespace EduQuest_Application.UseCases.Mascot.Commands.EquipMacotItem;
+namespace EduQuest_Application.UseCases.Mascots.Commands.EquipMacotItem;
 
 public class EquipMascotItemCommandHandler : IRequestHandler<EquipMascotItemCommand, APIResponse>
 {

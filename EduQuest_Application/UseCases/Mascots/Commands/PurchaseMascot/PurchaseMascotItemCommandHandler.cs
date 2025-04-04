@@ -7,7 +7,7 @@ using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot;
+namespace EduQuest_Application.UseCases.Mascots.Commands.PurchaseMascot;
 
 public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotItemCommand, APIResponse>
 {
