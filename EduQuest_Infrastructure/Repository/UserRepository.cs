@@ -4,6 +4,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository;
@@ -64,7 +65,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         
         return result;
     }
-    private async Task<List<UserGraphData>> CreateGraphDataUser(IQueryable<User>? TotalUsers)
+    /*private async Task<List<UserGraphData>> CreateGraphDataUser(IQueryable<User>? TotalUsers)
     {
         DateTime end = DateTime.Now;
         DateTime start = end.AddMonths(-5);
@@ -76,10 +77,33 @@ public class UserRepository : GenericRepository<User>, IUserRepository
                 TotalUser = g.Count(),
                 TotalActiveUser = g.Count(user => user.Status == AccountStatus.Active.ToString()),
                 TotalProUser = g.Count(user => user.Package == PackageEnum.Pro.ToString()),
-                Date = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM-yyyy") // Định dạng YYYY-MM
+                Date = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy") // Định dạng YYYY-MM
             })
         .ToListAsync();
 
         return GraphUser;
+    }*/
+    private async Task<List<UserGraphData>> CreateGraphDataUser(IQueryable<User>? TotalUsers)
+    {
+        DateTime tempDate = DateTime.Now.AddMonths(-6);
+        DateTime start = new DateTime(tempDate.Year, tempDate.Month, 1);
+        List<UserGraphData> result = new List<UserGraphData>();
+        var users = await TotalUsers.ToListAsync();
+
+        for (int i = 0; i <= 5; i++)
+        {
+            var currentMonth = tempDate.AddMonths(i);
+            start = start.AddMonths(1);
+            UserGraphData temp = new UserGraphData
+            {
+                Date = currentMonth.ToString("MMM yyyy"),
+                TotalUser = users.Count(u => u.CreatedAt.Value < start.ToUniversalTime()),
+                TotalActiveUser = users.Count(u => u.CreatedAt.Value < start.ToUniversalTime() && u.Status == AccountStatus.Active.ToString()),
+                TotalProUser = users.Count(u => u.CreatedAt.Value < start.ToUniversalTime() && u.Package == PackageEnum.Pro.ToString())
+            };
+
+            result.Add(temp);
+        }
+        return result;
     }
 }
