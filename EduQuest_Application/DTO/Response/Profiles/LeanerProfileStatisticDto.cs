@@ -7,7 +7,7 @@ namespace EduQuest_Application.DTO.Response.Profiles;
 
 public class LeanerProfileStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
 {
-    public int? Rank { get; set; } = 0;
+    public long? Rank { get; set; } = 0;
     public int? LongestStreak { get; set; } = 0;
     public int? TotalLearningTime { get; set; } = 0;
     public int? TotalLearningCourses { get; set; }
