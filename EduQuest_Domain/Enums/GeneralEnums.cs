@@ -113,6 +113,16 @@ namespace EduQuest_Domain.Enums
 			TrialCoursePercentage = 8,
 			CourseTrialPerMonth = 9
 		}
-		#endregion
-	}
+        #endregion
+
+        #region ReportType
+		public enum ReportStatus
+        {
+            // 1 = resolved, 2 = pending, 3 = rejected
+			Resolved = 1,
+			Pending = 2,
+			Rejected = 3
+        }
+        #endregion
+    }
 }

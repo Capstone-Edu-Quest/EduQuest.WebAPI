@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Mascot;
-using EduQuest_Application.UseCases.Mascot.Commands.EquipMacotItem;
-using EduQuest_Application.UseCases.Mascot.Commands.PurchaseMascot;
+using EduQuest_Application.UseCases.Mascots.Commands.EquipMacotItem;
+using EduQuest_Application.UseCases.Mascots.Commands.PurchaseMascot;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;

@@ -1,14 +1,16 @@
-﻿using MediatR;
+﻿using EduQuest_Application.UseCases.WebStatistics.Queries.AdminHomeDashboard;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace EduQuest_API.Controllers;
 
 [Route("api/webStatistic")]
 [ApiController]
-[Authorize(Roles ="Admin")]
+//[Authorize(Roles ="Admin")]
 public class WebStatisticController : ControllerBase
 {
     private ISender _mediator;
@@ -30,5 +32,11 @@ public class WebStatisticController : ControllerBase
         CancellationToken token = default)
     {
         throw new NotImplementedException();
+    }
+    [HttpGet("admin/home")]
+    public async Task<IActionResult> AdminDashboard(CancellationToken token = default)
+    {
+        var result = await _mediator.Send(new AdminHomeDashboardQuery(), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 }

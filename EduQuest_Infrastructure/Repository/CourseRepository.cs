@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -113,5 +114,36 @@ namespace EduQuest_Infrastructure.Repository
 
 			return totalCount;
 		}
-	}
+        public async Task<AdminDashboardCourses> GetAdminDashBoardStatistic()
+        {
+			AdminDashboardCourses result = new AdminDashboardCourses();
+            var Courses = _context.Courses.AsQueryable();
+
+			result.TotalCourses = await Courses.CountAsync();
+
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+            result.NewCoursesThisMonth = await Courses
+                .Where(c => c.CreatedAt!.Value.Month == currentMonth && c.CreatedAt.Value.Year == currentYear)
+                .CountAsync();
+            var topCategory = await Courses
+                .SelectMany(c => c.Tags!)
+                .GroupBy(t => t.Name)
+                .OrderByDescending(g => g.Count())
+                .Select(g => new { Category = g.Key, Count = g.Count() })
+                .FirstOrDefaultAsync();
+			if(topCategory == null)
+			{
+				result.MostPopularCategory = "none";
+			}
+			else
+			{
+				result.MostPopularCategory = topCategory.Category;
+            }
+            
+
+			return result;
+        }
+
+    }
 }
