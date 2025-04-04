@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.UseCases.WebStatistics.Queries.AdminHomeDashboard;
+using EduQuest_Domain.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +15,11 @@ namespace EduQuest_API.Controllers;
 public class WebStatisticController : ControllerBase
 {
     private ISender _mediator;
-    public WebStatisticController(ISender mediator)
+    private ICouponRepository _couponRepository;
+    public WebStatisticController(ISender mediator, ICouponRepository couponRepository)
     {
         _mediator = mediator;
+        _couponRepository = couponRepository;
 
     }
     [HttpGet("user")]
@@ -38,5 +41,11 @@ public class WebStatisticController : ControllerBase
     {
         var result = await _mediator.Send(new AdminHomeDashboardQuery(), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
+    [HttpGet("TestCoupon")]
+    public async Task<IActionResult> TestCouponStatistic(CancellationToken token = default)
+    {
+        var result = await _couponRepository.CouponStatistics();
+        return Ok(result);
     }
 }

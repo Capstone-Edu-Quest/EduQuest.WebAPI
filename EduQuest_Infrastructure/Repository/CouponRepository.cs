@@ -122,7 +122,7 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
     {
         DateTime dateTemp = DateTime.Now;
         DateTime end = new DateTime(dateTemp.Year, dateTemp.Month + 1, 1);
-        DateTime start = end.AddMonths(-6);
+        DateTime start = end.AddMonths(-7);
         var coupon = await coupons
             .Where(u => u.CreatedAt >= start.ToUniversalTime() && u.CreatedAt <= end.ToUniversalTime())
             .ToListAsync();
