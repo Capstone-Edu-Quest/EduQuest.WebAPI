@@ -56,8 +56,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             // parse learningPathCourses, CreatedBy and TotalCourses
             response.TotalCourses = learningPathCourses.Count;
             response.Courses = learningPathCourses.OrderBy(r => r.Order).ToList();
-            response.Author = learningPath.User.Username!;
-            response.CreatedBy = learningPath.UserId;
+            response.CreatedBy = _mapper.Map<CommonUserResponse>(learningPath.User);
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.GetSuccesfully,
                 response, Key, value);
         }
