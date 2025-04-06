@@ -4,6 +4,7 @@ using EduQuest_Application.UseCases.Materials.Command.CreateMaterial;
 using EduQuest_Application.UseCases.Materials.Command.DeleteMaterial;
 using EduQuest_Application.UseCases.Materials.Command.UpdateMaterial;
 using EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial;
+using EduQuest_Application.UseCases.Materials.Query.GetDetailMaterial;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -65,6 +66,16 @@ namespace EduQuest_API.Controllers
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
-		
-	}
+        [Authorize]
+        [HttpGet("detail")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetDetailMaterial(CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetDetailMaterialQuery(userId), cancellationToken);
+            return Ok(result);
+        }
+
+    }
 }
