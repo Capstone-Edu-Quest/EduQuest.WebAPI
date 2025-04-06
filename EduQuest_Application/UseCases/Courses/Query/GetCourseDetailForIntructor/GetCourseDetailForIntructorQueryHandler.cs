@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor
 {
@@ -61,8 +62,9 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 			courseResponse.TotalInWishList = await _favoriteListRepository.GetCountByCourseId(request.CourseId);
 			courseResponse.CourseEnrollOverTime = await _learnerRepository.GetCourseEnrollOverTimeAsync(request.CourseId);
 			courseResponse.CourseRatingOverTime = await _feedbackRepository.GetCourseRatingOverTimeAsync(request.CourseId);
+			courseResponse.IsPublic = existedCourse.Status == StatusCourse.Public.ToString() ? true : false;
 
-			var lessonResponses = new List<LessonCourseResponse>();
+            var lessonResponses = new List<LessonCourseResponse>();
 
 			foreach (var lesson in existedCourse.Lessons!)
 			{

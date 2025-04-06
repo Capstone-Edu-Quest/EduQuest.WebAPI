@@ -3,6 +3,7 @@ using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Application.Helper;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.DTO.Response.Courses
 {
@@ -15,6 +16,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public List<string>? RequirementList { get; set; } = new List<string>();
         public DateTime? LastUpdated { get; set; }
         public decimal Price { get; set; }
+        public bool IsPublic { get; set; }
         public decimal? DiscountPrice { get; set; }
         public AuthorCourseResponse? Author { get; set; }
         public List<LessonCourseResponse>? ListLesson { get; set; }
@@ -25,11 +27,11 @@ namespace EduQuest_Application.DTO.Response.Courses
         public int? TotalTime { get; set; }
         public decimal? Progress { get; set; }
 
-  //      public void Mapping(Profile profile)
-  //      {
-  //          profile.CreateMap<Course, CourseDetailResponse>()
-		//		.ForMember(dest => dest.Requirement, opt => opt.MapFrom(src => ContentHelper.SplitString(src.Requirement, '.')));
-		//}
+        public void Mapping(Profile profile)
+        {
+            profile.CreateMap<Course, CourseDetailResponse>()
+                .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString()));
+		}
 
     }
 
