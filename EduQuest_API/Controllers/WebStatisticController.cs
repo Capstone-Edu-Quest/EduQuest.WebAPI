@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.UseCases.WebStatistics.Queries.AdminHomeDashboard;
+using EduQuest_Application.UseCases.WebStatistics.Queries.StaffStatistics;
 using EduQuest_Domain.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,7 @@ namespace EduQuest_API.Controllers;
 
 [Route("api/webStatistic")]
 [ApiController]
-[Authorize(Roles ="Admin")]
+//[Authorize(Roles ="Admin")]
 public class WebStatisticController : ControllerBase
 {
     private ISender _mediator;
@@ -39,6 +40,13 @@ public class WebStatisticController : ControllerBase
     {
         var result = await _mediator.Send(new AdminHomeDashboardQuery(), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
+
+    [HttpGet("platform/setting")]
+    public async Task<IActionResult> PatformStatistic(CancellationToken token = default)
+    {
+        var result = await _mediator.Send(new GetStaffStatisticQuery(), token);
+        return Ok(result);
     }
     
 }
