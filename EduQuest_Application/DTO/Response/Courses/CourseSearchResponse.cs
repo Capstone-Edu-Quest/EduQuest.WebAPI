@@ -29,7 +29,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public void MappingFrom(Profile profile)
         {
             profile.CreateMap<Course, CourseSearchResponse>()
-            .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString() ? true : false));
+            .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString()));
         }
     }
 }
