@@ -49,12 +49,23 @@ public class UserController : BaseController
     [HttpGet("profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<APIResponse>> GetMyProfile(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<APIResponse>> GetMyProfile([FromQuery] GetUserProfileQuery profile, CancellationToken cancellationToken = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new GetUserProfileQuery(userId), cancellationToken);
+        //string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(profile, cancellationToken);
         return Ok(result);
     }
+
+
+    //[HttpGet("profile")]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //public async Task<ActionResult<APIResponse>> GetMyProfile(CancellationToken cancellationToken = default)
+    //{
+    //    string userId = User.GetUserIdFromToken().ToString();
+    //    var result = await _mediator.Send(new GetUserProfileQuery(userId), cancellationToken);
+    //    return Ok(result);
+    //}
 
     [HttpGet("instructor-profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]

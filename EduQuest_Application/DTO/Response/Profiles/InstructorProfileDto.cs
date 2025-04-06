@@ -15,7 +15,7 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
     public int? TotalLearners { get; set; } = 0;
     public int? TotalReviews { get; set; } = 0;
     public int? AvarageReviews { get; set; } = 0;
-    public List<CourseInstructorProfileDto> Courses { get; set; }
+    public List<CourseProfileDto> Courses { get; set; }
 
 
 

@@ -22,6 +22,7 @@ public class GetUserGameInfoQueryHandler : IRequestHandler<GetUserGameInfoQuery,
     {
         var result = await _userStatistic.GetByUserId(request.userId);
         var mappedResult = _mapper.Map<UserStatisticDto>(result);
+
         return new APIResponse
         {
             IsError = false,
