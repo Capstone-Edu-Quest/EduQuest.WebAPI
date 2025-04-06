@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Profiles.Heatmap;
-using EduQuest_Application.DTO.Response.Profiles.TotalCourse;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.Pagination;
 
 namespace EduQuest_Application.DTO.Response.Profiles;
 

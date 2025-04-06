@@ -1,5 +1,6 @@
 ﻿using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
+using EduQuest_Domain.Models.PlatformStatisticDashBoard;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
@@ -54,6 +55,44 @@ public class QuestRepository : GenericRepository<Quest>, IQuestRepository
         var response = await result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
-    
+
+    public async Task<QuestStatisticDto> GetQuestStatistic()
+    {
+        var result = new QuestStatisticDto();
+
+        result.TotalCreatedQuests = await _context.Quests
+            .AsNoTracking()
+            .CountAsync();
+
+        result.TotalCompletedQuests = await _context.UserQuests
+            .AsNoTracking()
+            .CountAsync(q => q.IsCompleted);
+
+        var totalUsersWithCompletedQuests = await _context.UserQuests
+            .Where(q => q.IsCompleted)
+            .Select(q => q.UserId)
+            .Distinct()
+            .CountAsync();
+
+        result.AverageCompletedQuestsPerUser = totalUsersWithCompletedQuests == 0
+            ? 0
+            : (double)result.TotalCompletedQuests / totalUsersWithCompletedQuests;
+
+        result.QuestCompletion = await _context.UserQuests
+            .Where(u => u.DeletedAt == null)
+            .Where(u => u.IsCompleted && u.CompleteDate != null)
+            .GroupBy(u => u.CompleteDate.Value.Date)
+            .Select(g => new QuestCompletionDto
+            {
+                Date = g.Key.ToString(),  
+                Count = g.Count()
+            })
+            .OrderBy(e0 => e0.Date)
+            .ToListAsync();
+
+
+        return result;
+    }
+
 
 }

@@ -15,5 +15,7 @@ namespace EduQuest_Domain.Repository
 		Task<List<Material>> GetByUserId(string userId);
 		Task<Material> GetMaterialWithLesson(string materialId);
 		Task<bool> IsOwnerThisMaterial(string userId, string materialId);
-	}
+		Task<List<Material>> GetByUserIdAsync(string userId);
+
+    }
 }
