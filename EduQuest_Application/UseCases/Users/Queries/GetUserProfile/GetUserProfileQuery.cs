@@ -7,8 +7,4 @@ public class GetUserProfileQuery : IRequest<APIResponse>
 {
     public string? userId { get; set; }
 
-    public GetUserProfileQuery(string? userId)
-    {
-        this.userId = userId;
-    }
 }

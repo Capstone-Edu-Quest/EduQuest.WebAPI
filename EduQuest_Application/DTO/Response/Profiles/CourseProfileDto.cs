@@ -24,7 +24,7 @@ public class CourseProfileDto : IMapFrom<Course>, IMapTo<Course>
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<Course, OverviewCourseResponse>()
+        profile.CreateMap<Course, CourseProfileDto>()
         .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.CourseStatistic.Rating))
         .ForMember(dest => dest.TotalLesson, opt => opt.MapFrom(src => src.CourseStatistic.TotalLesson))
         .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))
