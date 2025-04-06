@@ -122,7 +122,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 					Materials = materials
 				});
 			}
-			courseResponse.ListLesson = lessonResponses;
+			courseResponse.ListLesson = lessonResponses.OrderBy(c => c.Index).ToList();
 
 			courseResponse.ListTag = course.Tags?.Select(tag => new TagResponse
 			{
