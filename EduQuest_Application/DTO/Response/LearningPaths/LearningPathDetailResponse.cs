@@ -18,7 +18,7 @@ public class LearningPathDetailResponse : IMapFrom<LearningPath>
     public bool IsPublic { get; set; }
     public bool IsEnrolled { get; set; }
     public bool CreatedByExpert { get; set; }
-    public CommonUserResponse CreatedBy { get; set; } = new CommonUserResponse();
+    public CommonUserResponse CreatedBy {  get; set; } = new CommonUserResponse();
     public List<LearningPathCourseResponse> Courses { get; set; } = new List<LearningPathCourseResponse>();
     public List<LearningPathTagResponse> Tags { get; set; } = new List<LearningPathTagResponse>();
     public void MappingFrom(Profile profile)

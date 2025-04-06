@@ -32,7 +32,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
 
             if (learningPath == null)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, MessageCommon.NotFound, Key, value);
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.GetFailed, MessageCommon.NotFound, Key, value);
             }
 
             LearningPathDetailResponse response = _mapper.Map<LearningPathDetailResponse>(learningPath);
@@ -44,17 +44,12 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             var learningPathCourses = courses.Select(course =>
             {
                 var learningPathCourse = _mapper.Map<LearningPathCourseResponse>(course);
-                CommonUserResponse user = _mapper.Map<CommonUserResponse>(course.User);
                 var tempCourse = learningPath.LearningPathCourses.FirstOrDefault(r => r.CourseId == course.Id);
 
                 // parse order from LearningPathCourse Entity
                 learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
-
-                learningPathCourse.CreatedByUser = user;
-                learningPathCourse.AverageRating = course.CourseStatistic.Rating != null ? course.CourseStatistic.Rating.Value : 0;
-                learningPathCourse.TotalReview = course.CourseStatistic.TotalReview != null ? course.CourseStatistic.TotalReview.Value : 0;
-                learningPathCourse.TotalLesson = course.CourseStatistic.TotalLesson != null ? course.CourseStatistic.TotalLesson.Value : 0; 
-                learningPathCourse.TotalTime = course.CourseStatistic.TotalTime != null ? course.CourseStatistic.TotalTime.Value :  0;  
+                learningPathCourse.RequirementList = course.Requirement.Split(",").ToList();
+                learningPathCourse.Author = course.User.Username;
                 return learningPathCourse;
             }).ToList();
 
@@ -67,7 +62,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
         }
         catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, ex.Message, Key, value);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.GetFailed, ex.Message, Key, value);
         }
     }
 }

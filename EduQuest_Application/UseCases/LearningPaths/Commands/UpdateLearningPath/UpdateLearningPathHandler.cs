@@ -101,7 +101,8 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                     LearningPathCourse? temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId);
                     if(temp == null)
                     {
-                        return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
+                        continue;
+                        /*return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);*/
                     }
                     learingPath.LearningPathCourses.Remove(temp);
                     var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
