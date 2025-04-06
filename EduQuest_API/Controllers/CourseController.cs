@@ -83,8 +83,8 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetCourseStatisticForInstructor(CancellationToken cancellationToken = default)
 		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery(userId), cancellationToken);
+			//string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery("5e7ca4f0-2fca-42e9-b0a5-59be4c4cc037"), cancellationToken);
 			return Ok(result);
 		}
 
@@ -150,5 +150,24 @@ namespace EduQuest_API.Controllers
 			var result = await _mediator.Send(new UpdateCourseCommand(userId, request), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
-	}
+
+		[Authorize]
+		[HttpPost("quiz/attemt")]
+		public async Task<IActionResult> AttemptQuiz()
+		{
+			throw new NotImplementedException();
+		}
+        [Authorize]
+        [HttpPost("assignment/attemt")]
+        public async Task<IActionResult> AttemptAssignment()
+        {
+            throw new NotImplementedException();
+        }
+        [Authorize]
+        [HttpPost("assignment/peer-review")]
+        public async Task<IActionResult> AttemptReview()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
