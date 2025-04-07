@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250407025640_FixLessonMaterial")]
-    partial class FixLessonMaterial
+    [Migration("20250407073156_AddLessionMaterial")]
+    partial class AddLessionMaterial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -41,11 +41,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			var course = await _courseRepository.GetCourseById(request.CourseId);
 			var courseWithLearner = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
 			var courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
+			Lesson currentLesson = new Lesson(); 
+			int currentMaterialIndex = 0;
 
-			//Get Current Lesson
-			var currentLesson = await _lessonRepository.GetById(courseLearner.CurrentLessonId);
-			var currentMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(courseLearner.CurrentLessonId, courseLearner.CurrentMaterialId);
-
+			//Mapping course
 			var courseResponse = _mapper.Map<CourseDetailResponse>(course);
 			courseResponse.RequirementList = ContentHelper.SplitString(course.Requirement, '.');
 			courseResponse.TotalLearner = course.CourseStatistic.TotalLearner;
@@ -53,12 +52,21 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.Rating = course.CourseStatistic.Rating;
 			courseResponse.TotalTime = course.CourseStatistic.TotalTime;
 			courseResponse.LastUpdated = course.UpdatedAt;
-			
+
 			if (courseLearner != null)
 			{
 				courseResponse.Progress = courseLearner!.ProgressPercentage;
-			}
-			
+				//Get Current Lesson
+				if (courseLearner.CurrentLessonId != null)
+				{
+					currentLesson = await _lessonRepository.GetById(courseLearner.CurrentLessonId);
+				}
+				if (courseLearner.CurrentLessonId != null && courseLearner.CurrentMaterialId != null)
+				{
+					currentMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(courseLearner.CurrentLessonId, courseLearner.CurrentMaterialId);
+				}
+			} 
+
 			courseResponse.Author = course.User! != null ? new AuthorCourseResponse
 			{
 				Id = course.User.Id,
@@ -68,13 +76,14 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			} : null;
 
 			var userSta = await _userStatisticRepository.GetByUserId(course.User!.Id);
-			if(userSta != null)
+			if (userSta != null)
 			{
 				courseResponse.Author!.TotalCourseCreated = userSta.TotalCourseCreated;
 				courseResponse.Author.TotalReview = userSta.TotalReview;
 				courseResponse.Author.TotalLearner = userSta.TotalLearner;
 			}
 
+			
 			var lessonResponses = new List<LessonCourseResponse>();
 
 			foreach (var lesson in course.Lessons!)
@@ -86,7 +95,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				var listMaterialId = lessonInCourse.LessonMaterials.Select(x => x.MaterialId).Distinct().ToList();
 				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
 				
-				if(courseLearner.ProgressPercentage == null)
+				if(courseLearner == null || courseLearner.ProgressPercentage == null)
 				{
 					foreach (var material in listMaterial)
 					{
@@ -141,7 +150,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						currentMaterialResponse.OriginalMaterialId = material.OriginalMaterialId;
 
 						var nowMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(lesson.Id, material.Id);
-						if (currentLesson.Index == lesson.Index && nowMaterialIndex == currentMaterialIndex)
+						if ( courseResponse.Progress == 0 || (currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
+						{
+							currentMaterialResponse.Status = GeneralEnums.StatusMaterial.Locked.ToString();
+						} else if (currentLesson.Index == lesson.Index && nowMaterialIndex == currentMaterialIndex)
 						{
 							currentMaterialResponse.Status = GeneralEnums.StatusMaterial.Current.ToString();
 							
@@ -149,10 +161,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						{
 							currentMaterialResponse.Status = GeneralEnums.StatusMaterial.Done.ToString();
 						}
-						else if ((currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
-						{
-							currentMaterialResponse.Status = GeneralEnums.StatusMaterial.Locked.ToString();
-						} 
 						
 						materials.Add(currentMaterialResponse);
 

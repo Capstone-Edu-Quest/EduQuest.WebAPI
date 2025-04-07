@@ -26,7 +26,15 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		private readonly IMaterialRepository _materialRepository;
 		private readonly IUserMetaRepository _userMetaRepository;
 
-		
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper, ILessonRepository lessonRepository, IMaterialRepository materialRepository, IUserMetaRepository userMetaRepository)
+		{
+			_courseRepository = courseRepository;
+			_unitOfWork = unitOfWork;
+			_mapper = mapper;
+			_lessonRepository = lessonRepository;
+			_materialRepository = materialRepository;
+			_userMetaRepository = userMetaRepository;
+		}
 
 		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
 		{
