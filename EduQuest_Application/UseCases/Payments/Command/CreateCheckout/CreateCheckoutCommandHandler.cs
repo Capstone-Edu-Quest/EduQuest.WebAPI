@@ -1,4 +1,5 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
@@ -24,16 +25,9 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 		private readonly ISubscriptionRepository _subscriptionRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly ICouponRepository _couponRepository;
+		private readonly ILearnerRepository _learnerRepository;
 
-		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, 
-			IUnitOfWork unitOfWork, 
-			ICartRepository cartRepository, 
-			ITransactionRepository transactionRepository, 
-			ITransactionDetailRepository transactionDetailRepository, 
-			ICourseRepository courseRepository, 
-			ISubscriptionRepository subscriptionRepository, 
-			IUserRepository userRepository, 
-			ICouponRepository couponRepository)
+		public CreateCheckoutCommandHandler(IOptions<StripeModel> stripeModel, IUnitOfWork unitOfWork, ICartRepository cartRepository, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, ICourseRepository courseRepository, ISubscriptionRepository subscriptionRepository, IUserRepository userRepository, ICouponRepository couponRepository, ILearnerRepository learnerRepository)
 		{
 			_stripeModel = stripeModel.Value;
 			_unitOfWork = unitOfWork;
@@ -44,12 +38,14 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			_subscriptionRepository = subscriptionRepository;
 			_userRepository = userRepository;
 			_couponRepository = couponRepository;
+			_learnerRepository = learnerRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCheckoutCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-			Cart? cart = null;
+			Cart? cart = new Cart();
+			var subscription = new EduQuest_Domain.Entities.Subscription();
 			var options = new SessionCreateOptions
 			{
 				Mode = "payment",
@@ -59,92 +55,99 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				LineItems = new List<SessionLineItemOptions>()
 			};
 			var user = await _userRepository.GetById(request.UserId);
-			var subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)GeneralEnums.PackageEnum.Pro, (int)request.Request.ConfigEnum!);
+			
 			if (request.Request.CartId != null)
 			{
 				cart = await _cartRepository.GetListCartItemByCartId(request.Request.CartId);
 				if (cart == null)
 				{
-					return new APIResponse
-					{
-						IsError = true,
-						Payload = null,
-						Errors = new ErrorResponse
-						{
-							StatusResponse = HttpStatusCode.NotFound,
-							StatusCode = (int)HttpStatusCode.NotFound,
-							Message = MessageCommon.NotFound,
-						},
-						Message = new MessageResponse
-						{
-							content = MessageCommon.NotFound,
-							values = new Dictionary<string, string> { { "name", "cart" } }
-						}
-					};
+					return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "cart");
 				}
-				if (request.Request.CouponCode != null)
+				if(cart.Total > 0)
 				{
-					var IsCouponAvai = await _couponRepository.IsCouponAvailable(request.Request.CouponCode, request.UserId);
-					if (IsCouponAvai)
+					if (request.Request.CouponCode != null) //Incase cart has coupon
 					{
-						var isConsumeCoupon = await _couponRepository.ConsumeCoupon(request.Request.CouponCode, request.UserId);
-						if (isConsumeCoupon)
+						var IsCouponAvai = await _couponRepository.IsCouponAvailable(request.Request.CouponCode, request.UserId);
+						if (IsCouponAvai)
 						{
-							var coupon = await _couponRepository.GetCouponByCode(request.Request.CouponCode);
-							var disCount = coupon.Discount * cart.Total;
-							options.LineItems.Add(new SessionLineItemOptions
+							var isConsumeCoupon = await _couponRepository.ConsumeCoupon(request.Request.CouponCode, request.UserId);
+							if (isConsumeCoupon)
 							{
-								Quantity = 1,
-								PriceData = new SessionLineItemPriceDataOptions
+								var coupon = await _couponRepository.GetCouponByCode(request.Request.CouponCode);
+								var disCount = coupon.Discount * cart.Total;
+								if(cart.Total - disCount == 0)
 								{
-									Currency = "usd",
-									UnitAmount = (long)((cart.Total - disCount) * 100), // Convert to cents
-									ProductData = new SessionLineItemPriceDataProductDataOptions
+									var listCourseId = cart.CartItems.Select(x => x.CourseId).ToList();
+									var response = await CreateCourseLearners(listCourseId, request.UserId);
+									cart.CartItems.Clear();
+									await _cartRepository.Delete(cart.Id);
+									var result = await _unitOfWork.SaveChangesAsync();
+									return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageLearner.AddedUserToCourse, response, "name", "learner");
+								} else
+								{
+									var listCoursePriceZero = new List<string>();
+									foreach (var item in cart.CartItems)
 									{
-										Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
+										var course = await _courseRepository.GetById(item.CourseId);
+										var finalPrice = course.Price - (coupon.Discount * course.Price); 
+										if (finalPrice == 0)
+										{
+											listCoursePriceZero.Add(course.Id);
+										}
+										cart.CartItems.Remove(item);
+										
 									}
+									var listLearnerCourseFree = await CreateCourseLearners(listCoursePriceZero, request.UserId);
+
+									var result = await _unitOfWork.SaveChangesAsync();
+									options.LineItems.Add(new SessionLineItemOptions
+									{
+										Quantity = 1,
+										PriceData = new SessionLineItemPriceDataOptions
+										{
+											Currency = "usd",
+											UnitAmount = (long)((cart.Total - disCount) * 100), // Convert to cents
+											ProductData = new SessionLineItemPriceDataProductDataOptions
+											{
+												Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
+											}
+										}
+									});
 								}
-							});
+
+							}
 						}
 					}
-				}
-				
-				options.LineItems.Add(new SessionLineItemOptions
-				{
-					Quantity = 1,
-					PriceData = new SessionLineItemPriceDataOptions
+					options.LineItems.Add(new SessionLineItemOptions
 					{
-						Currency = "usd",
-						UnitAmount = (long)(cart.Total * 100), // Convert to cents
-						ProductData = new SessionLineItemPriceDataProductDataOptions
+						Quantity = 1,
+						PriceData = new SessionLineItemPriceDataOptions
 						{
-							Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
+							Currency = "usd",
+							UnitAmount = (long)(cart.Total * 100), // Convert to cents
+							ProductData = new SessionLineItemPriceDataProductDataOptions
+							{
+								Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
+							}
 						}
-					}
-				});
+					});
+				} else //Cart toal is == 0
+				{
+					var listCourseId = cart.CartItems.Select(x => x.CourseId).ToList();
+					var response = await CreateCourseLearners(listCourseId, request.UserId); //Add all cours ein cart into table Learner
+					cart.CartItems.Clear();
+					await _cartRepository.Delete(cart.Id);
+					var result = await _unitOfWork.SaveChangesAsync();
+					return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageLearner.AddedUserToCourse, response, "name", "learner");
+				}
 			}
 			else
 			{
+				subscription = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(user!.RoleId!, (int)GeneralEnums.PackageEnum.Pro, (int)request.Request.ConfigEnum!);
 				if(subscription == null)
 				{
-					return new APIResponse
-					{
-						IsError = true,
-						Payload = null,
-						Errors = new ErrorResponse
-						{
-							StatusResponse = HttpStatusCode.NotFound,
-							StatusCode = (int)HttpStatusCode.NotFound,
-							Message = MessageCommon.NotFound,
-						},
-						Message = new MessageResponse
-						{
-							content = MessageCommon.NotFound,
-							values = new Dictionary<string, string> { { "name", "subscription" } }
-						}
-					};
+					return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "subscription");
 				}
-
 				options.LineItems.Add(new SessionLineItemOptions
 				{
 					Quantity = 1,
@@ -198,22 +201,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 						}
 					} else
 					{
-						return new APIResponse
-						{
-							IsError = true,
-							Payload = null,
-							Errors = new ErrorResponse
-							{
-								StatusResponse = HttpStatusCode.NotFound,
-								StatusCode = (int)HttpStatusCode.NotFound,
-								Message = MessageCommon.NotFound,
-							},
-							Message = new MessageResponse
-							{
-								content = MessageCommon.NotFound,
-								values = new Dictionary<string, string> { { "name", "cartitem" } }
-							}
-						};
+						return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "cartitem");
 					}
 				}
 			} else
@@ -235,17 +223,25 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			//await _cartRepository.Delete(cart.Id);
 			await _unitOfWork.SaveChangesAsync();
 
-			return new APIResponse
+			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.CreateSuccesfully, session.Url, "name", "payment");
+		}
+
+		private async Task<List<CourseLearner>> CreateCourseLearners(List<string> courseIds, string userId)
+		{
+			
+			var listCourseLearner = courseIds.Distinct().Select(courseId => new CourseLearner
 			{
-				IsError = false,
-				Payload = session.Url,
-				Errors = null,
-				Message = new MessageResponse
-				{
-					content = MessageCommon.CreateSuccesfully,
-					values = new Dictionary<string, string> { { "name", "payment" } }
-				}
-			};
+				Id = Guid.NewGuid().ToString(),
+				CourseId = courseId,
+				UserId = userId,
+				IsActive = true,
+				TotalTime = 0,
+				ProgressPercentage = 0
+			}).ToList();
+
+			await _learnerRepository.CreateRangeAsync(listCourseLearner);
+				
+			return listCourseLearner;	
 		}
 	}
 }

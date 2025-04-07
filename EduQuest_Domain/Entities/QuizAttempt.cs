@@ -9,6 +9,7 @@ namespace EduQuest_Domain.Entities
 		public string UserId { get; set; }
 		public int CorrectAnswers { get; set; }
 		public int IncorrectAnswers { get; set; }
+		public int AttemptNo { get; set; }
 
 		public virtual Quiz Quiz { get; set; } = null!;
 		public virtual User User { get; set; } = null!;

@@ -24,14 +24,16 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		private readonly IMapper _mapper;
 		private readonly ILessonRepository _lessonRepository;
 		private readonly IMaterialRepository _materialRepository;
+		private readonly IUserMetaRepository _userMetaRepository;
 
-		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper, ILessonRepository lessonRepository, IMaterialRepository materialRepository)
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper, ILessonRepository lessonRepository, IMaterialRepository materialRepository, IUserMetaRepository userMetaRepository)
 		{
 			_courseRepository = courseRepository;
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_lessonRepository = lessonRepository;
 			_materialRepository = materialRepository;
+			_userMetaRepository = userMetaRepository;
 		}
 
 		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
@@ -43,7 +45,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found {request.CourseInfo.CourseId}", "name", "Course");
 				
 			}
-			if(existingCourse.CourseLearners == null && existingCourse.Status.ToLower() == GeneralEnums.StatusCourse.Draft.ToString().ToLower())
+			if(!existingCourse.CourseLearners.Any() && existingCourse.Status.ToLower() == GeneralEnums.StatusCourse.Draft.ToString().ToLower())
 			{
 				existingCourse.Title = request.CourseInfo.Title;
 				existingCourse.Description = request.CourseInfo.Description;
@@ -51,16 +53,18 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 				existingCourse.Price = request.CourseInfo.Price;
 
-				var newStages = new List<Lesson>();
+				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 				{
 
 					await _lessonRepository.DeleteStagesByCourseId(existingCourse.Id);
-
+					int TotalLesson = 0;
 					for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
 					{
 						var lessonRequest = request.CourseInfo.LessonCourse[i];
 						var materials = await _materialRepository.GetMaterialsByIds(lessonRequest.MaterialIds);
+						materials = materials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
+
 						var lesson = new Lesson
 						{
 							Id = Guid.NewGuid().ToString(),
@@ -68,22 +72,33 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							Description = lessonRequest.Description,
 							CourseId = existingCourse.Id,
 							Index = i + 1,
-							Materials = materials, // Gán Material
 							TotalTime = materials?.Sum(m => m.Duration) ?? 0
 						};
+						TotalLesson += materials.Count();
+						var lessonMaterials = materials.Select(m => new LessonMaterial
+						{
+							LessonId = lesson.Id,
+							MaterialId = m.Id,
+							Index = materials.IndexOf(m), 
+						}).ToList();
 
-						newStages.Add(lesson);
+						lesson.LessonMaterials = lessonMaterials;
+
+						newLessons.Add(lesson);
 					}
-					await _lessonRepository.CreateRangeAsync(newStages);
 
-					existingCourse.CourseStatistic.TotalTime = newStages.Sum(c => c.TotalTime);
-					existingCourse.CourseStatistic.TotalLesson = newStages.Sum(stage => stage.Materials?.Count ?? 0);
+					// Lưu bài học vào cơ sở dữ liệu
+					await _lessonRepository.CreateRangeAsync(newLessons);
+
+
+					existingCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
+					existingCourse.CourseStatistic.TotalLesson = TotalLesson;
 
 					await _courseRepository.Update(existingCourse);
 				}
 			
 				await _unitOfWork.SaveChangesAsync();
-				return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, newStages, "name", "Course and Lesson");
+				return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, newLessons, "name", "Course and Lesson");
 			} else
 			{
 				var newCourse = _mapper.Map<Course>(request.CourseInfo);
@@ -104,33 +119,49 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					TotalTime = 0
 				};
 				await _courseRepository.Add(newCourse);
+				var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
+				userMeta.TotalCourseCreated++;
+				await _userMetaRepository.Update(userMeta);
 				await _unitOfWork.SaveChangesAsync();
-				//Add Lesson
+
 				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 				{
 
+					int TotalLesson = 0;
 					for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
 					{
 						var lessonRequest = request.CourseInfo.LessonCourse[i];
 						var materials = await _materialRepository.GetMaterialsByIds(lessonRequest.MaterialIds);
+						materials = materials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
+
 						var lesson = new Lesson
 						{
 							Id = Guid.NewGuid().ToString(),
 							Name = lessonRequest.Name,
 							Description = lessonRequest.Description,
-							CourseId = newCourse.Id,
+							CourseId = existingCourse.Id,
 							Index = i + 1,
-							Materials = materials, // Gán Material
 							TotalTime = materials?.Sum(m => m.Duration) ?? 0
 						};
+						TotalLesson += materials.Count();
+						var lessonMaterials = materials.Select(m => new LessonMaterial
+						{
+							LessonId = lesson.Id,
+							MaterialId = m.Id,
+							Index = materials.IndexOf(m),
+						}).ToList();
+
+						lesson.LessonMaterials = lessonMaterials;
 
 						newLessons.Add(lesson);
 					}
+
 					await _lessonRepository.CreateRangeAsync(newLessons);
 
-					newCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
-					newCourse.CourseStatistic.TotalLesson = newLessons.Sum(stage => stage.Materials?.Count ?? 0);
+
+					existingCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
+					existingCourse.CourseStatistic.TotalLesson = TotalLesson;
 
 					await _courseRepository.Update(newCourse);
 				}
