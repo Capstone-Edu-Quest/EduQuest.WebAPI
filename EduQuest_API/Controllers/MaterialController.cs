@@ -69,13 +69,13 @@ namespace EduQuest_API.Controllers
 		}
 
         [Authorize]
-        [HttpGet("detail")]
+        [HttpGet("materialById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetDetailMaterial(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetMaterialById([FromQuery] string materialId, CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetDetailMaterialQuery(userId), cancellationToken);
+            //string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetMaterialByIdQuery(materialId), cancellationToken);
             return Ok(result);
         }
 

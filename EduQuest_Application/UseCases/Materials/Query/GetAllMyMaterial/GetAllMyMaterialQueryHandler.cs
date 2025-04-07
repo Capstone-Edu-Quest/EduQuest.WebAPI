@@ -60,6 +60,8 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 						m.Id,
 						m.Title,
 						m.Description,
+						m.Quiz.TimeLimit,
+						m.Quiz.PassingPercentage,
 						QuestionCount = m.Quiz.Questions.Count() // Duration for each video
 					}).ToList()
 				},
@@ -72,6 +74,8 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 						m.Id,
 						m.Title,
 						m.Description,
+						m.Assignment.TimeLimit,
+						m.Assignment.AnswerLanguage,
 						Language = m.Assignment!.AnswerLanguage
 					})
 				}
