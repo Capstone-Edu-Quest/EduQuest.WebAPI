@@ -32,10 +32,9 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
         var chunkKey = $"upload:{fileId}:chunk:{chunkIndex}";
         await _redisCaching.SetAsync(chunkKey, chunkData, 120);
 
-        // Sử dụng Hash để theo dõi các chunks đã nhận
+        // using HashSet data structure to track chunks
         var receivedChunksKey = $"upload:{fileId}:chunks";
 
-        // Thêm chunk hiện tại vào hash tracking
         var hashEntries = new HashEntry[]
         {
             new HashEntry(chunkIndex.ToString(), "1")
@@ -43,11 +42,11 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
 
         await _redisCaching.HashSetAsync(receivedChunksKey, hashEntries, 120);
 
-        // Lấy tất cả hash data để đếm số chunks đã nhận
+        // Get all data in HashSet with key
         var chunksReceived = await _redisCaching.GetAllHashDataAsync(receivedChunksKey);
         int receivedChunksCount = chunksReceived?.Count ?? 0;
 
-        // Kiểm tra nếu tất cả chunks đã được upload
+        // Count whether all the chunks is stored
         if (receivedChunksCount >= totalChunks)
         {
             using (var ms = new MemoryStream())
@@ -69,7 +68,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
                     await ms.WriteAsync(chunkDataToRetrieve);
                 }
 
-                // Upload video đã được ghép vào Azure Blob Storage
+
                 ms.Position = 0;
                 string fileName = $"{fileId}.mp4";
                 await _blobStorage.UploadAsync(fileName, ms);
