@@ -9,7 +9,7 @@ namespace EduQuest_Application.DTO.Request.Materials
 	public class VideoRequest
 	{
 		public string UrlMaterial { get; set; }
-		public int? Duration { get; set; }
+		public double? Duration { get; set; }
 		public string? Thumbnail { get; set; }
 	}
 }

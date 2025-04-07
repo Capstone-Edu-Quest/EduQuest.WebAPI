@@ -42,8 +42,6 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 			};
 			var transactionExisted = await _transactionRepository.GetByPaymentIntentId(request.Refund.PaymentIntentId);
 			
-
-
 			var refund = await _refundService.CreateAsync(refundOptions);
 
 			var newransaction = new Transaction

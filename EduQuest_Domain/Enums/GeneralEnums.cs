@@ -83,7 +83,7 @@ namespace EduQuest_Domain.Enums
 			ProAccount = 3
 		}
 
-		public enum ItemTypeTransaction
+		public enum ItemTypeTransactionDetail
 		{
 			Course = 1,
 			

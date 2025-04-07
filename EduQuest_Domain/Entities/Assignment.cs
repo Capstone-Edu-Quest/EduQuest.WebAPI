@@ -6,7 +6,7 @@ namespace EduQuest_Domain.Entities
 	[Table("Assignment")]
 	public class Assignment : BaseEntity
 	{
-		public int? TimeLimit { get; set; }
+		public double? TimeLimit { get; set; }
 		public string? Question { get; set; }
 		public string? AnswerLanguage { get; set; }
 		public string? ExpectedAnswer { get; set; }

@@ -7,7 +7,7 @@ namespace EduQuest_Domain.Entities
 	public partial class Quiz : BaseEntity
 	{
 
-		public int TimeLimit { get; set; }
+		public double? TimeLimit { get; set; }
 		public decimal PassingPercentage { get; set; }
 		
 

@@ -78,8 +78,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				userMeta.TotalStudyTime += request.Info.Time;
 			} else
 			{
-				courseLearner.TotalTime += material.Duration;
-				userMeta.TotalStudyTime += material.Duration;
+				courseLearner.TotalTime += (int)material.Duration;
+				userMeta.TotalStudyTime += (int)material.Duration;
 			}
 
 			courseLearner.CurrentLessonId = request.Info.LessonId;
