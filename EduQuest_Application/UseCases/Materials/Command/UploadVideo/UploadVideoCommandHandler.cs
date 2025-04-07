@@ -5,6 +5,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
 using System.Net;
+using StackExchange.Redis;
 
 namespace EduQuest_Application.UseCases.Materials.Command.UploadVideo;
 
@@ -23,27 +24,31 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
 
     public async Task<APIResponse> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
     {
-        
         string fileId = request.FileId;
         int totalChunks = request.TotalChunks;
         int chunkIndex = request.ChunkIndex;
         byte[] chunkData = request.ChunkData;
 
         var chunkKey = $"upload:{fileId}:chunk:{chunkIndex}";
-        await _redisCaching.SetAsync(chunkKey, chunkData, 60);
+        await _redisCaching.SetAsync(chunkKey, chunkData, 120);
 
-        // Track the number of chunks received for the file
-        var receivedChunksKey = $"upload:{fileId}:received";
-        var receivedChunks = await _redisCaching.GetAsync<int>(receivedChunksKey);
-        if (receivedChunks == 0)
+        // Sử dụng Hash để theo dõi các chunks đã nhận
+        var receivedChunksKey = $"upload:{fileId}:chunks";
+
+        // Thêm chunk hiện tại vào hash tracking
+        var hashEntries = new HashEntry[]
         {
-            await _redisCaching.SetAsync(receivedChunksKey, 0, 60);
-        }
+            new HashEntry(chunkIndex.ToString(), "1")
+        };
 
-        await _redisCaching.SetAsync(receivedChunksKey, receivedChunks + 1, 60);
+        await _redisCaching.HashSetAsync(receivedChunksKey, hashEntries, 120);
 
-        // Check if all chunks have been uploaded
-        if (receivedChunks + 1 == totalChunks)
+        // Lấy tất cả hash data để đếm số chunks đã nhận
+        var chunksReceived = await _redisCaching.GetAllHashDataAsync(receivedChunksKey);
+        int receivedChunksCount = chunksReceived?.Count ?? 0;
+
+        // Kiểm tra nếu tất cả chunks đã được upload
+        if (receivedChunksCount >= totalChunks)
         {
             using (var ms = new MemoryStream())
             {
@@ -54,28 +59,23 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
                     if (chunkDataToRetrieve == null)
                     {
                         return GeneralHelper.CreateErrorResponse(
-                                            HttpStatusCode.OK,
-                                            $"Missing chunk {i} for file {fileId}. Retry upload.",
-                                            $"Missing chunk {i} for file {fileId}. Retry upload.",
-                                            "name",
-                                            "file");
-
+                            HttpStatusCode.OK,
+                            $"Missing chunk {i} for file {fileId}. Retry upload.",
+                            $"Missing chunk {i} for file {fileId}. Retry upload.",
+                            "name",
+                            "file");
                     }
 
-                    // Write the chunk data to the MemoryStream
                     await ms.WriteAsync(chunkDataToRetrieve);
                 }
 
-                //upload the assembled video to Azure Blob Storage
-                ms.Position = 0; 
+                // Upload video đã được ghép vào Azure Blob Storage
+                ms.Position = 0;
                 string fileName = $"{fileId}.mp4";
                 await _blobStorage.UploadAsync(fileName, ms);
 
-                // After uploading, get the URL of the video
                 string fileUrl = _blobStorage.GetFileUrl(fileName);
 
-
-                // Reset received chunks count in Redis
                 for (int i = 0; i < totalChunks; i++)
                 {
                     await _redisCaching.DeleteKeyAsync($"upload:{fileId}:chunk:{i}");
@@ -92,16 +92,16 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
                     },
                     "name",
                     "file"
-            );
+                );
             }
         }
 
         return GeneralHelper.CreateSuccessResponse(
-                HttpStatusCode.OK,
-                $"Chunk {chunkIndex} uploaded. Waiting for more chunks...",
-                null,
-                "name",
-                "Material"
-            );
+            HttpStatusCode.OK,
+            $"Chunk {chunkIndex} uploaded. Waiting for more chunks...",
+            null,
+            "name",
+            "Material"
+        );
     }
 }
