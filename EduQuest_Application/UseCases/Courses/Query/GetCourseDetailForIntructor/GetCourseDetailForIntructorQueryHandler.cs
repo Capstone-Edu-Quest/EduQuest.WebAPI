@@ -4,16 +4,9 @@ using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Application.DTO.Response.Materials;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
-using Stripe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor
@@ -70,8 +63,10 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 
 				var materials = new List<MaterialInLessonResponse>();
 
+				var listMaterialId = lessonInCourse.LessonMaterials.Select(x => x.MaterialId).Distinct().ToList();
+				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
 
-				foreach (var material in lessonInCourse.Materials)
+				foreach (var material in listMaterial)
 				{
 					var currentMaterialResponse = new MaterialInLessonResponse
 					{

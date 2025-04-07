@@ -14,6 +14,7 @@ namespace EduQuest_Domain.Entities
         public string? OriginalMaterialId { get; set; }
         public int? Duration { get; set; }
         public string UserId { get; set; }
+        public string? Status { get; set; }
         //Video
         public string? UrlMaterial { get; set; }
         public string? Thumbnail { get; set; }
@@ -22,9 +23,8 @@ namespace EduQuest_Domain.Entities
         public string? AssignmentId { get; set; }
         public string? QuizId { get; set; }
 
-
 		[JsonIgnore]
-		public virtual ICollection<Lesson>? Lessons { get; set; }
+		public virtual ICollection<LessonMaterial> LessonMaterials { get; set; }
 		[JsonIgnore]
 		public virtual Quiz? Quiz { get; set; } = null;
 		[JsonIgnore]

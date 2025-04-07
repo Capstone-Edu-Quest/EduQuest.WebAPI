@@ -44,6 +44,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			
 			course.CreatedBy = user!.Id;
 			course.Id = Guid.NewGuid().ToString();
+			course.Version = 1;
 			//course.LastUpdated = DateTime.Now.ToUniversalTime();
 			course.Status = GeneralEnums.StatusCourse.Draft.ToString();
 			course.CourseStatistic = new CourseStatistic
@@ -54,7 +55,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 				TotalLesson = 0,
 				TotalReview = 0,
 				Rating = 0,
-				TotalTime = 0
+				TotalTime = 0,
+				CreatedAt = DateTime.Now.ToUniversalTime(),
+				UpdatedAt = DateTime.Now.ToUniversalTime(),
 			};
 			await _courseRepository.Add(course);
 			

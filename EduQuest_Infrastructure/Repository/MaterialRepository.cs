@@ -27,7 +27,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Material> GetMataterialQuizAssById(string materialId)
 		{
-			return await _context.Materials.Include(x => x.Lessons).Include(x => x.Quiz).Include(x => x.Assignment).FirstOrDefaultAsync(x => x.Id == materialId);
+			return await _context.Materials.Include(x => x.LessonMaterials).Include(x => x.Quiz).Include(x => x.Assignment).FirstOrDefaultAsync(x => x.Id == materialId);
 		}
 
 		public async Task<List<Material>> GetMaterialsByIds(List<string> materialIds)
@@ -37,7 +37,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Material> GetMaterialWithLesson(string materialId)
 		{
-			return await _context.Materials.Include(x => x.Lessons).FirstOrDefaultAsync(x => x.Id == materialId);
+			return await _context.Materials.Include(x => x.LessonMaterials).FirstOrDefaultAsync(x => x.Id == materialId);
 		}
 
 		public async Task<bool> IsOwnerThisMaterial(string userId, string materialId)

@@ -9,6 +9,8 @@ namespace EduQuest_Domain.Entities
 		public string UserId { get; set; }
 		public string CourseId { get; set; }
         public bool IsActive { get; set; }
+        public string? CurrentLessonId { get; set; }
+        public string? CurrentMaterialId { get; set; }
         public int? TotalTime { get; set; }
         public decimal? ProgressPercentage { get; set; }
 

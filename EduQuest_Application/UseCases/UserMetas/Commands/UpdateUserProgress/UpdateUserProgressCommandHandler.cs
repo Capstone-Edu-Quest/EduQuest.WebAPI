@@ -15,14 +15,16 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IUserMetaRepository _userMetaRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICourseRepository _courseRepository;
+		private readonly ILessonRepository _lessonRepository;
 		private readonly IMaterialRepository _materialRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
 
-		public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository)
+		public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository)
 		{
 			_userMetaRepository = userMetaRepository;
 			_unitOfWork = unitOfWork;
 			_courseRepository = courseRepository;
+			_lessonRepository = lessonRepository;
 			_materialRepository = materialRepository;
 			_systemConfigRepository = systemConfigRepository;
 		}
@@ -30,37 +32,52 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		public async Task<APIResponse> Handle(UpdateUserProgressCommand request, CancellationToken cancellationToken)
 		{
 			var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
+			//Get material
 			var material = await _materialRepository.GetMataterialQuizAssById(request.Info.MaterialId);
-			var course = await _courseRepository.GetCourseLearnerByCourseId(request.Info.CourseId);
+			//Get lesson
+			var lesson = await _lessonRepository.GetById(request.Info.LessonId);
+
+			//Get CourseLeaner
+			var course = await _courseRepository.GetCourseLearnerByCourseId(lesson.CourseId);
 			var courseLearner = course.CourseLearners.FirstOrDefault(x => x.UserId == request.UserId);
 
-			Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
-			var systemConfig = new SystemConfig();
-			switch (typeEnum)
+			//Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
+			//var systemConfig = new SystemConfig();
+			//switch (typeEnum)
+			//{
+			//	case GeneralEnums.TypeOfMaterial.Video:
+			//		courseLearner.TotalTime += request.Info.Time;
+			//		userMeta.TotalStudyTime += request.Info.Time;
+			//		break;
+			//	case GeneralEnums.TypeOfMaterial.Document:
+			//		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Document.ToString());
+			//		courseLearner.TotalTime += (int)systemConfig.Value;
+			//		userMeta.TotalStudyTime += (int)systemConfig.Value;
+			//		break;
+			//	case GeneralEnums.TypeOfMaterial.Assignment:
+			//		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Assignment.ToString());
+			//		courseLearner.TotalTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
+			//		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
+			//		break;
+			//	case GeneralEnums.TypeOfMaterial.Quiz:
+			//		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Quiz.ToString());
+			//		courseLearner.TotalTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
+			//		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
+			//		break;
+			//	default:
+			//		break;
+			//}
+			if(request.Info.Time != null)
 			{
-				case GeneralEnums.TypeOfMaterial.Video:
-					courseLearner.TotalTime += request.Info.Time;
-					userMeta.TotalStudyTime += request.Info.Time;
-					break;
-				case GeneralEnums.TypeOfMaterial.Document:
-					systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Document.ToString());
-					courseLearner.TotalTime += (int)systemConfig.Value;
-					userMeta.TotalStudyTime += (int)systemConfig.Value;
-					break;
-				case GeneralEnums.TypeOfMaterial.Assignment:
-					systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Assignment.ToString());
-					courseLearner.TotalTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
-					userMeta.TotalStudyTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
-					break;
-				case GeneralEnums.TypeOfMaterial.Quiz:
-					systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Quiz.ToString());
-					courseLearner.TotalTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
-					userMeta.TotalStudyTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
-					break;
-				default:
-					break;
+				courseLearner.TotalTime += request.Info.Time;
+				userMeta.TotalStudyTime += request.Info.Time;
+			} else
+			{
+				courseLearner.TotalTime += material.Duration;
+				userMeta.TotalStudyTime += material.Duration;
 			}
-
+			courseLearner.CurrentLessonId = request.Info.LessonId;
+			courseLearner.CurrentMaterialId = request.Info.MaterialId;
 			courseLearner.ProgressPercentage = ((decimal)courseLearner.TotalTime / course.CourseStatistic.TotalTime) * 100;
 			await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);
