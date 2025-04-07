@@ -112,7 +112,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             //Update Trasaction Detail
            
 			var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
-            if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString()))
+            if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString()))
             {
 				var myCart = await _cartRepository.GetByUserId(transactionExisted.UserId);
 				if (myCart == null)
@@ -172,7 +172,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
 						int packageEnum = (int)Enum.Parse(typeof(PackageEnum), user.Package);
 						var	courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), packageEnum, (int)GeneralEnums.ConfigEnum.CommissionFee);
-						if (detail.ItemType == GeneralEnums.ItemTypeTransaction.Course.ToString())
+						if (detail.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString())
 						{
 							systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value)/100);
 							instructorShare = courseNetAmount - systemShare;

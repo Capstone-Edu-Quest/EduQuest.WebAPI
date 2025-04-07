@@ -109,7 +109,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 											UnitAmount = (long)((cart.Total - disCount) * 100), // Convert to cents
 											ProductData = new SessionLineItemPriceDataProductDataOptions
 											{
-												Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
+												Name = GeneralEnums.ItemTypeTransactionDetail.Course.ToString()
 											}
 										}
 									});
@@ -127,7 +127,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 							UnitAmount = (long)(cart.Total * 100), // Convert to cents
 							ProductData = new SessionLineItemPriceDataProductDataOptions
 							{
-								Name = GeneralEnums.ItemTypeTransaction.Course.ToString()
+								Name = GeneralEnums.ItemTypeTransactionDetail.Course.ToString()
 							}
 						}
 					});
@@ -195,7 +195,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 								TransactionId = transaction.Id,
 								InstructorId = course.CreatedBy,
 								ItemId = item.CourseId,
-								ItemType = GeneralEnums.ItemTypeTransaction.Course.ToString(),
+								ItemType = GeneralEnums.ItemTypeTransactionDetail.Course.ToString(),
 								Amount = item.Price
 							});
 						}

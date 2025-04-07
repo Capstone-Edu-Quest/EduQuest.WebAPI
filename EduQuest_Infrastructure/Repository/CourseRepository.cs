@@ -107,7 +107,7 @@ namespace EduQuest_Infrastructure.Repository
             .CountAsync();
 
             var transactionCount = await _context.TransactionDetails
-                .Where(t => t.ItemType.ToLower() == GeneralEnums.ItemTypeTransaction.Course.ToString().ToLower() && t.ItemId == courseId)
+                .Where(t => t.ItemType.ToLower() == GeneralEnums.ItemTypeTransactionDetail.Course.ToString().ToLower() && t.ItemId == courseId)
                 .CountAsync();
 
             var totalCount = cartCount + transactionCount;
