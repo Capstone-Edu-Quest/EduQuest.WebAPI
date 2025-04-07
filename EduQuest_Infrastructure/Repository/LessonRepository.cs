@@ -40,7 +40,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Lesson> GetByLessonIdAsync(string lessonId)
 		{
-			return await _context.Lessons.Include(x => x.Materials).FirstOrDefaultAsync(x => x.Id == lessonId);
+			return await _context.Lessons.Include(x => x.LessonMaterials).FirstOrDefaultAsync(x => x.Id == lessonId);
 		}
 
 		public async Task<int?> GetMaxLevelInThisCourse(string id)

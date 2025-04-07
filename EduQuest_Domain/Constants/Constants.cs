@@ -121,7 +121,11 @@ namespace EduQuest_Domain.Constants
 		{
 			public const string ExistedUser = "USERS HAVE USED";
 		}
-        public static class MessageQuest
+		public static class MessageLearner
+		{
+			public const string AddedUserToCourse = "AddedUserToClass";
+		}
+		public static class MessageQuest
         {
             public const string InvalidQuestTypeOrResetType = "QUESTTYPE_OR_TYPE_INVALID";
         }

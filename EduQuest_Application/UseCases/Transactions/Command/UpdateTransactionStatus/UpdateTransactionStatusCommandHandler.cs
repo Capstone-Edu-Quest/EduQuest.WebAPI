@@ -191,11 +191,12 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 							ProgressPercentage = 0
 						};
 						course.CourseLearners.Add(newLearner);
-						await _cartRepository.Delete(myCart.Id);
 						await _courseRepository.Update(course);
 					}
 				}
-            } else
+				myCart.CartItems.Clear();
+				await _cartRepository.Delete(myCart.Id);
+			} else
 			{
 				foreach (var detail in transactionDetailList)
 				{

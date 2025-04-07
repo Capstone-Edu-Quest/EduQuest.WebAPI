@@ -54,6 +54,15 @@ namespace EduQuest_Domain.Enums
 
 		#endregion
 
+		#region
+		public enum StatusMaterial
+		{
+			Done = 1,
+			Current = 2,
+			Locked = 3
+		}
+		#endregion
+
 		#region Payment
 		public enum StatusPayment
 		{

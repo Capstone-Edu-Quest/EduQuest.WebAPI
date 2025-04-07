@@ -49,7 +49,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			var value = await _systemConfigRepository.GetByName(oldMaterial.Type!);  
 
 			//Check hasLearners
-			var lessons = oldMaterial.Lessons;
+			var lessons = oldMaterial.LessonMaterials.Select(x => x.Lesson);
 			var listCourse = new List<Course>();
 			bool hasLearners = false;
 			var courseIds = lessons.Select(l => l.CourseId).Distinct();

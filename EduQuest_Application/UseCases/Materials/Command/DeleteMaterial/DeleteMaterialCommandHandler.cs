@@ -31,9 +31,9 @@ namespace EduQuest_Application.UseCases.Materials.Command.DeleteMaterial
 				return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, "Not owner", MessageCommon.NotOwner, "name", "material");
 			}
 			var material = await _materialRepository.GetMaterialWithLesson(request.MaterialId);
-			if (material.Lessons.Any()) //Check material is used in any lesson
+			if (material.LessonMaterials.Any()) //Check material is used in any lesson
 			{
-				var courseIds = material.Lessons.Select(x => x.CourseId).ToList();
+				var courseIds = material.LessonMaterials.Select(x => x.Lesson.CourseId).ToList();
 				var listCourseUseThisMaterial = await _courseRepository.GetByListIds(courseIds);
 				bool hasPublicCourse = listCourseUseThisMaterial.Any(course => course.Status == GeneralEnums.StatusCourse.Public.ToString());
 				if(!hasPublicCourse)

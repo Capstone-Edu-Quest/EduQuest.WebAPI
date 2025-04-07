@@ -8,8 +8,8 @@ namespace EduQuest_Application.DTO.Request.UserMetas
 {
 	public class UpdateUserProgressRequest
 	{
-		public string CourseId { get; set; }
 		public string MaterialId { get; set; }
+		public string LessonId { get; set; }
 		public int? Time { get; set; }
 	}
 }
