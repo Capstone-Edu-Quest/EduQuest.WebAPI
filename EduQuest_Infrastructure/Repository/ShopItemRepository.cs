@@ -1,4 +1,5 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.PlatformStatisticDashBoard;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -32,5 +33,56 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
             query = query.Where(a => a.Name.Equals(name));
         }
         return await query.ToListAsync();
+    }
+
+    public async Task<ShopItemStatisticDto> GetShopItemStatisticsDto()
+    {
+        var result = new ShopItemStatisticDto();
+        var totalItems = await _context.Mascots.CountAsync();
+        var totalUsers = await _context.Mascots
+            .Select(x => x.UserId)
+            .Distinct()
+            .CountAsync();
+
+        var averageItemsPerUser = totalUsers == 0 ? 0 : (double)totalItems / totalUsers;
+
+        result.AverageItemsPerUser = averageItemsPerUser;
+
+        var totalItemSold = await _context.Mascots
+                            .AsNoTracking()
+                            .CountAsync(a => a.UserId != null);
+
+        var mostPurchasedItem = await _context.Mascots
+                            .AsNoTracking()
+                            .GroupBy(m => m.ShopItemId)
+                            .Select(g => new {
+                                ShopItemId = g.Key,
+                                Count = g.Count()
+                            })
+                            .OrderByDescending(x => x.Count)
+                            .FirstOrDefaultAsync();
+
+
+        var bestSaleItems = await _context.Mascots
+                            .AsNoTracking()
+                            .GroupBy(m => m.ShopItemId)
+                            .Select(g => new BestSaleItemDto { 
+                                name = g.Key,
+                                count = g.Count()
+                            })
+                            .ToListAsync();
+
+        var totalGold = await (from mascot in _context.Mascots
+                               join item in _context.ShopItems
+                               on mascot.ShopItemId equals item.Name
+                               select item.Price)
+                              .SumAsync();
+
+        result.MostPurchasedItem = mostPurchasedItem.ShopItemId;
+        result.BestSaleItems = bestSaleItems;
+        result.TotalGoldFromSales = totalGold;
+        result.TotalItemSold = totalItemSold;
+
+        return result;
     }
 }

@@ -32,7 +32,7 @@ public class GetInstructorProfileQueryHandler : IRequestHandler<GetInstructorPro
 
         var courses = await _courseRepository.GetCoursesByInstructorIdAsync(user.Id);
 
-        var courseDtos = _mapper.Map<List<CourseInstructorProfileDto>>(courses);
+        var courseDtos = _mapper.Map<List<CourseProfileDto>>(courses);
 
         foreach (var coursedto in courseDtos)
         {

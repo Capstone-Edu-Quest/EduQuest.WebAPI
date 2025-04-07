@@ -45,5 +45,10 @@ namespace EduQuest_Infrastructure.Repository
 			var material = await _context.Materials.FirstOrDefaultAsync(x => x.Id == materialId && x.UserId == userId);
 			return material != null;
 		}
-	}
+
+        public async Task<List<Material>> GetByUserIdAsync(string userId)
+        {
+            return await _context.Materials.AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
+        }
+    }
 }

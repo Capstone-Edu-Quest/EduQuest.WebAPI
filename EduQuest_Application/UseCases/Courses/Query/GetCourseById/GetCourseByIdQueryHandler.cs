@@ -10,6 +10,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 {
@@ -52,6 +53,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.Rating = course.CourseStatistic.Rating;
 			courseResponse.TotalTime = course.CourseStatistic.TotalTime;
 			courseResponse.LastUpdated = course.UpdatedAt;
+			
 			if (courseLearner != null)
 			{
 				courseResponse.Progress = courseLearner!.ProgressPercentage;
@@ -188,7 +190,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 					Materials = materials
 				});
 			}
-			courseResponse.ListLesson = lessonResponses;
+			courseResponse.ListLesson = lessonResponses.OrderBy(c => c.Index).ToList();
 
 			courseResponse.ListTag = course.Tags?.Select(tag => new TagResponse
 			{
