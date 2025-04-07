@@ -13,6 +13,7 @@ namespace EduQuest_Application.DTO.Request.Courses
         public string? KeywordName { get; set; }
         public DateTime? DateTo { get; set; }
         public DateTime? DateFrom { get; set; }
+        public bool? IsPublic { get; set; }
         public List<string?>? TagListId { get; set; }
         public string? Author { get; set; }
         public int? Rating { get; set; }
