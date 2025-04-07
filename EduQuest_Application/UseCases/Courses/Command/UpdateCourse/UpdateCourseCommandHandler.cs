@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Request.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -7,12 +6,6 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using Stripe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
@@ -79,7 +72,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 						{
 							LessonId = lesson.Id,
 							MaterialId = m.Id,
-							Index = materials.IndexOf(m), 
+							Index = materials.IndexOf(m),
+							CreatedAt = DateTime.Now.ToUniversalTime(),
+							UpdatedAt = DateTime.Now.ToUniversalTime(),
 						}).ToList();
 
 						lesson.LessonMaterials = lessonMaterials;

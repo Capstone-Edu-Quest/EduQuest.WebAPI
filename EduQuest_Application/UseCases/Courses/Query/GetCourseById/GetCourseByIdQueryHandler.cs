@@ -95,7 +95,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				var listMaterialId = lessonInCourse.LessonMaterials.Select(x => x.MaterialId).Distinct().ToList();
 				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
 				
-				if(courseLearner == null || courseLearner.ProgressPercentage == null)
+				if(courseLearner == null || courseLearner.ProgressPercentage == 0)
 				{
 					foreach (var material in listMaterial)
 					{

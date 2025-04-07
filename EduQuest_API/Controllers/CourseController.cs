@@ -83,8 +83,8 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetCourseStatisticForInstructor(CancellationToken cancellationToken = default)
 		{
-			//string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery("5e7ca4f0-2fca-42e9-b0a5-59be4c4cc037"), cancellationToken);
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery(userId), cancellationToken);
 			return Ok(result);
 		}
 
