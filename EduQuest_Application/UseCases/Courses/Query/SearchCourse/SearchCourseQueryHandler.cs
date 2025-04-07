@@ -80,6 +80,12 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			else if (request.SearchRequest.DateFrom != null)
 			{
 				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom).ToList();
+			}else if (request.SearchRequest.IsPublic.HasValue)
+			{
+				bool flag = request.SearchRequest.IsPublic.Value;
+
+                listCourse = flag == true? listCourse.Where(x => x.Status == StatusCourse.Public.ToString()).ToList()
+					: listCourse.Where(x => x.Status != StatusCourse.Public.ToString()).ToList();
 			}
 			else if (request.SearchRequest.DateFrom != null && request.SearchRequest.DateTo != null)
 			{
