@@ -19,35 +19,11 @@ public class DetailMaterialResponseDto : IMapFrom<Material>, IMapTo<Material>
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<Material, DetailMaterialResponseDto>()
-        .ForMember(dest => dest.Quizzes, opt => opt.MapFrom(src => src.Quiz))
-        .ForMember(dest => dest.Assignments, opt => opt.MapFrom(src => src.Assignment));
-        //.AfterMap((src, dest) =>
-        //{
-        //    dest.Videos ??= new VideoTypeDto
-        //    {
-        //        UrlMaterial = "",
-        //        Duration = 0,
-        //        Thumbnail = ""
-        //    };
-
-        //    dest.Quizzes ??= new QuizTypeDto
-        //    {
-        //        TimeLimit = 0,
-        //        PassingPercentage = 0,
-        //        Questions = new List<QuestionResponseDto>()
-        //    };
-
-        //    dest.Assignments ??= new AssignmentTypeDto
-        //    {
-        //        TimeLimit = 0,
-        //        Question = "",
-        //        AnswerLanguage = "",
-        //        ExpectedAnswer = "",
-                
-        //    };
-        //});
-
-
-    }
+		profile.CreateMap<Material, DetailMaterialResponseDto>()
+		.ForMember(dest => dest.Quizzes, opt => opt.MapFrom(src => src.Quiz))
+		.ForMember(dest => dest.Assignments, opt => opt.MapFrom(src => src.Assignment))
+		.ForPath(dest => dest.Videos.UrlMaterial, opt => opt.MapFrom(src => src.UrlMaterial))
+		.ForPath(dest => dest.Videos.Duration, opt => opt.MapFrom(src => src.Duration));
+       
+	}
 }

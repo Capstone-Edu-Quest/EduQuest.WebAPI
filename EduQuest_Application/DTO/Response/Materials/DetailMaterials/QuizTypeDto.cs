@@ -6,7 +6,7 @@ namespace EduQuest_Application.DTO.Response.Materials.DetailMaterials;
 
 public class QuizTypeDto : IMapFrom<Quiz>, IMapTo<Quiz>
 {
-    public int TimeLimit { get; set; }
+	public string? Id { get; set; }
     public decimal PassingPercentage { get; set; }
     public List<QuestionResponseDto> Questions { get; set; } = new List<QuestionResponseDto>();
 
@@ -38,6 +38,7 @@ public class QuizTypeDto : IMapFrom<Quiz>, IMapTo<Quiz>
 
 public class QuestionResponseDto : IMapFrom<Question>, IMapTo<Question>
 {
+    public string Id { get; set; }
     public string QuestionTitle { get; set; }
     public bool MultipleAnswers { get; set; }
     public List<AnswerResponseDto> Answers { get; set; } = new List<AnswerResponseDto>();
@@ -62,6 +63,7 @@ public class QuestionResponseDto : IMapFrom<Question>, IMapTo<Question>
 
 public class AnswerResponseDto : IMapTo<Answer>, IMapFrom<Answer>
 {
+    public string Id { get; set; }
     public string AnswerContent { get; set; }
     public bool IsCorrect { get; set; }
 }
