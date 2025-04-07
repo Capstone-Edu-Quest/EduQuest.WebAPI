@@ -7,6 +7,6 @@ namespace EduQuest_Application.DTO.Request.Materials
 	{
 		public string QuestionTitle { get; set; }
 		public bool MultipleAnswers { get; set; }
-        public List<AnswerRequest> AnswerRequest { get; set; }
+        public List<AnswerRequest> Answers { get; set; }
     }
 }

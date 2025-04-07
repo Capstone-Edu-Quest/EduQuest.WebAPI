@@ -172,12 +172,12 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			Quiz quiz = new Quiz(), newQuiz = new Quiz();
 			if (!hasLearners)
 			{
-				oldMaterial.Duration = (int)(item.QuizRequest!.TimeLimit! * (systemConfig?.Value ?? 1));
+				oldMaterial.Duration = (int)(item.Quiz!.TimeLimit! * (systemConfig?.Value ?? 1));
 
 				quiz = await _quizRepository.GetQuizById(oldMaterial.QuizId);
 				if (quiz != null)
 				{
-					quiz = _mapper.Map<Quiz>(item.QuizRequest);
+					quiz = _mapper.Map<Quiz>(item.Quiz);
 				}
 				await _quizRepository.Update(quiz);
 
@@ -193,14 +193,14 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 				quiz.Questions.Clear();
 			} else
 			{
-				newQuiz = _mapper.Map<Quiz>(item.QuizRequest!);
+				newQuiz = _mapper.Map<Quiz>(item.Quiz!);
 				newQuiz.Id = Guid.NewGuid().ToString();
 				newMaterial.QuizId = newQuiz.Id;
 				await _quizRepository.Add(newQuiz);
 			}
 
 			// Add new Questions for the quiz
-			var questions = _mapper.Map<List<Question>>(item.QuizRequest.QuestionRequest);
+			var questions = _mapper.Map<List<Question>>(item.Quiz.Questions);
 			foreach (var question in questions)
 			{
 				question.Id = Guid.NewGuid().ToString();
@@ -217,10 +217,10 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 
 			// Add answers for the questions
 			var answers = new List<Answer>();
-			foreach (var questionRequest in item.QuizRequest.QuestionRequest)
+			foreach (var questionRequest in item.Quiz.Questions)
 			{
 				var question = questions.First(q => q.QuestionTitle == questionRequest.QuestionTitle);
-				var answersForQuestion = _mapper.Map<List<Answer>>(questionRequest.AnswerRequest);
+				var answersForQuestion = _mapper.Map<List<Answer>>(questionRequest.Answers);
 
 				foreach (var answer in answersForQuestion)
 				{
@@ -240,17 +240,17 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 		{
 			if (!hasLearners)
 			{
-				oldMaterial.Duration = item.VideoRequest!.Duration;
-				oldMaterial.UrlMaterial = item.VideoRequest.UrlMaterial;
-				oldMaterial.Thumbnail = item.VideoRequest.Thumbnail;
+				oldMaterial.Duration = item.Video!.Duration;
+				oldMaterial.UrlMaterial = item.Video.UrlMaterial;
+				oldMaterial.Thumbnail = item.Video.Thumbnail;
 			} else
 			{
-				newMaterial.Duration = item.VideoRequest!.Duration;
-				newMaterial.UrlMaterial = item.VideoRequest.UrlMaterial;
-				newMaterial.Thumbnail = item.VideoRequest.Thumbnail;
+				newMaterial.Duration = item.Video!.Duration;
+				newMaterial.UrlMaterial = item.Video.UrlMaterial;
+				newMaterial.Thumbnail = item.Video.Thumbnail;
 			}
 
-			if (item.QuizRequest != null)
+			if (item.Quiz != null)
 			{
 				await ProcessQuizMaterialAsync(item, systemConfig, oldMaterial, newMaterial, hasLearners);
 			}
@@ -262,13 +262,13 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			if (!hasLearners)
 			{
 				var oldAssignment = oldMaterial.Assignment;
-				oldAssignment = _mapper.Map<Assignment>(item.AssignmentRequest);
+				oldAssignment = _mapper.Map<Assignment>(item.Assignment);
 				await _assignmentRepository.Update(oldAssignment);
 			}
 			else
 			{
-				newMaterial.Duration = (int)(item.AssignmentRequest!.TimeLimit! * systemConfig.Value!);
-				var newAssignment = _mapper.Map<Assignment>(item.AssignmentRequest);
+				newMaterial.Duration = (int)(item.Assignment!.TimeLimit! * systemConfig.Value!);
+				var newAssignment = _mapper.Map<Assignment>(item.Assignment);
 				newAssignment.Id = Guid.NewGuid().ToString();
 				newMaterial.AssignmentId = newAssignment.Id;
 				newMaterial.Assignment = newAssignment;

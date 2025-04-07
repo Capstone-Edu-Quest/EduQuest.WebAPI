@@ -12,6 +12,6 @@ namespace EduQuest_Application.DTO.Request.Materials
 	{
 		public int TimeLimit { get; set; }
 		public decimal PassingPercentage { get; set; }
-        public List<QuestionRequest> QuestionRequest { get; set; }
+        public List<QuestionRequest> Questions { get; set; }
     }
 }
