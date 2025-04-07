@@ -124,6 +124,7 @@ namespace EduQuest_Domain.Constants
 		public static class MessageLearner
 		{
 			public const string AddedUserToCourse = "AddedUserToClass";
+			public const string NotLearner = "YouarenotlearnerthisClass";
 		}
 		public static class MessageQuest
         {

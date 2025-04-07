@@ -96,9 +96,10 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 					group new { learner, courseStatistic } by learner.CourseId into g
 					select new TopCourseInfo
 					{
-						Ttile = g.FirstOrDefault().courseStatistic.Course.Title, 
-						RatingCount = (double)g.FirstOrDefault().courseStatistic.Rating, 
-						LearnerCount = g.Count() 
+						Title = g.FirstOrDefault().courseStatistic.Course.Title,
+						RatingCountOneToThree = g.Count(x => x.courseStatistic.Rating <= 3),
+						RatingCountThreeToFive = g.Count(x => x.courseStatistic.Rating > 3 && x.courseStatistic.Rating <= 5),
+						LearnerCount = g.Count()
 					};
 
 		var top3Courses = await query

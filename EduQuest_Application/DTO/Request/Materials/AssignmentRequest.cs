@@ -10,6 +10,5 @@ namespace EduQuest_Application.DTO.Request.Materials
 		public string? AnswerLanguage { get; set; }
 		public string? ExpectedAnswer { get; set; }
 
-		
 	}
 }

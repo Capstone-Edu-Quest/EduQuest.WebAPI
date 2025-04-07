@@ -7,6 +7,7 @@ using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using static EduQuest_Domain.Enums.GeneralEnums;
+using EduQuest_Application.Helper;
 
 namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 {
@@ -40,6 +41,10 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			//Get CourseLeaner
 			var course = await _courseRepository.GetCourseLearnerByCourseId(lesson.CourseId);
 			var courseLearner = course.CourseLearners.FirstOrDefault(x => x.UserId == request.UserId);
+			if(courseLearner == null)
+			{
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
+			}
 
 			//Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
 			//var systemConfig = new SystemConfig();
@@ -76,6 +81,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				courseLearner.TotalTime += material.Duration;
 				userMeta.TotalStudyTime += material.Duration;
 			}
+
 			courseLearner.CurrentLessonId = request.Info.LessonId;
 			courseLearner.CurrentMaterialId = request.Info.MaterialId;
 			courseLearner.ProgressPercentage = ((decimal)courseLearner.TotalTime / course.CourseStatistic.TotalTime) * 100;

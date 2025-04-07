@@ -10,5 +10,5 @@ public interface IFeedbackRepository : IGenericRepository<Feedback>
     Task<PagedList<Feedback>> GetByCourseId(string courseId, int pageNo, int pageSize, int? rating, string? feedback);
     Task<bool> IsOnwer(string feedbackId, string UserId);
     Task<List<ChartInfo>> GetCourseRatingOverTimeAsync(string courseId);
-    Task<List<ChartInfo>> GetMyCoursesRatingOverTimeAsync(List<string> courseIds);
+    Task<List<CourseRatingOverTime>> GetMyCoursesRatingOverTimeAsync(List<string> courseIds);
 }

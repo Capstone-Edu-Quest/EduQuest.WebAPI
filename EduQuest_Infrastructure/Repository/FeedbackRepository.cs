@@ -58,22 +58,32 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
 		return await query.ToListAsync();
 	}
 
-	public async Task<List<ChartInfo>> GetMyCoursesRatingOverTimeAsync(List<string> courseIds)
+	public async Task<List<CourseRatingOverTime>> GetMyCoursesRatingOverTimeAsync(List<string> courseIds)
 	{
 		var query = from feedback in _context.Feedbacks
-					where courseIds.Contains(feedback.CourseId)
-					group feedback by new
+					where courseIds.Contains(feedback.CourseId)  
+					group feedback by feedback.Rating into g 
+					select new CourseRatingOverTime
 					{
-						Year = feedback.UpdatedAt.Value.Year,
-						Month = feedback.UpdatedAt.Value.Month
-					} into g
-					select new ChartInfo
-					{
-						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
-						Count = g.Count().ToString()
+						Rating = g.Key,  
+						Count = g.Count()  
 					};
 
-		return await query.ToListAsync();
+		var result = await query.ToListAsync();
+
+		var courseRatingList = new List<CourseRatingOverTime>();
+
+		for (int rating = 1; rating <= 5; rating++)
+		{
+			var existingRating = result.FirstOrDefault(r => r.Rating == rating);
+			courseRatingList.Add(new CourseRatingOverTime
+			{
+				Rating = rating,
+				Count = existingRating?.Count ?? 0 
+			});
+		}
+
+		return courseRatingList;
 	}
 
 	public async Task<bool> IsOnwer(string feedbackId, string UserId)
