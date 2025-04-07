@@ -42,6 +42,9 @@ using EduQuest_Application.Helper;
 using Infrastructure.ExternalServices.Email.Setting;
 using EduQuest_Application.Abstractions.Email;
 using EduQuest_Infrastructure.ExternalServices.Email;
+using EduQuest_Infrastructure.ExternalServices.BlobStorage.Setting;
+using EduQuest_Application.Abstractions.AzureBlobStorage;
+using EduQuest_Infrastructure.ExternalServices.BlobStorage;
 
 namespace EduQuest_Infrastructure
 {
@@ -53,6 +56,7 @@ namespace EduQuest_Infrastructure
 			services.Configure<GoogleSetting>(configuration.GetSection("GoogleToken"));
 			services.Configure<StripeModel>(configuration.GetSection("Stripe"));
 			services.Configure<EmailSetting>(configuration.GetSection("SmtpSettings"));
+			services.Configure<AzureStorageSetting>(configuration.GetSection("Blob"));
 
 
 			#region DbContext
@@ -136,6 +140,7 @@ namespace EduQuest_Infrastructure
 
             #region AddSingleton
             services.AddSingleton<IRedisCaching, RedisCaching>();
+			services.AddSingleton<IAzureBlobStorage, AzureBlobStorage>();
             services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUserRepository, UserRepository>();
