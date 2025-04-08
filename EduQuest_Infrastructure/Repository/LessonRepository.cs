@@ -47,5 +47,12 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Lessons.MaxAsync(s => (int?)s.Index);
 		}
+
+		public async Task<List<LessonMaterial>> GetMaterialsByLessonId(string lessonId)
+		{
+			var temp = await _context.Lessons.Where(l => l.Id == lessonId).FirstOrDefaultAsync();
+			List<LessonMaterial> result = temp!.LessonMaterials.ToList();
+			return result;
+		}
 	}
 }
