@@ -49,7 +49,7 @@ public class LevelController : ControllerBase
     [HttpPost()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateNewLevel([FromBody] LevelDto level, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateNewLevel([FromBody] List<LevelDto> level, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(new CreateLevelCommand(level), cancellationToken);
         return Ok(result);
