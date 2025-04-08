@@ -26,9 +26,10 @@ namespace EduQuest_Domain.Repository
 		Task<Course> GetCourseByUserIdAndCourseId(string userId, string courseId);
 		Task<int> GetCourseCountByCourseIdAsync(string courseId);
 		Task<List<Course>> GetCoursesByInstructorIdAsync(string instructorId);
+		Task<Course> GetCourseWithLessonsAndMaterialsAsync(string courseId);
 
-        //admin dashboard
-        Task<AdminDashboardCourses> GetAdminDashBoardStatistic();
+		//admin dashboard
+		Task<AdminDashboardCourses> GetAdminDashBoardStatistic();
 
     }
 }
