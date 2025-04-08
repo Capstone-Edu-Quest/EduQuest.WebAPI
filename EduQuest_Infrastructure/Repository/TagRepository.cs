@@ -1,6 +1,7 @@
 ﻿using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
+using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ namespace EduQuest_Infrastructure.Repository
         }
 
 
-        public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int? page, int? eachPage)
+        public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage)
         {
             var query = _context.Tags.AsQueryable();
 
@@ -45,7 +46,8 @@ namespace EduQuest_Infrastructure.Repository
                 query = query.Where(c => c.Name.Contains(Name));
             }
 
-            return new PagedList<Tag>(await query.ToListAsync(), query.Count(), (int)page!, (int)eachPage!);
+            return await query.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
+            //return new PagedList<Tag>(await query.ToListAsync(), query.Count(), (int)page!, (int)eachPage!);
         }
     }
 }
