@@ -10,6 +10,7 @@ using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
+using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
 using MediatR;
@@ -119,6 +120,19 @@ namespace EduQuest_API.Controllers
 		}
 
 		[Authorize]
+        [HttpGet("lesson")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetMaterialsByLessonId(//[FromQuery] string userId,
+			[FromQuery, Required] string lessonId,
+			CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetLessonMaterialsQuery(lessonId, userId), cancellationToken);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+
+        [Authorize]
 		[HttpGet("createdByMe")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -14,5 +14,7 @@ namespace EduQuest_Domain.Repository
 		Task<int?> GetMaxLevelInThisCourse(string id);
 		Task<bool> DeleteStagesByCourseId(string courseId);
 		Task<Lesson> GetByLessonIdAsync(string lessonId);
-	}
+		Task<List<LessonMaterial>> GetMaterialsByLessonId(string lessonId);
+
+    }
 }

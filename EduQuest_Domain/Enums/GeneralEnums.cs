@@ -54,7 +54,7 @@ namespace EduQuest_Domain.Enums
 
 		#endregion
 
-		#region
+		#region Materials learner
 		public enum StatusMaterial
 		{
 			Done = 1,
