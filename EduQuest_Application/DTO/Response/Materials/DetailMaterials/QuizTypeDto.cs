@@ -7,7 +7,8 @@ namespace EduQuest_Application.DTO.Response.Materials.DetailMaterials;
 public class QuizTypeDto : IMapFrom<Quiz>, IMapTo<Quiz>
 {
 	public string? Id { get; set; }
-    public decimal PassingPercentage { get; set; }
+	public int TimeLimit { get; set; }
+	public decimal PassingPercentage { get; set; }
     public List<QuestionResponseDto> Questions { get; set; } = new List<QuestionResponseDto>();
 
     public void MappingFrom(Profile profile)

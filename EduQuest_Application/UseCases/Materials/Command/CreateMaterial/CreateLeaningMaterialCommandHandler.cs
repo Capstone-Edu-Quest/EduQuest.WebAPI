@@ -91,7 +91,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 			);
 		}
 
-		private async Task<Material?> ProcessMaterialAsync(CreateLearningMaterialRequest item, string userId)
+		private async Task<Material?> ProcessMaterialAsync(CreateMaterialRequest item, string userId)
 		{
 			var material = _mapper.Map<Material>(item);
 			material.Id = Guid.NewGuid().ToString();
@@ -123,25 +123,25 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessDocumentMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material)
+		private async Task<Material> ProcessDocumentMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
 			material.Duration = (int)systemConfig.Value!;
 			material.Content = item.Content;
 			return material;
 		}
 
-		private async Task<Material> ProcessQuizMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material)
+		private async Task<Material> ProcessQuizMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
-			material.Duration = (int)(item.QuizRequest!.TimeLimit! * systemConfig.Value!);
+			material.Duration = (int)(item.Quiz!.TimeLimit! * systemConfig.Value!);
 
 			// Add new Quiz
-			var newQuiz = _mapper.Map<Quiz>(item.QuizRequest!);
+			var newQuiz = _mapper.Map<Quiz>(item.Quiz!);
 			newQuiz.Id = Guid.NewGuid().ToString();
 			material.QuizId = newQuiz.Id;
 			await _quizRepository.Add(newQuiz);
 
 			// Add new Questions for the quiz
-			var questions = _mapper.Map<List<Question>>(item.QuizRequest.QuestionRequest);
+			var questions = _mapper.Map<List<Question>>(item.Quiz.Questions);
 			foreach (var question in questions)
 			{
 				question.Id = Guid.NewGuid().ToString();
@@ -151,10 +151,10 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 
 			// Add answers for the questions
 			var answers = new List<Answer>();
-			foreach (var questionRequest in item.QuizRequest.QuestionRequest)
+			foreach (var questionRequest in item.Quiz.Questions)
 			{
 				var question = questions.First(q => q.QuestionTitle == questionRequest.QuestionTitle);
-				var answersForQuestion = _mapper.Map<List<Answer>>(questionRequest.AnswerRequest);
+				var answersForQuestion = _mapper.Map<List<Answer>>(questionRequest.Answers);
 
 				foreach (var answer in answersForQuestion)
 				{
@@ -169,13 +169,13 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessVideoMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material)
+		private async Task<Material> ProcessVideoMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
-			material.Duration = item.VideoRequest!.Duration;
-			material.UrlMaterial = item.VideoRequest.UrlMaterial;
-			material.Thumbnail = item.VideoRequest.Thumbnail;
+			material.Duration = item.Video!.Duration;
+			material.UrlMaterial = item.Video.UrlMaterial;
+			material.Thumbnail = item.Video.Thumbnail;
 
-			if (item.QuizRequest != null)
+			if (item.Quiz != null)
 			{
 				await ProcessQuizMaterialAsync(item, systemConfig, material);
 			}
@@ -183,10 +183,10 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessAssignmentMaterialAsync(CreateLearningMaterialRequest item, SystemConfig systemConfig, Material material)
+		private async Task<Material> ProcessAssignmentMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
-			material.Duration = (int)(item.AssignmentRequest!.TimeLimit! * systemConfig.Value!);
-			var newAssignment = _mapper.Map<Assignment>(item.AssignmentRequest);
+			material.Duration = (int)(item.Assignment!.TimeLimit! * systemConfig.Value!);
+			var newAssignment = _mapper.Map<Assignment>(item.Assignment);
 			newAssignment.Id = Guid.NewGuid().ToString();
 			material.AssignmentId = newAssignment.Id;
 			await _assignmentRepository.Add(newAssignment);
