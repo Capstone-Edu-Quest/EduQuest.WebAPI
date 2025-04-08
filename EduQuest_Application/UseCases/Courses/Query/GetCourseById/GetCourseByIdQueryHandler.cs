@@ -114,26 +114,26 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						materials.Add(currentMaterialResponse);
 
 						// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
-						if (material.OriginalMaterialId != null)
-						{
-							var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
+						//if (material.OriginalMaterialId != null)
+						//{
+						//	var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
 
-							if (originalMaterial != null)
-							{
-								var originalMaterialResponse = new MaterialInLessonResponse
-								{
-									Id = originalMaterial.Id,
-									Type = originalMaterial.Type,
-									Duration = originalMaterial.Duration,
-									Title = originalMaterial.Title,
-									Description = originalMaterial.Description,
-									Version = originalMaterial.Version,
-									Status = GeneralEnums.StatusMaterial.Locked.ToString(),
-								};
+						//	if (originalMaterial != null)
+						//	{
+						//		var originalMaterialResponse = new MaterialInLessonResponse
+						//		{
+						//			Id = originalMaterial.Id,
+						//			Type = originalMaterial.Type,
+						//			Duration = originalMaterial.Duration,
+						//			Title = originalMaterial.Title,
+						//			Description = originalMaterial.Description,
+						//			Version = originalMaterial.Version,
+						//			Status = GeneralEnums.StatusMaterial.Locked.ToString(),
+						//		};
 
-								materials.Add(originalMaterialResponse);
-							}
-						}
+						//		materials.Add(originalMaterialResponse);
+						//	}
+						//}
 					}
 				}else
 				{
@@ -165,26 +165,26 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						materials.Add(currentMaterialResponse);
 
 						// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
-						if (material.OriginalMaterialId != null)
-						{
-							var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
+						//if (material.OriginalMaterialId != null)
+						//{
+						//	var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
 
-							if (originalMaterial != null)
-							{
-								var originalMaterialResponse = new MaterialInLessonResponse
-								{
-									Id = originalMaterial.Id,
-									Type = originalMaterial.Type,
-									Duration = originalMaterial.Duration,
-									Title = originalMaterial.Title,
-									Description = originalMaterial.Description,
-									Version = originalMaterial.Version,
-									Status = GeneralEnums.StatusMaterial.Locked.ToString(),
-								};
+						//	if (originalMaterial != null)
+						//	{
+						//		var originalMaterialResponse = new MaterialInLessonResponse
+						//		{
+						//			Id = originalMaterial.Id,
+						//			Type = originalMaterial.Type,
+						//			Duration = originalMaterial.Duration,
+						//			Title = originalMaterial.Title,
+						//			Description = originalMaterial.Description,
+						//			Version = originalMaterial.Version,
+						//			Status = GeneralEnums.StatusMaterial.Locked.ToString(),
+						//		};
 
-								materials.Add(originalMaterialResponse);
-							}
-						}
+						//		materials.Add(originalMaterialResponse);
+						//	}
+						//}
 					}
 				}
 				
