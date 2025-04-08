@@ -7,4 +7,6 @@ public interface IMascotInventoryRepository : IGenericRepository<Mascot>
 {
     Task<Mascot?> GetByUserIdAndItemIdAsync(string userId, string shopItemId);
     Task<IEnumerable<Mascot>> GetItemsByUserIdAsync(string userId);
+    Task UpdateRangeMascot(List<string> items, string userId);
+    Task<IEnumerable<Mascot>> GetMascotByUserIdAndItemIdAsync(string userId, List<string> shopItemId);
 }
