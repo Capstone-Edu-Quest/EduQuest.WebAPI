@@ -41,23 +41,23 @@ namespace EduQuest_API.Controllers
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
 
-        [Authorize(Roles = "Staff, Admin")]
+        //[Authorize(Roles = "Staff, Admin")]
         [HttpPut("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateQuest([FromBody] UpdateQuestRequest achievement,
             //[FromQuery] string questId,
-            //[FromQuery] string userId,
+            [FromQuery] string userId,
             CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
+            //string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new UpdateQuestCommand(userId, achievement), cancellationToken);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
 
-        [Authorize(Roles = "Staff, Admin")]
+        //[Authorize(Roles = "Staff, Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetAllSystemQuests(//[FromQuery] string userId,
+        public async Task<IActionResult> GetAllSystemQuests([FromQuery] string userId,
             [FromQuery, AllowNull] string? title,
             [FromQuery, AllowNull] int? questType,
             [FromQuery, AllowNull] int? type,
@@ -65,7 +65,7 @@ namespace EduQuest_API.Controllers
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
              CancellationToken cancellationToken = default)
         {
-            string userId = User.GetUserIdFromToken().ToString();
+            //string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetAllSystemQuestsQuery(title, questType, type, questValue, userId, pageNo, eachPage), cancellationToken);
             if ((result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK))
             {
