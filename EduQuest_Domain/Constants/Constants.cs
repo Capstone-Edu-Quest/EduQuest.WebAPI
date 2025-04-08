@@ -75,6 +75,7 @@ namespace EduQuest_Domain.Constants
 			public const string CreateFailed = "CREATED_FAILED";
 
 			public const string NotFound = "NOT_FOUND";
+			public const string NotEnoughGold = "NOT_ENOUGH_GOLD";
 			public const string Complete = "COMPLETE";
 			public const string NoProvided = "NO_PROVIDED";
             public const string AlreadyExists = "ALREADY_EXISTS";
