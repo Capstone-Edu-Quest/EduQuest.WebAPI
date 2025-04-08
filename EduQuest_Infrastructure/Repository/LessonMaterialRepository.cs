@@ -25,5 +25,17 @@ namespace EduQuest_Infrastructure.Repository
 			var entity =  await _context.LessonMaterials.FirstOrDefaultAsync(x => x.LessonId == lessonId && x.MaterialId == materialId);
 			return entity.Index;
 		}
+
+		public async Task<List<string>> GetListMaterialIdByLessonId(string lessonId)
+		{
+			var list = await (from lessonMaterial in _context.LessonMaterials
+							  join lesson in _context.Lessons on lessonMaterial.LessonId equals lesson.Id
+							  where lessonMaterial.LessonId == lessonId
+							  orderby lesson.Index, lessonMaterial.Index // Sắp xếp theo Index của Lesson trước, sau đó mới tới Index của Material
+							  select lessonMaterial)
+					 .ToListAsync();
+
+			return list.Select(x => x.MaterialId).ToList();
+		}
 	}
 }

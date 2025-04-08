@@ -6,6 +6,6 @@ namespace EduQuest_Application.UseCases.Mascots.Commands.EquipMacotItem;
 public class EquipMascotItemCommand : IRequest<APIResponse>
 {
     public string UserId { get; set; }
-    public string ShopItemId { get; set; }
+    public List<string> ItemIds { get; set; }
 }
 

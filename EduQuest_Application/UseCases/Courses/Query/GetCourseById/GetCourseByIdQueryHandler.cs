@@ -86,16 +86,16 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			
 			var lessonResponses = new List<LessonCourseResponse>();
 
-			foreach (var lesson in course.Lessons!)
+			foreach (var lesson in course.Lessons.OrderBy(x => x.Index)!)
 			{
 				var lessonInCourse = await _lessonRepository.GetByLessonIdAsync(lesson.Id);
 
 				var materials = new List<MaterialInLessonResponse>();
 
-				var listMaterialId = lessonInCourse.LessonMaterials.Select(x => x.MaterialId).Distinct().ToList();
+				var listMaterialId = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
 				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
 				
-				if(courseLearner == null || courseLearner.ProgressPercentage == 0)
+				if(courseLearner == null)
 				{
 					foreach (var material in listMaterial)
 					{
@@ -114,26 +114,26 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						materials.Add(currentMaterialResponse);
 
 						// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
-						if (material.OriginalMaterialId != null)
-						{
-							var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
+						//if (material.OriginalMaterialId != null)
+						//{
+						//	var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
 
-							if (originalMaterial != null)
-							{
-								var originalMaterialResponse = new MaterialInLessonResponse
-								{
-									Id = originalMaterial.Id,
-									Type = originalMaterial.Type,
-									Duration = originalMaterial.Duration,
-									Title = originalMaterial.Title,
-									Description = originalMaterial.Description,
-									Version = originalMaterial.Version,
-									Status = GeneralEnums.StatusMaterial.Locked.ToString(),
-								};
+						//	if (originalMaterial != null)
+						//	{
+						//		var originalMaterialResponse = new MaterialInLessonResponse
+						//		{
+						//			Id = originalMaterial.Id,
+						//			Type = originalMaterial.Type,
+						//			Duration = originalMaterial.Duration,
+						//			Title = originalMaterial.Title,
+						//			Description = originalMaterial.Description,
+						//			Version = originalMaterial.Version,
+						//			Status = GeneralEnums.StatusMaterial.Locked.ToString(),
+						//		};
 
-								materials.Add(originalMaterialResponse);
-							}
-						}
+						//		materials.Add(originalMaterialResponse);
+						//	}
+						//}
 					}
 				}else
 				{
@@ -150,7 +150,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						currentMaterialResponse.OriginalMaterialId = material.OriginalMaterialId;
 
 						var nowMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(lesson.Id, material.Id);
-						if ( courseResponse.Progress == 0 || (currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
+						if ( (currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
 						{
 							currentMaterialResponse.Status = GeneralEnums.StatusMaterial.Locked.ToString();
 						} else if (currentLesson.Index == lesson.Index && nowMaterialIndex == currentMaterialIndex)
@@ -165,26 +165,26 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						materials.Add(currentMaterialResponse);
 
 						// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
-						if (material.OriginalMaterialId != null)
-						{
-							var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
+						//if (material.OriginalMaterialId != null)
+						//{
+						//	var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
 
-							if (originalMaterial != null)
-							{
-								var originalMaterialResponse = new MaterialInLessonResponse
-								{
-									Id = originalMaterial.Id,
-									Type = originalMaterial.Type,
-									Duration = originalMaterial.Duration,
-									Title = originalMaterial.Title,
-									Description = originalMaterial.Description,
-									Version = originalMaterial.Version,
-									Status = GeneralEnums.StatusMaterial.Locked.ToString(),
-								};
+						//	if (originalMaterial != null)
+						//	{
+						//		var originalMaterialResponse = new MaterialInLessonResponse
+						//		{
+						//			Id = originalMaterial.Id,
+						//			Type = originalMaterial.Type,
+						//			Duration = originalMaterial.Duration,
+						//			Title = originalMaterial.Title,
+						//			Description = originalMaterial.Description,
+						//			Version = originalMaterial.Version,
+						//			Status = GeneralEnums.StatusMaterial.Locked.ToString(),
+						//		};
 
-								materials.Add(originalMaterialResponse);
-							}
-						}
+						//		materials.Add(originalMaterialResponse);
+						//	}
+						//}
 					}
 				}
 				

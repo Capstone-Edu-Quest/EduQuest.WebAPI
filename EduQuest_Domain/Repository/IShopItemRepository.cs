@@ -10,4 +10,5 @@ public interface IShopItemRepository : IGenericRepository<ShopItem>
     Task<ShopItem?> GetItemByName(string name);
     Task<IEnumerable<ShopItem?>> GetItemWithFilter(string name);
     Task<ShopItemStatisticDto> GetShopItemStatisticsDto();
+    Task UpdateShopItems(string Name, double price);
 }

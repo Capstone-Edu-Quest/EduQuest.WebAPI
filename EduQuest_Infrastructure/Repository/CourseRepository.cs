@@ -151,8 +151,14 @@ namespace EduQuest_Infrastructure.Repository
                 .ToListAsync();
         }
 
-
-    }
+		public async Task<Course> GetCourseWithLessonsAndMaterialsAsync(string courseId)
+		{
+			return await _context.Courses
+		       .Include(c => c.Lessons.OrderBy(l => l.Index))
+			   .ThenInclude(l => l.LessonMaterials.OrderBy(lm => lm.Index))
+			   .FirstOrDefaultAsync(c => c.Id == courseId);
+		}
+	}
 
 }
 
