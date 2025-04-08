@@ -13,7 +13,6 @@ public class CreateCouponRequest : IMapFrom<Coupon>, IMapTo<Coupon>
     [Range(1, 100, ErrorMessage = "Discount ranged from 1 to 100")]
     public double Discount { get; set; }
 
-    [Required(ErrorMessage = MessageError.ValueRequired)]
     public string? Code { get; set; }
 
     [Required(ErrorMessage = MessageError.ValueRequired)]
