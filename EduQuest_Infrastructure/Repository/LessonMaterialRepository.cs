@@ -31,10 +31,11 @@ namespace EduQuest_Infrastructure.Repository
 			var list = await (from lessonMaterial in _context.LessonMaterials
 							  join lesson in _context.Lessons on lessonMaterial.LessonId equals lesson.Id
 							  where lessonMaterial.LessonId == lessonId
-							  orderby lesson.Index, lessonMaterial.Index // Sắp xếp theo Index của Lesson và Material
+							  orderby lesson.Index, lessonMaterial.Index // Sắp xếp theo Index của Lesson trước, sau đó mới tới Index của Material
 							  select lessonMaterial)
-					.ToListAsync();
-			return list.Select(x => x.MaterialId).Distinct().ToList();
+					 .ToListAsync();
+
+			return list.Select(x => x.MaterialId).ToList();
 		}
 	}
 }
