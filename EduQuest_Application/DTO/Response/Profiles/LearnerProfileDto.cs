@@ -10,6 +10,7 @@ public class LearnerProfileDto : IMapFrom<User>, IMapTo<User>
     public string? Id { get; set; }
     public string? Username { get; set; }
     public string? Email { get; set; }
+    public string? RoleId { get; set; }
     public string? Phone { get; set; }
     public int? Level { get; set; } = 0;
     public string Status { get; set; } = null!;

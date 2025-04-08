@@ -8,7 +8,11 @@ namespace EduQuest_Domain.Constants
 {
 	public class Constants
 	{
-		public static class Http
+        public static class FireBaseUrl
+        {
+            public const string URL = "https://eduquest-6f8b8-default-rtdb.asia-southeast1.firebasedatabase.app/";
+        }
+        public static class Http
 		{
 			public const string API_VERSION = "v1";
 			public const string CORS = "CORS";
