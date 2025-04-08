@@ -21,7 +21,7 @@ public class GetFilterTagQueryHandler : IRequestHandler<GetFilterTagQuery, APIRe
 
     public async Task<APIResponse> Handle(GetFilterTagQuery request, CancellationToken cancellationToken)
     {
-        var query = await _tagRepository.GetTagsWithFilters(request.TagId, request.Name, request.Page, request.EachPage);
+        var query = await _tagRepository.GetTagsWithFilters(request.TagId, request.Name, request.Page.Value, request.EachPage.Value);
 
         var certificates = _mapper.Map<PagedList<TagDto>>(query);
 
