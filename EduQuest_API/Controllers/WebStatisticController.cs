@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.UseCases.WebStatistics.Queries.AdminHomeDashboard;
 using EduQuest_Application.UseCases.WebStatistics.Queries.StaffStatistics;
+using EduQuest_Domain.Constants;
 using EduQuest_Domain.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ using System.Net;
 
 namespace EduQuest_API.Controllers;
 
-[Route("api/webStatistic")]
+[Route(Constants.Http.API_VERSION + "/webStatistic")]
 [ApiController]
 //[Authorize(Roles ="Admin")]
 public class WebStatisticController : ControllerBase
