@@ -58,7 +58,7 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         {
             return false;
         }
-        if(coupon.Usage >= coupon.Limit || coupon.ExpireTime < DateTime.Now)
+        if(coupon.Usage >= coupon.Limit && coupon.Limit > 0 || coupon.ExpireTime < DateTime.Now)
         {
             return false;
         }
@@ -75,7 +75,7 @@ public class CouponRepository : GenericRepository<Coupon>, ICouponRepository
         .Include(c => c.UserCoupons)
         .FirstOrDefaultAsync(c => c.Code == code);
 
-        if (coupon == null || coupon.Usage >= coupon.Limit || coupon.ExpireTime < DateTime.UtcNow)
+        if (coupon == null || coupon.Usage >= coupon.Limit  && coupon.Limit > 0|| coupon.ExpireTime < DateTime.UtcNow)
         {
             return false;
         }

@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Helper;
+﻿using EduQuest_Application.DTO.Request.Level;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
@@ -22,22 +23,27 @@ public class CreateLevelCommandHandler : IRequestHandler<CreateLevelCommand, API
     }
 
     public async Task<APIResponse> Handle(CreateLevelCommand request, CancellationToken cancellationToken)
-    {
-        if(await _levelRepository.IsLevelExist(request.Level.Level))
+    {        
+        List<Levels> levels = new List<Levels>();
+        foreach(LevelDto dto in request.Level)
         {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.LevelExist, "name", "level");
+            if (await _levelRepository.IsLevelExist(dto.Level))
+            {
+                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.LevelExist, "name", "level");
+            }
+            Levels level = new Levels
+            {
+                Id = Guid.NewGuid().ToString(),
+                Level = dto.Level,
+                Exp = dto.Exp,
+                RewardTypes = GeneralHelper.ArrayToString(dto.RewardType),
+                RewardValues = GeneralHelper.ArrayToString(dto.RewardValue),
+                CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+            };
+            levels.Add(level);
         }
-        var newLevel = new EduQuest_Domain.Entities.Levels
-        {
-            Id = Guid.NewGuid().ToString(),
-            Level = request.Level.Level,
-            Exp = request.Level.Exp,
-            RewardTypes = GeneralHelper.ArrayToString(request.Level.RewardType),
-            RewardValues = GeneralHelper.ArrayToString(request.Level.RewardValue),
-            CreatedAt = DateTime.UtcNow.ToUniversalTime(),
-            
-        };
-        await _levelRepository.Add(newLevel);
+       
+        await _levelRepository.CreateRangeAsync(levels);
         await _unitOfWork.SaveChangesAsync();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.CreateSuccesfully, null, "name", "level");
     }
