@@ -1,4 +1,7 @@
-﻿using EduQuest_Application.Helper;
+﻿using AutoMapper;
+using EduQuest_Application.DTO.Request.ShopItem;
+using EduQuest_Application.DTO.Response.ShopItems;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -10,12 +13,12 @@ namespace EduQuest_Application.UseCases.Shop.Commands.UpdateShopItem;
 public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemCommand, APIResponse>
 {
     private readonly IShopItemRepository _shopItemRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public UpdateShopItemCommandHandler(IShopItemRepository shopItemRepository, IUnitOfWork unitOfWork)
+    public UpdateShopItemCommandHandler(IShopItemRepository shopItemRepository, IMapper mapper)
     {
         _shopItemRepository = shopItemRepository;
-        _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<APIResponse> Handle(UpdateShopItemCommand request, CancellationToken cancellationToken)
@@ -30,6 +33,9 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
             await _shopItemRepository.UpdateShopItems(item.Name, item.Price);
         }
 
-        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "item");
+        var result = await _shopItemRepository.GetAllItemAsync();
+        var mapResult = _mapper.Map<List<ShopItemFilterResponseDto>>(result);
+
+        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, mapResult, "name", "item");
     }
 }

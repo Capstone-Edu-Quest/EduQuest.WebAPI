@@ -19,7 +19,7 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
 
     public async Task<IEnumerable<ShopItem>> GetAllItemAsync()
     {
-        return await _context.ShopItems.ToListAsync();
+        return await _context.ShopItems.AsNoTracking().ToListAsync();
     }
     public async Task<ShopItem?> GetItemByName(string name)
     {
