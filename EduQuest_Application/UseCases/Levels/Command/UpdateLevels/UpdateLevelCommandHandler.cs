@@ -6,6 +6,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Level.Command.UpdateLevels;
 
@@ -22,8 +23,8 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
 
     public async Task<APIResponse> Handle(UpdateLevelCommand request, CancellationToken cancellationToken)
     {
-        var listOfLevel = request.Levels.Select(a => a.Id).ToList();
-         
+        List<string> listOfLevel = request.Levels.Select(a => a.Id).ToList();
+
         var existOfLevel = await _levelRepository.GetByBatchLevelNumber(listOfLevel!);
         foreach (var eachLevel in existOfLevel)
         {
@@ -36,6 +37,28 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
             eachLevel.UpdatedAt = DateTime.Now.ToUniversalTime();
             eachLevel.UpdatedBy = request.UserId;
         }
+
+
+        var newLevel = request.Levels.Where(l => string.IsNullOrEmpty(l.Id)).ToList();
+        List<Levels> levels = new List<Levels>();
+        foreach (LevelDto dto in newLevel)
+        {
+            if (await _levelRepository.IsLevelExist(dto.Level))
+            {
+                return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.LevelExist, "name", $"level {dto.Level}");
+            }
+            Levels level = new Levels
+            {
+                Id = Guid.NewGuid().ToString(),
+                Level = dto.Level,
+                Exp = dto.Exp,
+                RewardTypes = GeneralHelper.ArrayToString(dto.RewardType),
+                RewardValues = GeneralHelper.ArrayToString(dto.RewardValue),
+                CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+            };
+            levels.Add(level);
+        }
+        await _levelRepository.CreateRangeAsync(levels);
         await _unitOfWork.SaveChangesAsync();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "level");
     }
