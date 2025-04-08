@@ -20,20 +20,16 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
 
     public async Task<APIResponse> Handle(UpdateShopItemCommand request, CancellationToken cancellationToken)
     {
-        var existingShopItem = await _shopItemRepository.GetItemByName(request.Name);
-
-        if (existingShopItem == null)
+        if (!request.items.Any())
         {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", request.Name);
+            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", "item");
         }
 
-        // Cập nhật giá của món hàng
-        existingShopItem.Price = request.Price;
-        existingShopItem.UpdatedAt = DateTime.Now.ToUniversalTime();
+        foreach (var item in request.items)
+        {
+            await _shopItemRepository.UpdateShopItems(item.Name, item.Price);
+        }
 
-        await _shopItemRepository.Update(existingShopItem);
-        await _unitOfWork.SaveChangesAsync();
-
-        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", request.Name);
+        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "item");
     }
 }

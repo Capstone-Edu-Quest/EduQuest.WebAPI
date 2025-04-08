@@ -85,4 +85,12 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
 
         return result;
     }
+
+
+    public async Task UpdateShopItems(string Name, double price)
+    {
+        await _context.ShopItems
+            .Where(a => a.Name.ToLower().Equals(Name.ToLower()))
+            .ExecuteUpdateAsync(set => set.SetProperty(a => a.Price, price));
+    }
 }
