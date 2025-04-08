@@ -24,7 +24,6 @@ public class AzureBlobStorage : IAzureBlobStorage
         return _blobContainerClient;
     }
 
-    // Upload file từ Stream lên Azure Blob Storage
     public async Task UploadAsync(string fileName, Stream fileStream)
     {
         var blobClient = _blobContainerClient.GetBlobClient(fileName);
@@ -32,7 +31,6 @@ public class AzureBlobStorage : IAzureBlobStorage
         await blobClient.UploadAsync(fileStream, overwrite: true);
     }
 
-    // Upload file từ byte[] (ví dụ: file ghép từ chunks)
     public async Task UploadAsync(string fileName, byte[] data)
     {
         var blobClient = _blobContainerClient.GetBlobClient(fileName);
@@ -40,7 +38,6 @@ public class AzureBlobStorage : IAzureBlobStorage
         await blobClient.UploadAsync(stream, overwrite: true);
     }
 
-    // Lấy URL của file sau khi upload lên Blob Storage
     public string GetFileUrl(string fileName)
     {
         var blobClient = _blobContainerClient.GetBlobClient(fileName);

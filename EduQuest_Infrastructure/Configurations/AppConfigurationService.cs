@@ -141,6 +141,10 @@ namespace EduQuest_Infrastructure
             #region AddSingleton
             services.AddSingleton<IRedisCaching, RedisCaching>();
 			services.AddSingleton<IAzureBlobStorage, AzureBlobStorage>();
+            services.AddSingleton<IFireBaseRealtimeService>(provider =>
+            {
+                return new FirebaseRealtimeService(Constants.FireBaseUrl.URL);
+            });
             services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<ApplicationDbContext>());
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUserRepository, UserRepository>();
