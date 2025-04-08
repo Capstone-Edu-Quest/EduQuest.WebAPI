@@ -8,6 +8,7 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
     public string? Id { get; set; }
     public string? Username { get; set; }
     public string? Email { get; set; }
+    public string? RoleId { get; set; }
     public string? Phone { get; set; }
     public string Headline { get; set; }
     public string Description { get; set; }
