@@ -34,7 +34,7 @@ namespace EduQuest_API.Controllers
 
 		}
 
-        [HttpGet("submitCourse")]
+        [HttpPut("submitCourse")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAssignedCourse([FromBody] SubmitCourseCommand command, CancellationToken cancellationToken = default)
