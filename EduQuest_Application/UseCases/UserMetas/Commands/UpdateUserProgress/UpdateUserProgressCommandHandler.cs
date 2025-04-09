@@ -120,7 +120,10 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
                 }
 
-            }
+            }else if(temp != null && temp.Index < maxIndex)
+			{
+				newMaterialId = lesson.LessonMaterials.Where(l => l.Index == temp.Index + 1).FirstOrDefault()?.Id;
+			}
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;
 
