@@ -102,7 +102,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			int maxIndex = lesson.LessonMaterials.Count - 1;
             string newLessonId = request.Info.LessonId;
 			string newMaterialId = request.Info.MaterialId;
-            LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Id == request.Info.MaterialId);
+            LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Info.MaterialId);
             var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
             if (temp != null && temp.Index == maxIndex)
             {
