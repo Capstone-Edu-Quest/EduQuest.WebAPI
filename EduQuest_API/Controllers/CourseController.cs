@@ -24,6 +24,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using EduQuest_Infrastructure.Migrations;
+using EduQuest_Application.UseCases.Courses.Command.ReviewAssignment;
 
 namespace EduQuest_API.Controllers
 {
@@ -200,7 +202,7 @@ namespace EduQuest_API.Controllers
             string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new AttemptQuizCommand(userId, lessonId, attempt), token);
 
-            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+            if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
 			{
 				return NotFound(result);
 			}
@@ -214,7 +216,7 @@ namespace EduQuest_API.Controllers
         {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new AttemptAssignmentCommand(userId, lessonId, attempt), token);
-            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+            if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
             {
                 return NotFound(result);
             }
@@ -222,9 +224,16 @@ namespace EduQuest_API.Controllers
         }
         [Authorize]
         [HttpPost("assignment/review")]
-        public async Task<IActionResult> AttemptReview()
+        public async Task<IActionResult> AttemptReview([FromBody] GradingAssignmentDto grading,
+			CancellationToken token = default)
         {
-			return Ok("Not Implemented!");
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new ReviewAssignmentCommand(userId, grading), token);
+            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }
 }
