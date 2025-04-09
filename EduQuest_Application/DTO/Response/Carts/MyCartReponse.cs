@@ -1,4 +1,6 @@
-﻿using EduQuest_Application.DTO.Response.Courses;
+﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using System;
@@ -14,6 +16,16 @@ namespace EduQuest_Application.DTO.Response.Carts
         public string Id { get; set; }
         public decimal? Total { get; set; }
         public int? NumOfCourse { get; set; }
+        public bool? isFinished { get; set; }
         public List<CourseSearchResponse>? Courses { get; set; }
+
+        public void MappingFrom(Profile profile)
+        {
+            profile.CreateMap<Cart, MyCartReponse>()
+                .ForMember(dest => dest.isFinished, opt => opt.MapFrom(
+                    src => !src.User.Transactions.Any(t => t.Type == "CheckoutCart" && t.Status == "Pending")
+                ));
+
+        }
     }
 }
