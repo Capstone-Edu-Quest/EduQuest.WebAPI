@@ -225,7 +225,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
             await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
 			//await _cartRepository.Delete(cart.Id);
 			await _unitOfWork.SaveChangesAsync();
-
+			if(request.Request.SuccessUrl != null && request.Request.CancelUrl != null)
+			{
+				_stripeModel.SuccessUrl = request.Request.SuccessUrl;
+				_stripeModel.CancelUrl = request.Request.CancelUrl;
+			}
+			
 			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.CreateSuccesfully, session.Url, "name", "payment");
 		}
 

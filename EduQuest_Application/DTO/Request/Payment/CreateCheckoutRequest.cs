@@ -11,5 +11,7 @@ namespace EduQuest_Application.DTO.Request.Payment
 		public string? CartId { get; set; }
 		public string? CouponCode { get; set; }
 		public int? ConfigEnum { get; set; }
+		public string? SuccessUrl { get; set; }
+		public string? CancelUrl { get; set; }
 	}
 }
