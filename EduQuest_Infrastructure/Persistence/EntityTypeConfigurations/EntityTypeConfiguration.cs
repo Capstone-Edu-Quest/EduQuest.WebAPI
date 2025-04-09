@@ -17,7 +17,8 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<TransactionDetail>,
 		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
-		IEntityTypeConfiguration<Report>, IEntityTypeConfiguration<Booster>
+		IEntityTypeConfiguration<Report>, IEntityTypeConfiguration<Booster>, IEntityTypeConfiguration<AssignmentAttempt>, IEntityTypeConfiguration<AssignmentPeerReview>,
+		IEntityTypeConfiguration<UserQuizAnswers>
 
     {
 		#region Role
@@ -122,10 +123,20 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 
 		}
-		#endregion
+        public void Configure(EntityTypeBuilder<AssignmentAttempt> builder)
+        {
 
-		#region Cart
-		public void Configure(EntityTypeBuilder<Cart> builder)
+
+        }
+        public void Configure(EntityTypeBuilder<AssignmentPeerReview> builder)
+        {
+
+
+        }
+        #endregion
+
+        #region Cart
+        public void Configure(EntityTypeBuilder<Cart> builder)
 		{
 
 		}
@@ -356,10 +367,15 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 
 		}
-		#endregion
+        public void Configure(EntityTypeBuilder<UserQuizAnswers> builder)
+        {
 
-		#region QuizAttempt
-		public void Configure(EntityTypeBuilder<QuizAttempt> builder)
+
+        }
+        #endregion
+
+        #region QuizAttempt
+        public void Configure(EntityTypeBuilder<QuizAttempt> builder)
 		{
 
 

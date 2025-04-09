@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace EduQuest_Domain.Entities;
 
 
-[Table("AssignmentPeerReviews")]
+[Table("AssignmentReviews")]
 public partial class AssignmentPeerReview: BaseEntity
 {
     public string AssignmentAttemptId { get; set; }
