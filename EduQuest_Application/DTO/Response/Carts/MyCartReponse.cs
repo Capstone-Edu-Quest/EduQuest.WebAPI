@@ -33,8 +33,6 @@ namespace EduQuest_Application.DTO.Response.Carts
 					.FirstOrDefault(t => t.Type == "CheckoutCart" && t.Status == "Pending").Url
 					: null
 				));
-
-
 		}
     }
 }
