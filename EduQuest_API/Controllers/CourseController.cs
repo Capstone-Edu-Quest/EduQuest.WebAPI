@@ -132,8 +132,8 @@ namespace EduQuest_API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> SearchCourseById([FromQuery] string courseId, CancellationToken cancellationToken = default)
 		{
-			//string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseByIdQuery("7fb6b5d5-5db2-46c3-8d33-e3754614eee4", courseId), cancellationToken);
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseByIdQuery(userId, courseId), cancellationToken);
 
             return Ok(result);
 		}
