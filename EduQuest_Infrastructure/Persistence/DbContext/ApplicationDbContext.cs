@@ -56,6 +56,9 @@ namespace EduQuest_Infrastructure.Persistence
         public virtual DbSet<UserQuest> UserQuests { get; set; } = null!;
         public virtual DbSet<Report> Reports { get; set; } = null!;
         public virtual DbSet<Booster> Boosters { get; set; } = null!;
+        public virtual DbSet<AssignmentAttempt> AssignmentAttempts { get; set; }
+        public virtual DbSet<UserQuizAnswers> UserQuizAnswers { get; set; } = null!;
+        public virtual DbSet<AssignmentPeerReview> AssignmentPeerReviews { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

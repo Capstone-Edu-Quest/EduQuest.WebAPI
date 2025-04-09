@@ -193,6 +193,10 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IStudyTimeRepository, StudyTimeRepository>();
 			services.AddScoped<IReportRepository, ReportRepository>();
 
+			services.AddScoped<IAssignmentAttemptRepository, AssignmentAttemptRepository>();
+			services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
+			services.AddScoped<IReviewAssignmentRepository, ReviewAssignmentRepository>();
+
             services.AddSingleton(provider =>
 			{
 				// Define the file path to the Firebase credentials

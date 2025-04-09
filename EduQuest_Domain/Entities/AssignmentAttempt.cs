@@ -7,10 +7,12 @@ namespace EduQuest_Domain.Entities;
 [Table("AssignmentAttempts")]
 public partial class AssignmentAttempt : BaseEntity
 {
-    public string AttemptId { get; set; }
+    public string AssignmentId { get; set; }
+    public string LessonId { get; set; }
     public string UserId { get; set; }
     public int AttemptNo { get; set; }
     public string AnswerContent { get; set; }
+    public double ToTalTime { get; set; }
     public double AnswerScore { get; set; }// average score of total Peer review
 
 
@@ -19,5 +21,7 @@ public partial class AssignmentAttempt : BaseEntity
     [JsonIgnore]
     public virtual User User { get; set; }
     [JsonIgnore]
-    public virtual ICollection<AssignmentPeerReview> PeerReviews { get; set; }
+    public virtual Lesson Lesson { get; set; }
+    [JsonIgnore]
+    public virtual ICollection<AssignmentPeerReview> Reviewers { get; set; }
 }
