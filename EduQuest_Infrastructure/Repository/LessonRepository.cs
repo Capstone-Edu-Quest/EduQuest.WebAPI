@@ -51,7 +51,7 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<List<LessonMaterial>> GetMaterialsByLessonId(string lessonId)
 		{
 			var temp = await _context.Lessons.Where(l => l.Id == lessonId).FirstOrDefaultAsync();
-			List<LessonMaterial> result = temp!.LessonMaterials.ToList();
+			List<LessonMaterial> result = temp!.LessonMaterials.OrderBy(x => x.Index).ToList();
 			return result;
 		}
 
