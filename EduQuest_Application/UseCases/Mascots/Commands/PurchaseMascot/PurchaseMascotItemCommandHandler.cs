@@ -36,7 +36,7 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
     public async Task<APIResponse> Handle(PurchaseMascotItemCommand request, CancellationToken cancellationToken)
     {
         // Check if the item exists in the shop
-        var shopItem = await _shopItemRepository.GetItemByName(request.ShopItemId);
+        var shopItem = await _shopItemRepository.GetItemByName(request.Name);
         if (shopItem == null)
         {
             return new APIResponse
