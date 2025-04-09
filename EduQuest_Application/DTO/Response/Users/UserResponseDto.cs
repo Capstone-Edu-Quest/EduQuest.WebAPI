@@ -5,7 +5,7 @@ using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 
-namespace EduQuest_Application.DTO.Response;
+namespace EduQuest_Application.DTO.Response.Users;
 
 public class UserResponseDto : IMapFrom<User>, IMapTo<User>
 {
@@ -34,7 +34,7 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
                 .Select(s => s.ShopItemId)
                 .ToList()
             ));
-            
+
 
         profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();
     }

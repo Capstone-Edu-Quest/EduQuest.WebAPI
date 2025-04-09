@@ -4,6 +4,7 @@ using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
 using EduQuest_Application.UseCases.Users.Queries.GetInstructorProfile;
+using EduQuest_Application.UseCases.Users.Queries.GetUserByRole;
 using EduQuest_Application.UseCases.Users.Queries.GetUserProfile;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
@@ -76,8 +77,17 @@ public class UserController : BaseController
         return Ok(result);
     }
 
+	[HttpGet("byRoleId")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<ActionResult<APIResponse>> GetUserByRoleId([FromQuery] string roleId, CancellationToken cancellationToken = default)
+	{
+		var result = await _mediator.Send(new GetUserByRoleQuery(roleId), cancellationToken);
+		return Ok(result);
+	}
 
-    [Authorize]
+
+	[Authorize]
     [HttpPut("switch")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

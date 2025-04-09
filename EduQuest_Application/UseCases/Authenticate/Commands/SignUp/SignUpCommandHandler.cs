@@ -11,6 +11,7 @@ using EduQuest_Application.Helper;
 using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Application.DTO.Response.Users;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 

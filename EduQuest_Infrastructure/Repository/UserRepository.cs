@@ -106,4 +106,9 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         }
         return result;
     }
+
+	public async Task<List<User>> GetByRoleId(string roleId)
+	{
+        return await _context.Users.Where(x => x.RoleId == roleId).ToListAsync();
+	}
 }
