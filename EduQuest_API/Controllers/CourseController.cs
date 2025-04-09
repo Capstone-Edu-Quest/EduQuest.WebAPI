@@ -2,6 +2,7 @@
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Courses.Command.AssignCourseToExpert;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
+using EduQuest_Application.UseCases.Courses.Command.SubmitCourse;
 using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
@@ -33,7 +34,16 @@ namespace EduQuest_API.Controllers
 
 		}
 
-		[Authorize(Roles = Constants.PolicyType.Expert)]
+        [HttpGet("submitCourse")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAssignedCourse([FromBody] SubmitCourseCommand command, CancellationToken cancellationToken = default)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = Constants.PolicyType.Expert)]
         [HttpGet("assign")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
