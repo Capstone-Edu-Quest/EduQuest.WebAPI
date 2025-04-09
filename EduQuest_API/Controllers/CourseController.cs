@@ -134,7 +134,8 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetCourseByIdQuery(userId, courseId), cancellationToken);
-			return Ok(result);
+
+            return Ok(result);
 		}
 
 		[HttpGet("studying")]
