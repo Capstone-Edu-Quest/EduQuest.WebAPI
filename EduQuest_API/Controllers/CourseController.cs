@@ -200,7 +200,7 @@ namespace EduQuest_API.Controllers
         [HttpPost("assignment/review")]
         public async Task<IActionResult> AttemptReview()
         {
-            throw new NotImplementedException();
+			return Ok("Not Implemented!");
         }
     }
 }
