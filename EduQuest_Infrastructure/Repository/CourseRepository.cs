@@ -147,7 +147,7 @@ namespace EduQuest_Infrastructure.Repository
         public async Task<List<Course>> GetCoursesByAssignToAsync(string expertId)
         {
             return await _context.Courses.AsNoTracking()
-                .Where(c => c.AssignTo == expertId)
+                .Where(c => c.AssignTo == expertId && c.Status == "Pending")
                 .ToListAsync();
         }
 
