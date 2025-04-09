@@ -13,6 +13,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 namespace EduQuest_API.Controllers
 {
 	[Route(Constants.Http.API_VERSION + "/webhook/stripe")]
+	[ApiController]
 	public class WebhookController : ControllerBase
 	{
 		private ISender _mediator;
