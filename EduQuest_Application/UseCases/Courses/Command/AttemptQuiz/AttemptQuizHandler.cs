@@ -58,7 +58,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         var material = materials.Where(m => m.QuizId == request.Attempt.QuizId).FirstOrDefault();
         var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == material.Id);
         var quiz = await _quizRepository.GetQuizById(request.Attempt.QuizId);
-        if(lessonMaterial == null ||quiz == null || quiz.Id != lessonMaterial.Id)
+        if(lessonMaterial == null ||quiz == null)
         {
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "quiz");
@@ -73,34 +73,41 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         attempt.LessonId = lesson.Id;
         attempt.TotalTime = request.Attempt.TotalTime;
         attempt.AttemptNo = await _quizAttemptRepository.GetAttemptNo(request.Attempt.QuizId, request.LessonId) +1;
-        foreach(var item in questions)
+        List<UserQuizAnswers> userQuizAnswers = new List<UserQuizAnswers>();
+        foreach (var item in questions)
         {
+            
             var userchoose = request.Attempt.Answers.Where(t => t.QuestionId == item.Id).FirstOrDefault();
+            if (userchoose == null) continue;
             var answer = item.Answers.FirstOrDefault(t => t.Id == userchoose!.AnswerId);
+            
             if (answer != null && answer.IsCorrect)
             {
                 CorrectQuestion += 1;
                 attempt.CorrectAnswers += 1;
             }
-            else
+            else if (answer != null && !answer.IsCorrect)
             {
                 attempt.IncorrectAnswers += 1;
             }
-            attempt.Answers.Add(new UserQuizAnswers
+            UserQuizAnswers userQuizAnswer = new UserQuizAnswers
             {
                 Id = Guid.NewGuid().ToString(),
                 QuestionId = item.Id,
                 AnswerId = userchoose!.AnswerId,
                 IsCorrect = answer.IsCorrect
-            });
+            };
+            userQuizAnswers.Add(userQuizAnswer);
+            attempt.Answers = userQuizAnswers;
         }
 
-        
-        double CorrectPercentage = CorrectQuestion / TotalQuestion * 100;
+
+        double CorrectPercentage = Math.Round((double)CorrectQuestion / TotalQuestion * 100, 2);
         attempt.Percentage = CorrectPercentage;
         await _quizAttemptRepository.Add(attempt);
         await _unitOfWork.SaveChangesAsync();
         QuizAttemptResponse response = _mapper.Map<QuizAttemptResponse>(attempt);
+        response.Percentage = CorrectPercentage;
         if (Convert.ToInt32(CorrectPercentage) < quiz.PassingPercentage)
         {
             response.isPassed = false;
@@ -127,7 +134,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         learner.ProgressPercentage = (decimal)learner.TotalTime / course.CourseStatistic.TotalTime * 100;
-        var userMeta = await _userMetaRepository.GetById(request.UserId);
+        var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
         await _unitOfWork.SaveChangesAsync();
 

@@ -56,7 +56,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         var material = materials.Where(m => m.AssignmentId == request.Attempt.AssignmentId).FirstOrDefault();
         var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == material.Id);
         var assignment = await _assignmentRepository.GetById(request.Attempt.AssignmentId);
-        if (lessonMaterial == null || assignment == null || assignment.Id != lessonMaterial.Id)
+        if (lessonMaterial == null || assignment == null)
         {
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "assignment");
@@ -68,7 +68,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         attempt.UserId = request.UserId;
         attempt.AnswerContent = request.Attempt.AnswerContent;
         attempt.ToTalTime = request.Attempt.TotalTime;
-        
+        attempt.LessonId = request.LessonId;
         await _assignmentAttemptRepository.Add(attempt);
 
         var course = await _courseRepository.GetById(lesson.CourseId);
@@ -86,12 +86,17 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         {
             newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).Id;
         }
-        learner.TotalTime += Convert.ToInt32(request.Attempt.TotalTime);
+        
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         learner.ProgressPercentage = (decimal)learner.TotalTime / course.CourseStatistic.TotalTime * 100;
-        var userMeta = await _userMetaRepository.GetById(request.UserId);
-        userMeta.TotalStudyTime += Convert.ToInt32(request.Attempt.TotalTime);
+        if(attempNo <= 1)
+        {
+            var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
+            userMeta.TotalStudyTime += Convert.ToInt32(request.Attempt.TotalTime);
+            learner.TotalTime += Convert.ToInt32(request.Attempt.TotalTime);
+            await _userMetaRepository.Update(userMeta);
+        }
         await _unitOfWork.SaveChangesAsync();
 
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);

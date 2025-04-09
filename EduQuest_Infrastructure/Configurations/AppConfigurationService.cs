@@ -194,7 +194,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IReportRepository, ReportRepository>();
 
 			services.AddScoped<IAssignmentAttemptRepository, AssignmentAttemptRepository>();
-			services.AddScoped<QuizAttemptRepository, QuizAttemptRepository>();
+			services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 
             services.AddSingleton(provider =>
 			{

@@ -16,5 +16,5 @@ public class QuizAttemptResponse : IMapFrom<QuizAttempt>
     public int AttemptNo { get; set; }
     public int TotalTime { get; set; }
     public DateTime? SubmitAt { get; set; }
-    public bool isPassed = false;
+    public bool isPassed {  get; set; } = false;
 }

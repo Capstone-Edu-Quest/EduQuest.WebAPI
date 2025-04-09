@@ -199,7 +199,8 @@ namespace EduQuest_API.Controllers
 		{
             string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new AttemptQuizCommand(userId, lessonId, attempt), token);
-			if(result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+
+            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
 			{
 				return NotFound(result);
 			}
