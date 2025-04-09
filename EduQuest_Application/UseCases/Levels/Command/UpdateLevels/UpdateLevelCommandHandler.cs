@@ -34,7 +34,7 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
         {
             var requestLevel = request.Levels.FirstOrDefault(x => x.Id.ToString() == eachLevel.Id);
             if (requestLevel == null) continue;
-
+            eachLevel.Level = requestLevel.Level;
             eachLevel.Exp = requestLevel.Exp;
             eachLevel.RewardTypes = GeneralHelper.ArrayToString(requestLevel.RewardType);
             eachLevel.RewardValues = GeneralHelper.ArrayToString(requestLevel.RewardValue);
