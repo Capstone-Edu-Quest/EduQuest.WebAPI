@@ -142,7 +142,7 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[Authorize]
+		//[Authorize]
         [HttpGet("lesson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -8,5 +8,6 @@ namespace EduQuest_Domain.Repository
 	{
 		Task<int> GetCurrentMaterialIndex(string lessonId, string materialId);
 		Task<List<string>> GetListMaterialIdByLessonId(string lessonId);
+		Task<List<Material>> GetMaterialsByLessonIdAsync(string lessonId);
 	}
 }
