@@ -106,7 +106,7 @@ namespace EduQuest_API.Controllers
         }
 
         [Authorize(Roles = "Learner")]
-        [HttpPost("user")]
+        [HttpPost("learner/claim")]
         public async Task<IActionResult> ClaimReward([FromQuery] string userQuestId, 
             //[FromQuery] string userId,
             CancellationToken token = default)
