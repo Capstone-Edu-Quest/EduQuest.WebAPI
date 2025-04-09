@@ -70,21 +70,21 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			//}
 
 			var listCourse = await _courseRepository.GetListCourse();
-			if(request.SearchRequest.KeywordName != null)
+			if (request.SearchRequest.KeywordName != null)
 			{
 				listCourse = listCourse.Where(x => ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(request.SearchRequest.KeywordName.ToLower()))).ToList();
-			} else if(request.SearchRequest.DateTo != null)
+			} else if (request.SearchRequest.DateTo != null)
 			{
 				listCourse = listCourse.Where(x => x.UpdatedAt <= request.SearchRequest.DateTo).ToList();
 			}
 			else if (request.SearchRequest.DateFrom != null)
 			{
 				listCourse = listCourse.Where(x => x.UpdatedAt >= request.SearchRequest.DateFrom).ToList();
-			}else if (request.SearchRequest.IsPublic.HasValue)
+			} else if (request.SearchRequest.IsPublic.HasValue)
 			{
 				bool flag = request.SearchRequest.IsPublic.Value;
 
-                listCourse = flag == true? listCourse.Where(x => x.Status == StatusCourse.Public.ToString()).ToList()
+				listCourse = flag == true ? listCourse.Where(x => x.Status == StatusCourse.Public.ToString()).ToList()
 					: listCourse.Where(x => x.Status != StatusCourse.Public.ToString()).ToList();
 			}
 			else if (request.SearchRequest.DateFrom != null && request.SearchRequest.DateTo != null)
@@ -97,6 +97,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 			} else if (request.SearchRequest.Rating != null)
 			{
 				listCourse = listCourse.Where(x => x.CourseStatistic.Rating >= request.SearchRequest.Rating).ToList();
+			}
+				if (request.SearchRequest.TagListId != null && request.SearchRequest.TagListId.Any())
+			{
+				listCourse = listCourse.Where(x => x.Tags.Any(tag => request.SearchRequest.TagListId.Contains(tag.Id))).ToList();
 			} else if (request.SearchRequest.Sort != null)
 			{
 				var sortOptions = new Dictionary<SortCourse, Func<IQueryable<Course>, IOrderedQueryable<Course>>>
