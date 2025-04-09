@@ -7,4 +7,10 @@ public class AssignExpertCommand : IRequest<APIResponse>
 {
     public string CourseId { get; set; }
     public string AssignTo { get; set; }
+
+	public AssignExpertCommand(string courseId, string assignTo)
+	{
+		CourseId = courseId;
+		AssignTo = assignTo;
+	}
 }
