@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Payment;
@@ -183,6 +184,9 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 						string materialId = null;
 						if (firstLesson != null){
 							materialId = (firstLesson.LessonMaterials.FirstOrDefault(x => x.Index == 1)).MaterialId;
+						} else
+						{
+							return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
 						}
 						
 						var newLearner = new CourseLearner
