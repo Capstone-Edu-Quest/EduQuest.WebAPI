@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Materials.DetailMaterials;
 using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -15,25 +16,34 @@ public class GetLessonMaterialsHandler : IRequestHandler<GetLessonMaterialsQuery
     private readonly ILearnerRepository _learnerRepository;
     private readonly ILessonRepository _lessonRepository;
     private readonly IMaterialRepository _materialRepository;
-    private readonly IMapper _mapper;
+	private readonly ILessonMaterialRepository _lessonMaterialRepository;
+	private readonly IMapper _mapper;
     private const string key = "name";
     private const string value = "materials";
-    public GetLessonMaterialsHandler(ILearnerRepository learnerRepository,ILessonRepository lessonRepository, 
-        IMaterialRepository materialRepository, IMapper mapper)
-    {
-        _learnerRepository = learnerRepository;
-        _lessonRepository = lessonRepository;
-        _materialRepository = materialRepository;
-        _mapper = mapper;
-    }
 
-    public async Task<APIResponse> Handle(GetLessonMaterialsQuery request, CancellationToken cancellationToken)
+	public GetLessonMaterialsHandler(ILearnerRepository learnerRepository, ILessonRepository lessonRepository, IMaterialRepository materialRepository, ILessonMaterialRepository lessonMaterialRepository, IMapper mapper)
+	{
+		_learnerRepository = learnerRepository;
+		_lessonRepository = lessonRepository;
+		_materialRepository = materialRepository;
+		_lessonMaterialRepository = lessonMaterialRepository;
+		_mapper = mapper;
+	}
+
+	public async Task<APIResponse> Handle(GetLessonMaterialsQuery request, CancellationToken cancellationToken)
     {
         var lessonMaterials = await _lessonRepository.GetMaterialsByLessonId(request.LessonId);
-        var Materials = await _materialRepository.GetMaterialsByIds(lessonMaterials.Select(l => l.MaterialId).ToList());
-        var lesson = await _lessonRepository.GetById(request.LessonId);
-        
-        if (lesson == null)
+		var Materials = await _lessonMaterialRepository.GetMaterialsByLessonIdAsync(request.LessonId);
+		
+		//var Materials = await _lessonMaterialRepository.GetListMaterialIdByLessonId(request.LessonId);
+		var lesson = await _lessonRepository.GetById(request.LessonId);
+
+		//Add
+		//var listMaterialId = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
+		//var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
+
+
+		if (lesson == null)
         {
             GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.GetFailed, MessageCommon.NotFound, key, value);
         }

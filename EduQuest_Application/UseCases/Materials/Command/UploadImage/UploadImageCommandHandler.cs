@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Abstractions.AzureBlobStorage;
+﻿using Azure.Storage.Blobs.Models;
+using EduQuest_Application.Abstractions.AzureBlobStorage;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using MediatR;
@@ -25,8 +26,13 @@ public class UploadImageCommandHandler : IRequestHandler<UploadImageCommand, API
         using var memoryStream = new MemoryStream();
         await request.ImageFile.CopyToAsync(memoryStream, cancellationToken);
         memoryStream.Position = 0;
+        var httpHeaders = new BlobHttpHeaders
+        {
+            ContentType = "image/png" // file type
+        };
 
-        await _azureBlobStorage.UploadAsync(uniqueFileName, memoryStream);
+
+        await _azureBlobStorage.UploadAsync(uniqueFileName, memoryStream, httpHeaders);
 
         string fileUrl = _azureBlobStorage.GetFileUrl(uniqueFileName);
 

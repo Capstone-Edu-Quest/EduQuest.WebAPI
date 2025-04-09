@@ -24,12 +24,15 @@ public class AzureBlobStorage : IAzureBlobStorage
         return _blobContainerClient;
     }
 
-    public async Task UploadAsync(string fileName, Stream fileStream)
+    public async Task UploadAsync(string fileName, Stream stream, BlobHttpHeaders headers)
     {
         var blobClient = _blobContainerClient.GetBlobClient(fileName);
-
-        await blobClient.UploadAsync(fileStream, overwrite: true);
+        await blobClient.UploadAsync(stream, new BlobUploadOptions
+        {
+            HttpHeaders = headers
+        });
     }
+
 
     public async Task UploadAsync(string fileName, byte[] data)
     {

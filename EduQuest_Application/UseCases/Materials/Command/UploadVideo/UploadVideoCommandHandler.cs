@@ -6,6 +6,7 @@ using EduQuest_Domain.Repository;
 using MediatR;
 using System.Net;
 using StackExchange.Redis;
+using Azure.Storage.Blobs.Models;
 
 namespace EduQuest_Application.UseCases.Materials.Command.UploadVideo;
 
@@ -71,7 +72,13 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, API
 
                 ms.Position = 0;
                 string fileName = $"{fileId}.mp4";
-                await _blobStorage.UploadAsync(fileName, ms);
+                var blobHttpHeaders = new BlobHttpHeaders
+                {
+                    ContentType = "video/mp4"
+                };
+
+                await _blobStorage.UploadAsync(fileName, ms, blobHttpHeaders);
+
 
                 string fileUrl = _blobStorage.GetFileUrl(fileName);
 

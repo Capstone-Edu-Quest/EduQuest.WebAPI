@@ -10,7 +10,6 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
-using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 {
@@ -40,7 +39,12 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			var apiResponse = new APIResponse();
 			var course = await _courseRepository.GetCourseById(request.CourseId);
 			var courseWithLearner = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
-			var courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
+			var courseLearner = new CourseLearner();
+			if (courseWithLearner.CourseLearners != null)
+			{
+				courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
+			}
+			
 			Lesson currentLesson = new Lesson(); 
 			int currentMaterialIndex = 0;
 
@@ -92,10 +96,9 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 				var materials = new List<MaterialInLessonResponse>();
 
-				var listMaterialId = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
-				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
-				
-				if(courseLearner == null)
+				var listMaterial = await _lessonMaterialRepository.GetMaterialsByLessonIdAsync(lesson.Id);
+
+				if (courseLearner == null)
 				{
 					foreach (var material in listMaterial)
 					{
