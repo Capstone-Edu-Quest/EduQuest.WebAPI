@@ -1,6 +1,6 @@
 ﻿
 using AutoMapper;
-using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;

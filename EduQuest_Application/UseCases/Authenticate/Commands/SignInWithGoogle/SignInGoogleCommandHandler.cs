@@ -3,6 +3,7 @@ using EduQuest_Application.Abstractions.Authentication;
 using EduQuest_Application.Abstractions.Email;
 using EduQuest_Application.Abstractions.Oauth2;
 using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
