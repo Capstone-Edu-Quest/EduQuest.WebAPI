@@ -180,7 +180,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			//Transaction Detail
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
 
-			if (request.Request.CartId != null || string.IsNullOrEmpty(request.Request.CartId))
+			if (!string.IsNullOrEmpty(request.Request.CartId))
 			{
 				var cartItems = cart.CartItems;
 				if (cart.Total > 0)
@@ -221,7 +221,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				await _userRepository.Update(user);
 			}
 			await _transactionRepository.Add(transaction);
-			await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
+            await _unitOfWork.SaveChangesAsync();
+            await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
 			//await _cartRepository.Delete(cart.Id);
 			await _unitOfWork.SaveChangesAsync();
 
