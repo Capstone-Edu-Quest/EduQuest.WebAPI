@@ -3,6 +3,7 @@ using EduQuest_Application.DTO.Response.Coupons;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Coupons.Commands.CreateCourseCoupons;
 using EduQuest_Application.UseCases.Coupons.Commands.UpdateCourseCoupons;
+using EduQuest_Application.UseCases.Coupons.Queries.GetByCode;
 using EduQuest_Application.UseCases.Coupons.Queries.GetPlatformCouponsQuery;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Pagination;
@@ -17,7 +18,7 @@ using System.Net;
 namespace EduQuest_API.Controllers;
 
 
-[Authorize(Roles = "Staff, Admin")]
+
 [Route(Constants.Http.API_VERSION + "/coupon")]
 [ApiController]
 public class CouponController : ControllerBase
@@ -30,6 +31,7 @@ public class CouponController : ControllerBase
         //_couponRepository = couponRepository;
     }
 
+    [Authorize(Roles = "Staff, Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateCoupon([FromBody, Required] CreateCouponRequest coupon,
         //[FromQuery] string userId,
@@ -40,6 +42,7 @@ public class CouponController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
+    [Authorize(Roles = "Staff, Admin")]
     [HttpPut]
     public async Task<IActionResult> UpdateCoupon([FromQuery, Required] string couponId,
         [FromBody, Required] UpdateCouponRequest coupon,
@@ -51,6 +54,7 @@ public class CouponController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
+    [Authorize(Roles = "Staff, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetPlatformCoupons([FromQuery, AllowNull] string? code,
         [FromQuery, AllowNull] double discount,
@@ -70,6 +74,13 @@ public class CouponController : ControllerBase
         Response.Headers.Add("X-Total-Page", list.TotalPages.ToString());
         Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());
         return Ok(result);
+    }
+    //[Authorize(Roles ="Learner")]
+    [HttpGet("learner")]
+    public async Task<IActionResult> GetCouponByCode([FromQuery] GetByCodeCommand command, CancellationToken token = default)
+    {
+        var result = await _mediator.Send(command, token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? NotFound(result) : Ok(result);
     }
 
     /*[HttpPost("test")]
