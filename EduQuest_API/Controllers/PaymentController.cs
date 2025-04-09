@@ -5,6 +5,7 @@ using EduQuest_Application.UseCases.Payments.Command.Refund;
 using EduQuest_Application.UseCases.Payments.Command.StripeExpress;
 using EduQuest_Domain.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduQuest_API.Controllers
@@ -19,6 +20,7 @@ namespace EduQuest_API.Controllers
 			_mediator = mediator;
 		}
 
+		[Authorize]
 		[HttpPost("checkout")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

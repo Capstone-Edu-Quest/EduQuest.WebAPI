@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Payment;
@@ -179,7 +180,15 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 							detail.InstructorShare = instructorShare;
 						}
 						var firstLesson = await _lessonRepository.GetFirstLesson(course.Id);
-						var materialId = (firstLesson.LessonMaterials.FirstOrDefault(x => x.Index == 1)).MaterialId;
+
+						string materialId = null;
+						if (firstLesson != null){
+							materialId = (firstLesson.LessonMaterials.FirstOrDefault(x => x.Index == 1)).MaterialId;
+						} else
+						{
+							return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
+						}
+						
 						var newLearner = new CourseLearner
 						{
 							CourseId = course.Id,
@@ -189,7 +198,9 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 							ProgressPercentage = 0,
 							CurrentLessonId = firstLesson.Id,
 							CurrentMaterialId = materialId,
-							
+							CreatedAt = DateTime.Now.ToUniversalTime(),
+							UpdatedAt = DateTime.Now.ToUniversalTime(),
+
 						};
 						course.CourseLearners.Add(newLearner);
 						await _courseRepository.Update(course);

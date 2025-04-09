@@ -144,6 +144,14 @@ namespace EduQuest_Infrastructure.Repository
             return result;
         }
 
+        public async Task<List<Course>> GetCoursesByAssignToAsync(string expertId)
+        {
+            return await _context.Courses.AsNoTracking()
+                .Where(c => c.AssignTo == expertId)
+                .ToListAsync();
+        }
+
+
         public async Task<List<Course>> GetCoursesByInstructorIdAsync(string instructorId)
         {
             return await _context.Courses.AsNoTracking()
@@ -158,7 +166,15 @@ namespace EduQuest_Infrastructure.Repository
 			   .ThenInclude(l => l.LessonMaterials.OrderBy(lm => lm.Index))
 			   .FirstOrDefaultAsync(c => c.Id == courseId);
 		}
-	}
+
+
+        public async Task UpdateStatus(string status, string courseId)
+        {
+             await _context.Courses
+                .Where(a => a.Id == courseId)
+                .ExecuteUpdateAsync(a => a.SetProperty(b => b.Status, status));
+        }
+    }
 
 }
 

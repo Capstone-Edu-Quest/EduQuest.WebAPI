@@ -140,6 +140,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 					var result = await _unitOfWork.SaveChangesAsync();
 					return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageLearner.AddedUserToCourse, response, "name", "learner");
 				}
+				
 			}
 			else
 			{
@@ -174,11 +175,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
 			transaction.PaymentIntentId = paymentIntentId;
 			transaction.Type = (request.Request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : subscription.Config;
+			transaction.Url = session.Url;
 
 			//Transaction Detail
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
 
-			if (request.Request.CartId != null || string.IsNullOrEmpty(request.Request.CartId))
+			if (!string.IsNullOrEmpty(request.Request.CartId))
 			{
 				var cartItems = cart.CartItems;
 				if (cart.Total > 0)
@@ -219,7 +221,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 				await _userRepository.Update(user);
 			}
 			await _transactionRepository.Add(transaction);
-			await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
+            await _unitOfWork.SaveChangesAsync();
+            await _transactionDetailRepository.CreateRangeAsync(transactionDetails);
 			//await _cartRepository.Delete(cart.Id);
 			await _unitOfWork.SaveChangesAsync();
 
