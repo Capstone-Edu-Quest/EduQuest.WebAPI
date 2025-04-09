@@ -35,6 +35,13 @@ public class GetCourseByStatusQueryHandler : IRequestHandler<GetCourseByStatusQu
             var user = await _userRepository.GetById(course.CreatedBy);
             course.Author = user!.Username!;
 
+            var expert = await _userRepository.GetById(course.ExpertId);
+            if (expert != null)
+            {
+                course.ExpertName = expert!.Username!;
+            }
+            
+
             var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
             if (courseSta != null)
             {
