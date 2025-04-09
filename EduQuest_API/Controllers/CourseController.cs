@@ -6,6 +6,7 @@ using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
+using EduQuest_Application.UseCases.Courses.Query.GetCourseByAssignToUser;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstructor;
@@ -13,6 +14,7 @@ using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,17 @@ namespace EduQuest_API.Controllers
 			_mediator = mediator;
 
 		}
+
+		[Authorize(Roles = Constants.PolicyType.Expert)]
+        [HttpGet("assign")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAssignedCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+        {
+			var userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetCourseByAssignToUserQuery(userId, pageNo, eachPage), cancellationToken);
+            return Ok(result);
+        }
 
         [HttpPut("approve")]
         [ProducesResponseType(StatusCodes.Status200OK)]

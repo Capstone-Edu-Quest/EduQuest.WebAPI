@@ -144,6 +144,14 @@ namespace EduQuest_Infrastructure.Repository
             return result;
         }
 
+        public async Task<List<Course>> GetCoursesByAssignToAsync(string expertId)
+        {
+            return await _context.Courses.AsNoTracking()
+                .Where(c => c.AssignTo == expertId)
+                .ToListAsync();
+        }
+
+
         public async Task<List<Course>> GetCoursesByInstructorIdAsync(string instructorId)
         {
             return await _context.Courses.AsNoTracking()

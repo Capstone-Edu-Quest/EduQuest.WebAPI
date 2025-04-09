@@ -38,6 +38,8 @@ namespace EduQuest_Domain.Constants
 			// Just guest
 			public const string Guest = "Guest";
 			public const string Learner = "Learner";
+			public const string Expert = "Expert";
+			public const string Staff = "Staff";
 		}
 
 		public static class UserClaimType
