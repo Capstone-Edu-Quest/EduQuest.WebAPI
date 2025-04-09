@@ -96,10 +96,9 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 				var materials = new List<MaterialInLessonResponse>();
 
-				var listMaterialId = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
-				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
-				
-				if(courseLearner == null)
+				var listMaterial = await _lessonMaterialRepository.GetMaterialsByLessonIdAsync(lesson.Id);
+
+				if (courseLearner == null)
 				{
 					foreach (var material in listMaterial)
 					{
