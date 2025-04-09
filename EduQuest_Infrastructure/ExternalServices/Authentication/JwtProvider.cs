@@ -19,7 +19,6 @@ public class JwtProvider : IJwtProvider
     private readonly JwtSettings _jwtSettings;
     private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
-    private readonly IUnitOfWork unitOfWork;
 
     public JwtProvider(IOptions<JwtSettings> jwtSettings,
         IUserRepository userRepository,

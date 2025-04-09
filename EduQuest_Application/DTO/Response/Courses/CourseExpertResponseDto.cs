@@ -22,11 +22,10 @@ public class CourseExpertResponseDto : IMapFrom<Course>, IMapTo<Course>
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<Course, CourseSearchResponse>()
-            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.User.Username)) 
+        profile.CreateMap<Course, CourseExpertResponseDto>()
+            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.User.Username))
             .ForMember(dest => dest.TotalLesson, opt => opt.MapFrom(src => src.CourseStatistic.TotalLesson))
             .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))
-            .ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview))
-            .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString()))
+            .ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview));
     }
 }

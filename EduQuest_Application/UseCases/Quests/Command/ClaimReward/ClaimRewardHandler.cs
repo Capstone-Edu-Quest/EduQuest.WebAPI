@@ -58,7 +58,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.Complete, response, key, value);
         }
         return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.AlreadyExists, 
-            MessageError.QuestAlreadyClaimed, key, value);
+            MessageError.QuestAlreadyClaimed, key, value + $" with id: {request.UserQuestId}");
     }
     private int[] GetRewardType(string input)
     {

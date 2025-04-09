@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.ExternalServices.QuartzService;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Payment;
@@ -18,6 +19,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly ILessonRepository _lessonRepository;
         private readonly ITransactionDetailRepository _transactionDetailRepository;
         private readonly IUserRepository _userRepository;
         private readonly ICartRepository _cartRepository;
@@ -26,15 +28,11 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 		private readonly IQuartzService _quartzService;
 		private readonly StripeModel _stripeModel;
 
-		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository,
-			ITransactionDetailRepository transactionDetailRepository, 
-			IUserRepository userRepository, 
-			ICartRepository cartRepository, 
-			ISubscriptionRepository subscriptionRepository, 
-			IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
+		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
 		{
 			_transactionRepository = transactionRepository;
 			_courseRepository = courseRepository;
+			_lessonRepository = lessonRepository;
 			_transactionDetailRepository = transactionDetailRepository;
 			_userRepository = userRepository;
 			_cartRepository = cartRepository;
@@ -95,7 +93,6 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 					}
 				};
 			}
-
 			var balanceTransactionService = new BalanceTransactionService();
             var balanceTransaction = await balanceTransactionService.GetAsync(charge.BalanceTransactionId);
             
@@ -182,13 +179,28 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 							detail.SystemShare = systemShare;
 							detail.InstructorShare = instructorShare;
 						}
+						var firstLesson = await _lessonRepository.GetFirstLesson(course.Id);
+
+						string materialId = null;
+						if (firstLesson != null){
+							materialId = (firstLesson.LessonMaterials.FirstOrDefault(x => x.Index == 1)).MaterialId;
+						} else
+						{
+							return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
+						}
+						
 						var newLearner = new CourseLearner
 						{
 							CourseId = course.Id,
 							UserId = transactionExisted.UserId,
 							IsActive = true,
 							TotalTime = 0,
-							ProgressPercentage = 0
+							ProgressPercentage = 0,
+							CurrentLessonId = firstLesson.Id,
+							CurrentMaterialId = materialId,
+							CreatedAt = DateTime.Now.ToUniversalTime(),
+							UpdatedAt = DateTime.Now.ToUniversalTime(),
+
 						};
 						course.CourseLearners.Add(newLearner);
 						await _courseRepository.Update(course);

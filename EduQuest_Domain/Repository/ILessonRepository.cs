@@ -15,6 +15,7 @@ namespace EduQuest_Domain.Repository
 		Task<bool> DeleteStagesByCourseId(string courseId);
 		Task<Lesson> GetByLessonIdAsync(string lessonId);
 		Task<List<LessonMaterial>> GetMaterialsByLessonId(string lessonId);
-
+		Task<Lesson> GetFirstLesson(string courseId);
+			 
     }
 }

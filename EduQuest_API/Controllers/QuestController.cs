@@ -106,13 +106,17 @@ namespace EduQuest_API.Controllers
         }
 
         [Authorize(Roles = "Learner")]
-        [HttpPost("user")]
+        [HttpPost("learner/claim")]
         public async Task<IActionResult> ClaimReward([FromQuery] string userQuestId, 
             //[FromQuery] string userId,
             CancellationToken token = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new ClaimRewardCommand(userQuestId, userId), token);
+            if(result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }
