@@ -3,6 +3,7 @@ using EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Payment;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
