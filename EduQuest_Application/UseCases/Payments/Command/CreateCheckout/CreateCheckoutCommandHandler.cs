@@ -140,6 +140,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 					var result = await _unitOfWork.SaveChangesAsync();
 					return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageLearner.AddedUserToCourse, response, "name", "learner");
 				}
+				
 			}
 			else
 			{
@@ -174,6 +175,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
 			transaction.Status = GeneralEnums.StatusPayment.Pending.ToString();
 			transaction.PaymentIntentId = paymentIntentId;
 			transaction.Type = (request.Request.CartId != null) ? GeneralEnums.TypeTransaction.CheckoutCart.ToString() : subscription.Config;
+			transaction.Url = session.Url;
 
 			//Transaction Detail
 			List<TransactionDetail> transactionDetails = new List<TransactionDetail>();
