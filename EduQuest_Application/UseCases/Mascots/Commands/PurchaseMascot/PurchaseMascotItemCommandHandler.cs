@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Mascot;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -34,7 +36,7 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
     public async Task<APIResponse> Handle(PurchaseMascotItemCommand request, CancellationToken cancellationToken)
     {
         // Check if the item exists in the shop
-        var shopItem = await _shopItemRepository.GetItemByName(request.ShopItemId);
+        var shopItem = await _shopItemRepository.GetItemByName(request.Name);
         if (shopItem == null)
         {
             return new APIResponse
@@ -76,12 +78,16 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
             IsEquipped = false
         };
 
-        //var userdetail = await _userStatisticRepository.GetById(request.UserId);
-        //userdetail.Gold -= (int)shopItem.Price;
+        var userdetail = await _userStatisticRepository.GetById(request.UserId);
+        if (userdetail.Gold < shopItem.Price)
+        {
+            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotEnoughGold, Constants.MessageCommon.NotEnoughGold, "name", "item");
+        }
+        userdetail.Gold -= (int)shopItem.Price;
 
 
         await _mascotInventoryRepository.Add(mascotInventory);
-        //await _userStatisticRepository.Update(userdetail);
+        await _userStatisticRepository.Update(userdetail);
         var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
 
         var result = _mapper.Map<UserMascotDto>(mascotInventory);

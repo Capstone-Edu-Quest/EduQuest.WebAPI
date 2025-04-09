@@ -86,7 +86,7 @@ namespace EduQuest_Infrastructure.Repository
 
         public async Task<List<Course>> GetListCourse()
         {
-            return await _context.Courses.Include(x => x.User).ToListAsync();
+            return await _context.Courses.Include(x => x.User).Include(x => x.Tags).ToListAsync();
         }
 
         public async Task<Course> GetCourseLearnerByCourseId(string courseId)
