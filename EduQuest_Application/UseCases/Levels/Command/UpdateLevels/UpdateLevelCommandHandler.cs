@@ -24,6 +24,10 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
     public async Task<APIResponse> Handle(UpdateLevelCommand request, CancellationToken cancellationToken)
     {
         List<string> listOfLevel = request.Levels.Select(a => a.Id).ToList();
+       
+        var totalLevels = await _levelRepository.GetAll();
+        List<string> TotalIds = totalLevels.Select( l => l.Id).ToList();
+        List<string> IdsToDelete = TotalIds.Where(a => !listOfLevel.Any(l => l == a)).ToList();
 
         var existOfLevel = await _levelRepository.GetByBatchLevelNumber(listOfLevel!);
         foreach (var eachLevel in existOfLevel)
@@ -58,6 +62,7 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
             };
             levels.Add(level);
         }
+        await _levelRepository.DeleteRangeByListId(IdsToDelete);
         await _levelRepository.CreateRangeAsync(levels);
         await _unitOfWork.SaveChangesAsync();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.UpdateSuccesfully, null, "name", "level");

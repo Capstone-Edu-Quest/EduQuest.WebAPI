@@ -13,4 +13,5 @@ public interface ILevelRepository : IGenericRepository<Levels>
     Task ReArrangeLevelAfterDelete(int level);
     int GetExpByLevel(int level);
     Task<LevelExpStatisticDto> GetLevelExpStatistic();
+    Task<int> DeleteRangeByListId(List<string> ids);
 }

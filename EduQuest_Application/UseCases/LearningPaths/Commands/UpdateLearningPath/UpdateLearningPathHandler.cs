@@ -137,7 +137,7 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             var tagsToAdd = tags.Where(nt => !currentTags.Any(ct => ct.Id == nt.Id)).ToList();
 
             // deleted tag (exist in currentTags but not in tags)
-            var tagsToRemove = currentTags.Where(ct => tags.Any(nt => nt.Id == ct.Id)).ToList();
+            var tagsToRemove = currentTags.Where(ct => !tags.Any(nt => nt.Id == ct.Id)).ToList();
 
             // update learning path tags
             foreach (var tag in tagsToAdd)

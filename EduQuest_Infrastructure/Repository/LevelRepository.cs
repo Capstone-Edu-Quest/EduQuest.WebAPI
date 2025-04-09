@@ -103,4 +103,17 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
         result.UserLevels = numberOfLevel;
         return result;
     }
+    public async Task<int> DeleteRangeByListId(List<string> ids)
+    {
+        if (ids == null || !ids.Any())
+        {
+            return 0;
+        }
+
+        var deletedCount = await _context.Levels
+            .Where(l => ids.Contains(l.Id))
+            .ExecuteDeleteAsync();
+
+        return deletedCount;
+    }
 }
