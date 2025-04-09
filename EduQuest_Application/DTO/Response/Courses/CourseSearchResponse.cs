@@ -24,12 +24,15 @@ namespace EduQuest_Application.DTO.Response.Courses
         public int TotalLesson { get; set; }
         public int TotalTime { get; set; }
         public int TotalReview { get; set; }
+        public string ExpertId { get; set; }
+        public string ExpertName { get; set; }
         public decimal? ProgressPercentage { get; set; }
 
         public void MappingFrom(Profile profile)
         {
             profile.CreateMap<Course, CourseSearchResponse>()
-            .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString()));
+            .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString()))
+            .ForMember(dest => dest.ExpertId, opt => opt.MapFrom(src => src.AssignTo));
         }
     }
 }
