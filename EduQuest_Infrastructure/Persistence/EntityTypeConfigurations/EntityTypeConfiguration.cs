@@ -130,8 +130,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         }
         public void Configure(EntityTypeBuilder<AssignmentPeerReview> builder)
         {
-
-
+			builder.HasOne<User>()
+				.WithMany()
+				.HasForeignKey(r => r.ReviewerId)
+				.OnDelete(DeleteBehavior.Cascade);
         }
         #endregion
 
