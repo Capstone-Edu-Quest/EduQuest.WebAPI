@@ -183,7 +183,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 
 						string materialId = null;
 						if (firstLesson != null){
-							materialId = (firstLesson.LessonMaterials.FirstOrDefault(x => x.Index == 1)).MaterialId;
+							materialId = (firstLesson.LessonMaterials.FirstOrDefault(x => x.Index == 0)).MaterialId;
 						} else
 						{
 							return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
