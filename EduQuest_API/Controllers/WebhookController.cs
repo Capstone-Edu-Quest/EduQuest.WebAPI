@@ -24,6 +24,7 @@ namespace EduQuest_API.Controllers
 			_stripeModel = stripeModel.Value;
 		}
 
+		[AllowAnonymous]
 		[HttpPost]
 		public async Task<IActionResult> StripeWebhook(CancellationToken cancellationToken)
 		{
