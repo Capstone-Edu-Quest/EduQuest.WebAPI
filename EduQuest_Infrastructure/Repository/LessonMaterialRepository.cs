@@ -23,7 +23,7 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<int> GetCurrentMaterialIndex(string lessonId, string materialId)
 		{
 			var entity =  await _context.LessonMaterials.FirstOrDefaultAsync(x => x.LessonId == lessonId && x.MaterialId == materialId);
-			return entity.Index;
+			return entity.Index != null ? entity.Index : 0;
 		}
 
 		public async Task<List<string>> GetListMaterialIdByLessonId(string lessonId)
