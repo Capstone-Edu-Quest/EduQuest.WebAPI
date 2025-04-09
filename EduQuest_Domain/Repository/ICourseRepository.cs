@@ -11,7 +11,8 @@ namespace EduQuest_Domain.Repository
 {
 	public interface ICourseRepository : IGenericRepository<Course>
 	{
-		Task<Course> GetCourseById(string Id);
+		Task UpdateStatus(string status, string courseId);
+        Task<Course> GetCourseById(string Id);
 		Task<List<Course>> GetCourseByUserId(string Id);
 		//Task<IEnumerable<Course>> GetAllCourse();
 		Task<int> GetTotalTime(string courseId);

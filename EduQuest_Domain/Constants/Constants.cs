@@ -65,6 +65,7 @@ namespace EduQuest_Domain.Constants
 		#region Message
 		public static class MessageCommon
 		{
+			public const string SubmitSuccessfully = "SUBMIT_SUCCESSFULLY";
 			public const string GetSuccesfully = "GET_SUCCESSFULLY";
 			public const string GetFailed = "GET_FAILED";
 			public const string SavingSuccesfully = "SAVING_SUCCESSFULLY";
