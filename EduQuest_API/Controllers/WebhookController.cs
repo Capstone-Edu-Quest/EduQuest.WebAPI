@@ -3,6 +3,7 @@ using EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Payment;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -12,6 +13,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 namespace EduQuest_API.Controllers
 {
 	[Route(Constants.Http.API_VERSION + "/webhook/stripe")]
+	[ApiController]
 	public class WebhookController : ControllerBase
 	{
 		private ISender _mediator;
@@ -24,6 +26,7 @@ namespace EduQuest_API.Controllers
 			_stripeModel = stripeModel.Value;
 		}
 
+		[AllowAnonymous]
 		[HttpPost]
 		public async Task<IActionResult> StripeWebhook(CancellationToken cancellationToken)
 		{
@@ -32,7 +35,7 @@ namespace EduQuest_API.Controllers
 
 			stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.LocalSigningKey);
 
-			if (stripeEvent.Type == "checkout.session.completed" || stripeEvent.Type == "payment_intent.succeeded" || stripeEvent.Type == "charge.succeeded")
+			if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
 			{
 				var session = stripeEvent.Data.Object as Session;
 				if (session != null)
