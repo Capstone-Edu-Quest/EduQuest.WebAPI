@@ -26,7 +26,6 @@ namespace EduQuest_API.Controllers
 		public async Task<IActionResult> Register(CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
-
 			var result = await _mediator.Send(new GetCartByUserIdQuery(userId), cancellationToken);
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
