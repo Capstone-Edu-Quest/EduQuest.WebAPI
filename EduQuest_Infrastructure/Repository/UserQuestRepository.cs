@@ -276,6 +276,8 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         .Where(q => q.Type == (int)ResetType.Daily)
         .ExecuteUpdateAsync(q => q
             .SetProperty(uq => uq.PointToComplete, 0)
+            .SetProperty(uq => uq.IsCompleted, false)
+            .SetProperty(uq => uq.IsRewardClaimed, false)
             .SetProperty(uq => uq.StartDate, DateTime.Now.ToUniversalTime())
             .SetProperty(uq => uq.DueDate, DateTime.Now.AddDays(1).ToUniversalTime()));
 
