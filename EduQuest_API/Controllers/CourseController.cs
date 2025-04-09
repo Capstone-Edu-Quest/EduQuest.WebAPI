@@ -1,6 +1,8 @@
 ﻿using EduQuest_Application.DTO.Request.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Courses.Command.AssignCourseToExpert;
+using EduQuest_Application.UseCases.Courses.Command.AttemptAssignment;
+using EduQuest_Application.UseCases.Courses.Command.AttemptQuiz;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
 using EduQuest_Application.UseCases.Courses.Command.SubmitCourse;
 using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
@@ -16,6 +18,7 @@ using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -188,23 +191,40 @@ namespace EduQuest_API.Controllers
 			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
-		[Authorize]
+		[Authorize(Roles ="Learner")]
 		[HttpPost("quiz/attemt")]
-		public async Task<IActionResult> AttemptQuiz()
+		public async Task<IActionResult> AttemptQuiz([FromQuery] string lessonId,
+			[FromBody] AttemptQuizDto attempt,
+            CancellationToken token = default)
 		{
-			throw new NotImplementedException();
-		}
-        [Authorize]
+            string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new AttemptQuizCommand(userId, lessonId, attempt), token);
+
+            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+			{
+				return NotFound(result);
+			}
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+        [Authorize(Roles = "Learner")]
         [HttpPost("assignment/attemt")]
-        public async Task<IActionResult> AttemptAssignment()
+        public async Task<IActionResult> AttemptAssignment([FromQuery] string lessonId,
+            [FromBody] AttemptAssignmentDto attempt,
+            CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new AttemptAssignmentCommand(userId, lessonId, attempt), token);
+            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
         [Authorize]
-        [HttpPost("assignment/peer-review")]
+        [HttpPost("assignment/review")]
         public async Task<IActionResult> AttemptReview()
         {
-            throw new NotImplementedException();
+			return Ok("Not Implemented!");
         }
     }
 }
