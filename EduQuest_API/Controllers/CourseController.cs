@@ -37,7 +37,7 @@ namespace EduQuest_API.Controllers
         [HttpPut("submitCourse")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAssignedCourse([FromBody] SubmitCourseCommand command, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> SubmitCourse([FromBody] SubmitCourseCommand command, CancellationToken cancellationToken = default)
         {
             var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
