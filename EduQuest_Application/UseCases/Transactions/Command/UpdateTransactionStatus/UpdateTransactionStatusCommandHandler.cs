@@ -66,12 +66,12 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     }
                 };
             }
-			var chargeService = new ChargeService();
-			var chargeList = await chargeService.ListAsync(new ChargeListOptions
-			{
-				PaymentIntent = transactionExisted.PaymentIntentId, // Lọc theo PaymentIntent
-				Limit = 1
-			});
+			//var chargeService = new ChargeService();
+			//var chargeList = await chargeService.ListAsync(new ChargeListOptions
+			//{
+			//	PaymentIntent = transactionExisted.PaymentIntentId, // Lọc theo PaymentIntent
+			//	Limit = 1
+			//});
 
             var (balanceTransaction, errorResponse) = await GetBalanceTransactionFromPaymentIntent(transactionExisted.PaymentIntentId);
             if (errorResponse != null)
