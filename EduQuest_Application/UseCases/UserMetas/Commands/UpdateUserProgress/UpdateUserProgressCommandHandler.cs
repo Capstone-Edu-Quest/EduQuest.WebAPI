@@ -122,7 +122,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 
             }else if(temp != null && temp.Index < maxIndex)
 			{
-				newMaterialId = lesson.LessonMaterials.Where(l => l.Index == temp.Index + 1).FirstOrDefault()?.Id;
+				newMaterialId = lesson.LessonMaterials.Where(l => l.Index == temp.Index + 1).FirstOrDefault()?.MaterialId;
 			}
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;

@@ -59,5 +59,26 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Lessons.Include(x => x.LessonMaterials).FirstOrDefaultAsync(x => x.CourseId == courseId && x.Index == 1);
 		}
+
+		public async Task<(string lessonId, string materialId)> GetFirstLessonAndMaterialIdInCourseAsync(string courseId)
+		{
+			var firstLesson = await _context.Lessons
+			.Where(lesson => lesson.CourseId == courseId) 
+			.OrderBy(lesson => lesson.Index) 
+			.FirstOrDefaultAsync();
+
+			if (firstLesson == null)
+			{
+				return (null, null);
+			}
+
+			var firstMaterialId = await _context.LessonMaterials
+				.Where(lm => lm.LessonId == firstLesson.Id)
+				.OrderBy(lm => lm.Index) 
+				.Select(lm => lm.MaterialId)
+				.FirstOrDefaultAsync();
+
+			return (firstLesson.Id, firstMaterialId);
+		}
 	}
 }
