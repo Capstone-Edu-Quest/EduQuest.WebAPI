@@ -16,12 +16,12 @@ public class StripePayment : IStripePayment
         StripeConfiguration.ApiKey = _stripeModel.SecretKey;
     }
 
-    public async Task<Session> CreateStripeSessionAsync(decimal amount, string currency, string productName, string successUrl, string cancelUrl)
+    public async Task<Session> CreateStripeSessionAsync(decimal amount, string productName, string successUrl, string cancelUrl)
     {
         var options = new SessionCreateOptions
         {
             Mode = "payment",
-            Currency = currency,
+            Currency = "usd",
             SuccessUrl = successUrl,
             CancelUrl = cancelUrl,
             LineItems = new List<SessionLineItemOptions>
@@ -31,7 +31,7 @@ public class StripePayment : IStripePayment
                     Quantity = 1,
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        Currency = currency,
+                        Currency = "usd",
                         UnitAmount = (long)(amount * 100), // cents
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
