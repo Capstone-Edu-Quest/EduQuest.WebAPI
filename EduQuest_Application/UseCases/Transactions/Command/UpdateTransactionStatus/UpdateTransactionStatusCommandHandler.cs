@@ -255,7 +255,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         try
                         {
                             var balanceTransaction = await balanceTransactionService.GetAsync(charge.BalanceTransactionId);
-                            return (balanceTransaction, null); 
+                            return (balanceTransaction, null);
                         }
                         catch
                         {
@@ -263,7 +263,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         }
                     }
 
-                    await Task.Delay(2000); 
+                    await Task.Delay(2000);
+                }
             }
             catch (Exception ex)
             {
