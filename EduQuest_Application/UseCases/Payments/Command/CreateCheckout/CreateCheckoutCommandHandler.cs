@@ -52,8 +52,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
             if (user == null)
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "user");
 
-            if (!string.IsNullOrEmpty(request.Request.SuccessUrl)) _stripeModel.SuccessUrl = request.Request.SuccessUrl!;
-            if (!string.IsNullOrEmpty(request.Request.CancelUrl)) _stripeModel.CancelUrl = request.Request.CancelUrl!;
+            if (!string.IsNullOrEmpty(request.Request.SuccessUrl) || request.Request.SuccessUrl.Equals("string")) _stripeModel.SuccessUrl = request.Request.SuccessUrl!;
+            if (!string.IsNullOrEmpty(request.Request.CancelUrl) || request.Request.CancelUrl.Equals("string")) _stripeModel.CancelUrl = request.Request.CancelUrl!;
 
             if (!string.IsNullOrEmpty(request.Request.CartId))
                 return await HandleCartCheckout(request, user);
@@ -102,7 +102,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
             }
 
             var total = paidItems.Sum(x => x.Price);
-            var session = await _stripePayment.CreateStripeSessionAsync(total, "usd", GeneralEnums.ItemTypeTransactionDetail.Course.ToString(), request.Request.SuccessUrl, request.Request.CancelUrl);
+            var session = await _stripePayment.CreateStripeSessionAsync(total, GeneralEnums.ItemTypeTransactionDetail.Course.ToString(), request.Request.SuccessUrl, request.Request.CancelUrl);
+
 
             var transaction = new Transaction
             {
@@ -145,7 +146,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
             if (subscription == null)
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "subscription");
 
-            var session = await _stripePayment.CreateStripeSessionAsync(subscription.Value, "usd",subscription.Config, request.Request.SuccessUrl, request.Request.CancelUrl);
+            var session = await _stripePayment.CreateStripeSessionAsync(subscription.Value,subscription.Config, request.Request.SuccessUrl, request.Request.CancelUrl);
 
             var transaction = new Transaction
             {

@@ -15,7 +15,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus
 {
-	public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
+    public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICourseRepository _courseRepository;
@@ -25,29 +25,29 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         private readonly ICartRepository _cartRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IUnitOfWork _unitOfWork;
-		private readonly IQuartzService _quartzService;
-		private readonly StripeModel _stripeModel;
+        private readonly IQuartzService _quartzService;
+        private readonly StripeModel _stripeModel;
 
-		public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
-		{
-			_transactionRepository = transactionRepository;
-			_courseRepository = courseRepository;
-			_lessonRepository = lessonRepository;
-			_transactionDetailRepository = transactionDetailRepository;
-			_userRepository = userRepository;
-			_cartRepository = cartRepository;
-			_subscriptionRepository = subscriptionRepository;
-			_unitOfWork = unitOfWork;
-			_quartzService = quartzService;
-			_stripeModel = stripeModel.Value;
-		}
-
-		public async Task<APIResponse> Handle(UpdateTransactionStatusCommand request, CancellationToken cancellationToken)
+        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
         {
-			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-			var transactionExisted = await _transactionRepository.GetById(request.TransactionId);
-			var user = await _userRepository.GetUserById(transactionExisted.UserId);
-			if (transactionExisted == null)
+            _transactionRepository = transactionRepository;
+            _courseRepository = courseRepository;
+            _lessonRepository = lessonRepository;
+            _transactionDetailRepository = transactionDetailRepository;
+            _userRepository = userRepository;
+            _cartRepository = cartRepository;
+            _subscriptionRepository = subscriptionRepository;
+            _unitOfWork = unitOfWork;
+            _quartzService = quartzService;
+            _stripeModel = stripeModel.Value;
+        }
+
+        public async Task<APIResponse> Handle(UpdateTransactionStatusCommand request, CancellationToken cancellationToken)
+        {
+            StripeConfiguration.ApiKey = _stripeModel.SecretKey;
+            var transactionExisted = await _transactionRepository.GetById(request.TransactionId);
+            var user = await _userRepository.GetUserById(transactionExisted.UserId);
+            if (transactionExisted == null)
             {
                 return new APIResponse
                 {
@@ -66,14 +66,14 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     }
                 };
             }
-			var chargeService = new ChargeService();
-			var chargeList = await chargeService.ListAsync(new ChargeListOptions
-			{
-				PaymentIntent = transactionExisted.PaymentIntentId, // Lọc theo PaymentIntent
-				Limit = 1
-			});
+            //var chargeService = new ChargeService();
+            //var chargeList = await chargeService.ListAsync(new ChargeListOptions
+            //{
+            //	PaymentIntent = transactionExisted.PaymentIntentId, // Lọc theo PaymentIntent
+            //	Limit = 1
+            //});
 
-            var (balanceTransaction, errorResponse) = await GetBalanceTransactionFromPaymentIntent(transactionExisted.PaymentIntentId);
+            var (balanceTransaction, errorResponse) = await GetBalanceTransactionFromPaymentIntent(request.PaymentIntentId);
             if (errorResponse != null)
             {
                 return errorResponse;
@@ -84,130 +84,132 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             decimal netAmount = balanceTransaction.Net / 100m;
             transactionExisted.NetAmount = netAmount;
             transactionExisted.StripeFee = transactionExisted.TotalAmount - netAmount;
-			transactionExisted.Status = request.Status;
-			transactionExisted.PaymentIntentId = request.PaymentIntentId;
-			transactionExisted.CustomerName = request.CustomerName;
-			transactionExisted.CustomerEmail = request.CustomerEmail;
+            transactionExisted.Status = request.Status;
+            transactionExisted.PaymentIntentId = request.PaymentIntentId;
+            transactionExisted.CustomerName = request.CustomerName;
+            transactionExisted.CustomerEmail = request.CustomerEmail;
             await _transactionRepository.Update(transactionExisted);
 
             //Update Trasaction Detail
-           
-			var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
+
+            var transactionDetailList = await _transactionDetailRepository.GetByTransactionId(request.TransactionId);
             if (transactionDetailList.Any() && (transactionDetailList.FirstOrDefault(x => x.TransactionId == request.TransactionId).ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString()))
             {
-				var myCart = await _cartRepository.GetByUserId(transactionExisted.UserId);
-				if (myCart == null)
-				{
-					return new APIResponse
-					{
-						IsError = true,
-						Payload = null,
-						Errors = new ErrorResponse
-						{
-							StatusResponse = HttpStatusCode.NotFound,
-							StatusCode = (int)HttpStatusCode.NotFound,
-							Message = MessageCommon.NotFound,
-						},
-						Message = new MessageResponse
-						{
-							content = MessageCommon.NotFound,
-							values = new Dictionary<string, string> { { "name", "cart" } }
-						}
-					};
-				}
-				foreach (var detail in transactionDetailList)
+                var myCart = await _cartRepository.GetByUserId(transactionExisted.UserId);
+                if (myCart == null)
                 {
-					var cartItem = myCart.CartItems.FirstOrDefault(c => c.CourseId == detail.ItemId);
-					decimal? systemShare, instructorShare;
-					
-					if (cartItem != null)
+                    return new APIResponse
                     {
-						var course = await _courseRepository.GetById(cartItem.CourseId);
+                        IsError = true,
+                        Payload = null,
+                        Errors = new ErrorResponse
+                        {
+                            StatusResponse = HttpStatusCode.NotFound,
+                            StatusCode = (int)HttpStatusCode.NotFound,
+                            Message = MessageCommon.NotFound,
+                        },
+                        Message = new MessageResponse
+                        {
+                            content = MessageCommon.NotFound,
+                            values = new Dictionary<string, string> { { "name", "cart" } }
+                        }
+                    };
+                }
+                foreach (var detail in transactionDetailList)
+                {
+                    var cartItem = myCart.CartItems.FirstOrDefault(c => c.CourseId == detail.ItemId);
+                    decimal? systemShare, instructorShare;
 
-						if(course == null)
-						{
-							return new APIResponse
-							{
-								IsError = true,
-								Payload = null,
-								Errors = new ErrorResponse
-								{
-									StatusResponse = HttpStatusCode.NotFound,
-									StatusCode = (int)HttpStatusCode.NotFound,
-									Message = MessageCommon.NotFound,
-								},
-								Message = new MessageResponse
-								{
-									content = MessageCommon.NotFound,
-									values = new Dictionary<string, string> { { "name", $"course with Id {cartItem.CourseId}" } }
-								}
-							};
-						}
-						var instructor = await _userRepository.GetById(course.CreatedBy);
-						
-						//Calculate Stripe fee
-						decimal? percentage = (cartItem.Price/myCart.Total) * 100;
-						decimal? stripeFeeForInstructor = (percentage / 100) * transactionExisted.StripeFee;
+                    if (cartItem != null)
+                    {
+                        var course = await _courseRepository.GetById(cartItem.CourseId);
+
+                        if (course == null)
+                        {
+                            return new APIResponse
+                            {
+                                IsError = true,
+                                Payload = null,
+                                Errors = new ErrorResponse
+                                {
+                                    StatusResponse = HttpStatusCode.NotFound,
+                                    StatusCode = (int)HttpStatusCode.NotFound,
+                                    Message = MessageCommon.NotFound,
+                                },
+                                Message = new MessageResponse
+                                {
+                                    content = MessageCommon.NotFound,
+                                    values = new Dictionary<string, string> { { "name", $"course with Id {cartItem.CourseId}" } }
+                                }
+                            };
+                        }
+                        var instructor = await _userRepository.GetById(course.CreatedBy);
+
+                        //Calculate Stripe fee
+                        decimal? percentage = (cartItem.Price / myCart.Total) * 100;
+                        decimal? stripeFeeForInstructor = (percentage / 100) * transactionExisted.StripeFee;
 
                         //Calculate amount after fees
-						decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
-						int packageEnum = (int)Enum.Parse(typeof(PackageEnum), user.Package);
-						var	courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), packageEnum, (int)GeneralEnums.ConfigEnum.CommissionFee);
-						if (detail.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString())
-						{
-							systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value)/100);
-							instructorShare = courseNetAmount - systemShare;
-							//Update for transaction detail
-							detail.StripeFee = stripeFeeForInstructor;
-							detail.NetAmount = courseNetAmount;
-							detail.SystemShare = systemShare;
-							detail.InstructorShare = instructorShare;
-						}
-						var firstLessonAndMaterialId = await _lessonRepository.GetFirstLessonAndMaterialIdInCourseAsync(course.Id);
-						if(firstLessonAndMaterialId.lessonId == null && firstLessonAndMaterialId.materialId == null)
-						{
-							return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
-						}
+                        decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
+                        int packageEnum = (int)Enum.Parse(typeof(PackageEnum), user.Package);
+                        var courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), packageEnum, (int)GeneralEnums.ConfigEnum.CommissionFee);
+                        if (detail.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString())
+                        {
+                            systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100);
+                            instructorShare = courseNetAmount - systemShare;
+                            //Update for transaction detail
+                            detail.StripeFee = stripeFeeForInstructor;
+                            detail.NetAmount = courseNetAmount;
+                            detail.SystemShare = systemShare;
+                            detail.InstructorShare = instructorShare;
+                        }
+                        var firstLessonAndMaterialId = await _lessonRepository.GetFirstLessonAndMaterialIdInCourseAsync(course.Id);
+                        if (firstLessonAndMaterialId.lessonId == null && firstLessonAndMaterialId.materialId == null)
+                        {
+                            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
+                        }
 
-						var newLearner = new CourseLearner
-						{
-							CourseId = course.Id,
-							UserId = transactionExisted.UserId,
-							IsActive = true,
-							TotalTime = 0,
-							ProgressPercentage = 0,
-							CurrentLessonId = firstLessonAndMaterialId.lessonId,
-							CurrentMaterialId = firstLessonAndMaterialId.materialId,
-							CreatedAt = DateTime.Now.ToUniversalTime(),
-							UpdatedAt = DateTime.Now.ToUniversalTime(),
+                        var newLearner = new CourseLearner
+                        {
+                            CourseId = course.Id,
+                            UserId = transactionExisted.UserId,
+                            IsActive = true,
+                            TotalTime = 0,
+                            ProgressPercentage = 0,
+                            CurrentLessonId = firstLessonAndMaterialId.lessonId,
+                            CurrentMaterialId = firstLessonAndMaterialId.materialId,
+                            CreatedAt = DateTime.Now.ToUniversalTime(),
+                            UpdatedAt = DateTime.Now.ToUniversalTime(),
 
-						};
-						course.CourseLearners.Add(newLearner);
-						await _courseRepository.Update(course);
-					}
-				}
-				myCart.CartItems.Clear();
-				await _cartRepository.Delete(myCart.Id);
-			} else
-			{
-				foreach (var detail in transactionDetailList)
-				{
-					detail.StripeFee = transactionExisted.TotalAmount - netAmount;
-					detail.NetAmount = netAmount;
-					detail.SystemShare = netAmount;
-					var subscription = await _subscriptionRepository.GetById(detail.ItemId);
-					user.Package = GeneralEnums.PackageEnum.Pro.ToString();
-					if(detail.ItemType.ToLower() == ConfigEnum.PriceYearly.ToString().ToLower())
-					{
-						user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddMinutes(30);
-					} else if (detail.ItemType.ToLower() == ConfigEnum.PriceMonthly.ToString().ToLower())
-					{
-						user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddYears(1);
-					}
-					await _userRepository.Update(user);
-					await _quartzService.UpdateUserPackageAccountType(user.Id);
-				}
-			}
+                        };
+                        course.CourseLearners.Add(newLearner);
+                        await _courseRepository.Update(course);
+                    }
+                }
+                myCart.CartItems.Clear();
+                await _cartRepository.Delete(myCart.Id);
+            }
+            else
+            {
+                foreach (var detail in transactionDetailList)
+                {
+                    detail.StripeFee = transactionExisted.TotalAmount - netAmount;
+                    detail.NetAmount = netAmount;
+                    detail.SystemShare = netAmount;
+                    var subscription = await _subscriptionRepository.GetById(detail.ItemId);
+                    user.Package = GeneralEnums.PackageEnum.Pro.ToString();
+                    if (detail.ItemType.ToLower() == ConfigEnum.PriceYearly.ToString().ToLower())
+                    {
+                        user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddMinutes(30);
+                    }
+                    else if (detail.ItemType.ToLower() == ConfigEnum.PriceMonthly.ToString().ToLower())
+                    {
+                        user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddYears(1);
+                    }
+                    await _userRepository.Update(user);
+                    await _quartzService.UpdateUserPackageAccountType(user.Id);
+                }
+            }
             var result = await _unitOfWork.SaveChangesAsync() > 0;
 
             return new APIResponse
@@ -231,38 +233,62 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         private async Task<(BalanceTransaction balanceTransaction, APIResponse error)> GetBalanceTransactionFromPaymentIntent(string paymentIntentId)
         {
             var chargeService = new ChargeService();
-            var chargeList = await chargeService.ListAsync(new ChargeListOptions
-            {
-                PaymentIntent = paymentIntentId,
-                Limit = 1
-            });
+            var balanceTransactionService = new BalanceTransactionService();
+            Charge charge = null;
 
-            var charge = chargeList.Data.FirstOrDefault();
-            if (charge == null || charge.Status?.ToLower() != "succeeded")
+            try
             {
-                var error = new APIResponse
+                for (int attempt = 1; attempt <= 3; attempt++)
                 {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
+                    var chargeList = await chargeService.ListAsync(new ChargeListOptions
                     {
-                        StatusResponse = HttpStatusCode.BadRequest,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Message = "Transaction not successful",
-                    },
-                    Message = new MessageResponse
+                        PaymentIntent = paymentIntentId,
+                        Limit = 1
+                    });
+
+                    charge = chargeList.Data.FirstOrDefault();
+
+                    if (charge != null &&
+                        charge.Status?.ToLower() == "succeeded" &&
+                        !string.IsNullOrEmpty(charge.BalanceTransactionId))
                     {
-                        content = "Transaction not successful",
-                        values = new Dictionary<string, string> { { "name", "transaction" } }
+                        try
+                        {
+                            var balanceTransaction = await balanceTransactionService.GetAsync(charge.BalanceTransactionId);
+                            return (balanceTransaction, null); 
+                        }
+                        catch
+                        {
+                            //tiếp tục retry
+                        }
                     }
-                };
-                return (null, error);
+
+                    await Task.Delay(2000); 
+            }
+            catch (Exception ex)
+            {
+                // Nuốt lỗi tổng thể để không lọt ra Global Exception Middleware
             }
 
-            var balanceTransactionService = new BalanceTransactionService();
-            var balanceTransaction = await balanceTransactionService.GetAsync(charge.BalanceTransactionId);
-            return (balanceTransaction, null);
+            var error = new APIResponse
+            {
+                IsError = true,
+                Errors = new ErrorResponse
+                {
+                    StatusResponse = HttpStatusCode.BadRequest,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = "Transaction not successful or balance transaction not ready",
+                },
+                Message = new MessageResponse
+                {
+                    content = "Transaction not successful or balance transaction not ready",
+                    values = new Dictionary<string, string> { { "name", "transaction" } }
+                }
+            };
+
+            return (null, error);
         }
+
 
     }
 }
