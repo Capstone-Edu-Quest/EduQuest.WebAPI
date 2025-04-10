@@ -26,6 +26,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using EduQuest_Infrastructure.Migrations;
 using EduQuest_Application.UseCases.Courses.Command.ReviewAssignment;
+using EduQuest_Domain.Models.Request;
 
 namespace EduQuest_API.Controllers
 {
@@ -90,7 +91,7 @@ namespace EduQuest_API.Controllers
         [HttpGet("searchCourse")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequest request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequestDto request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, userId, request), cancellationToken);
