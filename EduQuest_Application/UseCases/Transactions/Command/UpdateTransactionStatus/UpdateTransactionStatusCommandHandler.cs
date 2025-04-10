@@ -73,29 +73,13 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 				Limit = 1
 			});
 
-			var charge = chargeList.Data.FirstOrDefault();
-			if (charge == null || !charge.Status.ToLower().Contains("succeeded"))
-			{
-				return new APIResponse
-				{
-					IsError = true,
-					Payload = null,
-					Errors = new ErrorResponse
-					{
-						StatusResponse = HttpStatusCode.BadRequest,
-						StatusCode = (int)HttpStatusCode.BadRequest,
-						Message = "Transaction not successful",
-					},
-					Message = new MessageResponse
-					{
-						content = "Transaction not successful",
-						values = new Dictionary<string, string> { { "name", "transaction" } }
-					}
-				};
-			}
-			var balanceTransactionService = new BalanceTransactionService();
-            var balanceTransaction = await balanceTransactionService.GetAsync(charge.BalanceTransactionId);
-            
+            var (balanceTransaction, errorResponse) = await GetBalanceTransactionFromPaymentIntent(transactionExisted.PaymentIntentId);
+            if (errorResponse != null)
+            {
+                return errorResponse;
+            }
+
+
             //Update Transaction
             decimal netAmount = balanceTransaction.Net / 100m;
             transactionExisted.NetAmount = netAmount;
@@ -243,5 +227,42 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                 }
             };
         }
+
+        private async Task<(BalanceTransaction balanceTransaction, APIResponse error)> GetBalanceTransactionFromPaymentIntent(string paymentIntentId)
+        {
+            var chargeService = new ChargeService();
+            var chargeList = await chargeService.ListAsync(new ChargeListOptions
+            {
+                PaymentIntent = paymentIntentId,
+                Limit = 1
+            });
+
+            var charge = chargeList.Data.FirstOrDefault();
+            if (charge == null || charge.Status?.ToLower() != "succeeded")
+            {
+                var error = new APIResponse
+                {
+                    IsError = true,
+                    Payload = null,
+                    Errors = new ErrorResponse
+                    {
+                        StatusResponse = HttpStatusCode.BadRequest,
+                        StatusCode = (int)HttpStatusCode.BadRequest,
+                        Message = "Transaction not successful",
+                    },
+                    Message = new MessageResponse
+                    {
+                        content = "Transaction not successful",
+                        values = new Dictionary<string, string> { { "name", "transaction" } }
+                    }
+                };
+                return (null, error);
+            }
+
+            var balanceTransactionService = new BalanceTransactionService();
+            var balanceTransaction = await balanceTransactionService.GetAsync(charge.BalanceTransactionId);
+            return (balanceTransaction, null);
+        }
+
     }
 }
