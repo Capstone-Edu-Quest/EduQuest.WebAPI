@@ -73,7 +73,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 			//	Limit = 1
 			//});
 
-            var (balanceTransaction, errorResponse) = await GetBalanceTransactionFromPaymentIntent(transactionExisted.PaymentIntentId);
+            var (balanceTransaction, errorResponse) = await GetBalanceTransactionFromPaymentIntent(request.PaymentIntentId);
             if (errorResponse != null)
             {
                 return errorResponse;
