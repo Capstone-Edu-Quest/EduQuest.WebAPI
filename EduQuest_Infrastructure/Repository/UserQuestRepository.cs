@@ -252,7 +252,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
 
         foreach (var quest in quests)
         {
-            quest.PointToComplete = 0;
+            quest.CurrentPoint = 0;
             quest.StartDate = DateTime.Now.ToUniversalTime();
             quest.DueDate = DateTime.Now.AddMinutes(GetTimeToComplete(quest.QuestValues!).Value).ToUniversalTime();
 
@@ -275,7 +275,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         int affectedRows = await _context.UserQuests
         .Where(q => q.Type == (int)ResetType.Daily)
         .ExecuteUpdateAsync(q => q
-            .SetProperty(uq => uq.PointToComplete, 0)
+            .SetProperty(uq => uq.CurrentPoint, 0)
             .SetProperty(uq => uq.IsCompleted, false)
             .SetProperty(uq => uq.IsRewardClaimed, false)
             .SetProperty(uq => uq.StartDate, DateTime.Now.ToUniversalTime())
