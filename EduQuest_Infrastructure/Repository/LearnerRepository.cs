@@ -6,6 +6,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -20,10 +21,15 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
     public async Task<CourseLearner?> GetByUserIdAndCourseId(string userId, string courseId)
     {
-        return await _context.Learners.FirstOrDefaultAsync(a => a.UserId.Equals(userId) && a.CourseId.Equals(courseId));
+        return await _context.Learners.AsNoTracking().FirstOrDefaultAsync(a => a.UserId.Equals(userId) && a.CourseId.Equals(courseId));
     }
 
-	public async Task<List<ChartInfo>> GetCourseEnrollOverTimeAsync(string courseId)
+    public async Task<List<CourseLearner>> GetByUserIdAndCourseIdsAsync(string userId, List<string> courseIds)
+    {
+        return await _context.Learners.AsNoTracking().Where(a => a.UserId.Equals(userId) && courseIds.Contains(a.CourseId)).ToListAsync();
+    }
+
+    public async Task<List<ChartInfo>> GetCourseEnrollOverTimeAsync(string courseId)
 	{
 		var query = from learner in _context.Learners
 					where learner.CourseId == courseId 

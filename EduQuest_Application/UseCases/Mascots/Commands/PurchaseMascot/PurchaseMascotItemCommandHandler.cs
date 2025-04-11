@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Firebase;
 using EduQuest_Application.DTO.Response.Mascot;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -18,19 +20,16 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
     private readonly IUserMetaRepository _userStatisticRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IFireBaseRealtimeService _notifcation;
 
-    public PurchaseMascotItemCommandHandler(
-        IShopItemRepository shopItemRepository,
-        IMascotInventoryRepository mascotInventoryRepository,
-        IUserMetaRepository userStatisticRepository,
-        IMapper mapper,
-        IUnitOfWork unitOfWork)
+    public PurchaseMascotItemCommandHandler(IShopItemRepository shopItemRepository, IMascotInventoryRepository mascotInventoryRepository, IUserMetaRepository userStatisticRepository, IMapper mapper, IUnitOfWork unitOfWork, IFireBaseRealtimeService notifcation)
     {
         _shopItemRepository = shopItemRepository;
         _mascotInventoryRepository = mascotInventoryRepository;
         _userStatisticRepository = userStatisticRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _notifcation = notifcation;
     }
 
     public async Task<APIResponse> Handle(PurchaseMascotItemCommand request, CancellationToken cancellationToken)
@@ -81,10 +80,27 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
         var userdetail = await _userStatisticRepository.GetById(request.UserId);
         if (userdetail.Gold < shopItem.Price)
         {
+            await _notifcation.PushNotificationAsync(
+                new NotificationDto
+                {
+                    userId = request.UserId,
+                    Content = "Not enough gold to buy this item",
+                    Receiver = request.UserId,
+                    Url = BaseUrl.ShopItemUrl,
+                }
+             );
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotEnoughGold, Constants.MessageCommon.NotEnoughGold, "name", "item");
         }
         userdetail.Gold -= (int)shopItem.Price;
-
+        await _notifcation.PushNotificationAsync(
+                new NotificationDto
+                {
+                    userId = request.UserId,
+                    Content = $"Purchase {shopItem.Name} successfully",
+                    Receiver = request.UserId,
+                    Url = BaseUrl.ShopItemUrl,
+                }
+             );
 
         await _mascotInventoryRepository.Add(mascotInventory);
         await _userStatisticRepository.Update(userdetail);
