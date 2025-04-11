@@ -88,6 +88,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             transactionExisted.PaymentIntentId = request.PaymentIntentId;
             transactionExisted.CustomerName = request.CustomerName;
             transactionExisted.CustomerEmail = request.CustomerEmail;
+            transactionExisted.Url = null;
             await _transactionRepository.Update(transactionExisted);
 
             //Update Trasaction Detail

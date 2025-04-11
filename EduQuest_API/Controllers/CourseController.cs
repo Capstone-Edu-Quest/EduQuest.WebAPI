@@ -4,6 +4,7 @@ using EduQuest_Application.UseCases.Courses.Command.AssignCourseToExpert;
 using EduQuest_Application.UseCases.Courses.Command.AttemptAssignment;
 using EduQuest_Application.UseCases.Courses.Command.AttemptQuiz;
 using EduQuest_Application.UseCases.Courses.Command.CreateCourse;
+using EduQuest_Application.UseCases.Courses.Command.ReviewAssignment;
 using EduQuest_Application.UseCases.Courses.Command.SubmitCourse;
 using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries;
@@ -17,16 +18,12 @@ using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
-using EduQuest_Domain.Enums;
-using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Request;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using EduQuest_Infrastructure.Migrations;
-using EduQuest_Application.UseCases.Courses.Command.ReviewAssignment;
-using EduQuest_Domain.Models.Request;
 
 namespace EduQuest_API.Controllers
 {
