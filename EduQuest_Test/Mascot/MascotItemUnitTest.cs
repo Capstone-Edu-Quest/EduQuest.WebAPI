@@ -14,36 +14,36 @@ using static EduQuest_Domain.Constants.Constants;
 namespace EduQuest_Test.Mascot;
 public class MascotItemUnitTest
 {
-    private readonly Mock<IShopItemRepository> _mockShopItemRepo;
-    private readonly Mock<IMascotInventoryRepository> _mockMascotInventoryRepo;
-    private readonly Mock<IUserMetaRepository> _mockUserStatisticRepo;
-    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
-    private readonly Mock<IMapper> _mockMapper;
-    private readonly PurchaseMascotItemCommandHandler _handler;
-    private readonly EquipMascotItemCommandHandler _equipMascotHandler;
+    //private readonly Mock<IShopItemRepository> _mockShopItemRepo;
+    //private readonly Mock<IMascotInventoryRepository> _mockMascotInventoryRepo;
+    //private readonly Mock<IUserMetaRepository> _mockUserStatisticRepo;
+    //private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    //private readonly Mock<IMapper> _mockMapper;
+    //private readonly PurchaseMascotItemCommandHandler _handler;
+    //private readonly EquipMascotItemCommandHandler _equipMascotHandler;
 
-    public MascotItemUnitTest()
-    {
-        _mockShopItemRepo = new Mock<IShopItemRepository>();
-        _mockMascotInventoryRepo = new Mock<IMascotInventoryRepository>();
-        _mockUserStatisticRepo = new Mock<IUserMetaRepository>();
-        _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _mockMapper = new Mock<IMapper>();
+    //public MascotItemUnitTest()
+    //{
+    //    _mockShopItemRepo = new Mock<IShopItemRepository>();
+    //    _mockMascotInventoryRepo = new Mock<IMascotInventoryRepository>();
+    //    _mockUserStatisticRepo = new Mock<IUserMetaRepository>();
+    //    _mockUnitOfWork = new Mock<IUnitOfWork>();
+    //    _mockMapper = new Mock<IMapper>();
 
-        _handler = new PurchaseMascotItemCommandHandler(
-            _mockShopItemRepo.Object,
-            _mockMascotInventoryRepo.Object,
-            _mockUserStatisticRepo.Object,
-            _mockMapper.Object,
-            _mockUnitOfWork.Object
-        );
+    //    _handler = new PurchaseMascotItemCommandHandler(
+    //        _mockShopItemRepo.Object,
+    //        _mockMascotInventoryRepo.Object,
+    //        _mockUserStatisticRepo.Object,
+    //        _mockMapper.Object,
+    //        _mockUnitOfWork.Object
+    //    );
 
-        _equipMascotHandler = new EquipMascotItemCommandHandler(
-            _mockMascotInventoryRepo.Object,
-            _mockUnitOfWork.Object,
-            _mockMapper.Object
-            );
-    }
+    //    _equipMascotHandler = new EquipMascotItemCommandHandler(
+    //        _mockMascotInventoryRepo.Object,
+    //        _mockUnitOfWork.Object,
+    //        _mockMapper.Object
+    //        );
+    //}
 
     //[Fact]
     //public async Task Handle_ShouldReturnNotFound_WhenShopItemDoesNotExist()

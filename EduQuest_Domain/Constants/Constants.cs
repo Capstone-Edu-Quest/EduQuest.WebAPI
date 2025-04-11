@@ -10,7 +10,13 @@ namespace EduQuest_Domain.Constants
 	{
         public static class FireBaseUrl
         {
-            public const string URL = "https://eduquest-6f8b8-default-rtdb.asia-southeast1.firebasedatabase.app/";
+            public const string URL = "https://eduquest-notifications.asia-southeast1.firebasedatabase.app/";
+        }
+
+        public static class BaseUrl
+        {
+            public const string Base = "https://edu-quest-webui.vercel.app";
+            public const string ShopItemUrl = $"{Base}/shop-items";
         }
         public static class Http
 		{

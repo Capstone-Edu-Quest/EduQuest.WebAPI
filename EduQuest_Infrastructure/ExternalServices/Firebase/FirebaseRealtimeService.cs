@@ -1,4 +1,5 @@
 ﻿using EduQuest_Application.Abstractions.Firebase;
+using EduQuest_Domain.Models.Notification;
 using Firebase.Database;
 using Firebase.Database.Query;
 
@@ -13,19 +14,23 @@ public class FirebaseRealtimeService : IFireBaseRealtimeService
         _firebaseClient = new FirebaseClient(firebaseDbUrl);
     }
 
-    public async Task PushNotificationAsync(string userId, string title, string message)
+    public async Task PushNotificationAsync(NotificationDto request)
     {
+        string generatedId = Guid.NewGuid().ToString();
         var notification = new
         {
-            title = title,
-            message = message,
+            content = request.Content,
+            id = generatedId,
+            receiverId = request.Receiver,
+            url = request.Url,
             timestamp = DateTime.UtcNow.ToString("o")
         };
 
 
         await _firebaseClient
             .Child("notifications")
-            .Child(userId)
-            .PostAsync(notification);
+            .Child(request.userId)
+            .Child(generatedId)
+            .PutAsync(notification);
     }
 }

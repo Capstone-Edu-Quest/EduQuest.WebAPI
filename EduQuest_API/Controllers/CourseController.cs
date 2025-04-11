@@ -27,7 +27,7 @@ using System.Net;
 
 namespace EduQuest_API.Controllers
 {
-	[Route(Constants.Http.API_VERSION + "/course")]
+    [Route(Constants.Http.API_VERSION + "/course")]
 	public class CourseController : BaseController
 	{
 		private ISender _mediator;

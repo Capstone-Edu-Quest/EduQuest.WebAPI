@@ -176,8 +176,19 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 
 
             var (courses, totalItems) = await _courseRepository.SearchCoursesAsync(request.SearchRequest, request.PageNo, request.EachPage);
+            
+
 
             var courseResponses = _mapper.Map<List<CourseSearchResponse>>(courses);
+            var courseIds = courseResponses.Select(c => c.Id).ToList();
+            var learners = await _learnerRepository.GetByUserIdAndCourseIdsAsync(request.UserId, courseIds);
+            var learnerDict = learners.ToDictionary(x => x.CourseId, x => x.ProgressPercentage);
+            foreach (var course in courseResponses)
+            {
+                if (learnerDict.TryGetValue(course.Id, out var progress))
+                    course.ProgressPercentage = progress;
+                
+            }
             var result = new PagedList<CourseSearchResponse>
             {
                 Items = courseResponses,
