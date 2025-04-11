@@ -33,30 +33,38 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStudying
 			var listCourse = await _courseRepository.GetByListIds(listCourseId);
 
 			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse);
-			foreach (var course in listCourseResponse)
+            var courseIds = listCourseResponse.Select(c => c.Id).ToList();
+
+			//Get all courses that the user is studying
+            var learners = await _learnerRepository.GetByUserIdAndCourseIdsAsync(request.UserId, courseIds);
+            var learnerDict = learners.ToDictionary(x => x.CourseId, x => x.ProgressPercentage);
+            foreach (var course in listCourseResponse)
 			{
-				var user = await _userRepository.GetById(course.CreatedBy);
-				course.Author = user!.Username!;
+                //var user = await _userRepository.GetById(course.CreatedBy);
+                //course.Author = user!.Username!;
 
-				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
-				if (courseSta != null)
-				{
-					course.TotalLesson = (int)courseSta.TotalLesson;
-					course.TotalReview = (int)courseSta.TotalReview;
-					course.Rating = (int)courseSta.Rating;
-					course.TotalTime = (int)courseSta.TotalTime;
-				}
+                //var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
+                //if (courseSta != null)
+                //{
+                //	course.TotalLesson = (int)courseSta.TotalLesson;
+                //	course.TotalReview = (int)courseSta.TotalReview;
+                //	course.Rating = (int)courseSta.Rating;
+                //	course.TotalTime = (int)courseSta.TotalTime;
+                //}
 
-				var courseLeanrer = await _learnerRepository.GetByUserIdAndCourseId(request.UserId, course.Id);
-				if (courseLeanrer != null)
-				{
-					course.ProgressPercentage = courseLeanrer.ProgressPercentage;
-				}
-				else
-				{
-					course.ProgressPercentage = null;
-				}
-			}
+                //var courseLeanrer = await _learnerRepository.GetByUserIdAndCourseId(request.UserId, course.Id);
+                //if (courseLeanrer != null)
+                //{
+                //	course.ProgressPercentage = courseLeanrer.ProgressPercentage;
+                //}
+                //else
+                //{
+                //	course.ProgressPercentage = null;
+                //}
+
+                if (learnerDict.TryGetValue(course.Id, out var progress))
+                    course.ProgressPercentage = progress;
+            }
 			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, listCourseResponse, "name", "course studying");
 		}
 	}

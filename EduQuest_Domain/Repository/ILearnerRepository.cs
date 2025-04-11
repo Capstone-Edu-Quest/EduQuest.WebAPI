@@ -6,6 +6,7 @@ namespace EduQuest_Domain.Repository;
 
 public interface ILearnerRepository : IGenericRepository<CourseLearner>
 {
+    Task<List<CourseLearner>> GetByUserIdAndCourseIdsAsync(string userId, List<string> courseIds);
     Task<CourseLearner?> GetByUserIdAndCourseId(string userId, string courseId);
     Task<bool> RegisteredCourse(string courseId, string userId);
     Task<List<ChartInfo>> GetCourseEnrollOverTimeAsync(string courseId);
