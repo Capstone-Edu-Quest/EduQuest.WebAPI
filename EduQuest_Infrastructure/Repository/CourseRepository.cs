@@ -3,12 +3,14 @@ using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Request;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Google.Api;
 using Microsoft.EntityFrameworkCore;
 using Nest;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -25,6 +27,71 @@ namespace EduQuest_Infrastructure.Repository
         //{
         //	return await _context.Courses.Include(x => x.User).Include(x => x.CourseStatistic).ToListAsync();
         //}
+
+        public async Task<(List<Course> Courses, int TotalItems)> SearchCoursesAsync(SearchCourseRequestDto request, int pageNo, int eachPage)
+        {
+            var query = _context.Courses
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(request.KeywordName))
+            {
+                var keyword = ContentHelper.ConvertVietnameseToEnglish(request.KeywordName.ToLower());
+                query = query.Where(x =>
+                    ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(keyword));
+            }
+
+            if (request.DateFrom.HasValue)
+                query = query.Where(x => x.UpdatedAt >= request.DateFrom.Value);
+
+            if (request.DateTo.HasValue)
+                query = query.Where(x => x.UpdatedAt <= request.DateTo.Value);
+
+            if (request.IsPublic.HasValue)
+            {
+                var isPublic = request.IsPublic.Value;
+                query = query.Where(x =>
+                    isPublic ? x.Status == StatusCourse.Public.ToString() : x.Status != StatusCourse.Public.ToString());
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Author))
+            {
+                var author = ContentHelper.ConvertVietnameseToEnglish(request.Author.ToLower());
+                query = query.Where(x =>
+                    ContentHelper.ConvertVietnameseToEnglish(x.User.Username.ToLower()).Contains(author));
+            }
+
+            if (request.Rating.HasValue)
+                query = query.Where(x => x.CourseStatistic.Rating >= request.Rating.Value);
+
+            if (request.TagListId != null && request.TagListId.Any())
+            {
+                var tagList = request.TagListId;
+                query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
+            }
+
+            if (request.Sort != null)
+            {
+                var sortType = (SortCourse)request.Sort;
+                query = sortType switch
+                {
+                    SortCourse.NewestCourses => query.OrderByDescending(x => x.CreatedAt),
+                    SortCourse.MostReviews => query.OrderByDescending(x => x.CourseStatistic.TotalReview),
+                    SortCourse.HighestRated => query.OrderByDescending(x => x.CourseStatistic.Rating),
+                    _ => query.OrderByDescending(x => x.CreatedAt)
+                };
+            }
+
+            var totalItems = await query.CountAsync();
+            var pagedCourses = await query
+                .Skip((pageNo - 1) * eachPage)
+                .Take(eachPage)
+                .ToListAsync();
+
+            return (pagedCourses, totalItems);
+        }
+
+
+
 
         public async Task<Course> GetCourseById(string Id)
         {

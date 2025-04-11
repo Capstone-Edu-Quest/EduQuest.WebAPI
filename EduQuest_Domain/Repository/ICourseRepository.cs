@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Request;
 using EduQuest_Domain.Repository.Generic;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,9 @@ namespace EduQuest_Domain.Repository
 {
 	public interface ICourseRepository : IGenericRepository<Course>
 	{
-		Task UpdateStatus(string status, string courseId);
+		Task<(List<Course> Courses, int TotalItems)> SearchCoursesAsync(SearchCourseRequestDto request, int pageNo, int eachPage);
+
+        Task UpdateStatus(string status, string courseId);
         Task<Course> GetCourseById(string Id);
 		Task<List<Course>> GetCourseByUserId(string Id);
 		//Task<IEnumerable<Course>> GetAllCourse();

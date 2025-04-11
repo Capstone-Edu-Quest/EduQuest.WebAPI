@@ -67,6 +67,10 @@ public class ApproveCourseCommandHandler : IRequestHandler<ApproveCourseCommand,
         existingCourse.Status = request.isApprove 
             ? GeneralEnums.StatusCourse.Public.ToString()
             : GeneralEnums.StatusCourse.Draft.ToString();
+        if (!request.isApprove)
+        {
+            existingCourse.AssignTo = null;
+        }
 
         await _courseRepository.Update(existingCourse);
         var result = await _unitOfWork.SaveChangesAsync(cancellationToken);

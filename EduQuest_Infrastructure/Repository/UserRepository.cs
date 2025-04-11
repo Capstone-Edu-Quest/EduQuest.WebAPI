@@ -37,7 +37,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<User> GetUserById(string userId)
     {
-        return await _context.Users.Include(x => x.Subscription).FirstOrDefaultAsync(x => x.Id == userId);
+        return await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
     }
 
     public async Task<bool> UpdateUserPackageAccountType(string userId)

@@ -22,12 +22,12 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Cart> GetByUserId(string userId)
 		{
-			return await _context.Carts.Include(x => x.CartItems).FirstOrDefaultAsync(x => x.UserId.Equals(userId));
+			return await _context.Carts.FirstOrDefaultAsync(x => x.UserId.Equals(userId));
 		}
 
 		public async Task<Cart> GetListCartItemByCartId(string cartId)
 		{
-			return await _context.Carts.Include(x => x.CartItems).FirstOrDefaultAsync(x => x.Id.Equals(cartId));
+			return await _context.Carts.FirstOrDefaultAsync(x => x.Id.Equals(cartId));
 		}
 	}
 }

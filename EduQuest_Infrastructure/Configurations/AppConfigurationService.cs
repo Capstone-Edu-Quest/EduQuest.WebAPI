@@ -45,6 +45,8 @@ using EduQuest_Infrastructure.ExternalServices.Email;
 using EduQuest_Infrastructure.ExternalServices.BlobStorage.Setting;
 using EduQuest_Application.Abstractions.AzureBlobStorage;
 using EduQuest_Infrastructure.ExternalServices.BlobStorage;
+using EduQuest_Application.Abstractions.Stripe;
+using EduQuest_Infrastructure.ExternalServices.Payment;
 
 namespace EduQuest_Infrastructure
 {
@@ -192,6 +194,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IBoosterRepository, BoosterRepository>();
 			services.AddScoped<IStudyTimeRepository, StudyTimeRepository>();
 			services.AddScoped<IReportRepository, ReportRepository>();
+			services.AddScoped<IStripePayment, StripePayment>();
 
 			services.AddScoped<IAssignmentAttemptRepository, AssignmentAttemptRepository>();
 			services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
