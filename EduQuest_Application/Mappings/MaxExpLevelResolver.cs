@@ -14,7 +14,6 @@ public class MaxExpLevelResolver : IValueResolver<UserMeta, UserStatisticDto, in
         _levelRepository = levelRepository;
     }
 
-    // Tính toán MaxExpLevel dựa trên Level trong UserMeta
     public int? Resolve(UserMeta source, UserStatisticDto destination, int? destMember, ResolutionContext context)
     {
         if (source.Level == null) return null;
