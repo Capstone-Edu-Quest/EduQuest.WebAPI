@@ -101,4 +101,11 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
             .Where(a => a.Name.ToLower().Equals(Name.ToLower()))
             .ExecuteUpdateAsync(set => set.SetProperty(a => a.Price, price));
     }
+
+    public async Task DeleteAllAsync()
+    {
+        await _context.ShopItems
+            .ExecuteDeleteAsync(); 
+    }
+
 }
