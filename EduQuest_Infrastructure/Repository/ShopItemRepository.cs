@@ -17,6 +17,14 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
         _context = context;
     }
 
+    public async Task<IEnumerable<ShopItem>> GetByNamesAsync(List<string> names)
+    {
+        return await _context.ShopItems
+                             .AsNoTracking()
+                             .Where(item => names.Contains(item.Name))
+                             .ToListAsync();
+    }
+
     public async Task<IEnumerable<ShopItem>> GetAllItemAsync()
     {
         return await _context.ShopItems.AsNoTracking().ToListAsync();
