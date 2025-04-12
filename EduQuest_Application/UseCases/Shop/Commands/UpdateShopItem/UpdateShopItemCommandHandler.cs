@@ -25,10 +25,10 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
 
     public async Task<APIResponse> Handle(UpdateShopItemCommand request, CancellationToken cancellationToken)
     {
-        if (!request.items.Any())
-        {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", "item");
-        }
+        //if (!request.items.Any())
+        //{
+        //    return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", "item");
+        //}
 
         await _shopItemRepository.DeleteAllAsync();
 
