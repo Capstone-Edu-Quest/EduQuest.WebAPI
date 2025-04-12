@@ -127,8 +127,9 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
                     ItemId = item.CourseId,
                     ItemType = GeneralEnums.ItemTypeTransactionDetail.Course.ToString(),
                     InstructorId = course.CreatedBy,
-                    Amount = item.Price
-                });
+                    Amount = item.Price,
+					TransferGoup = $"ORDER_{transaction.Id}_INSTR_{course.CreatedBy}"
+				});
             }
 
             await _transactionRepository.Add(transaction);
@@ -166,7 +167,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
                 ItemId = subscription.Id,
                 ItemType = subscription.Config,
                 Amount = subscription.Value
-            };
+                
+			};
 
             user.Package = subscription.PackageType;
             await _userRepository.Update(user);

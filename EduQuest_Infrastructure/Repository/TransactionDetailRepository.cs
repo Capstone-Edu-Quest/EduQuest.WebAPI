@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.DTO.Response.Revenue;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Revenue;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -24,6 +25,20 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<List<TransactionDetail>> GetByTransactionId(string transactionId)
 		{
 			return await _context.TransactionDetails.Where(x => x.TransactionId.Equals(transactionId)).ToListAsync();
+		}
+
+		public async Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId)
+		{
+			return await _context.TransactionDetails
+			.Where(d => d.TransactionId == transactionId && d.InstructorId != null && d.InstructorShare != null)
+			.GroupBy(d => d.InstructorId)
+			.Select(g => new InstructorTransferInfo
+			{
+				InstructorId = g.Key,
+				TotalInstructorShare = g.Sum(x => x.InstructorShare.Value),
+				TransferGroup = $"ORDER_{transactionId}_INSTR_{g.Key}"
+			})
+			.ToListAsync();
 		}
 
 		public async Task<RevenueReportDto> GetRevenueReportAsync(string userId)
