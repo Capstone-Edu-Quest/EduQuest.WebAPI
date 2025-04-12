@@ -30,6 +30,8 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, Constants.MessageCommon.NotFound, "name", "item");
         }
 
+        await _shopItemRepository.DeleteAllAsync();
+
         var itemNames = request.items.Select(i => i.Name).ToList();
 
         var existingItems = await _shopItemRepository.GetByNamesAsync(itemNames);
@@ -48,6 +50,8 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
             await _shopItemRepository.CreateRangeAsync(newShopItems);
         }
 
+        await _unitOfWork.SaveChangesAsync();
+
         foreach (var item in request.items)
         {
             var existingItem = existingItems.FirstOrDefault(e => e.Name == item.Name);
@@ -58,7 +62,6 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
             }
         }
 
-        await _unitOfWork.SaveChangesAsync();
 
         var result = await _shopItemRepository.GetAllItemAsync();
 
