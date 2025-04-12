@@ -77,30 +77,30 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
             IsEquipped = false
         };
 
-        var userdetail = await _userStatisticRepository.GetById(request.UserId);
+        var userdetail = await _userStatisticRepository.GetByUserId(request.UserId);
         if (userdetail.Gold < shopItem.Price)
         {
-            await _notifcation.PushNotificationAsync(
-                new NotificationDto
-                {
-                    userId = request.UserId,
-                    Content = "Not enough gold to buy this item",
-                    Receiver = request.UserId,
-                    Url = BaseUrl.ShopItemUrl,
-                }
-             );
+            //await _notifcation.PushNotificationAsync(
+            //    new NotificationDto
+            //    {
+            //        userId = request.UserId,
+            //        Content = "Not enough gold to buy this item",
+            //        Receiver = request.UserId,
+            //        Url = BaseUrl.ShopItemUrl,
+            //    }
+            // );
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotEnoughGold, Constants.MessageCommon.NotEnoughGold, "name", "item");
         }
         userdetail.Gold -= (int)shopItem.Price;
-        await _notifcation.PushNotificationAsync(
-                new NotificationDto
-                {
-                    userId = request.UserId,
-                    Content = $"Purchase {shopItem.Name} successfully",
-                    Receiver = request.UserId,
-                    Url = BaseUrl.ShopItemUrl,
-                }
-             );
+        //await _notifcation.PushNotificationAsync(
+        //        new NotificationDto
+        //        {
+        //            userId = request.UserId,
+        //            Content = $"Purchase {shopItem.Name} successfully",
+        //            Receiver = request.UserId,
+        //            Url = BaseUrl.ShopItemUrl,
+        //        }
+        //     );
 
         await _mascotInventoryRepository.Add(mascotInventory);
         await _userStatisticRepository.Update(userdetail);
