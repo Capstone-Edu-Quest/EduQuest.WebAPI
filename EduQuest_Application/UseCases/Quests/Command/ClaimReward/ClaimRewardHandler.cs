@@ -103,14 +103,28 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                 break;
 
             case (int)RewardType.Item:
-                
-                user.MascotItem.Add(new Mascot
+
+                if (user.MascotItem != null)
                 {
-                    UserId = userId,
-                    ShopItemId = rewardValue[arrayIndex],
-                    CreatedAt = now.ToUniversalTime(),
-                    IsEquipped = false,
-                });
+                    user.MascotItem.Add(new Mascot
+                    {
+                        UserId = userId,
+                        ShopItemId = rewardValue[arrayIndex],
+                        CreatedAt = now.ToUniversalTime(),
+                        IsEquipped = false,
+                    });
+                }
+                else
+                {
+                    user.MascotItem = new List<Mascot> {new Mascot
+                    {
+                        UserId = userId,
+                        ShopItemId = rewardValue[arrayIndex],
+                        CreatedAt = now.ToUniversalTime(),
+                        IsEquipped = false,
+                    }
+                };
+                }
                 response.Item = rewardValue[arrayIndex];
                 break;
 
