@@ -247,7 +247,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     public async Task<bool> ResetQuestProgress()
     {
         var quests = await _context.UserQuests
-            .Where(q => q.DueDate.HasValue && q.DueDate <= DateTime.UtcNow && q.IsCompleted == false && q.Type == (int)ResetType.OneTime)
+            .Where(q => q.DueDate.HasValue && q.DueDate <= DateTime.Now.ToUniversalTime() && q.IsCompleted == false && q.Type == (int)ResetType.OneTime)
             .ToListAsync();
 
         foreach (var quest in quests)
