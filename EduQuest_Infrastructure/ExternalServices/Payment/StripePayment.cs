@@ -39,8 +39,12 @@ public class StripePayment : IStripePayment
                         }
                     }
                 }
-            }
-        };
+            },
+			 PaymentIntentData = new SessionPaymentIntentDataOptions
+			 {
+				 TransferGroup = $"ORDER_{Guid.NewGuid().ToString()}"  //Add group for further transfer
+			 }
+		};
 
         var service = new SessionService();
         var session = await service.CreateAsync(options);
