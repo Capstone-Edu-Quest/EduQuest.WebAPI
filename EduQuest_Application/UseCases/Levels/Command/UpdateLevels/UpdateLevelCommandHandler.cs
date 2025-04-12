@@ -47,10 +47,10 @@ public class UpdateLevelCommandHandler : IRequestHandler<UpdateLevelCommand, API
         List<Levels> levels = new List<Levels>();
         foreach (LevelDto dto in newLevel)
         {
-            if (await _levelRepository.IsLevelExist(dto.Level))
+            /*if (await _levelRepository.IsLevelExist(dto.Level))
             {
                 return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.LevelExist, "name", $"level {dto.Level}");
-            }
+            }*/
             Levels level = new Levels
             {
                 Id = Guid.NewGuid().ToString(),
