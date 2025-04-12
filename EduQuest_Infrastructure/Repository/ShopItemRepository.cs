@@ -17,6 +17,14 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
         _context = context;
     }
 
+    public async Task<IEnumerable<ShopItem>> GetByNamesAsync(List<string> names)
+    {
+        return await _context.ShopItems
+                             .AsNoTracking()
+                             .Where(item => names.Contains(item.Name))
+                             .ToListAsync();
+    }
+
     public async Task<IEnumerable<ShopItem>> GetAllItemAsync()
     {
         return await _context.ShopItems.AsNoTracking().ToListAsync();
@@ -38,14 +46,15 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
     public async Task<ShopItemStatisticDto> GetShopItemStatisticsDto()
     {
         var result = new ShopItemStatisticDto();
+
         var totalItems = await _context.Mascots.CountAsync();
+
         var totalUsers = await _context.Mascots
             .Select(x => x.UserId)
             .Distinct()
             .CountAsync();
 
         var averageItemsPerUser = totalUsers == 0 ? 0 : (double)totalItems / totalUsers;
-
         result.AverageItemsPerUser = averageItemsPerUser;
 
         var totalItemSold = await _context.Mascots
@@ -55,18 +64,17 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
         var mostPurchasedItem = await _context.Mascots
                             .AsNoTracking()
                             .GroupBy(m => m.ShopItemId)
-                            .Select(g => new {
-                                ShopItemId = g.Key,
-                                Count = g.Count()
-                            })
+                            .Select(g => new { ShopItemId = g.Key, Count = g.Count() })
                             .OrderByDescending(x => x.Count)
                             .FirstOrDefaultAsync();
 
+        result.MostPurchasedItem = mostPurchasedItem?.ShopItemId;
 
         var bestSaleItems = await _context.Mascots
                             .AsNoTracking()
                             .GroupBy(m => m.ShopItemId)
-                            .Select(g => new BestSaleItemDto { 
+                            .Select(g => new BestSaleItemDto
+                            {
                                 name = g.Key,
                                 count = g.Count()
                             })
@@ -78,7 +86,6 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
                                select item.Price)
                               .SumAsync();
 
-        result.MostPurchasedItem = mostPurchasedItem.ShopItemId;
         result.BestSaleItems = bestSaleItems;
         result.TotalGoldFromSales = totalGold;
         result.TotalItemSold = totalItemSold;
@@ -87,10 +94,18 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
     }
 
 
+
     public async Task UpdateShopItems(string Name, double price)
     {
         await _context.ShopItems
             .Where(a => a.Name.ToLower().Equals(Name.ToLower()))
             .ExecuteUpdateAsync(set => set.SetProperty(a => a.Price, price));
     }
+
+    public async Task DeleteAllAsync()
+    {
+        await _context.ShopItems
+            .ExecuteDeleteAsync(); 
+    }
+
 }
