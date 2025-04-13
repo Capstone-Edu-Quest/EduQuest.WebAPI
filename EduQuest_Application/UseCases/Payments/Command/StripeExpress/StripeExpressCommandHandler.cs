@@ -30,7 +30,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
 			var user = await _userRepository.GetById(request.UserId);
-            if (user!.BankAccountId == null)
+            if (user!.StripeAccountId == null)
 			{
 				var account = await _accountService.CreateAsync(new AccountCreateOptions
 				{
@@ -51,7 +51,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 					ReturnUrl = "https://eduquests.giakhang3005.com/",
 					Type = "account_onboarding"
 				};
-				user.BankAccountId = account.Id;
+				user.StripeAccountId = account.Id;
 				await _userRepository.Update(user);
 				await _unitOfWork.SaveChangesAsync();
 				var accountLink = await _accountLinkService.CreateAsync(accountLinkOptions);
@@ -71,7 +71,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 				return new APIResponse
 				{
 					IsError = false,
-					Payload = user!.BankAccountId,
+					Payload = user!.StripeAccountId,
 					Errors = null,
 					Message = new MessageResponse
 					{

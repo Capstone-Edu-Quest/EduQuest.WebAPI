@@ -40,7 +40,7 @@ public class StripePayment : IStripePayment
                     }
                 }
             }
-        };
+		};
 
         var service = new SessionService();
         var session = await service.CreateAsync(options);
