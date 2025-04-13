@@ -189,7 +189,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                 }
                 myCart.CartItems.Clear();
                 await _cartRepository.Delete(myCart.Id);
-                await _quartzService.TransferToInstructor(transactionExisted.Id);
+                await _transactionDetailRepository.UpdateRangeAsync(transactionDetailList);
+				await _quartzService.TransferToInstructor(transactionExisted.Id);
             }
             else
             {
