@@ -16,5 +16,5 @@ public interface ILearnerRepository : IGenericRepository<CourseLearner>
     Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds);
     Task<IList<CourseLearner>> GetRecentCourseByUserId(string userId);
     Task<int> CountNumberOfCourseByUserId(string userId);
-
+    Task<List<string>> GetCoursesIdStudying(string userId);
 }

@@ -163,7 +163,7 @@ namespace EduQuest_Domain.Constants
 
 			public const string QuestAlreadyClaimed = "QUEST_ALREADY_CLAIMED";
 
-			public const string CourseExist = "COURSE_EXIST";
+			public const string CourseExist = "ALREADY_IN_COURSE";
 		}
 		#endregion
 

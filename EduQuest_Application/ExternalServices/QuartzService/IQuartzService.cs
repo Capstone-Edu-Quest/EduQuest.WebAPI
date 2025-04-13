@@ -8,7 +8,7 @@ public interface IQuartzService
     Task AddAllQuestsToNewUser(string userId);
     Task UpdateAllUserQuest(string questId);
     Task UpdateUserPackageAccountType(string userId);
-    Task TransferToInstructor(string transactionId);
+    Task TransferToInstructor(string TransactionId);
     /*Task ResetQuestProgress();
     Task ResetDailyQuests();*/
 }

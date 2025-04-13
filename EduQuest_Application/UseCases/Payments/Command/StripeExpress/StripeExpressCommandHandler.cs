@@ -30,13 +30,13 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
 			var user = await _userRepository.GetById(request.UserId);
-            if (user!.StripeAccountId == null)
+            if (user!.StripeAccountId == null || string.IsNullOrEmpty(user!.StripeAccountId))
 			{
 				var account = await _accountService.CreateAsync(new AccountCreateOptions
 				{
 					Type = "express",
-					Country = "SG",
-					Email = request.Email,
+					Country = "US",
+					Email = user.Email,
 					Capabilities = new AccountCapabilitiesOptions
 					{
 						CardPayments = new AccountCapabilitiesCardPaymentsOptions { Requested = true },
@@ -47,8 +47,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 				var accountLinkOptions = new AccountLinkCreateOptions
 				{
 					Account = account.Id,
-					RefreshUrl = "https://eduquests.giakhang3005.com/",
-					ReturnUrl = "https://eduquests.giakhang3005.com/",
+					RefreshUrl = _stripeModel.SuccessUrl,
+					ReturnUrl = _stripeModel.SuccessUrl,
 					Type = "account_onboarding"
 				};
 				user.StripeAccountId = account.Id;
