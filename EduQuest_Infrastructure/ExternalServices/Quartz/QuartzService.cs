@@ -43,10 +43,10 @@ public class QuartzService : IQuartzService
         .Build();
         var newTrigger =
             TriggerBuilder.Create().ForJob(jobKey)
-            .WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(scheduleTime)))
+            .WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddSeconds(5))))
             .Build();
         await scheduler.ScheduleJob(job, newTrigger);
-        Console.WriteLine($"ScheduleJob: AddNewQuestToAllUser with id {jobKey} at {scheduleTime}.");
+        Console.WriteLine($"ScheduleJob: AddNewQuestToAllUser with id {jobKey} at {DateTime.Now.AddSeconds(5)}.");
     }
 
     public async Task UpdateAllUserQuest(string questId)
