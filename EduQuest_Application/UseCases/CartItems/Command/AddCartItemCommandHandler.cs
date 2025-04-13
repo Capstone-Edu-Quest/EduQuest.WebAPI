@@ -16,19 +16,18 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 		private readonly ICartItemRepository _cartItemRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICourseRepository _courseRepository;
+        private readonly ILearnerRepository _learnerRepository;
 
-		public AddCartItemCommandHandler(ICartRepository cartRepository, 
-			ICartItemRepository cartItemRepository, 
-			IUnitOfWork unitOfWork, 
-			ICourseRepository courseRepository)
+		public AddCartItemCommandHandler(ICartRepository cartRepository, ICartItemRepository cartItemRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILearnerRepository learnerRepository)
 		{
 			_cartRepository = cartRepository;
 			_cartItemRepository = cartItemRepository;
 			_unitOfWork = unitOfWork;
 			_courseRepository = courseRepository;
+			_learnerRepository = learnerRepository;
 		}
 
-        public async Task<APIResponse> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
+		public async Task<APIResponse> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
         {
             var cart = await _cartRepository.GetByUserId(request.UserId);
 
@@ -50,15 +49,14 @@ namespace EduQuest_Application.UseCases.CartItems.Command
             }
 
             var cartItems = new List<CartItem>();
+            var myCourseStudying = await _learnerRepository.GetCoursesIdStudying(request.UserId);
 
-            if (request.CourseIds != null && request.CourseIds.Any())
+			if (request.CourseIds != null && request.CourseIds.Any())
             {
-				var courseIdInExistIncart = cart.CartItems.Select(x => x.CourseId).Distinct();
 				foreach (var courseId in request.CourseIds)
                 {
-                    if (courseIdInExistIncart.Contains(courseId))
+                    if (myCourseStudying.Contains(courseId))
                     {
-
 						return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, Constants.MessageError.CourseExist, MessageError.CourseExist, "name", $"Course ID {courseId}");
 					}
                     var course = await _courseRepository.GetById(courseId);

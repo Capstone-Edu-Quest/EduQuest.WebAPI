@@ -3,6 +3,7 @@
 using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
+using EduQuest_Infrastructure.ExternalServices.Quartz.Payment;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Users;
 using Quartz;
@@ -95,16 +96,16 @@ public class QuartzService : IQuartzService
         Console.WriteLine($"ScheduleJob: Add All Quests To New User with id {jobKey}.");
     }
 
-	public async Task TransferToInstructor(string transactionId)
+	public async Task TransferToInstructor(string TransactionId)
 	{
-		var jobKey = new JobKey(transactionId);
+		var jobKey = new JobKey(TransactionId);
 		IScheduler scheduler = await _schedulerFactory.GetScheduler();
-		IJobDetail job = JobBuilder.Create<UpdateUserPackageAccountType>()
+		IJobDetail job = JobBuilder.Create<TransferToInstructorJob>()
 		.WithIdentity(jobKey)
 		.Build();
 		var newTrigger =
 			TriggerBuilder.Create().ForJob(jobKey)
-			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(5))))
+			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(1))))
 			.Build();
 		await scheduler.ScheduleJob(job, newTrigger);
 		Console.WriteLine($"ScheduleJob: Transfer to all instructors with id {jobKey}.");
