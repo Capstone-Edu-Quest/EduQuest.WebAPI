@@ -1,15 +1,14 @@
-﻿using EduQuest_Domain.Repository;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
 using MediatR;
 using Stripe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstructor
 {
-	public class TransfertoAllInstructorCommandHandler : IRequestHandler<TransfertoAllInstructorCommand, Unit>
+	public class TransfertoAllInstructorCommandHandler : IRequestHandler<TransfertoAllInstructorCommand, APIResponse>
 	{
 		private readonly ITransactionDetailRepository _transactionDetailRepo;
 		private readonly IUserRepository _userRepository;
@@ -20,14 +19,14 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 			_userRepository = userRepository;
 		}
 
-		public async Task<Unit> Handle(TransfertoAllInstructorCommand request, CancellationToken cancellationToken)
+		public async Task<APIResponse> Handle(TransfertoAllInstructorCommand request, CancellationToken cancellationToken)
 		{
 			var transferList = await _transactionDetailRepo.GetGroupedInstructorTransfersByTransactionId(request.TransactionId);
 
 			foreach (var item in transferList)
 			{
 				var instructor = await _userRepository.GetById(item.InstructorId);
-				if (instructor == null || string.IsNullOrEmpty(instructor.StripeAccountId)) continue;
+				if (instructor == null || string.IsNullOrEmpty(instructor.StripeAccountId)) return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", $"StripeAccountId Of Intructor ID {item.InstructorId}");
 
 				var options = new TransferCreateOptions
 				{
@@ -40,7 +39,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 				var service = new TransferService();
 				await service.CreateAsync(options, cancellationToken: cancellationToken);
 			}
-			return Unit.Value;
+			return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully, null, "name", "Transfer"); ;
 		}
 	}
 }
