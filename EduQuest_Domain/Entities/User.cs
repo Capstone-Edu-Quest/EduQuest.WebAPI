@@ -17,7 +17,7 @@ namespace EduQuest_Domain.Entities
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
 		public string? RoleId { get; set; }
-        public string? BankAccountId { get; set; }
+        public string? StripeAccountId { get; set; }
 		public string Package { get; set; }
         public DateTime? PackageExperiedDate { get; set; }
 

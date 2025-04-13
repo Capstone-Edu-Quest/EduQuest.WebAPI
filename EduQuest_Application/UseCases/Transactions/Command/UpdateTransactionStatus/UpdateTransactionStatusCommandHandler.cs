@@ -19,6 +19,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly ICourseStatisticRepository _courseStatisticRepository;
         private readonly ILessonRepository _lessonRepository;
         private readonly ITransactionDetailRepository _transactionDetailRepository;
         private readonly IUserRepository _userRepository;
@@ -28,10 +29,11 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         private readonly IQuartzService _quartzService;
         private readonly StripeModel _stripeModel;
 
-        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
+        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
         {
             _transactionRepository = transactionRepository;
             _courseRepository = courseRepository;
+            _courseStatisticRepository = courseStatisticRepository;
             _lessonRepository = lessonRepository;
             _transactionDetailRepository = transactionDetailRepository;
             _userRepository = userRepository;
@@ -88,6 +90,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             transactionExisted.PaymentIntentId = request.PaymentIntentId;
             transactionExisted.CustomerName = request.CustomerName;
             transactionExisted.CustomerEmail = request.CustomerEmail;
+            transactionExisted.Url = null;
             await _transactionRepository.Update(transactionExisted);
 
             //Update Trasaction Detail
@@ -183,11 +186,15 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 
                         };
                         course.CourseLearners.Add(newLearner);
+                        course.CourseStatistic.TotalLearner++;
+                        await _courseStatisticRepository.Update(course.CourseStatistic);
                         await _courseRepository.Update(course);
                     }
                 }
                 myCart.CartItems.Clear();
                 await _cartRepository.Delete(myCart.Id);
+                await _transactionDetailRepository.UpdateRangeAsync(transactionDetailList);
+				await _quartzService.TransferToInstructor(transactionExisted.Id);
             }
             else
             {

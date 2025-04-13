@@ -138,4 +138,9 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
         return await _context.Learners.AsNoTracking().Where(a => a.UserId.Equals(userId)).CountAsync();
     }
 
+	public async Task<List<string>> GetCoursesIdStudying(string userId)
+	{
+		var list = await _context.Learners.Where(x => x.UserId == userId).ToListAsync();
+		return list.Select(x => x.CourseId).Distinct().ToList();
+	}
 }

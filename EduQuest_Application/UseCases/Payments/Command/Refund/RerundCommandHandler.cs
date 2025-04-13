@@ -1,4 +1,6 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Constants;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
@@ -7,11 +9,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Stripe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Payments.Command.Refund
 {
@@ -33,27 +31,30 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 		public async Task<APIResponse> Handle(RefundCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-
+			var transactionExisted = await _transactionRepository.GetByPaymentIntentId(request.Refund.PaymentIntentId);
+			if(transactionExisted == null)
+			{
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction with PaymentIntentId {request.Refund.PaymentIntentId}");
+			}
 			var refundOptions = new RefundCreateOptions
 			{
 				PaymentIntent = request.Refund.PaymentIntentId,
 				Amount = (long)request.Refund.Amount * 100,
 				Reason = "requested_by_customer"
 			};
-			var transactionExisted = await _transactionRepository.GetByPaymentIntentId(request.Refund.PaymentIntentId);
 			
 			var refund = await _refundService.CreateAsync(refundOptions);
 
-			var newransaction = new Transaction
+			var newTransaction = new Transaction
 			{
 				Id = Guid.NewGuid().ToString(),
 				UserId = request.UserId,
-				Status = GeneralEnums.StatusPayment.Pending.ToString(),
+				Status = GeneralEnums.StatusPayment.Completed.ToString(),
 				TotalAmount = (decimal)request.Refund.Amount,
-				Type = transactionExisted.Type,
+				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
 				PaymentIntentId = refund.Id,
 			};
-			await _transactionRepository.Add(newransaction);
+			await _transactionRepository.Add(newTransaction);
 			await _unitOfWork.SaveChangesAsync();
 			return new APIResponse
 			{

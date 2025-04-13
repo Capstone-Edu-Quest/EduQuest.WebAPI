@@ -1,15 +1,11 @@
 ﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.CartItems.Command
@@ -20,19 +16,18 @@ namespace EduQuest_Application.UseCases.CartItems.Command
 		private readonly ICartItemRepository _cartItemRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICourseRepository _courseRepository;
+        private readonly ILearnerRepository _learnerRepository;
 
-		public AddCartItemCommandHandler(ICartRepository cartRepository, 
-			ICartItemRepository cartItemRepository, 
-			IUnitOfWork unitOfWork, 
-			ICourseRepository courseRepository)
+		public AddCartItemCommandHandler(ICartRepository cartRepository, ICartItemRepository cartItemRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILearnerRepository learnerRepository)
 		{
 			_cartRepository = cartRepository;
 			_cartItemRepository = cartItemRepository;
 			_unitOfWork = unitOfWork;
 			_courseRepository = courseRepository;
+			_learnerRepository = learnerRepository;
 		}
 
-        public async Task<APIResponse> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
+		public async Task<APIResponse> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
         {
             var cart = await _cartRepository.GetByUserId(request.UserId);
 
@@ -54,11 +49,16 @@ namespace EduQuest_Application.UseCases.CartItems.Command
             }
 
             var cartItems = new List<CartItem>();
+            var myCourseStudying = await _learnerRepository.GetCoursesIdStudying(request.UserId);
 
-            if (request.CourseIds != null && request.CourseIds.Any())
+			if (request.CourseIds != null && request.CourseIds.Any())
             {
-                foreach (var courseId in request.CourseIds)
+				foreach (var courseId in request.CourseIds)
                 {
+                    if (myCourseStudying.Contains(courseId))
+                    {
+						return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, Constants.MessageError.CourseExist, MessageError.CourseExist, "name", $"Course ID {courseId}");
+					}
                     var course = await _courseRepository.GetById(courseId);
 
                     if (course == null)
