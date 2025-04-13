@@ -31,16 +31,26 @@ public class MascotInventoryRepository : GenericRepository<Mascot>, IMascotInven
 
     public async Task UpdateRangeMascot(List<string> items, string userId)
     {
-        if (items == null || items.Count == 0)
-            return;
+        await _context.Mascots
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(m => m.IsEquipped, false)
+            );
+
+        //if (items == null || items.Count == 0)
+        //    return;
 
         await _context.Mascots
             .Where(m => m.UserId == userId && items.Contains(m.ShopItemId))
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(m => m.IsEquipped, m => !m.IsEquipped)
+                .SetProperty(m => m.IsEquipped, true)
             );
 
     }
+
+    //public async Task UnequipMascot()
+    //{
+    //    await 
+    //}
 
     public async Task<IEnumerable<Mascot>> GetMascotByUserIdAndItemIdAsync(string userId, List<string> shopItemId)
     {
