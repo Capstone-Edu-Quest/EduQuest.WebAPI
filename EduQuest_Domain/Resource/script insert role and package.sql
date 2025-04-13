@@ -7,8 +7,8 @@ VALUES
 (2, 'Instructor', NOW(), 'System', NOW(), NULL),
 (3, 'Learner', NOW(), 'System', NOW(), NULL),
 (4, 'Guest', NOW(), 'System', NOW(), NULL),
-(5, 'Staff', NOW(), 'System', NOW(), NULL),
-(6, 'Expert', NOW(), 'System', NOW(), NULL);
+(5, 'Expert', NOW(), 'System', NOW(), NULL),
+(6, 'Staff', NOW(), 'System', NOW(), NULL);
 
 INSERT INTO public."SystemConfig" ("Id", "Name", "Value", "Description", "CreatedAt", "UpdatedAt")
 VALUES
@@ -37,11 +37,11 @@ VALUES (6, '3', 'Pro', 'priceYearly', 50, NOW(), NULL, NULL, NULL);
 
 -- Insert Instructor Free - Benefit Commission Fee
 INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
-VALUES (7, '2', 'Free', 'commisionFee', 18, NOW(), NULL, NULL, NULL);
+VALUES (7, '2', 'Free', 'commissionFee', 18, NOW(), NULL, NULL, NULL);
 
 -- Insert Instructor Pro - Benefit Commission Fee
 INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
-VALUES (8, '2', 'Pro', 'commisionFee', 12, NOW(), NULL, NULL, NULL);
+VALUES (8, '2', 'Pro', 'commissionFee', 12, NOW(), NULL, NULL, NULL);
 
 -- Insert Instructor Pro - Benefit Marketing Email Per Month
 INSERT INTO public."Subscription" ("Id", "RoleId", "PackageType", "Config", "Value", "CreatedAt", "UpdatedAt", "UpdatedBy", "DeletedAt")
