@@ -31,14 +31,14 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 		public async Task<APIResponse> Handle(RefundCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
-			var transactionExisted = await _transactionRepository.GetByPaymentIntentId(request.Refund.PaymentIntentId);
+			var transactionExisted = await _transactionRepository.GetById(request.Refund.TransactionId);
 			if(transactionExisted == null)
 			{
-				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction with PaymentIntentId {request.Refund.PaymentIntentId}");
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction with ID {request.Refund.TransactionId}");
 			}
 			var refundOptions = new RefundCreateOptions
 			{
-				PaymentIntent = request.Refund.PaymentIntentId,
+				PaymentIntent = transactionExisted.PaymentIntentId,
 				Amount = (long)request.Refund.Amount * 100,
 				Reason = "requested_by_customer"
 			};
@@ -47,12 +47,11 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 
 			var newTransaction = new Transaction
 			{
-				Id = Guid.NewGuid().ToString(),
+				Id = refund.Id.ToString(),
 				UserId = request.UserId,
 				Status = GeneralEnums.StatusPayment.Completed.ToString(),
 				TotalAmount = (decimal)request.Refund.Amount,
 				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
-				PaymentIntentId = refund.Id,
 			};
 			await _transactionRepository.Add(newTransaction);
 			await _unitOfWork.SaveChangesAsync();

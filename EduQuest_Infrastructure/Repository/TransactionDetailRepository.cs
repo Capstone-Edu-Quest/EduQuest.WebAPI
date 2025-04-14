@@ -76,7 +76,7 @@ namespace EduQuest_Infrastructure.Repository
 
 			// Available Balance
 			var available = await _context.Transactions
-				.Where(t => t.Type == "Revenue" && t.UserId == userId && t.DeletedAt == null)
+				.Where(t => t.Type == "Transfer" && t.UserId == userId && t.DeletedAt == null)
 				.SumAsync(t => t.NetAmount);
 
 			var pending = totalThisYear - available;
