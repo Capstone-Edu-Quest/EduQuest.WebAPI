@@ -10,6 +10,7 @@ using EduQuest_Application.UseCases.Courses.Command.UpdateCourse;
 using EduQuest_Application.UseCases.Courses.Queries;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
+using EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttempt;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByAssignToUser;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
@@ -228,6 +229,20 @@ namespace EduQuest_API.Controllers
         {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new ReviewAssignmentCommand(userId, grading), token);
+            if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
+            {
+                return NotFound(result);
+            }
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+
+        [Authorize(Roles = "Learner")]
+        [HttpGet("assignment/attempt")]
+		public async Task<IActionResult> GetLearnersAssignmentAttempt([FromQuery] string assignmentId,
+			CancellationToken token = default)
+		{
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetAssignmentAttemptCommand(userId, assignmentId), token);
             if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
             {
                 return NotFound(result);
