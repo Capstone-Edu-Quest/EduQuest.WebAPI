@@ -12,10 +12,12 @@ public class GetAssignmentAttemptCommand : IRequest<APIResponse>
 {
     public string UserId { get; set; }
     public string AssignmentId { get; set; }
+    public string LessonId { get; set; }
 
-    public GetAssignmentAttemptCommand(string userId, string assignmentId   )
+    public GetAssignmentAttemptCommand(string userId, string assignmentId, string lessonId)
     {
         UserId = userId;
         AssignmentId = assignmentId;
+        LessonId = lessonId;
     }
 }

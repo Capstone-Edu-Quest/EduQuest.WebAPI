@@ -208,14 +208,14 @@ namespace EduQuest_API.Controllers
 			}
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
-        [Authorize(Roles = "Learner")]
+        //[Authorize(Roles = "Learner")]
         [HttpPost("assignment/attemt")]
         public async Task<IActionResult> AttemptAssignment([FromQuery] string lessonId,
             [FromBody] AttemptAssignmentDto attempt,
             CancellationToken token = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new AttemptAssignmentCommand(userId, lessonId, attempt), token);
+            var result = await _mediator.Send(new AttemptAssignmentCommand("b354f9e5-37bc-45f2-9f90-fcf74504f5b8", lessonId, attempt), token);
             if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
             {
                 return NotFound(result);
@@ -239,10 +239,11 @@ namespace EduQuest_API.Controllers
         [Authorize(Roles = "Learner")]
         [HttpGet("assignment/attempt")]
 		public async Task<IActionResult> GetLearnersAssignmentAttempt([FromQuery] string assignmentId,
+			[FromQuery] string lessonId,
 			CancellationToken token = default)
 		{
             string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetAssignmentAttemptCommand(userId, assignmentId), token);
+            var result = await _mediator.Send(new GetAssignmentAttemptCommand(userId, assignmentId, lessonId), token);
             if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
             {
                 return NotFound(result);
