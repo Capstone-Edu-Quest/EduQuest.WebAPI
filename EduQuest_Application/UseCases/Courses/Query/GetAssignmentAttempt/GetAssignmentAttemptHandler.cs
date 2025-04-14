@@ -12,8 +12,6 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttempt;
 public class GetAssignmentAttemptHandler : IRequestHandler<GetAssignmentAttemptCommand, APIResponse>
 {
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
-    private readonly ILessonMaterialRepository _lessonMaterialRepository;
-    private readonly IMaterialRepository _materialRepository;
     private readonly IMapper _mapper;
 
     public GetAssignmentAttemptHandler(IAssignmentAttemptRepository assignmentAttemptRepository, ILessonMaterialRepository lessonMaterialRepository,
@@ -27,8 +25,7 @@ public class GetAssignmentAttemptHandler : IRequestHandler<GetAssignmentAttemptC
 
     public async Task<APIResponse> Handle(GetAssignmentAttemptCommand request, CancellationToken cancellationToken)
     {
-        var lesson = await _lessonMaterialRepository.GetListMaterialIdByLessonId(request.LessonId);
-        var attempt = await _assignmentAttemptRepository.GetLearnerAttempt(request.AssignmentId, request.UserId);
+        var attempt = await _assignmentAttemptRepository.GetLearnerAttempt(request.LessonId, request.AssignmentId, request.UserId);
         if (attempt == null)
         {
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.NotAttemptRecorded, null, "name", "assignment attempt");
