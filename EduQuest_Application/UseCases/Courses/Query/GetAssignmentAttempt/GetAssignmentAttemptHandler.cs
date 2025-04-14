@@ -14,12 +14,9 @@ public class GetAssignmentAttemptHandler : IRequestHandler<GetAssignmentAttemptC
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
     private readonly IMapper _mapper;
 
-    public GetAssignmentAttemptHandler(IAssignmentAttemptRepository assignmentAttemptRepository, ILessonMaterialRepository lessonMaterialRepository,
-        IMaterialRepository materialRepository, IMapper mapper)
+    public GetAssignmentAttemptHandler(IAssignmentAttemptRepository assignmentAttemptRepository, IMapper mapper)
     {
         _assignmentAttemptRepository = assignmentAttemptRepository;
-        _lessonMaterialRepository = lessonMaterialRepository;
-        _materialRepository = materialRepository;
         _mapper = mapper;
     }
 
