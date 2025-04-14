@@ -80,7 +80,8 @@ namespace EduQuest_Domain.Enums
 		{
 			CheckoutCart = 1,
 			Refund = 2,
-			ProAccount = 3
+			ProAccount = 3,
+			Transfer = 4
 		}
 
 		public enum ItemTypeTransactionDetail
@@ -141,6 +142,8 @@ namespace EduQuest_Domain.Enums
 			Pending = 2,
 			Rejected = 3
         }
-        #endregion
-    }
+		#endregion
+
+		
+	}
 }
