@@ -20,6 +20,7 @@ namespace EduQuest_Domain.Entities
         public decimal? NetAmount { get; set; }
         public decimal? SystemShare { get; set; }
         public decimal? InstructorShare { get; set; }
+        public string? TransferGoup { get; set; }
 
 		[JsonIgnore]
 		public virtual Transaction Transaction { get; set; } = null;
