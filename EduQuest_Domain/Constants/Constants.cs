@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EduQuest_Domain.Constants
+﻿namespace EduQuest_Domain.Constants
 {
-	public class Constants
+    public class Constants
 	{
         public static class FireBaseUrl
         {

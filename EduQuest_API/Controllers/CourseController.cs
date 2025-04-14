@@ -239,10 +239,11 @@ namespace EduQuest_API.Controllers
         [Authorize(Roles = "Learner")]
         [HttpGet("assignment/attempt")]
 		public async Task<IActionResult> GetLearnersAssignmentAttempt([FromQuery] string assignmentId,
+			[FromQuery] string lessonId,
 			CancellationToken token = default)
 		{
             string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetAssignmentAttemptCommand(userId, assignmentId), token);
+            var result = await _mediator.Send(new GetAssignmentAttemptCommand(userId, assignmentId, lessonId), token);
             if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
             {
                 return NotFound(result);

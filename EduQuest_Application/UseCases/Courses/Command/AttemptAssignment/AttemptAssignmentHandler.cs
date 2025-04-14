@@ -80,11 +80,11 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         if (lessonMaterial.Index == maxIndex && newLesson != null)
         {
             newLessonId = newLesson.Id;
-            newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).Id;
+            newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
         }
         if (lessonMaterial.Index < maxIndex)
         {
-            newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).Id;
+            newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
         }
         
         learner.CurrentLessonId = newLessonId;

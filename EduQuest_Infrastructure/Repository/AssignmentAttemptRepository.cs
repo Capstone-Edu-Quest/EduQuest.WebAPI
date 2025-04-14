@@ -23,10 +23,10 @@ public class AssignmentAttemptRepository : GenericRepository<AssignmentAttempt>,
     {
         return await _context.AssignmentAttempts.Where(q => q.AssignmentId == quizId && q.LessonId == lessonId).CountAsync();
     }
-    public async Task<AssignmentAttempt?> GetLearnerAttempt(string assignmentId, string userId)
+    public async Task<AssignmentAttempt?> GetLearnerAttempt(string lessonId, string assignmentId, string userId)
     {
         return await _context.AssignmentAttempts
-            .Where(q => q.AssignmentId == assignmentId && q.UserId == userId && q.AttemptNo == 1)
+            .Where(q => q.AssignmentId == assignmentId && q.UserId == userId && q.LessonId == lessonId && q.AttemptNo == 1)
             .FirstOrDefaultAsync();
     }
 }
