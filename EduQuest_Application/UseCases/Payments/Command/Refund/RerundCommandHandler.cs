@@ -18,28 +18,31 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 		private readonly StripeModel _stripeModel;
 		private readonly RefundService _refundService;
 		private readonly ITransactionRepository _transactionRepository;
+		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
 
-		public RerundCommandHandler(IOptions<StripeModel> stripeModel, RefundService refundService, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork)
+		public RerundCommandHandler(IOptions<StripeModel> stripeModel, RefundService refundService, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, IUnitOfWork unitOfWork)
 		{
 			_stripeModel = stripeModel.Value;
 			_refundService = refundService;
 			_transactionRepository = transactionRepository;
+			_transactionDetailRepository = transactionDetailRepository;
 			_unitOfWork = unitOfWork;
 		}
 
 		public async Task<APIResponse> Handle(RefundCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
+			var transactionDetail = await _transactionDetailRepository.GetByTransactionIdAndCourseId(request.Refund.TransactionId, request.Refund.CourseId);
 			var transactionExisted = await _transactionRepository.GetById(request.Refund.TransactionId);
-			if(transactionExisted == null)
+			if(transactionDetail == null)
 			{
-				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction with ID {request.Refund.TransactionId}");
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction Detail with ID {request.Refund.TransactionId}");
 			}
 			var refundOptions = new RefundCreateOptions
 			{
 				PaymentIntent = transactionExisted.PaymentIntentId,
-				Amount = (long)request.Refund.Amount * 100,
+				Amount = (long)transactionDetail.NetAmount * 100,
 				Reason = "requested_by_customer"
 			};
 			
@@ -50,7 +53,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 				Id = refund.Id.ToString(),
 				UserId = request.UserId,
 				Status = GeneralEnums.StatusPayment.Completed.ToString(),
-				TotalAmount = (decimal)request.Refund.Amount,
+				TotalAmount = (decimal)transactionDetail.NetAmount,
 				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
 			};
 			await _transactionRepository.Add(newTransaction);

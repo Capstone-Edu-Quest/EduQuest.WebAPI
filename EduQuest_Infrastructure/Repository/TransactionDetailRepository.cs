@@ -27,6 +27,11 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.TransactionDetails.Where(x => x.TransactionId.Equals(transactionId)).ToListAsync();
 		}
 
+		public async Task<TransactionDetail> GetByTransactionIdAndCourseId(string transactionId, string courseId)
+		{
+			return await _context.TransactionDetails.FirstOrDefaultAsync(x => x.TransactionId == transactionId && x.ItemId == courseId);
+		}
+
 		public async Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId)
 		{
 			return await _context.TransactionDetails

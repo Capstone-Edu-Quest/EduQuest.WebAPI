@@ -35,7 +35,7 @@ namespace EduQuest_API.Controllers
 			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 			Event stripeEvent;
 
-			stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.ProductionSigningKey);
+			stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.LocalSigningKey);
 
 			if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
 			{

@@ -10,5 +10,6 @@ namespace EduQuest_Domain.Repository
 		Task<List<TransactionDetail>> GetByTransactionId(string transactionId);
 		Task<RevenueReportDto> GetRevenueReportAsync(string userId);
 		Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId);
+		Task<TransactionDetail> GetByTransactionIdAndCourseId(string transactionId, string courseId);
 	}
 }
