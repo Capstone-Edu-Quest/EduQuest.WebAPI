@@ -1,9 +1,10 @@
 ﻿using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -14,6 +15,11 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
     public CertificateRepository(ApplicationDbContext context) : base(context)
     {
         _context = context;
+    }
+
+    public async Task BulkCreateAsync(List<Certificate> certificates)
+    {
+        await _context.BulkInsertAsync(certificates);
     }
 
     public async Task<List<Certificate>> GetCertificatesWithFilters(
