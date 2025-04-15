@@ -67,7 +67,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							Name = lessonRequest.Name,
 							Description = lessonRequest.Description,
 							CourseId = existingCourse.Id,
-							Index = i + 1,
+							Index = i,
 							TotalTime = (int?)materials?.Sum(m => m.Duration) ?? 0
 						};
 						TotalLesson += materials.Count();
