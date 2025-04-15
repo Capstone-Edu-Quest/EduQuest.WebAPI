@@ -105,7 +105,7 @@ public class QuartzService : IQuartzService
 		.Build();
 		var newTrigger =
 			TriggerBuilder.Create().ForJob(jobKey)
-			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(1))))
+			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(5))))
 			.Build();
 		await scheduler.ScheduleJob(job, newTrigger);
 		Console.WriteLine($"ScheduleJob: Transfer to all instructors with id {jobKey}.");
