@@ -12,6 +12,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
+    <PackageReference Include="EFCore.BulkExtensions" Version="8.0.4" />
     <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
     <PackageReference Include="FirebaseDatabase.net" Version="4.2.0" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
