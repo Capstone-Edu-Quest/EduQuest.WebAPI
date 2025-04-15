@@ -1,4 +1,5 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.User;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -18,6 +19,11 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<CourseStatistic> GetByCourseId(string courseId)
 		{
 			return await _context.CourseStatistics.FirstOrDefaultAsync(x => x.CourseId.Equals(courseId));
+		}
+
+		public async Task<StatisticForInstructor> GetStatisticForInstructor(List<string> courseIds)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
