@@ -11,7 +11,7 @@ public class AssignmentAttemptResponseForInstructor : IMapFrom<AssignmentAttempt
     public string AssignmentId { get; set; }
     public string LessonId { get; set; }
     public string AnswerContent { get; set; }
-    public double ToTalTime { get; set; }
+    public double TotalTime { get; set; }
 
     public CommonUserResponse Author {  get; set; } = new CommonUserResponse();
 
