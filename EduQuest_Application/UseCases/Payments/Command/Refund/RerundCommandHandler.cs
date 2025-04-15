@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Helper;
+﻿using EduQuest_Application.Abstractions.Stripe;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -16,18 +17,18 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 	public class RerundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
 	{
 		private readonly StripeModel _stripeModel;
-		private readonly RefundService _refundService;
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly IStripePayment _stripePayment;
 
-		public RerundCommandHandler(IOptions<StripeModel> stripeModel, RefundService refundService, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, IUnitOfWork unitOfWork)
+		public RerundCommandHandler(IOptions<StripeModel> stripeModel, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, IUnitOfWork unitOfWork, IStripePayment stripePayment)
 		{
 			_stripeModel = stripeModel.Value;
-			_refundService = refundService;
 			_transactionRepository = transactionRepository;
 			_transactionDetailRepository = transactionDetailRepository;
 			_unitOfWork = unitOfWork;
+			_stripePayment = stripePayment;
 		}
 
 		public async Task<APIResponse> Handle(RefundCommand request, CancellationToken cancellationToken)
@@ -39,14 +40,8 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 			{
 				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction Detail with ID {request.Refund.TransactionId}");
 			}
-			var refundOptions = new RefundCreateOptions
-			{
-				PaymentIntent = transactionExisted.PaymentIntentId,
-				Amount = (long)transactionDetail.NetAmount * 100,
-				Reason = "requested_by_customer"
-			};
-			
-			var refund = await _refundService.CreateAsync(refundOptions);
+
+			var refund = await _stripePayment.CreateRefund(transactionExisted.PaymentIntentId, (long)transactionDetail.NetAmount);
 
 			var newTransaction = new Transaction
 			{
