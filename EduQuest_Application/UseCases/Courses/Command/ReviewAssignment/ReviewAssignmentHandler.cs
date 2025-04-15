@@ -43,7 +43,7 @@ public class ReviewAssignmentHandler : IRequestHandler<ReviewAssignmentCommand, 
         review.Comment = request.grade.Comment;
         int totalReviewer = attempt.Reviewers.Count + 1;
         int totalPoint = attempt.Reviewers.Sum(r => r.Grade) + request.grade.Grade;
-        attempt.AnswerScore = Math.Round((double)totalReviewer/totalPoint,2);
+        attempt.AnswerScore = Math.Round((double)totalPoint/totalReviewer,2);
         await _assignmentAttemptRepository.Update(attempt);
         await _reviewAssignmentRepository.Add(review);
         await _unitOfWork.SaveChangesAsync();
