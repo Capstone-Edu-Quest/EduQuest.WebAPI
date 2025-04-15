@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EduQuest_Domain.Constants
+﻿namespace EduQuest_Domain.Constants
 {
-	public class Constants
+    public class Constants
 	{
         public static class FireBaseUrl
         {
@@ -123,6 +117,8 @@ namespace EduQuest_Domain.Constants
 
 			public const string SentOtpSuccessfully = "SENT_OTP_SUCCESSFULLY";
 			public const string NotOwner = "YOU ARE NOT OWNER OF THIS MATERIAL";
+
+			public const string NotAttemptRecorded = "NO_ATTEMPT_RECORDED";
 
 		}
 

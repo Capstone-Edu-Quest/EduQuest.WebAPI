@@ -11,4 +11,5 @@ namespace EduQuest_Domain.Repository;
 public interface IAssignmentAttemptRepository : IGenericRepository<AssignmentAttempt>
 {
     Task<int> GetAttemptNo(string quizId, string lessonId);
+    Task<AssignmentAttempt?> GetLearnerAttempt(string lessonId, string assignmentId, string userId);
 }

@@ -47,7 +47,7 @@ public class CreateCertificateCommandHandler : IRequestHandler<CreateCertificate
         {
             Title = request.Title,
             Url = request.Url,
-            
+            UserId = request.UserId,
             CourseId = request.CourseId,
         };
 
