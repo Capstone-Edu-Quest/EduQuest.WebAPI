@@ -196,14 +196,14 @@ namespace EduQuest_API.Controllers
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
 
-        //[Authorize(Roles = "Learner")]
+        [Authorize(Roles = "Learner")]
         [HttpPost("quiz/attemt")]
         public async Task<IActionResult> AttemptQuiz([FromQuery] string lessonId,
             [FromBody] AttemptQuizDto attempt,
             CancellationToken token = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new AttemptQuizCommand("b354f9e5-37bc-45f2-9f90-fcf74504f5b8", lessonId, attempt), token);
+            var result = await _mediator.Send(new AttemptQuizCommand(userId, lessonId, attempt), token);
 
             if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
             {
