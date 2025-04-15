@@ -9,7 +9,7 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttempt;
 
-public class GetAssignmentAttemptHandler : IRequestHandler<GetAssignmentAttemptCommand, APIResponse>
+public class GetAssignmentAttemptHandler : IRequestHandler<GetAssignmentAttemptQuery, APIResponse>
 {
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class GetAssignmentAttemptHandler : IRequestHandler<GetAssignmentAttemptC
         _mapper = mapper;
     }
 
-    public async Task<APIResponse> Handle(GetAssignmentAttemptCommand request, CancellationToken cancellationToken)
+    public async Task<APIResponse> Handle(GetAssignmentAttemptQuery request, CancellationToken cancellationToken)
     {
         var attempt = await _assignmentAttemptRepository.GetLearnerAttempt(request.LessonId, request.AssignmentId, request.UserId);
         if (attempt == null)
