@@ -18,8 +18,10 @@ using EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstructo
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Courses.Query.GetLearnerAssignmentAttempts;
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
+using EduQuest_Application.UseCases.Courses.Query.GetQuizAttempts;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Request;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -30,14 +32,14 @@ using System.Net;
 namespace EduQuest_API.Controllers
 {
     [Route(Constants.Http.API_VERSION + "/course")]
-	public class CourseController : BaseController
-	{
-		private ISender _mediator;
-		public CourseController(ISender mediator)
-		{
-			_mediator = mediator;
+    public class CourseController : BaseController
+    {
+        private ISender _mediator;
+        public CourseController(ISender mediator)
+        {
+            _mediator = mediator;
 
-		}
+        }
 
         [HttpPut("submitCourse")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -54,7 +56,7 @@ namespace EduQuest_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAssignedCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
         {
-			var userId = User.GetUserIdFromToken().ToString();
+            var userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetCourseByAssignToUserQuery(userId, pageNo, eachPage), cancellationToken);
             return Ok(result);
         }
@@ -68,93 +70,93 @@ namespace EduQuest_API.Controllers
             return Ok(result);
         }
 
-		[HttpPut("assign")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> ApprovePendingCourse([FromBody] AssignExpertCommand command, CancellationToken cancellationToken = default)
-		{
-			var result = await _mediator.Send(command, cancellationToken);
-			return Ok(result);
-		}
+        [HttpPut("assign")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ApprovePendingCourse([FromBody] AssignExpertCommand command, CancellationToken cancellationToken = default)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
+        }
 
-		[HttpGet("status")]
+        [HttpGet("status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCourseByStatus([FromQuery] GetCourseByStatusQuery query, CancellationToken cancellationToken = default)
         {
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(query, cancellationToken);
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
         [HttpGet("searchCourse")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequestDto request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, userId, request), cancellationToken);
-			return Ok(result);
-		}
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SearchCourse([FromQuery] SearchCourseRequestDto request, [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new SearchCourseQuery(pageNo, eachPage, userId, request), cancellationToken);
+            return Ok(result);
+        }
 
-		[HttpGet("courseDetailForInstructor")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CourseDetailResponseForIntructor([FromQuery] string courseId, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseDetailForIntructorQuery(userId, courseId), cancellationToken);
-			return Ok(result);
-		}
+        [HttpGet("courseDetailForInstructor")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CourseDetailResponseForIntructor([FromQuery] string courseId, CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetCourseDetailForIntructorQuery(userId, courseId), cancellationToken);
+            return Ok(result);
+        }
 
-		[HttpGet("courseStatisticOverview")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetCourseStatisticForInstructor(CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery(userId), cancellationToken);
-			return Ok(result);
-		}
+        [HttpGet("courseStatisticOverview")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetCourseStatisticForInstructor(CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetCourseStatisticForInstructorQuery(userId), cancellationToken);
+            return Ok(result);
+        }
 
-		//[HttpGet("recommendedCourse")]
-		//[ProducesResponseType(StatusCodes.Status200OK)]
-		//[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		//public async Task<IActionResult> GetRecommnededCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-		//{
-		//	string userId = User.GetUserIdFromToken().ToString();
-		//	var result = await _mediator.Send(new GetRecommendedCourseQuery(userId, pageNo, eachPage), cancellationToken);
-		//	return Ok(result);
-		//}
+        //[HttpGet("recommendedCourse")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<IActionResult> GetRecommnededCourse([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+        //{
+        //	string userId = User.GetUserIdFromToken().ToString();
+        //	var result = await _mediator.Send(new GetRecommendedCourseQuery(userId, pageNo, eachPage), cancellationToken);
+        //	return Ok(result);
+        //}
 
-		[HttpGet("byCourseId")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> SearchCourseById([FromQuery] string courseId, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseByIdQuery(userId, courseId), cancellationToken);
+        [HttpGet("byCourseId")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SearchCourseById([FromQuery] string courseId, CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetCourseByIdQuery(userId, courseId), cancellationToken);
 
             return Ok(result);
-		}
+        }
 
-		[HttpGet("studying")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetCourseStudying(CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseStudyingQuery(userId), cancellationToken);
-			return Ok(result);
-		}
+        [HttpGet("studying")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetCourseStudying(CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetCourseStudyingQuery(userId), cancellationToken);
+            return Ok(result);
+        }
 
-		//[Authorize]
+        //[Authorize]
         [HttpGet("lesson")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetMaterialsByLessonId(//[FromQuery] string userId,
-			[FromQuery, Required] string lessonId,
-			CancellationToken cancellationToken = default)
+            [FromQuery, Required] string lessonId,
+            CancellationToken cancellationToken = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetLessonMaterialsQuery(lessonId, userId), cancellationToken);
@@ -162,51 +164,51 @@ namespace EduQuest_API.Controllers
         }
 
         [Authorize]
-		[HttpGet("createdByMe")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetCourseByUserId([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseCreatedByMeQuery(userId,pageNo, eachPage), cancellationToken);
-			return Ok(result);
-		}
-
-		[Authorize]
-		[HttpPost("")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest request, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new CreateCourseCommand(request, userId), cancellationToken);
-			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
-		}
-
-		[Authorize]
-		[HttpPut("")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateCourse([FromBody] UpdateCourseRequest request, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new UpdateCourseCommand(userId, request), cancellationToken);
-			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
-		}
-
-		[Authorize(Roles ="Learner")]
-		[HttpPost("quiz/attemt")]
-		public async Task<IActionResult> AttemptQuiz([FromQuery] string lessonId,
-			[FromBody] AttemptQuizDto attempt,
-            CancellationToken token = default)
-		{
+        [HttpGet("createdByMe")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetCourseByUserId([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
+        {
             string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new AttemptQuizCommand(userId, lessonId, attempt), token);
+            var result = await _mediator.Send(new GetCourseCreatedByMeQuery(userId, pageNo, eachPage), cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest request, CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new CreateCourseCommand(request, userId), cancellationToken);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateCourse([FromBody] UpdateCourseRequest request, CancellationToken cancellationToken = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new UpdateCourseCommand(userId, request), cancellationToken);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+
+        [Authorize(Roles = "Learner")]
+        [HttpPost("quiz/attemt")]
+        public async Task<IActionResult> AttemptQuiz([FromQuery] string lessonId,
+            [FromBody] AttemptQuizDto attempt,
+            CancellationToken token = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new AttemptQuizCommand(userId, lessonId, attempt), token);
 
             if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
-			{
-				return NotFound(result);
-			}
+            {
+                return NotFound(result);
+            }
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
         [Authorize(Roles = "Learner")]
@@ -226,7 +228,7 @@ namespace EduQuest_API.Controllers
         [Authorize]
         [HttpPost("assignment/review")]
         public async Task<IActionResult> AttemptReview([FromBody] GradingAssignmentDto grading,
-			CancellationToken token = default)
+            CancellationToken token = default)
         {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new ReviewAssignmentCommand(userId, grading), token);
@@ -239,10 +241,10 @@ namespace EduQuest_API.Controllers
 
         [Authorize(Roles = "Learner")]
         [HttpGet("assignment/attempt")]
-		public async Task<IActionResult> GetLearnersAssignmentAttempt([FromQuery] string assignmentId,
-			[FromQuery] string lessonId,
-			CancellationToken token = default)
-		{
+        public async Task<IActionResult> GetLearnersAssignmentAttempt([FromQuery] string assignmentId,
+            [FromQuery] string lessonId,
+            CancellationToken token = default)
+        {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetAssignmentAttemptQuery(userId, assignmentId, lessonId), token);
             if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
@@ -258,6 +260,18 @@ namespace EduQuest_API.Controllers
             CancellationToken token = default)
         {
             var result = await _mediator.Send(new GetLearnerAssignmentAttemptsQuery(assignmentId, lessonId), token);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+
+
+        [Authorize(Roles = "Learner")]
+        [HttpGet("quiz/attemt")]
+        public async Task<IActionResult> GetQuizAttempts([FromQuery] string quizId,
+            [FromQuery] string lessonId,
+            CancellationToken token = default)
+        {
+            string userId = User.GetUserIdFromToken().ToString();
+            var result = await _mediator.Send(new GetQuizAttemptsQuery(quizId, lessonId, userId), token);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }
