@@ -23,4 +23,10 @@ public class QuizAttemptRepository : GenericRepository<QuizAttempt>, IQuizAttemp
     {
         return await _context.QuizAttempts.Where(q => q.QuizId == quizId && q.LessonId == lessonId).CountAsync();
     }
+    public async Task<List<QuizAttempt>> GetQuizAttempts(string quizId, string lessonId, string userId)
+    {
+        return await _context.QuizAttempts
+            .Where(q => q.QuizId == quizId && q.LessonId == lessonId && q.UserId == userId)
+            .ToListAsync();
+    }
 }
