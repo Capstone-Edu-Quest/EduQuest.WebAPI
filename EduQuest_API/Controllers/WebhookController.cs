@@ -37,7 +37,7 @@ namespace EduQuest_API.Controllers
 
 			stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _stripeModel.ProductionSigningKey);
 
-			if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
+			if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted || stripeEvent.Type == EventTypes.ChargeSucceeded || stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
 			{
 				var session = stripeEvent.Data.Object as Session;
 				if (session != null)

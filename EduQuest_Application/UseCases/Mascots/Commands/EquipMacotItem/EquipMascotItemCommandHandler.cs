@@ -30,11 +30,11 @@ public class EquipMascotItemCommandHandler : IRequestHandler<EquipMascotItemComm
 
     public async Task<APIResponse> Handle(EquipMascotItemCommand request, CancellationToken cancellationToken)
     {
-        if (!request.ItemIds.Any() || request.UserId == null)
-        {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.OK, MessageCommon.NotFound,
-            MessageCommon.NotFound, "name", "item");
-        }
+        //if (!request.ItemIds.Any() || request.UserId == null)
+        //{
+        //    return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.OK, MessageCommon.NotFound,
+        //    MessageCommon.NotFound, "name", "item");
+        //}
 
         await _mascotInventoryRepository.UpdateRangeMascot(request.ItemIds, request.UserId);
         await _unitOfWork.SaveChangesAsync();

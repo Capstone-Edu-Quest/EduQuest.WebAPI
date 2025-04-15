@@ -6,5 +6,7 @@ namespace EduQuest_Domain.Repository;
 
 public interface ICertificateRepository : IGenericRepository<Certificate>
 {
-    Task<PagedList<Certificate>> GetCertificatesWithFilters(string? title, string? userId, string? courseId, int page, int eachPage);
+    Task BulkCreateAsync(List<Certificate> certificates);
+    Task<List<Certificate>> GetCertificatesWithFilters(
+    string? id, string? userId, string? courseId);
 }

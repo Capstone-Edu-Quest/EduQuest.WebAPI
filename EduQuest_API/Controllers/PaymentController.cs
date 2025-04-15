@@ -3,10 +3,12 @@ using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Payments.Command.CreateCheckout;
 using EduQuest_Application.UseCases.Payments.Command.Refund;
 using EduQuest_Application.UseCases.Payments.Command.StripeExpress;
+using EduQuest_Application.UseCases.Payments.Query;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace EduQuest_API.Controllers
 {
@@ -28,7 +30,7 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new CreateCheckoutCommand(userId, command), cancellationToken);
-			return Ok(result);
+			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
 		[HttpPost("stripeExpress")]
@@ -48,6 +50,15 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new RefundCommand(userId, request), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("connectedAccount")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetStatusConnectedAccount([FromQuery] string userId, CancellationToken cancellationToken = default)
+		{
+			var result = await _mediator.Send(new GetConnectedAccountStatusQuery(userId), cancellationToken);
 			return Ok(result);
 		}
 	}

@@ -47,6 +47,7 @@ using EduQuest_Application.Abstractions.AzureBlobStorage;
 using EduQuest_Infrastructure.ExternalServices.BlobStorage;
 using EduQuest_Application.Abstractions.Stripe;
 using EduQuest_Infrastructure.ExternalServices.Payment;
+using EduQuest_Infrastructure.ExternalServices.Quartz.Certificates;
 
 namespace EduQuest_Infrastructure
 {
@@ -221,8 +222,11 @@ namespace EduQuest_Infrastructure
                 string cronExpression = "0 0 5 * * ?";
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
+
+                var checkJobKey = new JobKey("ProvideCertificates");
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
+                q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
 					.WithCronSchedule(cronExpression)
 					/*.StartNow()
@@ -235,6 +239,14 @@ namespace EduQuest_Infrastructure
                     .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
                     .WithDescription("Reset Quests Progress!")*/
                 );
+                
+                q.AddTrigger(opts => opts
+                    .ForJob(checkJobKey)
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInMinutes(2)
+                        .RepeatForever()
+                        .Build()));
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             #endregion

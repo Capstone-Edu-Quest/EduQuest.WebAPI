@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Certificates;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -21,22 +23,10 @@ public class GetCertificatesQueryHandler : IRequestHandler<GetCertificatesQuery,
 
     public async Task<APIResponse> Handle(GetCertificatesQuery request, CancellationToken cancellationToken)
     {
-        var query = await _certificateRepository.GetCertificatesWithFilters(request.Title, request.UserId, request.CourseId, request.Page, request.EachPage);
+        var query = await _certificateRepository.GetCertificatesWithFilters(request.Id, request.UserId, request.CourseId);
 
-        var certificates = _mapper.Map<PagedList<CertificateDto>>(query);
+        var certificates = _mapper.Map<List<CertificateDto>>(query);
 
-        return new APIResponse
-        {
-            IsError = false,
-            Payload = certificates,
-            Message = new MessageResponse
-            {
-                content = MessageCommon.GetSuccesfully,
-                values = new
-                {
-                    name = "certifcate"
-                }
-            }
-        };
+        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.CreateSuccesfully, certificates, "name", "certificate");
     }
 }

@@ -15,7 +15,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus
 {
-    public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
+	public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICourseRepository _courseRepository;
@@ -159,7 +159,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         if (detail.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString())
                         {
                             systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100);
-                            instructorShare = courseNetAmount - systemShare;
+                            instructorShare = (long)courseNetAmount - systemShare;
                             //Update for transaction detail
                             detail.StripeFee = stripeFeeForInstructor;
                             detail.NetAmount = courseNetAmount;
@@ -207,7 +207,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     user.Package = GeneralEnums.PackageEnum.Pro.ToString();
                     if (detail.ItemType.ToLower() == ConfigEnum.PriceYearly.ToString().ToLower())
                     {
-                        user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddMinutes(30);
+                        user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddMonths(30);
                     }
                     else if (detail.ItemType.ToLower() == ConfigEnum.PriceMonthly.ToString().ToLower())
                     {

@@ -1,9 +1,10 @@
 ﻿using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -16,14 +17,24 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
         _context = context;
     }
 
-    public async Task<PagedList<Certificate>> GetCertificatesWithFilters(
-    string? title, string? userId, string? courseId, int page, int eachPage)
+    public async Task BulkCreateAsync(List<Certificate> certificates)
     {
-        var query = _context.Certificates.AsQueryable();
+        await _context.BulkInsertAsync(certificates);
+    }
 
-        if (!string.IsNullOrEmpty(title))
+    public async Task<List<Certificate>> GetCertificatesWithFilters(
+    string? id, string? userId, string? courseId)
+    {
+        var query = _context.Certificates.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrEmpty(id))
         {
-            query = query.Where(c => c.Title.Contains(title));
+            query = query.Where(c => c.Title.Contains(id));
+        }
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            query = query.Where(c => c.UserId == userId);
         }
 
         if (!string.IsNullOrEmpty(courseId))
@@ -31,15 +42,7 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
             query = query.Where(c => c.CourseId == courseId);
         }
 
- 
-
-        int totalCount = await query.CountAsync();
-
-        var items = await query.Skip((page - 1) * eachPage)
-                               .Take(eachPage)
-                               .ToListAsync();
-
-        return new PagedList<Certificate>(items, totalCount, page, eachPage);
+        return await query.ToListAsync();
     }
 
 }

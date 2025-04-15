@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.Helper;
+﻿using EduQuest_Application.Abstractions.Stripe;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -16,41 +17,38 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 	public class RerundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
 	{
 		private readonly StripeModel _stripeModel;
-		private readonly RefundService _refundService;
 		private readonly ITransactionRepository _transactionRepository;
+		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly IStripePayment _stripePayment;
 
-		public RerundCommandHandler(IOptions<StripeModel> stripeModel, RefundService refundService, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork)
+		public RerundCommandHandler(IOptions<StripeModel> stripeModel, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, IUnitOfWork unitOfWork, IStripePayment stripePayment)
 		{
 			_stripeModel = stripeModel.Value;
-			_refundService = refundService;
 			_transactionRepository = transactionRepository;
+			_transactionDetailRepository = transactionDetailRepository;
 			_unitOfWork = unitOfWork;
+			_stripePayment = stripePayment;
 		}
 
 		public async Task<APIResponse> Handle(RefundCommand request, CancellationToken cancellationToken)
 		{
 			StripeConfiguration.ApiKey = _stripeModel.SecretKey;
+			var transactionDetail = await _transactionDetailRepository.GetByTransactionIdAndCourseId(request.Refund.TransactionId, request.Refund.CourseId);
 			var transactionExisted = await _transactionRepository.GetById(request.Refund.TransactionId);
-			if(transactionExisted == null)
+			if(transactionDetail == null)
 			{
-				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction with ID {request.Refund.TransactionId}");
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Transaction Detail with ID {request.Refund.TransactionId}");
 			}
-			var refundOptions = new RefundCreateOptions
-			{
-				PaymentIntent = transactionExisted.PaymentIntentId,
-				Amount = (long)request.Refund.Amount * 100,
-				Reason = "requested_by_customer"
-			};
-			
-			var refund = await _refundService.CreateAsync(refundOptions);
+
+			var refund = await _stripePayment.CreateRefund(transactionExisted.PaymentIntentId, (long)transactionDetail.NetAmount);
 
 			var newTransaction = new Transaction
 			{
 				Id = refund.Id.ToString(),
 				UserId = request.UserId,
 				Status = GeneralEnums.StatusPayment.Completed.ToString(),
-				TotalAmount = (decimal)request.Refund.Amount,
+				TotalAmount = (decimal)transactionDetail.NetAmount,
 				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
 			};
 			await _transactionRepository.Add(newTransaction);
