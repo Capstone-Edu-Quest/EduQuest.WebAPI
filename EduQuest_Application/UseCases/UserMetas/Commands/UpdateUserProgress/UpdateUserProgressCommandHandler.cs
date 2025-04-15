@@ -79,7 +79,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			//}
 			if(request.Info.Time != null)
 			{
-				courseLearner.TotalTime += request.Info.Time;
+                courseLearner.TotalTime += (int)material.Duration;
 				userMeta.TotalStudyTime += request.Info.Time;
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
