@@ -45,7 +45,8 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 
 			var existedCourse = await _courseRepository.GetCourseByUserIdAndCourseId(request.UserId, request.CourseId);
 			var courseResponse = _mapper.Map<CourseDetailResponseForIntructor>(existedCourse);
-			courseResponse.RequirementList = ContentHelper.SplitString(existedCourse.Requirement, '.');
+			courseResponse.RequirementList =  existedCourse.Requirement != null ?  ContentHelper.SplitString(existedCourse.Requirement, '.') : null;
+			
 			courseResponse.LastUpdated = existedCourse.UpdatedAt;
 			courseResponse.TotalLearner = existedCourse.CourseStatistic.TotalLearner;
 			courseResponse.TotalReview = existedCourse.CourseStatistic.TotalReview;

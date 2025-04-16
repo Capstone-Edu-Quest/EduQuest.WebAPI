@@ -83,12 +83,11 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<decimal> CalculateMaterialProgressAsync(string lessonId, string materialId, decimal courseTotalTime)
 		{
+			// 1. Lấy lesson hiện tại
 			var currentLesson = await _context.Lessons
-			.AsNoTracking()
-			.FirstOrDefaultAsync(l => l.Id == lessonId);
+				.AsNoTracking()
+				.FirstOrDefaultAsync(l => l.Id == lessonId);
 
-
-			var courseId = currentLesson.CourseId;
 			var currentLessonIndex = currentLesson.Index;
 
 			// 2. Lấy index của materialId trong lessonId
@@ -99,30 +98,27 @@ namespace EduQuest_Infrastructure.Repository
 
 			var targetMaterialIndex = targetLessonMaterial.Index;
 
-			// 3. Lấy tất cả lessonIds có index < hoặc = currentLesson
-			var relevantLessons = await _context.Lessons
+			// 3. Lấy các lessonId có index nhỏ hơn current
+			var lessonIdsBefore = await _context.Lessons
 				.AsNoTracking()
-				.Where(l => l.CourseId == courseId && l.Index <= currentLessonIndex)
-				.Select(l => new { l.Id, l.Index })
+				.Where(l => l.CourseId == currentLesson.CourseId && l.Index < currentLessonIndex)
+				.Select(l => l.Id)
 				.ToListAsync();
 
-			// 4. Lấy tất cả material theo logic:
-			var allRelevantMaterials = await _context.LessonMaterials
+			// 4. Truy vấn material từ lesson trước và bài hiện tại
+			var lessonMaterials = await _context.LessonMaterials
 				.AsNoTracking()
 				.Include(lm => lm.Material)
 				.Where(lm =>
-					// Với lesson trước bài hiện tại → lấy tất cả material
-					relevantLessons.Any(rl => rl.Id == lm.LessonId && rl.Index < currentLessonIndex)
-					||
-					// Với lesson hiện tại → chỉ lấy material index <= material hiện tại
-					(lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
+					lessonIdsBefore.Contains(lm.LessonId) || // các bài trước
+					(lm.LessonId == lessonId && lm.Index <= targetMaterialIndex) // bài hiện tại và material đến vị trí chỉ định
 				)
 				.ToListAsync();
 
-			// 5. Tính tổng duration
-			var totalDuration = allRelevantMaterials.Sum(lm => lm.Material?.Duration ?? 0);
+			// 5. Tính tổng Duration
+			double totalDuration = lessonMaterials.Sum(lm => lm.Material?.Duration ?? 0);
 
-			// 6. Tính tỷ lệ so với courseTotalTime
+			// 6. Trả về tỷ lệ
 			return courseTotalTime > 0 ? (decimal)totalDuration / courseTotalTime : 0;
 		}
 	}
