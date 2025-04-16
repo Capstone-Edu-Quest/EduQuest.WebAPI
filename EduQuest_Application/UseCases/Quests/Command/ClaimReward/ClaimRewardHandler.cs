@@ -43,18 +43,28 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
         }
         ClaimRewardResponse response = new ClaimRewardResponse();
         string coupon = CodeGenerator.GenerateRandomCouponCode();
-        if(userQuest.IsCompleted && !userQuest.IsRewardClaimed)
+        var user = await _userRepository.GetById(request.UserId);
+
+        if (user == null || user.UserMeta == null)
+        {
+            throw new Exception("User not found or UserMeta is null.");
+        }
+        if (userQuest.IsCompleted && !userQuest.IsRewardClaimed)
         {
             int[] rewardType = GetRewardType(userQuest.RewardTypes!);
             for(int i = 0; i < rewardType.Length; i++)
             {
-                await HandleReward(rewardType[i], request.UserId, userQuest.RewardValues!.Split(','),
+                await HandleReward(rewardType[i], user, userQuest.RewardValues!.Split(','),
                     i, coupon, response, userQuest.Title!);
                 userQuest.IsRewardClaimed = true;
                 userQuest.CompleteDate = DateTime.Now.ToUniversalTime();
                 await _userQuestRepository.Update(userQuest);
             }
             await _unitOfWork.SaveChangesAsync();
+            var temp = _mapper.Map<ClaimRewardResponse>(user);
+            response.mascotItem = temp.mascotItem;
+            response.equippedItems = temp.equippedItems;
+            response.statistic = temp.statistic;
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.Complete, response, key, value);
         }
         return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.AlreadyExists, 
@@ -65,25 +75,25 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
         int[] result = input.Split(',').Select(int.Parse).ToArray();
         return result;
     }
-    private async Task HandleReward(int rewardType, string userId, string[] rewardValue,
+    private async Task HandleReward(int rewardType, User user, string[] rewardValue,
     int arrayIndex, string couponCode, ClaimRewardResponse response, string questName)
     {
         DateTime now = DateTime.Now;
-        var user = await _userRepository.GetById(userId);
-
-        if (user == null || user.UserMeta == null)
-        {
-            throw new Exception("User not found or UserMeta is null.");
-        }
+       
 
         if (arrayIndex < 0 || arrayIndex >= rewardValue.Length)
         {
             throw new IndexOutOfRangeException("Invalid array index.");
         }
-        double? BoostValue = user.Boosters
-            .Where(b => b.DueDate >= now)
-            .OrderByDescending(b => b.BoostValue)
-            .FirstOrDefault().BoostValue;
+        double? BoostValue = null;
+       if (user.Boosters != null)
+        {
+            var booster = user.Boosters
+           .Where(b => b.DueDate >= now)
+           .OrderByDescending(b => b.BoostValue)
+           .FirstOrDefault();
+            BoostValue = booster?.BoostValue;
+        }
         switch (rewardType)
         {
             case (int)RewardType.Gold:
@@ -108,7 +118,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                 {
                     user.MascotItem.Add(new Mascot
                     {
-                        UserId = userId,
+                        UserId = user.Id,
                         ShopItemId = rewardValue[arrayIndex],
                         CreatedAt = now.ToUniversalTime(),
                         IsEquipped = false,
@@ -118,7 +128,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                 {
                     user.MascotItem = new List<Mascot> {new Mascot
                     {
-                        UserId = userId,
+                        UserId = user.Id,
                         ShopItemId = rewardValue[arrayIndex],
                         CreatedAt = now.ToUniversalTime(),
                         IsEquipped = false,
@@ -141,7 +151,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                     AllowUsagePerUser = 1,
                     Limit = 1,
                     Usage = 0,
-                    CreatedBy = userId,
+                    CreatedBy = user.Id,
                 };
                 response.Coupon = couponCode;
                 await _couponRepository.Add(coupon);
