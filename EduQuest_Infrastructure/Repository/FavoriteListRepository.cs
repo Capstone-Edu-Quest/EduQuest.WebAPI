@@ -34,7 +34,7 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<FavoriteList> GetFavoriteListByUserId(string userId)
 		{
 			return await _context.FavoriteLists
-				.Include(x => x.User).Include(x => x.Courses)
+				.Include(x => x.User)
 				.FirstOrDefaultAsync(x => x.UserId == userId);
 		}
 		public async Task<PagedList<FavoriteList>> GetFavoriteListByUserId(string userId, string? title, string? description,

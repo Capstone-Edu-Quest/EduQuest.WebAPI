@@ -34,9 +34,9 @@ public class GetUserFavoriteListHandler : IRequestHandler<GetUserFavoriteListQue
 	public async Task<APIResponse> Handle(GetUserFavoriteListQuery request, CancellationToken cancellationToken)
     {
         var listCourses = await _favoriteListRepository.GetFavoriteListByUserId(request.UserId);
+       
 
-
-        var temp = listCourses.Courses!.AsQueryable();
+		var temp = listCourses.Courses!.AsQueryable();
         #region Filter
         if (!string.IsNullOrEmpty(request.Title))
         {

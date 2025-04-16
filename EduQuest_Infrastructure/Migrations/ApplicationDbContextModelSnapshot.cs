@@ -707,16 +707,11 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("FavoriteList");
@@ -2417,14 +2412,10 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany("FavoriteLists")
-                        .HasForeignKey("UserId")
+                        .WithOne("FavoriteList")
+                        .HasForeignKey("EduQuest_Domain.Entities.FavoriteList", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.User", null)
-                        .WithOne("FavoriteList")
-                        .HasForeignKey("EduQuest_Domain.Entities.FavoriteList", "UserId1");
 
                     b.Navigation("User");
                 });
@@ -2931,8 +2922,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("FavoriteList");
-
-                    b.Navigation("FavoriteLists");
 
                     b.Navigation("InstructorCertificates");
 
