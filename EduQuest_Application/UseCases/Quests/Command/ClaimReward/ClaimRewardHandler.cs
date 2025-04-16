@@ -5,7 +5,6 @@ using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
-using Google.Api;
 using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
@@ -100,7 +99,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                 if (int.TryParse(rewardValue[arrayIndex], out int addedGold))
                 {
                     user.UserMeta.Gold += BoostValue != null ? Convert.ToInt32(addedGold * BoostValue / 100) : addedGold;
-                    response.Gold = BoostValue != null ? Convert.ToInt32(addedGold * BoostValue / 100) : addedGold;
+                    response.GoldAdded = BoostValue != null ? Convert.ToInt32(addedGold * BoostValue / 100) : addedGold;
                 }
                 break;
 
@@ -108,7 +107,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                 if (int.TryParse(rewardValue[arrayIndex], out int addedExp))
                 {
                     user.UserMeta.Exp += BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
-                    response.Exp = BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
+                    response.ExpAdded = BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
                 }
                 break;
 
@@ -135,7 +134,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                     }
                 };
                 }
-                response.Item = rewardValue[arrayIndex];
+                
                 break;
 
             case (int)RewardType.Coupon:
@@ -165,7 +164,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                         BoostValue = booster,
                         DueDate = now.AddDays(7).ToUniversalTime()
                     });
-                    response.Booster = Convert.ToInt32(booster);
+                    response.BoosterAdded = Convert.ToInt32(booster);
                 }
                 break;
 
