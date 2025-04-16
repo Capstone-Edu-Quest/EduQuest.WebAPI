@@ -707,17 +707,11 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId1")
                         .IsUnique();
 
                     b.ToTable("FavoriteList");
@@ -2423,10 +2417,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduQuest_Domain.Entities.User", null)
-                        .WithOne("FavoriteLists")
-                        .HasForeignKey("EduQuest_Domain.Entities.FavoriteList", "UserId1");
-
                     b.Navigation("User");
                 });
 
@@ -2932,8 +2922,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("FavoriteList");
-
-                    b.Navigation("FavoriteLists");
 
                     b.Navigation("InstructorCertificates");
 
