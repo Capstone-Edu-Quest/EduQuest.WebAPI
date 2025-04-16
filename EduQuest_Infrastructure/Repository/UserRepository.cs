@@ -18,6 +18,13 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         _context = context;
     }
 
+    public async Task<List<User>> GetUserByStatus(string status)
+    {
+        return await _context.Users
+            .AsNoTracking()
+            .Where(x => x.Status!.ToLower().Equals(status.ToLower())).ToListAsync();
+    }
+
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await _context.Users

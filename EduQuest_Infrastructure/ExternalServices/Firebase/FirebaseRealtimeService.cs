@@ -23,7 +23,8 @@ public class FirebaseRealtimeService : IFireBaseRealtimeService
             id = generatedId,
             receiverId = request.Receiver,
             url = request.Url,
-            timestamp = DateTime.UtcNow.ToString("o")
+            timestamp = DateTime.UtcNow.ToString("o"),
+            value = request.Values
         };
 
 

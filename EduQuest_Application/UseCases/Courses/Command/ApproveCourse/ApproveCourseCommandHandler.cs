@@ -81,7 +81,7 @@ public class ApproveCourseCommandHandler : IRequestHandler<ApproveCourseCommand,
             Errors = null,
             Message = new MessageResponse
             {
-                content = result > 0 ? MessageCommon.UpdateSuccesfully : MessageCommon.UpdateFailed,
+                content = result > 0 ? MessageCommon.ApproveSuccessfully : MessageCommon.UpdateFailed,
                 values = new { name = "course" }
             }
         };
