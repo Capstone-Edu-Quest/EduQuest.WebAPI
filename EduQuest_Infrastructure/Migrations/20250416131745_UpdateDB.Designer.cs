@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250415000434_minorChange")]
-    partial class minorChange
+    [Migration("20250416131745_UpdateDB")]
+    partial class UpdateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -710,16 +710,11 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("FavoriteList");
@@ -767,6 +762,41 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Feedback");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.InstructorCertificate", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CertificateUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InstructorCertificate");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Item", b =>
@@ -2385,14 +2415,10 @@ namespace EduQuest_Infrastructure.Migrations
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany("FavoriteLists")
-                        .HasForeignKey("UserId")
+                        .WithOne("FavoriteList")
+                        .HasForeignKey("EduQuest_Domain.Entities.FavoriteList", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.User", null)
-                        .WithOne("FavoriteList")
-                        .HasForeignKey("EduQuest_Domain.Entities.FavoriteList", "UserId1");
 
                     b.Navigation("User");
                 });
@@ -2412,6 +2438,17 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EduQuest_Domain.Entities.InstructorCertificate", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
+                        .WithMany("InstructorCertificates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -2889,7 +2926,7 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Navigation("FavoriteList");
 
-                    b.Navigation("FavoriteLists");
+                    b.Navigation("InstructorCertificates");
 
                     b.Navigation("LearningPaths");
 
