@@ -80,5 +80,50 @@ namespace EduQuest_Infrastructure.Repository
 
 			return (firstLesson.Id, firstMaterialId);
 		}
+
+		public async Task<decimal> CalculateMaterialProgressAsync(string lessonId, string materialId, decimal courseTotalTime)
+		{
+			var currentLesson = await _context.Lessons
+			.AsNoTracking()
+			.FirstOrDefaultAsync(l => l.Id == lessonId);
+
+
+			var courseId = currentLesson.CourseId;
+			var currentLessonIndex = currentLesson.Index;
+
+			// 2. Lấy index của materialId trong lessonId
+			var targetLessonMaterial = await _context.LessonMaterials
+				.AsNoTracking()
+				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.MaterialId == materialId);
+
+
+			var targetMaterialIndex = targetLessonMaterial.Index;
+
+			// 3. Lấy tất cả lessonIds có index < hoặc = currentLesson
+			var relevantLessons = await _context.Lessons
+				.AsNoTracking()
+				.Where(l => l.CourseId == courseId && l.Index <= currentLessonIndex)
+				.Select(l => new { l.Id, l.Index })
+				.ToListAsync();
+
+			// 4. Lấy tất cả material theo logic:
+			var allRelevantMaterials = await _context.LessonMaterials
+				.AsNoTracking()
+				.Include(lm => lm.Material)
+				.Where(lm =>
+					// Với lesson trước bài hiện tại → lấy tất cả material
+					relevantLessons.Any(rl => rl.Id == lm.LessonId && rl.Index < currentLessonIndex)
+					||
+					// Với lesson hiện tại → chỉ lấy material index <= material hiện tại
+					(lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
+				)
+				.ToListAsync();
+
+			// 5. Tính tổng duration
+			var totalDuration = allRelevantMaterials.Sum(lm => lm.Material?.Duration ?? 0);
+
+			// 6. Tính tỷ lệ so với courseTotalTime
+			return courseTotalTime > 0 ? (decimal)totalDuration / courseTotalTime : 0;
+		}
 	}
 }
