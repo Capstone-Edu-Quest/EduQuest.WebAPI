@@ -36,6 +36,8 @@ namespace EduQuest_Domain.Entities
 		public virtual UserMeta? UserMeta { get; set; } = null!;
 		[JsonIgnore]
 		public virtual Subscription? Subscription { get; set; } = null!;
+		[JsonIgnore]
+		public virtual FavoriteList? FavoriteLists { get; set; }
 
 		[JsonIgnore]
 		public virtual ICollection<Mascot>? MascotItem { get; set; } = null!;
@@ -51,8 +53,7 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Course>? Courses { get; set; }
 		
-		[JsonIgnore]
-		public virtual ICollection<FavoriteList>? FavoriteLists { get; set; }
+		
         [JsonIgnore]
         public virtual ICollection<RefreshToken>? RefreshTokens { get; set; }
 

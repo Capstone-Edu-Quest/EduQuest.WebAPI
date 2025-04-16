@@ -21,9 +21,12 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.CourseStatistics.FirstOrDefaultAsync(x => x.CourseId.Equals(courseId));
 		}
 
-		public async Task<StatisticForInstructor> GetStatisticForInstructor(List<string> courseIds)
+		public async Task<(int totalLearner, decimal avgRating)> GetTotalLearnerForInstructor(List<string> courseIds)
 		{
-			throw new NotImplementedException();
+			var statistic = await _context.CourseStatistics.Where(x => courseIds.Contains(x.CourseId)).ToListAsync();
+			var totalLearner= (int)statistic.Sum(x => x.TotalLearner);
+			var avgReview = (int)statistic.Average(x => x.Rating);
+			return (totalLearner, avgReview);
 		}
 	}
 }

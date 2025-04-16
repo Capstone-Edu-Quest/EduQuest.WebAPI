@@ -7,6 +7,6 @@ namespace EduQuest_Domain.Repository
 	public interface ICourseStatisticRepository : IGenericRepository<CourseStatistic>
 	{
 		Task<CourseStatistic> GetByCourseId(string courseId);
-		Task<StatisticForInstructor> GetStatisticForInstructor(List<string> courseIds);
+		Task<(int totalLearner, decimal avgRating)> GetTotalLearnerForInstructor(List<string> courseIds);
 	}
 }
