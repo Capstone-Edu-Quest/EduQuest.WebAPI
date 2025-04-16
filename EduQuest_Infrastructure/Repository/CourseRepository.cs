@@ -163,7 +163,7 @@ namespace EduQuest_Infrastructure.Repository
 
         public async Task<Course> GetCourseByUserIdAndCourseId(string userId, string courseId)
         {
-            return await _context.Courses.Include(x => x.CourseStatistic).Include(x => x.Lessons).Include(x => x.Tags).FirstOrDefaultAsync(x => x.CreatedBy == userId && x.Id == courseId);
+            return await _context.Courses.FirstOrDefaultAsync(x => x.CreatedBy == userId && x.Id == courseId);
 
         }
 
