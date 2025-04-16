@@ -20,9 +20,15 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<List<User>> GetUserByStatus(string status)
     {
-        return await _context.Users
-            .AsNoTracking()
-            .Where(x => x.Status!.ToLower().Equals(status.ToLower())).ToListAsync();
+        var result = _context.Users.AsQueryable().AsNoTracking();
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            result = result.Where(x => x.Status!.ToLower().Equals(status.ToLower()));
+        }
+
+        var finalResult = await result.ToListAsync();
+        return finalResult;
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)

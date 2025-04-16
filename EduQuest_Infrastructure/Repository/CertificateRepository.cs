@@ -29,7 +29,7 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
 
         if (!string.IsNullOrEmpty(id))
         {
-            query = query.Where(c => c.Title.Contains(id));
+            query = query.Where(c => c.Id.Equals(id));
         }
 
         if (!string.IsNullOrEmpty(userId))
