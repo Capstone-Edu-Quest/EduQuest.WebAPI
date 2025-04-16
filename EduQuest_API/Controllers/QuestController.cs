@@ -87,7 +87,7 @@ namespace EduQuest_API.Controllers
             [FromQuery, AllowNull] int? pointToComplete,
             [FromQuery, AllowNull] DateTime? startDate,
             [FromQuery, AllowNull] DateTime? dueDate,
-            [FromQuery, AllowNull] bool? isComplete = false,          
+            [FromQuery, AllowNull] bool? isComplete,          
             [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10,
         CancellationToken cancellationToken = default)
         {
