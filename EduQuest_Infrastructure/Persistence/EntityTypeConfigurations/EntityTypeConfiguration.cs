@@ -71,11 +71,11 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
                 .HasForeignKey(c => c.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
-            builder.HasMany(u => u.FavoriteLists)
-                .WithOne(fl => fl.User)
-                .HasForeignKey(fl => fl.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-        }
+			builder.HasOne(u => u.FavoriteList)
+				.WithOne(fl => fl.User)
+				.HasForeignKey<FavoriteList>(f => f.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+		}
 
         #endregion
 
