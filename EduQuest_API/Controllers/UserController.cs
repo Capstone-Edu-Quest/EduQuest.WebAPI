@@ -44,12 +44,12 @@ public class UserController : BaseController
         return Ok(result);
     }
 
-    [HttpGet("all")]
+    [HttpGet("status")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<IActionResult> GetAllUsers([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
-	{
-		var result = await _mediator.Send(new GetAllUsersQuery(pageNo, eachPage), cancellationToken);
+	public async Task<IActionResult> GetAllUsers([FromQuery] GetAllUsersQuery query, CancellationToken cancellationToken = default)
+	{ 
+		var result = await _mediator.Send(query, cancellationToken);
 		return Ok(result);
 	}
 

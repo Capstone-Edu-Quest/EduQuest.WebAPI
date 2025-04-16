@@ -45,7 +45,7 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
             userId = user.Id,
             Receiver = user.Id,
             Content = "NEW_COURSE",
-            Url = "/courses",
+            Url = "",
             Values = new Dictionary<string, string>
             {
                 { "courseId", "course-101" },
