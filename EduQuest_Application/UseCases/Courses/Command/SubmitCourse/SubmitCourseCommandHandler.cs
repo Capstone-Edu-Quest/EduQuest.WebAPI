@@ -15,6 +15,7 @@ public class SubmitCourseCommandHandler : IRequestHandler<SubmitCourseCommand, A
     private readonly ICourseRepository _courseRepository;
     private readonly IFireBaseRealtimeService _notifcation;
 
+
     public SubmitCourseCommandHandler(ICourseRepository courseRepository, IFireBaseRealtimeService notifcation)
     {
         _courseRepository = courseRepository;
