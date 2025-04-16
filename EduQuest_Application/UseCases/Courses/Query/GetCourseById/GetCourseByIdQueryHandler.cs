@@ -116,29 +116,8 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 						materials.Add(currentMaterialResponse);
 
-						// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
-						//if (material.OriginalMaterialId != null)
-						//{
-						//	var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
-
-						//	if (originalMaterial != null)
-						//	{
-						//		var originalMaterialResponse = new MaterialInLessonResponse
-						//		{
-						//			Id = originalMaterial.Id,
-						//			Type = originalMaterial.Type,
-						//			Duration = originalMaterial.Duration,
-						//			Title = originalMaterial.Title,
-						//			Description = originalMaterial.Description,
-						//			Version = originalMaterial.Version,
-						//			Status = GeneralEnums.StatusMaterial.Locked.ToString(),
-						//		};
-
-						//		materials.Add(originalMaterialResponse);
-						//	}
-						//}
 					}
-				}else
+				}else if(courseLearner.ProgressPercentage < 100)
 				{
 					
 					foreach (var material in listMaterial)
@@ -151,7 +130,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						currentMaterialResponse.Description = material.Description;
 						currentMaterialResponse.Version = material.Version;
 						currentMaterialResponse.OriginalMaterialId = material.OriginalMaterialId;
-
+						
 						var nowMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(lesson.Id, material.Id);
 						if ( (currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
 						{
@@ -188,6 +167,24 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						//		materials.Add(originalMaterialResponse);
 						//	}
 						//}
+					}
+				} else if (courseLearner.ProgressPercentage == 100)
+				{
+					foreach (var material in listMaterial)
+					{
+						var currentMaterialResponse = new MaterialInLessonResponse
+						{
+							Id = material.Id,
+							Type = material.Type,
+							Duration = material.Duration,
+							Title = material.Title,
+							Description = material.Description,
+							Version = material.Version,
+							OriginalMaterialId = material.OriginalMaterialId,
+							Status = GeneralEnums.StatusMaterial.Done.ToString(),
+						};
+
+						materials.Add(currentMaterialResponse);
 					}
 				}
 				
