@@ -67,10 +67,10 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							Name = lessonRequest.Name,
 							Description = lessonRequest.Description,
 							CourseId = existingCourse.Id,
-							Index = i + 1,
+							Index = i,
 							TotalTime = (int?)materials?.Sum(m => m.Duration) ?? 0
 						};
-						TotalLesson += materials.Count();
+						
 						var lessonMaterials = materials.Select(m => new LessonMaterial
 						{
 							LessonId = lesson.Id,
@@ -89,10 +89,11 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					await _lessonRepository.CreateRangeAsync(newLessons);
 
 
-					existingCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
-					existingCourse.CourseStatistic.TotalLesson = TotalLesson;
-					await _courseRepository.Update(existingCourse);
+					
 				}
+				existingCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
+				existingCourse.CourseStatistic.TotalLesson = newLessons.Count();
+				await _courseRepository.Update(existingCourse);
 
 				var result = await _unitOfWork.SaveChangesAsync();
 				if (result > 0)

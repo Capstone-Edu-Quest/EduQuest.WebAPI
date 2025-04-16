@@ -120,8 +120,6 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
     {
         return await _context.Learners.AnyAsync(l => l.UserId == userId && l.CourseId == courseId);
     }
-
-
     public async Task<IList<CourseLearner>> GetRecentCourseByUserId(string userId)
     {
         return await _context.Learners
@@ -131,7 +129,6 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
             .Take(5)  
             .ToListAsync();
     }
-
 
     public async Task<int> CountNumberOfCourseByUserId(string userId)
     {
@@ -148,4 +145,6 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
     {
         return await _context.Learners.AsNoTracking().Where(x => x.ProgressPercentage >= 90).ToListAsync();
     }
+
+	
 }
