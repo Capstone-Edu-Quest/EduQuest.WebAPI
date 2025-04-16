@@ -153,13 +153,13 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         decimal? stripeFeeForInstructor = (percentage / 100) * transactionExisted.StripeFee;
 
                         //Calculate amount after fees
-                        decimal? courseNetAmount = cartItem.Price - stripeFeeForInstructor;
+                        decimal courseNetAmount = cartItem.Price - (decimal)stripeFeeForInstructor;
                         int packageEnum = (int)Enum.Parse(typeof(PackageEnum), user.Package);
                         var courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), packageEnum, (int)GeneralEnums.ConfigEnum.CommissionFee);
                         if (detail.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString())
                         {
-                            systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100);
-                            instructorShare = (long)courseNetAmount - systemShare;
+                            systemShare = Math.Round(courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100), 2);
+                            instructorShare = courseNetAmount - systemShare;
                             //Update for transaction detail
                             detail.StripeFee = stripeFeeForInstructor;
                             detail.NetAmount = courseNetAmount;

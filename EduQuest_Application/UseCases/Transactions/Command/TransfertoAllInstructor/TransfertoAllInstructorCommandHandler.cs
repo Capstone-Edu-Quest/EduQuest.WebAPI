@@ -48,7 +48,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 				var newTransaction = new Transaction
 				{
 					Id = Guid.NewGuid().ToString(),
-					TotalAmount = (long)(item.TotalInstructorShare),
+					TotalAmount = item.TotalInstructorShare,
 					Status = GeneralEnums.StatusPayment.Completed.ToString(),
 					Type = GeneralEnums.TypeTransaction.Transfer.ToString(),
 					UserId = "3b7d5b9c-c7bf-494b-9a75-e931d4a5cb22"
