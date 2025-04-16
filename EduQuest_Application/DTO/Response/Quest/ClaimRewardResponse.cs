@@ -14,11 +14,10 @@ namespace EduQuest_Application.DTO.Response.Quests;
 
 public class ClaimRewardResponse : IMapFrom<User>
 {
-    public int? Gold {  get; set; }
-    public int? Exp { get; set; }
+    public int? GoldAdded { get; set; } = 0;
+    public int? ExpAdded { get; set; } = 0;
     public string? Coupon { get; set; }
-    public int? Booster { get; set; }
-    public string? Item { get; set; }
+    public int? BoosterAdded { get; set; } = 0;
     public UserStatisticDto statistic { get; set; }
     public List<string> mascotItem { get; set; }
     public List<string> equippedItems { get; set; }
