@@ -79,7 +79,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			//}
 			if(request.Info.Time != null)
 			{
-				courseLearner.TotalTime += request.Info.Time;
+                courseLearner.TotalTime += (int)material.Duration;
 				userMeta.TotalStudyTime += request.Info.Time;
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
@@ -95,7 +95,10 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
             }
-            
+            if (courseLearner.TotalTime > course.CourseStatistic.TotalTime)
+            {
+                courseLearner.TotalTime = course.CourseStatistic.TotalTime;
+            }
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
             
@@ -128,7 +131,11 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             courseLearner.CurrentMaterialId = newMaterialId;
 
             courseLearner.ProgressPercentage = ((decimal)courseLearner.TotalTime / course.CourseStatistic.TotalTime) * 100;
-			await _courseRepository.Update(course);
+            if (courseLearner.ProgressPercentage > 100)
+            {
+                courseLearner.ProgressPercentage = 100;
+            }
+            await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse

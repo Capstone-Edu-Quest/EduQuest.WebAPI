@@ -89,12 +89,21 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
+        
         learner.ProgressPercentage = (decimal)learner.TotalTime / course.CourseStatistic.TotalTime * 100;
-        if(attempNo <= 1)
+        if (learner.ProgressPercentage > 100)
+        {
+            learner.ProgressPercentage = 100;
+        }
+        if (attempNo <= 1)
         {
             var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
             userMeta.TotalStudyTime += Convert.ToInt32(request.Attempt.TotalTime);
-            learner.TotalTime += Convert.ToInt32(request.Attempt.TotalTime);
+            learner.TotalTime += Convert.ToInt32(material.Duration);
+            if (learner.TotalTime > course.CourseStatistic.TotalTime)
+            {
+                learner.TotalTime = course.CourseStatistic.TotalTime;
+            }
             await _userMetaRepository.Update(userMeta);
         }
         await _unitOfWork.SaveChangesAsync();

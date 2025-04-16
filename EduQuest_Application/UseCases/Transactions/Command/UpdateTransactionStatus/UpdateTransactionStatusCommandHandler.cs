@@ -158,7 +158,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         var courseFeeForPlatForm = await _subscriptionRepository.GetSubscriptionByRoleIPackageConfig(((int)GeneralEnums.UserRole.Instructor).ToString(), packageEnum, (int)GeneralEnums.ConfigEnum.CommissionFee);
                         if (detail.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString())
                         {
-                            systemShare = (long)(courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100));
+                            systemShare = courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100);
                             instructorShare = (long)courseNetAmount - systemShare;
                             //Update for transaction detail
                             detail.StripeFee = stripeFeeForInstructor;
