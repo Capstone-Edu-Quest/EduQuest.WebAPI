@@ -9,8 +9,8 @@
 
         public static class BaseUrl
         {
-            public const string Base = "https://edu-quest-webui.vercel.app";
-            public const string ShopItemUrl = $"{Base}/shop-items";
+            //public const string Base = "https://edu-quest-webui.vercel.app";
+            public const string ShopItemUrl = $"/shop-items";
         }
         public static class Http
 		{
@@ -26,6 +26,26 @@
 			public const string SID = "sid";
 			public const string SCP = "http://schemas.microsoft.com/identity/claims/scope";
 		}
+
+		public static class NotificationMessage 
+		{
+            public const string SUBMIT_COURSE_SUCCESSFULLY = "SUBMIT_COURSE_SUCCESSFULLY";
+            public const string PURCHASE_ITEM_SUCCESSFULLY = "PURCHASE_ITEM_SUCCESSFULLY";
+            public const string NOT_ENOUGH_GOLD = "NOT_ENOUGH_GOLD";
+            public const string YOUR_COURSE_WAS_APPROVED= "YOUR_COURSE_WAS_APPROVED";
+            public const string YOUR_COURSE_WAS_REJECTED = "YOUR_COURSE_WAS_REJECTED";
+            public const string A_STAFF_HAS_ASSIGN_COURSE_TO_YOU= "A_STAFF_HAS_ASSIGN_COURSE_TO_YOU";
+            public const string CHECK_OUT_SUCCESSFULLY = "SUBMIT_COURSE_SUCCESSFULLY";
+            public const string BUY_COURSE_SUCCESSFULLY = "BUY_COURSE_SUCCESSFULLY";
+            public const string BUY_COURSE_FAILED = "BUY_COURSE_FAILED";
+            public const string YOUR_MONEY_WAS_TRANSFERED_FROM_THE_PLATFORM = "YOUR_MONEY_WAS_TRANSFERED_FROM_THE_PLATFORM";
+            public const string REFUND_SUCCESSFULLY = "REFUND_SUCCESSFULLY";
+            public const string REFUND_FAILED = "REFUND_FAILED";
+            public const string YOUR_COURSE_WAS_FEEDBACK = "YOUR_COURSE_WAS_RATED";
+            public const string BECOME_INSTRUCTOR_APPROVED = "BECOME_INSTRUCTOR_APPROVED";
+            public const string BECOME_INSTRUCTOR_REJECTED = "BECOME_INSTRUCTOR_REJECTED";
+        }
+
 
 
 		#region Authenticate
@@ -119,6 +139,8 @@
 			public const string NotOwner = "YOU ARE NOT OWNER OF THIS MATERIAL";
 
 			public const string NotAttemptRecorded = "NO_ATTEMPT_RECORDED";
+			public const string SubmitBecomeInstructorSuccessfully = "SUBMIT_BECOME_INSTRUCTOR_SUCCESSFULLY";
+			public const string ApproveSuccessfully = "APPROVED_SUCCESSFULLY";
 
 		}
 

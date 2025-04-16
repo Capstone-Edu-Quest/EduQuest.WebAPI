@@ -130,12 +130,22 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         {
             newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index +1)).MaterialId;
         }
-        learner.TotalTime += request.Attempt.TotalTime;
+        
+        learner.TotalTime += Convert.ToInt32(material.Duration);
+        if(learner.TotalTime > course.CourseStatistic.TotalTime)
+        {
+            learner.TotalTime = course.CourseStatistic.TotalTime;
+        }
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         learner.ProgressPercentage = (decimal)learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+        if(learner.ProgressPercentage > 100)
+        {
+            learner.ProgressPercentage = 100;
+        }
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
+        await _userMetaRepository.Update(userMeta);
         await _unitOfWork.SaveChangesAsync();
 
 

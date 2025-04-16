@@ -72,5 +72,8 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Booster> Boosters { get; set; }
 
-	}
+        [JsonIgnore]
+        public virtual ICollection<InstructorCertificate> InstructorCertificates { get; set; } 
+
+    }
 }

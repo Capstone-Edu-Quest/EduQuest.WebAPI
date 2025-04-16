@@ -1,4 +1,6 @@
 ﻿using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Users.Commands.ApproveBecomeInstructor;
+using EduQuest_Application.UseCases.Users.Commands.BecomeInstructor;
 using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
@@ -24,8 +26,25 @@ public class UserController : BaseController
 		_mediator = mediator;
 
 	}
+    [HttpPost("becomeInstructor")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> BecomeInstructor([FromForm] BecomeInstructorCommand command, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
 
-	[HttpGet("all")]
+    [HttpPost("approveInstructor")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ApproveInstructor([FromForm] ApproveBecomeInstructorCommand command, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("all")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	public async Task<IActionResult> GetAllUsers([FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)

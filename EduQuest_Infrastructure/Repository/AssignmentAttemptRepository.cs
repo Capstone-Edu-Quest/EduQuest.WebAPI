@@ -29,4 +29,9 @@ public class AssignmentAttemptRepository : GenericRepository<AssignmentAttempt>,
             .Where(q => q.AssignmentId == assignmentId && q.UserId == userId && q.LessonId == lessonId && q.AttemptNo == 1)
             .FirstOrDefaultAsync();
     }
+    public async Task<List<AssignmentAttempt>> GetLearnerAttempts(string lessonId, string assignmentId)
+    {
+        return await _context.AssignmentAttempts
+            .Where(a => a.LessonId == lessonId && a.AssignmentId == assignmentId).ToListAsync();
+    }
 }
