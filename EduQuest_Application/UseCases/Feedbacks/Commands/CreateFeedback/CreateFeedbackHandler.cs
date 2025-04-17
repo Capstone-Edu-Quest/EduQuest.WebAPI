@@ -60,8 +60,16 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
 			var feedbacks = await _feedbackRepository.GetByCourseId(request.Feedback.CourseId, 1, 10, null, null);
 			var averageRating = feedbacks.Any() ? feedbacks.Average(f => f.Rating) : 0;
 			courseStatistic.CourseStatistic.Rating = averageRating;
+            if(courseStatistic.CourseStatistic.TotalReview != null)
+            {
+                courseStatistic.CourseStatistic.TotalReview += 1;
+            }
+            else
+            {
+                courseStatistic.CourseStatistic.TotalReview = 1;
+            }
 
-			await _courseRepository.Update(courseStatistic);
+            await _courseRepository.Update(courseStatistic);
 
 			if (await _unitOfWork.SaveChangesAsync() > 0)
             {
