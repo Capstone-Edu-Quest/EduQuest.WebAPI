@@ -33,11 +33,18 @@ internal class ProvideCertificate : IJob
         var AllNewCertificates = new List<Certificate>();
         foreach (var entry in finishedLearner)
         {
+            var certificate = await _certificateRepository.GetCertificatesWithFilters(null, entry.UserId, entry.CourseId);
+            if (certificate.Any())
+            {
+                continue;
+            }
             var newCertificate = new Certificate
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = entry.UserId,
                 CourseId = entry.CourseId,
+                CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+                UpdatedAt = DateTime.UtcNow.ToUniversalTime(),
                 Title = "",
                 Url = "",
             };
