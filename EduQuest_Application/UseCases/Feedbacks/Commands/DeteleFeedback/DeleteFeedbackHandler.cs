@@ -9,6 +9,8 @@ using static EduQuest_Domain.Constants.Constants;
 using System.Net;
 using EduQuest_Application.DTO.Response.Feedbacks;
 using EduQuest_Application.Helper;
+using EduQuest_Domain.Enums;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Feedbacks.Commands.DeteleFeedback;
 
@@ -16,14 +18,17 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
 {
     private readonly IFeedbackRepository _feedbackRepository;
     private readonly IMapper _mapper;
+    private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
     private const string Key = "name";
     private const string value = "feedback";
+
     public DeleteFeedbackHandler(IFeedbackRepository feedbackRepository, IMapper mapper, 
-        IUnitOfWork unitOfWork)
+        IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _feedbackRepository = feedbackRepository;
         _mapper = mapper;
+        _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -33,7 +38,9 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
         {
             #region validate owner
             bool isOwner = await _feedbackRepository.IsOnwer(request.FeedbackId, request.UserId);
-            if (!isOwner)
+            var user = await _userRepository.GetById(request.UserId);
+            bool isStaff = user != null && Convert.ToInt32(user.RoleId) == (int)UserRole.Staff;
+            if (!isOwner && !isStaff)
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.UserDontHavePer, Key, value);
             }
@@ -45,13 +52,13 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.NotFound, Key, value);
             }
 
-            await _feedbackRepository.Delete(feedback);
-
+            await _feedbackRepository.Delete(request.FeedbackId);
+            FeedbackResponse response = _mapper.Map<FeedbackResponse>(feedback);
             #region return value
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.DeleteSuccessfully,
-                    _mapper.Map<FeedbackResponse>(feedback), Key, value);
+                    response, Key, value);
             }
 
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.DeleteFailed, Key, value);
@@ -59,7 +66,7 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
         }
         catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, Key, value);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, ex.Message, Key, value);
         }
     }
 }
