@@ -39,7 +39,8 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
             #region validate owner
             bool isOwner = await _feedbackRepository.IsOnwer(request.FeedbackId, request.UserId);
             var user = await _userRepository.GetById(request.UserId);
-            if (!isOwner || user != null && Convert.ToInt32(user.RoleId) != (int)UserRole.Staff)
+            bool isStaff = user != null && Convert.ToInt32(user.RoleId) == (int)UserRole.Staff;
+            if (!isOwner && !isStaff)
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.UserDontHavePer, Key, value);
             }
@@ -51,13 +52,13 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.NotFound, Key, value);
             }
 
-            await _feedbackRepository.Delete(feedback);
-
+            await _feedbackRepository.Delete(request.FeedbackId);
+            FeedbackResponse response = _mapper.Map<FeedbackResponse>(feedback);
             #region return value
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.DeleteSuccessfully,
-                    _mapper.Map<FeedbackResponse>(feedback), Key, value);
+                    response, Key, value);
             }
 
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.DeleteFailed, Key, value);
@@ -65,7 +66,7 @@ public class DeleteFeedbackHandler : IRequestHandler<DeteleFeedbackCommand, APIR
         }
         catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, Key, value);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, ex.Message, Key, value);
         }
     }
 }

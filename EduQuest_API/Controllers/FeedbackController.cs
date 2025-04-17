@@ -45,13 +45,13 @@ public class FeedbackController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateFeedback([FromBody, Required] CreateFeedbackRequest feeback,
-        //[FromQuery] string UserId,
+        [FromQuery] string userId,
         CancellationToken token = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
+        //string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new CreateFeedbackCommand(feeback, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
@@ -60,7 +60,7 @@ public class FeedbackController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateFeedback([FromBody, Required] UpdateFeedbackRequest feedback, 
         [FromQuery, Required] string feedbackId,
-        //[FromQuery] string UserId,
+        //[FromQuery] string userId,
         CancellationToken token = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
@@ -71,10 +71,10 @@ public class FeedbackController : ControllerBase
     [Authorize]
     [HttpDelete]
     public async Task<IActionResult> DeleteFeedback([FromQuery, Required] string feedbackId,
-        //[FromQuery] string UserId,
+        [FromQuery] string userId,
         CancellationToken token = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
+        //string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new DeteleFeedbackCommand(userId, feedbackId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
