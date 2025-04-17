@@ -29,5 +29,45 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Transactions.Where(x => x.UserId == userId).ToListAsync();
 		}
-	}
+
+        public async Task<List<Transaction>> GetTransactionByFilter(
+    string Id, string userId, string status, string type, string courseId)
+        {
+            var queries = _context.Transactions
+                .Include(t => t.TransactionDetails) 
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(Id))
+            {
+                queries = queries.Where(a => a.Id.Equals(Id));
+            }
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                queries = queries.Where(a => a.UserId.Equals(userId));
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                queries = queries.Where(a => a.Status.ToLower().Equals(status.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(type))
+            {
+                queries = queries.Where(a => a.Type.ToLower().Equals(type.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(courseId))
+            {
+                queries = queries.Where(t =>
+                    t.TransactionDetails.Any(d =>
+                        d.ItemType == "Course" && d.ItemId == courseId));
+            }
+
+            return await queries.ToListAsync();
+        }
+
+
+    }
 }
