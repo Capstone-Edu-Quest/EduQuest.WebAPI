@@ -27,13 +27,13 @@ public class CertificateController : ControllerBase
 
 
 
-    [HttpPost()]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateNewCertificate([FromBody] CreateCertificateCommand command, CancellationToken cancellationToken = default)
-    {
-        var result = await _mediator.Send(command, cancellationToken);
-        return Ok(result);
-    }
+    //[HttpPost()]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //public async Task<IActionResult> CreateNewCertificate([FromBody] CreateCertificateCommand command, CancellationToken cancellationToken = default)
+    //{
+    //    var result = await _mediator.Send(command, cancellationToken);
+    //    return Ok(result);
+    //}
 
 }

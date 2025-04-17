@@ -56,7 +56,12 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 			return new APIResponse
 			{
 				IsError = false,
-				Payload = refund.Id, // Trả về ID của refund
+				Payload = new
+				{
+					refundId = refund.Id,
+					transactionId = transactionExisted.Id,
+
+                }, // Trả về ID của refund
 				Errors = null,
 				Message = new MessageResponse
 				{
