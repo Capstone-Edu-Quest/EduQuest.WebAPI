@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
@@ -27,10 +28,11 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
     private readonly ICourseRepository _courseRepository;
     private readonly IUserMetaRepository _userMetaRepository;
     private readonly IMaterialRepository _materialRepository;
-
+    private readonly IRedisCaching _redis;
+    private readonly IStudyTimeRepository _studyTimeRepository;
     public AttemptQuizHandler(IQuizRepository quizRepository, ILessonRepository lessonRepository, IQuizAttemptRepository quizAttemptRepository,
-        IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository,
-        IUserQuestRepository userQuestRepository, ICourseRepository courseRepository, IMaterialRepository materialRepository)
+        IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository, 
+        ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
     {
         _quizRepository = quizRepository;
         _lessonRepository = lessonRepository;
@@ -41,13 +43,15 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         _courseRepository = courseRepository;
         _userMetaRepository = userMetaRepository;
         _materialRepository = materialRepository;
+        _redis = redis;
+        _studyTimeRepository = studyTimeRepository;
     }
 
     public async Task<APIResponse> Handle(AttemptQuizCommand request, CancellationToken cancellationToken)
     {
         int attempNo = 0;
         int CorrectQuestion = 0;
-        
+        DateTime now = DateTime.Now;
         var lesson = await _lessonRepository.GetById(request.LessonId);
         if(lesson == null)
         {
@@ -67,7 +71,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         int TotalQuestion = quiz.Questions.Count;
         QuizAttempt attempt = new QuizAttempt();
         attempt.Id = Guid.NewGuid().ToString();
-        attempt.SubmitAt = DateTime.Now.ToUniversalTime();
+        attempt.SubmitAt = now.ToUniversalTime();
         attempt.UserId = request.UserId;
         attempt.QuizId = quiz.Id;
         attempt.LessonId = lesson.Id;
@@ -132,6 +136,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         }
         
         learner.TotalTime += Convert.ToInt32(material.Duration);
+        
         if(learner.TotalTime > course.CourseStatistic.TotalTime)
         {
             learner.TotalTime = course.CourseStatistic.TotalTime;
@@ -146,6 +151,24 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
         await _userMetaRepository.Update(userMeta);
+
+        var studyTime = await _studyTimeRepository.GetByDate(now);
+        if(studyTime != null)
+        {
+            studyTime.StudyTimes += request.Attempt.TotalTime;
+            await _studyTimeRepository.Update(studyTime);
+        }
+        else
+        {
+            await _studyTimeRepository.Add(new StudyTime
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = request.UserId,
+                StudyTimes = request.Attempt.TotalTime,
+                Date = now.ToUniversalTime()
+            });
+        }
+        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Attempt.TotalTime);
         await _unitOfWork.SaveChangesAsync();
 
 
