@@ -52,6 +52,7 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 			courseResponse.TotalReview = existedCourse.CourseStatistic.TotalReview;
 			courseResponse.Rating = existedCourse.CourseStatistic.Rating;
 			courseResponse.TotalTime = existedCourse.CourseStatistic.TotalTime;
+			courseResponse.TotalLesson = existedCourse.CourseStatistic.TotalLesson;
 			courseResponse.TotalInCart = await _courseRepository.GetCourseCountByCourseIdAsync(request.CourseId);
 			courseResponse.TotalInWishList = await _favoriteListRepository.GetCountByCourseId(request.CourseId);
 			courseResponse.CourseEnrollOverTime = await _learnerRepository.GetCourseEnrollOverTimeAsync(request.CourseId);
