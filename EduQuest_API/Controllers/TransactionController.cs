@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Revenue.Query.GetRevenueReportForIntructor;
+using EduQuest_Application.UseCases.Transactions.Query.GetTransactionByFilter;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -26,5 +27,15 @@ namespace EduQuest_API.Controllers
 			var result = await _mediator.Send(new GetRevenueReportForIntructorQuery(transactionId), cancellationToken);
 			return Ok(result);
 		}
-	}
+
+
+        [HttpGet("filter")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetTransactionByFilter([FromQuery] GetTransactionByFilterQuery query, CancellationToken cancellationToken = default)
+        {
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
+    }
 }
