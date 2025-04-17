@@ -69,6 +69,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         attempt.AnswerContent = request.Attempt.AnswerContent;
         attempt.ToTalTime = request.Attempt.TotalTime;
         attempt.LessonId = request.LessonId;
+        attempt.AnswerScore = -1;
         await _assignmentAttemptRepository.Add(attempt);
 
         var course = await _courseRepository.GetById(lesson.CourseId);
