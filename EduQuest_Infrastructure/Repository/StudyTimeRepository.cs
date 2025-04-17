@@ -20,4 +20,12 @@ public class StudyTimeRepository : GenericRepository<StudyTime>, IStudyTimeRepos
         return await _context.StudyTimes.AsNoTracking().Where(a => a.UserId == userId).ToListAsync();
     }
 
+    public async Task<StudyTime?> GetByDate(DateTime date)
+    {
+        var result = await _context.StudyTimes
+            .Where(s => s.Date == date.ToUniversalTime())
+            .FirstOrDefaultAsync();
+        return result;
+    }
+
 }
