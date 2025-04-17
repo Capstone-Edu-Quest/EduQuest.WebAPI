@@ -1,4 +1,6 @@
-﻿using EduQuest_Application.DTO.Response.LearningPaths;
+﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.LearningPaths;
+using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 
@@ -12,4 +14,9 @@ public class FeedbackResponse : IMapFrom<Feedback>, IMapTo<Feedback>
     public string Comment { get; set; } = string.Empty;
     public DateTime? CreatedAt { get; set; }
     public CommonUserResponse CreatedBy {  get; set; } = new CommonUserResponse();
+    public void MappingFrom(Profile profile)
+    {
+        profile.CreateMap<Feedback, FeedbackResponse>()
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User));
+    }
 }

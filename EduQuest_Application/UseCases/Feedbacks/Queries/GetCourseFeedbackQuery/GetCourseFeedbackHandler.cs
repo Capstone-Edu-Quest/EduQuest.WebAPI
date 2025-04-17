@@ -53,9 +53,7 @@ public class GetCourseFeedbackHandler : IRequestHandler<GetCourseFeedbackQuery, 
             var temp = result.Items.ToList();
             foreach (var item in temp)
             {
-                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(item.User);
                 FeedbackResponse myFeedbackResponse = _mapper.Map<FeedbackResponse>(item);
-                myFeedbackResponse.CreatedBy = userResponse;
                 responseDto.Add(myFeedbackResponse);
             }
             PagedList<FeedbackResponse> responses = new PagedList<FeedbackResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);

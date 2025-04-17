@@ -44,7 +44,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			var lesson = await _lessonRepository.GetById(request.Info.LessonId);
 
 			//Get CourseLeaner
-			var course = await _courseRepository.GetCourseLearnerByCourseId(lesson.CourseId);
+			var course = await _courseRepository.GetById(lesson.CourseId);
 			var courseLearner = course.CourseLearners.FirstOrDefault(x => x.UserId == request.UserId);
 			if(courseLearner == null)
 			{
@@ -130,7 +130,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;
 
-            courseLearner.ProgressPercentage = ((decimal)courseLearner.TotalTime / course.CourseStatistic.TotalTime) * 100;
+			courseLearner.ProgressPercentage = await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, (decimal)course.CourseStatistic.TotalTime);
             if (courseLearner.ProgressPercentage > 100)
             {
                 courseLearner.ProgressPercentage = 100;
