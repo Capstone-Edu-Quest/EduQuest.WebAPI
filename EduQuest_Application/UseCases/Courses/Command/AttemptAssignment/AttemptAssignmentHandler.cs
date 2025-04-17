@@ -44,7 +44,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
 
     public async Task<APIResponse> Handle(AttemptAssignmentCommand request, CancellationToken cancellationToken)
     {
-        int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId) + 1;
+        int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId, request.UserId) + 1;
 
         var lesson = await _lessonRepository.GetById(request.LessonId);
         if (lesson == null)
