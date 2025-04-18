@@ -50,4 +50,11 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
         return await query.ToListAsync();
     }
 
+
+    public async Task<bool> GetCertificatesByCourseIdAndUserId(
+    string? userId, string? courseId)
+    {
+        return await _context.Certificates.Where(x => x.UserId == userId && x.CourseId == courseId).AnyAsync();
+    }
+
 }

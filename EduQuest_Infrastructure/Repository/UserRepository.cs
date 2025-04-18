@@ -18,6 +18,11 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         _context = context;
     }
 
+    public async Task<List<User>> GetUserByAssignToExpet(string expertId)
+    {
+        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId)).ToListAsync();  
+    }
+
     public async Task<List<User>> GetUserByStatus(string status)
     {
         var result = _context.Users.AsQueryable().AsNoTracking();

@@ -6,6 +6,7 @@ using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
 using EduQuest_Application.UseCases.Users.Queries.GetInstructorProfile;
+using EduQuest_Application.UseCases.Users.Queries.GetUserByAssignToExpert;
 using EduQuest_Application.UseCases.Users.Queries.GetUserByRole;
 using EduQuest_Application.UseCases.Users.Queries.GetUserProfile;
 using EduQuest_Domain.Constants;
@@ -26,6 +27,15 @@ public class UserController : BaseController
 		_mediator = mediator;
 
 	}
+    [HttpGet("assignToExpert")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> GetUserByAssignToExpert([FromQuery] GetUserByAsignToExpertQuery request, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpPost("becomeInstructor")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,7 +48,7 @@ public class UserController : BaseController
     [HttpPost("approveInstructor")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ApproveInstructor([FromForm] ApproveBecomeInstructorCommand command, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> ApproveInstructor([FromBody] ApproveBecomeInstructorCommand command, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);

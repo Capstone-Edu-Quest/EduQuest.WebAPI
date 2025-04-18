@@ -10,6 +10,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Users.Commands.ApproveBecomeInstructor;
 
@@ -36,26 +37,26 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
         await _unitOfWork.SaveChangesAsync();
 
         string message = request.isApprove
-            ? Constants.NotificationMessage.BECOME_INSTRUCTOR_APPROVED
-            : Constants.NotificationMessage.BECOME_INSTRUCTOR_REJECTED;
+            ? NotificationMessage.BECOME_INSTRUCTOR_APPROVED
+            : NotificationMessage.BECOME_INSTRUCTOR_REJECTED;
 
 
         await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
         {
             userId = user.Id,
             Receiver = user.Id,
-            Content = "NEW_COURSE",
+            Content = NotificationMessage.BECOME_INSTRUCTOR_APPROVED,
             Url = "",
             Values = new Dictionary<string, string>
             {
-                { "courseId", "course-101" },
+                { "name", "" },
             }
         });
 
         
         return GeneralHelper.CreateSuccessResponse(
            HttpStatusCode.OK,
-           Constants.MessageCommon.ApproveSuccessfully,
+           MessageCommon.ApproveSuccessfully,
            null,
            "name",
            user.Username

@@ -12,6 +12,7 @@ using EduQuest_Application.Helper;
 using static EduQuest_Domain.Constants.Constants;
 using EduQuest_Domain.Entities;
 using static EduQuest_Domain.Enums.QuestEnum;
+using EduQuest_Application.Abstractions.Redis;
 
 namespace EduQuest_Application.UseCases.Courses.Command.AttemptAssignment;
 
@@ -26,10 +27,11 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly ICourseRepository _courseRepository;
     private readonly IUserMetaRepository _userMetaRepository;
     private readonly IMaterialRepository _materialRepository;
-
+    private readonly IRedisCaching _redis;
+    private readonly IStudyTimeRepository _studyTimeRepository;
     public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, ILessonRepository lessonRepository, IAssignmentAttemptRepository assignmentAttemptRepository, 
         IMapper mapper, IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, ICourseRepository courseRepository, 
-        IUserMetaRepository userMetaRepository, IMaterialRepository materialRepository)
+        IUserMetaRepository userMetaRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
     {
         _assignmentRepository = assignmentRepository;
         _lessonRepository = lessonRepository;
@@ -40,12 +42,14 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         _courseRepository = courseRepository;
         _userMetaRepository = userMetaRepository;
         _materialRepository = materialRepository;
+        _redis = redis;
+        _studyTimeRepository = studyTimeRepository;
     }
 
     public async Task<APIResponse> Handle(AttemptAssignmentCommand request, CancellationToken cancellationToken)
     {
-        int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId) + 1;
-
+        int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId, request.UserId) + 1;
+        DateTime now = DateTime.Now;
         var lesson = await _lessonRepository.GetById(request.LessonId);
         if (lesson == null)
         {
@@ -69,6 +73,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         attempt.AnswerContent = request.Attempt.AnswerContent;
         attempt.ToTalTime = request.Attempt.TotalTime;
         attempt.LessonId = request.LessonId;
+        attempt.AnswerScore = -1;
+        attempt.CreatedAt = now.ToUniversalTime();
         await _assignmentAttemptRepository.Add(attempt);
 
         var course = await _courseRepository.GetById(lesson.CourseId);
@@ -106,6 +112,23 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             }
             await _userMetaRepository.Update(userMeta);
         }
+        var studyTime = await _studyTimeRepository.GetByDate(now);
+        if (studyTime != null)
+        {
+            studyTime.StudyTimes += Convert.ToInt32(request.Attempt.TotalTime);
+            await _studyTimeRepository.Update(studyTime);
+        }
+        else
+        {
+            await _studyTimeRepository.Add(new StudyTime
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = request.UserId,
+                StudyTimes = Convert.ToInt32(request.Attempt.TotalTime),
+                Date = now.ToUniversalTime()
+            });
+        }
+        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, Convert.ToInt32(request.Attempt.TotalTime));
         await _unitOfWork.SaveChangesAsync();
 
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);

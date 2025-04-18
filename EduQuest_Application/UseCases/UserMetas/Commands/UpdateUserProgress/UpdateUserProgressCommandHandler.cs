@@ -9,6 +9,7 @@ using System.Net;
 using static EduQuest_Domain.Enums.GeneralEnums;
 using EduQuest_Application.Helper;
 using static EduQuest_Domain.Enums.QuestEnum;
+using EduQuest_Application.Abstractions.Redis;
 
 namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 {
@@ -21,10 +22,11 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IMaterialRepository _materialRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IUserQuestRepository _userQuestRepository;
-
-		public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, 
-			ICourseRepository courseRepository, ILessonRepository lessonRepository, 
-			IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository)
+		private readonly IRedisCaching _redis;
+		private readonly IStudyTimeRepository _studyTimeRepository;
+		public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, 
+			ILessonRepository lessonRepository, IRedisCaching redis, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, 
+			IUserQuestRepository userQuestRepository, IStudyTimeRepository studyTimeRepository)
 		{
 			_userMetaRepository = userMetaRepository;
 			_unitOfWork = unitOfWork;
@@ -33,10 +35,13 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			_materialRepository = materialRepository;
 			_systemConfigRepository = systemConfigRepository;
 			_userQuestRepository = userQuestRepository;
+			_redis = redis;
+			_studyTimeRepository = studyTimeRepository;
 		}
 
 		public async Task<APIResponse> Handle(UpdateUserProgressCommand request, CancellationToken cancellationToken)
 		{
+			DateTime now = DateTime.Now;
 			var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
 			//Get material
 			var material = await _materialRepository.GetMataterialQuizAssById(request.Info.MaterialId);
@@ -51,42 +56,60 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
 			}
 
-			//Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
-			//var systemConfig = new SystemConfig();
-			//switch (typeEnum)
-			//{
-			//	case GeneralEnums.TypeOfMaterial.Video:
-			//		courseLearner.TotalTime += request.Info.Time;
-			//		userMeta.TotalStudyTime += request.Info.Time;
-			//		break;
-			//	case GeneralEnums.TypeOfMaterial.Document:
-			//		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Document.ToString());
-			//		courseLearner.TotalTime += (int)systemConfig.Value;
-			//		userMeta.TotalStudyTime += (int)systemConfig.Value;
-			//		break;
-			//	case GeneralEnums.TypeOfMaterial.Assignment:
-			//		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Assignment.ToString());
-			//		courseLearner.TotalTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
-			//		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
-			//		break;
-			//	case GeneralEnums.TypeOfMaterial.Quiz:
-			//		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Quiz.ToString());
-			//		courseLearner.TotalTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
-			//		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
-			//		break;
-			//	default:
-			//		break;
-			//}
-			if(request.Info.Time != null)
+            //Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
+            //var systemConfig = new SystemConfig();
+            //switch (typeEnum)
+            //{
+            //	case GeneralEnums.TypeOfMaterial.Video:
+            //		courseLearner.TotalTime += request.Info.Time;
+            //		userMeta.TotalStudyTime += request.Info.Time;
+            //		break;
+            //	case GeneralEnums.TypeOfMaterial.Document:
+            //		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Document.ToString());
+            //		courseLearner.TotalTime += (int)systemConfig.Value;
+            //		userMeta.TotalStudyTime += (int)systemConfig.Value;
+            //		break;
+            //	case GeneralEnums.TypeOfMaterial.Assignment:
+            //		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Assignment.ToString());
+            //		courseLearner.TotalTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
+            //		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
+            //		break;
+            //	case GeneralEnums.TypeOfMaterial.Quiz:
+            //		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Quiz.ToString());
+            //		courseLearner.TotalTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
+            //		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
+            //		break;
+            //	default:
+            //		break;
+            //}
+            var studyTime = await _studyTimeRepository.GetByDate(now);
+            if (studyTime != null)
+            {
+                studyTime.StudyTimes += request.Info.Time != null ? Convert.ToInt32(request.Info.Time) : (int)material.Duration;
+                await _studyTimeRepository.Update(studyTime);
+            }
+            else
+            {
+                await _studyTimeRepository.Add(new StudyTime
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = request.UserId,
+                    StudyTimes = request.Info.Time != null ? Convert.ToInt32(request.Info.Time) : (int)material.Duration,
+                    Date = now.ToUniversalTime()
+                });
+            }
+            if (request.Info.Time != null)
 			{
                 courseLearner.TotalTime += (int)material.Duration;
 				userMeta.TotalStudyTime += request.Info.Time;
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
             } else
 			{
 				courseLearner.TotalTime += (int)material.Duration;
 				userMeta.TotalStudyTime += (int)material.Duration;
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, (int)material.Duration);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, (int)material.Duration);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, (int)material.Duration);
             }
@@ -137,7 +160,10 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             }
             await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);
-			var result = await _unitOfWork.SaveChangesAsync() > 0;
+
+            
+           
+            var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse
 			{
 				IsError = !result,

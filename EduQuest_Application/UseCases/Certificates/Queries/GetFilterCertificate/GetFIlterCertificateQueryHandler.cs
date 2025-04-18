@@ -27,6 +27,6 @@ public class GetCertificatesQueryHandler : IRequestHandler<GetCertificatesQuery,
 
         var certificates = _mapper.Map<List<CertificateDto>>(query);
 
-        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.CreateSuccesfully, certificates, "name", "certificate");
+        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, certificates, "name", "certificate");
     }
 }

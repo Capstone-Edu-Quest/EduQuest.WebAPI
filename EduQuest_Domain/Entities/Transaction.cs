@@ -8,18 +8,23 @@ namespace EduQuest_Domain.Entities
 	{
 		public string UserId { get; set; }
 		public decimal TotalAmount { get; set; }
-        public decimal? NetAmount { get; set; }
-        public decimal? StripeFee { get; set; }
-        public string Status { get; set; }
-        public string Type { get; set; }
-        public string? PaymentIntentId { get; set; }
+		public decimal? NetAmount { get; set; }
+		public decimal? StripeFee { get; set; }
+		public string Status { get; set; }
+		public string Type { get; set; }
+		public string? PaymentIntentId { get; set; }
 		public string? CustomerEmail { get; set; }
 		public string? CustomerName { get; set; }
-        public string? Url { get; set; }
+		public string? Url { get; set; }
 
-        [JsonIgnore]
+		[JsonIgnore]
 		public virtual User User { get; set; } = null;
-		
-		
+
+		[JsonIgnore]
+		public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
 	}
 }
+
+
+
+
