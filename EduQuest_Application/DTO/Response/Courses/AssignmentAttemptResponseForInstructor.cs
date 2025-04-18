@@ -12,7 +12,7 @@ public class AssignmentAttemptResponseForInstructor : IMapFrom<AssignmentAttempt
     public string LessonId { get; set; }
     public string AnswerContent { get; set; }
     public double TotalTime { get; set; }
-
+    public double AnswerScore { get; set; }
     public CommonUserResponse Author {  get; set; } = new CommonUserResponse();
 
     public void MappingFrom(Profile profile)

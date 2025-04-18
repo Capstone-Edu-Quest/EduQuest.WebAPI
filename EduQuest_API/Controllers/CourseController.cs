@@ -11,6 +11,7 @@ using EduQuest_Application.UseCases.Courses.Queries;
 using EduQuest_Application.UseCases.Courses.Queries.GetCourseById;
 using EduQuest_Application.UseCases.Courses.Queries.SearchCourse;
 using EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttempt;
+using EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttemptsForIns;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByAssignToUser;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseByStatus;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
@@ -291,6 +292,15 @@ namespace EduQuest_API.Controllers
         {
             string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new GetQuizAttemptsQuery(quizId, lessonId, userId), token);
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+        }
+        [Authorize(Roles = "Instructor")]
+        [HttpGet("assignment/instructor/unreviewedAttempts")]
+        public async Task<IActionResult> ViewUnreviewedAssignmentAttempts([FromQuery] string assignmentId,
+            [FromQuery] string lessonId,
+            CancellationToken token = default)
+        {
+            var result = await _mediator.Send(new GetAssignmentAttemptsForInsQuery(assignmentId, lessonId), token);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }

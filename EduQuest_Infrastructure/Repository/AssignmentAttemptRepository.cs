@@ -40,4 +40,9 @@ public class AssignmentAttemptRepository : GenericRepository<AssignmentAttempt>,
         return await _context.AssignmentAttempts
             .Where(a => a.LessonId == lessonId && a.AssignmentId == assignmentId).ToListAsync();
     }
+    public async Task<List<AssignmentAttempt>> GetUnreviewedAttempts(string lessonId, string assignmentId)
+    {
+        return await _context.AssignmentAttempts
+            .Where(a => a.LessonId == lessonId && a.AssignmentId == assignmentId && a.AnswerScore < 0).ToListAsync();
+    }
 }
