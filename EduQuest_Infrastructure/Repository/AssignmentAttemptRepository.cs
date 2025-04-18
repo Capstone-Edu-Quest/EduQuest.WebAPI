@@ -19,6 +19,12 @@ public class AssignmentAttemptRepository : GenericRepository<AssignmentAttempt>,
         _context = context;
     }
 
+	public async Task<List<AssignmentAttempt>> GetAssignmentAttempts(List<string> assignmentIds, List<string> lessonIds, string userId)
+	{
+		return await _context.AssignmentAttempts.Where(x => assignmentIds.Contains(x.AssignmentId) && lessonIds.Contains(x.LessonId) && x.UserId == userId).ToListAsync();
+	}
+
+	
     public async Task<int> GetAttemptNo(string quizId, string lessonId, string userId)
     {
         return await _context.AssignmentAttempts.Where(q => q.AssignmentId == quizId && q.LessonId == lessonId && q.UserId == userId).CountAsync();

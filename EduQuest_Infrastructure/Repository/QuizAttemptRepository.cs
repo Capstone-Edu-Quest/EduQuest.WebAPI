@@ -29,4 +29,9 @@ public class QuizAttemptRepository : GenericRepository<QuizAttempt>, IQuizAttemp
             .Where(q => q.QuizId == quizId && q.LessonId == lessonId && q.UserId == userId)
             .ToListAsync();
     }
+
+	public async Task<List<QuizAttempt>> GetQuizzesAttempts(List<string> quizIds, List<string> lessonIds, string userId)
+	{
+        return await _context.QuizAttempts.Where(x => quizIds.Contains(x.QuizId) && lessonIds.Contains(x.LessonId) && x.UserId == userId).ToListAsync();
+	}
 }

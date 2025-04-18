@@ -32,6 +32,26 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.TransactionDetails.FirstOrDefaultAsync(x => x.TransactionId == transactionId && x.ItemId == courseId);
 		}
 
+		public async Task<(DateTime? CreatedAt, decimal Amount)> GetCourseTransactionInfoAsync(string courseId, string userId)
+		{
+			var result = await(from td in _context.TransactionDetails
+							   join t in _context.Transactions
+								   on td.TransactionId equals t.Id
+							   where td.ItemId == courseId &&
+									 td.ItemType == "Course" &&
+									 t.Type == "CheckoutCart" &&
+									 t.Status == "Completed" &&
+									 t.UserId == userId
+							   orderby td.CreatedAt descending // Nếu có nhiều, lấy gần nhất
+							   select new
+							   {
+								   CreatedAt = td.CreatedAt,
+								   Amount = td.Amount
+							   })
+					   .FirstOrDefaultAsync();
+			return (result.CreatedAt, result.Amount);
+		}
+
 		public async Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId)
 		{
 			return await _context.TransactionDetails

@@ -146,5 +146,8 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
         return await _context.Learners.AsNoTracking().Where(x => x.ProgressPercentage >= 90).ToListAsync();
     }
 
-	
+	public async Task<List<CourseLearner>> GetListLearnerOfCourse(string courseId)
+	{
+		return await _context.Learners.Where(x => x.CourseId == courseId).ToListAsync();
+	}
 }
