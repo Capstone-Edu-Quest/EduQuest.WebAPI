@@ -1,6 +1,8 @@
-﻿using EduQuest_Application.Helper;
+﻿using EduQuest_Application.Abstractions.Firebase;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -53,7 +55,21 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 					Type = GeneralEnums.TypeTransaction.Transfer.ToString(),
 					UserId = "3b7d5b9c-c7bf-494b-9a75-e931d4a5cb22"
 				};
-				await _transactionRepo.Add(newTransaction);
+
+                //await _firebaseRealtimeService.PushNotificationAsync(
+                //new NotificationDto
+                //{
+                //    userId = transactionExisted.UserId,
+                //    Content = NotificationMessage.BUY_COURSE_SUCCESSFULLY,
+                //    Receiver = transactionExisted.UserId,
+                //    Url = "",
+                //    Values = new Dictionary<string, string>
+                //    {
+                //        { "item", string.Join(",", purchasedCourseNames)}
+                //    }
+                //}
+
+                await _transactionRepo.Add(newTransaction);
 				await _unitOfWork.SaveChangesAsync();
 
 			}
