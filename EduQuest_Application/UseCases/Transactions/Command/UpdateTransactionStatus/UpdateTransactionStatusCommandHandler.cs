@@ -9,6 +9,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using Microsoft.Extensions.Options;
 using Stripe;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
@@ -31,7 +32,18 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         private readonly IQuartzService _quartzService;
         private readonly StripeModel _stripeModel;
 
-        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IFireBaseRealtimeService firebaseRealtimeService, IUnitOfWork unitOfWork, IQuartzService quartzService, StripeModel stripeModel)
+        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, 
+            ICourseRepository courseRepository, 
+            ICourseStatisticRepository courseStatisticRepository, 
+            ILessonRepository lessonRepository, 
+            ITransactionDetailRepository transactionDetailRepository, 
+            IUserRepository userRepository, 
+            ICartRepository cartRepository, 
+            ISubscriptionRepository subscriptionRepository, 
+            IFireBaseRealtimeService firebaseRealtimeService, 
+            IUnitOfWork unitOfWork, 
+            IQuartzService quartzService, 
+           IOptions<StripeModel> stripeModel)
         {
             _transactionRepository = transactionRepository;
             _courseRepository = courseRepository;
@@ -44,7 +56,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             _firebaseRealtimeService = firebaseRealtimeService;
             _unitOfWork = unitOfWork;
             _quartzService = quartzService;
-            _stripeModel = stripeModel;
+            _stripeModel = stripeModel.Value;
         }
 
         public async Task<APIResponse> Handle(UpdateTransactionStatusCommand request, CancellationToken cancellationToken)
@@ -172,10 +184,10 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                             detail.InstructorShare = instructorShare;
                         }
                         var firstLessonAndMaterialId = await _lessonRepository.GetFirstLessonAndMaterialIdInCourseAsync(course.Id);
-                        if (firstLessonAndMaterialId.lessonId == null && firstLessonAndMaterialId.materialId == null)
-                        {
-                            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
-                        }
+                        //if (firstLessonAndMaterialId.lessonId == null && firstLessonAndMaterialId.materialId == null)
+                        //{
+                        //    return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
+                        //}
 
                         var newLearner = new CourseLearner
                         {
@@ -184,8 +196,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                             IsActive = true,
                             TotalTime = 0,
                             ProgressPercentage = 0,
-                            CurrentLessonId = firstLessonAndMaterialId.lessonId,
-                            CurrentMaterialId = firstLessonAndMaterialId.materialId,
+                            CurrentLessonId = firstLessonAndMaterialId.lessonId != null ? firstLessonAndMaterialId.lessonId : null,
+                            CurrentMaterialId = firstLessonAndMaterialId.materialId != null ?  firstLessonAndMaterialId.materialId : null,
                             CreatedAt = DateTime.Now.ToUniversalTime(),
                             UpdatedAt = DateTime.Now.ToUniversalTime(),
 

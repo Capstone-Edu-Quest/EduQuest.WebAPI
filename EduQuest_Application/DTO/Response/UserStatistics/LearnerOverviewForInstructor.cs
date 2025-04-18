@@ -3,13 +3,13 @@ using EduQuest_Application.DTO.Response.Lessons;
 
 namespace EduQuest_Application.DTO.Response.UserStatistics
 {
-	public class LearnerStatisticForInstructor
+	public class LearnerOverviewForInstructor
 	{
         public string UserId { get; set; }
+        public string UserName { get; set; }
         public decimal Progress { get; set; }
         public string? CertificateId { get; set; }
-        public List<LessonBasicResponse> Lessons { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public decimal Amount { get; set; }
+        public DateTime? EnrolledDate { get; set; }
+        public decimal PurchasedAmount { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EduQuest_Application.DTO.Response.Materials;
+﻿using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Application.DTO.Response.Materials;
 
 namespace EduQuest_Application.DTO.Response.Lessons
 {
@@ -6,7 +7,7 @@ namespace EduQuest_Application.DTO.Response.Lessons
 	{
         public string Id { get; set; }
         public string Name { get; set; }
-        public List<QuizBasicResponse>? Quizzes { get; set; }
-		public List<AssignmentBasicResponse>? Assignments { get; set; }
+        public List<QuizAttemptsResponse>? Quizzes { get; set; }
+		public List<AssignmentAttemptResponseForInstructor>? Assignments { get; set; }
 	}
 }

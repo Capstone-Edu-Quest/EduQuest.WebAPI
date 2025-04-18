@@ -17,12 +17,12 @@ using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Courses.Query.GetLearnerAssignmentAttempts;
-using EduQuest_Application.UseCases.Courses.Query.GetLearnerStatisticForInstructor;
+using EduQuest_Application.UseCases.Courses.Query.GetLearnerDetailForInstructor;
+using EduQuest_Application.UseCases.Courses.Query.GetLearnerOverviewForInstructor;
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Courses.Query.GetQuizAttempts;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
 using EduQuest_Domain.Constants;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Request;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +32,7 @@ using System.Net;
 
 namespace EduQuest_API.Controllers
 {
-    [Route(Constants.Http.API_VERSION + "/course")]
+	[Route(Constants.Http.API_VERSION + "/course")]
     public class CourseController : BaseController
     {
         private ISender _mediator;
@@ -175,12 +175,21 @@ namespace EduQuest_API.Controllers
             return Ok(result);
         }
 
-		[HttpGet("learnerStatistic")]
+		[HttpGet("learnerOverview")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetLearnerStatistic([FromQuery] string courseId, CancellationToken cancellationToken = default)
 		{
-			var result = await _mediator.Send(new GetLearnerStatisticForInstructorQuery(courseId), cancellationToken);
+			var result = await _mediator.Send(new GetLearnerOverviewForInstructorQuery(courseId), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("learnerDetail")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetLearnerDetailInCourse([FromQuery] string userId, string courseId, CancellationToken cancellationToken = default)
+		{
+			var result = await _mediator.Send(new GetLearnerDetailForInstructorQuery(userId, courseId), cancellationToken);
 			return Ok(result);
 		}
 
