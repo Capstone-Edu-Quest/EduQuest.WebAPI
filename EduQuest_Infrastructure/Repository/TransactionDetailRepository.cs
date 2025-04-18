@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.DTO.Response.Revenue;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Revenue;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
@@ -38,9 +39,9 @@ namespace EduQuest_Infrastructure.Repository
 							   join t in _context.Transactions
 								   on td.TransactionId equals t.Id
 							   where td.ItemId == courseId &&
-									 td.ItemType == "Course" &&
-									 t.Type == "CheckoutCart" &&
-									 t.Status == "Completed" &&
+									 td.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString() &&
+									 t.Type == GeneralEnums.TypeTransaction.CheckoutCart.ToString() &&
+									 t.Status == GeneralEnums.StatusPayment.Completed.ToString() &&
 									 t.UserId == userId
 							   orderby td.CreatedAt descending // Nếu có nhiều, lấy gần nhất
 							   select new
@@ -117,6 +118,18 @@ namespace EduQuest_Infrastructure.Repository
 				AvailableBalance = (decimal)available,
 				PendingBalance = (decimal)pending
 			};
+		}
+
+		public async Task<decimal> GetTotalRevenueByInstructorId(string instructorId)
+		{
+			var now = DateTime.UtcNow.ToUniversalTime();
+			var yearStart = new DateTime(now.Year, 1, 1);
+			var query = _context.TransactionDetails
+			.Where(t => t.InstructorId == instructorId && t.DeletedAt == null);
+
+			// Total Revenue
+			var totalThisYear = await query.Where(t => t.CreatedAt >= yearStart).SumAsync(t => t.InstructorShare);
+			return (decimal)totalThisYear;
 		}
 
 		private decimal CalculatePercentageChange(decimal oldValue, decimal newValue)

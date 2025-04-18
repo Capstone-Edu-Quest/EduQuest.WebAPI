@@ -14,7 +14,26 @@ public class FirebaseRealtimeService : IFireBaseRealtimeService
         _firebaseClient = new FirebaseClient(firebaseDbUrl);
     }
 
-    public async Task PushNotificationAsync(NotificationDto request)
+	public async Task<List<NotificationDto>> GetNotificationsAsync(string receiverId)
+	{
+		var notifications = await _firebaseClient
+		.Child("notifications")
+		.Child(receiverId)
+		.OnceAsync<NotificationDto>();
+
+		return notifications
+			.Select(n => new NotificationDto
+			{
+				Content = n.Object.Content,
+				Receiver = n.Object.Receiver,
+				Url = n.Object.Url,
+				userId = receiverId,
+				Values = n.Object.Values
+			})
+			.ToList();
+	}
+
+	public async Task PushNotificationAsync(NotificationDto request)
     {
         string generatedId = Guid.NewGuid().ToString();
         var notification = new

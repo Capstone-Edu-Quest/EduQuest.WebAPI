@@ -1,4 +1,6 @@
-﻿using EduQuest_Application.UseCases.WebStatistics.Queries.AdminHomeDashboard;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.WebStatistics.Queries.AdminHomeDashboard;
+using EduQuest_Application.UseCases.WebStatistics.Queries.GetStatisticForInstructor;
 using EduQuest_Application.UseCases.WebStatistics.Queries.StaffStatistics;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Repository;
@@ -43,7 +45,15 @@ public class WebStatisticController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    [HttpGet("platform/setting")]
+	[HttpGet("instructor/home")]
+	public async Task<IActionResult> GetHomeStatisticForInstructor(CancellationToken token = default)
+	{
+        string userId = User.GetUserIdFromToken().ToString();
+		var result = await _mediator.Send(new GetStatisticForInstructorQuery(userId), token);
+		return Ok(result);
+	}
+
+	[HttpGet("platform/setting")]
     public async Task<IActionResult> PatformStatistic(CancellationToken token = default)
     {
         var result = await _mediator.Send(new GetStaffStatisticQuery(), token);
