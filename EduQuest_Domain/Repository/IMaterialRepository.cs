@@ -18,5 +18,6 @@ namespace EduQuest_Domain.Repository
 		Task<List<Material>> GetByUserIdAsync(string userId);
 		Task<Material> GetMaterialIncludeQuizAssignment(string materialId);
 		Task<List<Material>> GetMaterialsByType(List<string> materialIds, string type);
+		Task<Material?> GetMaterialByAssignmentId(string assignmentId);
     }
 }
