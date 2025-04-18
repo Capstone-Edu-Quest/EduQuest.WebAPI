@@ -1,13 +1,14 @@
-﻿using EduQuest_Application.ExternalServices.QuartzService;
+﻿using EduQuest_Application.Abstractions.Firebase;
+using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Payment;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using Microsoft.Extensions.Options;
 using Stripe;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
@@ -15,7 +16,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionStatus
 {
-	public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
+    public class UpdateTransactionStatusCommandHandler : IRequestHandler<UpdateTransactionStatusCommand, APIResponse>
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICourseRepository _courseRepository;
@@ -25,11 +26,12 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
         private readonly IUserRepository _userRepository;
         private readonly ICartRepository _cartRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly IFireBaseRealtimeService _firebaseRealtimeService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IQuartzService _quartzService;
         private readonly StripeModel _stripeModel;
 
-        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork, IQuartzService quartzService, IOptions<StripeModel> stripeModel)
+        public UpdateTransactionStatusCommandHandler(ITransactionRepository transactionRepository, ICourseRepository courseRepository, ICourseStatisticRepository courseStatisticRepository, ILessonRepository lessonRepository, ITransactionDetailRepository transactionDetailRepository, IUserRepository userRepository, ICartRepository cartRepository, ISubscriptionRepository subscriptionRepository, IFireBaseRealtimeService firebaseRealtimeService, IUnitOfWork unitOfWork, IQuartzService quartzService, StripeModel stripeModel)
         {
             _transactionRepository = transactionRepository;
             _courseRepository = courseRepository;
@@ -39,9 +41,10 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
             _userRepository = userRepository;
             _cartRepository = cartRepository;
             _subscriptionRepository = subscriptionRepository;
+            _firebaseRealtimeService = firebaseRealtimeService;
             _unitOfWork = unitOfWork;
             _quartzService = quartzService;
-            _stripeModel = stripeModel.Value;
+            _stripeModel = stripeModel;
         }
 
         public async Task<APIResponse> Handle(UpdateTransactionStatusCommand request, CancellationToken cancellationToken)
@@ -118,6 +121,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         }
                     };
                 }
+
+                List<string> purchasedCourseNames = new();
                 foreach (var detail in transactionDetailList)
                 {
                     var cartItem = myCart.CartItems.FirstOrDefault(c => c.CourseId == detail.ItemId);
@@ -126,7 +131,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     if (cartItem != null)
                     {
                         var course = await _courseRepository.GetById(cartItem.CourseId);
-
+                        purchasedCourseNames.Add(course.Title);
                         if (course == null)
                         {
                             return new APIResponse
@@ -195,6 +200,21 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                 await _cartRepository.Delete(myCart.Id);
                 await _transactionDetailRepository.UpdateRangeAsync(transactionDetailList);
 				await _quartzService.TransferToInstructor(transactionExisted.Id);
+
+
+                await _firebaseRealtimeService.PushNotificationAsync(
+                                new NotificationDto
+                                {
+                                    userId = transactionExisted.UserId,
+                                    Content = NotificationMessage.BUY_COURSE_SUCCESSFULLY,
+                                    Receiver = transactionExisted.UserId,
+                                    Url = "",
+                                    Values = new Dictionary<string, string>
+                                    {
+                                        { "item", string.Join(",", purchasedCourseNames)} 
+                                    }
+                                }
+                            );
             }
             else
             {
@@ -215,6 +235,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     }
                     await _userRepository.Update(user);
                     await _quartzService.UpdateUserPackageAccountType(user.Id);
+
                 }
             }
             var result = await _unitOfWork.SaveChangesAsync() > 0;

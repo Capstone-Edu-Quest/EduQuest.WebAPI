@@ -31,6 +31,7 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
     {
         var user = await _userRepository.GetUserById(request.UserId);
 
+        user.RoleId = "3";
         user.Status = request.isApprove ? AccountStatus.Active.ToString() : AccountStatus.Rejected.ToString();
 
         await _userRepository.Update(user);

@@ -1,8 +1,11 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.Abstractions.Firebase;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Repository;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Infrastructure.ExternalServices.Quartz.Certificates;
 
@@ -11,13 +14,17 @@ internal class ProvideCertificate : IJob
     private readonly ISchedulerFactory _scheduler;
     private readonly ILearnerRepository _learnerRepository;
     private readonly ICertificateRepository _certificateRepository;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IFireBaseRealtimeService _fireBaseRealtimeService;
     private readonly ILogger<ProvideCertificate> _logger;
 
-    public ProvideCertificate(ISchedulerFactory scheduler, ILearnerRepository learnerRepository, ICertificateRepository certificateRepository, ILogger<ProvideCertificate> logger)
+    public ProvideCertificate(ISchedulerFactory scheduler, ILearnerRepository learnerRepository, ICertificateRepository certificateRepository, ICourseRepository courseRepository, IFireBaseRealtimeService fireBaseRealtimeService, ILogger<ProvideCertificate> logger)
     {
         _scheduler = scheduler;
         _learnerRepository = learnerRepository;
         _certificateRepository = certificateRepository;
+        _courseRepository = courseRepository;
+        _fireBaseRealtimeService = fireBaseRealtimeService;
         _logger = logger;
     }
 
@@ -48,6 +55,24 @@ internal class ProvideCertificate : IJob
                 Title = "",
                 Url = "",
             };
+
+            //send notification after completed course
+            var courseName = await _courseRepository.GetById(entry.CourseId);
+            await _fireBaseRealtimeService.PushNotificationAsync(
+                              new NotificationDto
+                              {
+                                  userId = entry.UserId,
+                                  Content = NotificationMessage.COMPLETED_COURSE_SUCCESSFULLY,
+                                  Receiver = entry.UserId,
+                                  Url = "",
+                                  Values = new Dictionary<string, string>
+                                  {
+                                        { "certificate", courseName.Title}
+                                  }
+                              }
+                          );
+
+
 
             AllNewCertificates.Add(newCertificate);
         }
