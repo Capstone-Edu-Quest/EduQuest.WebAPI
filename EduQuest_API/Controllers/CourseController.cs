@@ -17,6 +17,7 @@ using EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstructor;
 using EduQuest_Application.UseCases.Courses.Query.GetCourseStudying;
 using EduQuest_Application.UseCases.Courses.Query.GetLearnerAssignmentAttempts;
+using EduQuest_Application.UseCases.Courses.Query.GetLearnerStatisticForInstructor;
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Courses.Query.GetQuizAttempts;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
@@ -174,7 +175,16 @@ namespace EduQuest_API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+		[HttpGet("learnerStatistic")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetLearnerStatistic([FromQuery] string courseId, CancellationToken cancellationToken = default)
+		{
+			var result = await _mediator.Send(new GetLearnerStatisticForInstructorQuery(courseId), cancellationToken);
+			return Ok(result);
+		}
+
+		[Authorize]
         [HttpPost("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

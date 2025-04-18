@@ -55,5 +55,10 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Materials.Include(x => x.Quiz).Include(x => x.Assignment).FirstOrDefaultAsync(x => x.Id == materialId);
 		}
+
+		public async Task<List<Material>> GetMaterialsByType(List<string> materialIds, string type)
+		{
+			return await _context.Materials.Where(x => materialIds.Contains(x.Id) && x.Type == type).ToListAsync();
+		}
 	}
 }

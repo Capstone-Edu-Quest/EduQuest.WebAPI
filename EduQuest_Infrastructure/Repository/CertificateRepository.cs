@@ -22,7 +22,12 @@ public class CertificateRepository : GenericRepository<Certificate>, ICertificat
         await _context.BulkInsertAsync(certificates);
     }
 
-    public async Task<List<Certificate>> GetCertificatesWithFilters(
+	public async Task<Certificate> GetByUserIdAndCourseId(string courseId, string userId)
+	{
+		return await _context.Certificates.FirstOrDefaultAsync(x => x.CourseId == courseId && x.UserId == userId);
+	}
+
+	public async Task<List<Certificate>> GetCertificatesWithFilters(
     string? id, string? userId, string? courseId)
     {
         var query = _context.Certificates.AsNoTracking().AsQueryable();
