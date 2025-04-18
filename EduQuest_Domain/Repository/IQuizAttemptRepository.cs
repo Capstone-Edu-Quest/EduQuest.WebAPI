@@ -12,4 +12,5 @@ public interface IQuizAttemptRepository: IGenericRepository<QuizAttempt>
 {
     Task<int> GetAttemptNo(string quizId, string lessonId);
     Task<List<QuizAttempt>> GetQuizAttempts(string quizId, string lessonId, string userId);
+    Task<List<QuizAttempt>> GetQuizzesAttempts(List<string> quizId, List<string> lessonId, string userId);
 }

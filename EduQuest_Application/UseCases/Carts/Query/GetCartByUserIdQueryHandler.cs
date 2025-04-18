@@ -32,7 +32,6 @@ namespace EduQuest_Application.UseCases.Carts.Query
 
 		public async Task<APIResponse> Handle(GetCartByUserIdQuery request, CancellationToken cancellationToken)
 		{
-			var apiResponse = new APIResponse();
 			var cart = await _cartRepository.GetByUserId(request.UserId);
 			var cartResponse = _mapper.Map<MyCartReponse>(cart);
 			if (cart != null && cart.CartItems.Any())
@@ -58,7 +57,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 					course.ProgressPercentage = null;
 				}
 				cartResponse.Courses = listCourseResponse;
-				return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, cartResponse, "name", "cart");
+				return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, cartResponse, "name", "cart");
 			} else if(cart == null)
 			{
 				var newCart = new Cart
@@ -78,7 +77,7 @@ namespace EduQuest_Application.UseCases.Carts.Query
 			}
 			cartResponse.NumOfCourse = 0;
 			cartResponse.Courses = new List<CourseSearchResponse>();
-			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, cartResponse, "name", "cart");
+			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, cartResponse, "name", "cart");
 
 		}
 	}
