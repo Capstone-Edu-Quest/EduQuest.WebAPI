@@ -150,4 +150,22 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 	{
 		return await _context.Learners.Where(x => x.CourseId == courseId).ToListAsync();
 	}
+
+	public async Task<List<TopCourseLearner>> GetTopCourseLearner(List<string> courseIds)
+	{
+		var query = from learner in _context.Learners
+					join courseStatistic in _context.CourseStatistics
+						on learner.CourseId equals courseStatistic.CourseId
+					where courseIds.Contains(learner.CourseId)
+					group new { learner, courseStatistic } by learner.CourseId into g
+					select new TopCourseLearner
+					{
+						Title = g.FirstOrDefault().courseStatistic.Course.Title,
+						LearnerCount = g.Count()
+					};
+
+		var topCourses = await query
+								.OrderByDescending(x => x.LearnerCount).ToListAsync();
+		return topCourses;
+	}
 }

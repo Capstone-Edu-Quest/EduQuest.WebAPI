@@ -31,21 +31,26 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
     {
         var user = await _userRepository.GetUserById(request.UserId);
 
+        user.RoleId = ((int)GeneralEnums.UserRole.Instructor).ToString();
         user.Status = request.isApprove ? AccountStatus.Active.ToString() : AccountStatus.Rejected.ToString();
-
+        if (!request.isApprove)
+        {
+            user.AssignToExpertId = null;
+        }
         await _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
 
         string message = request.isApprove
             ? NotificationMessage.BECOME_INSTRUCTOR_APPROVED
             : NotificationMessage.BECOME_INSTRUCTOR_REJECTED;
+        
 
 
         await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
         {
             userId = user.Id,
             Receiver = user.Id,
-            Content = NotificationMessage.BECOME_INSTRUCTOR_APPROVED,
+            Content = message,
             Url = "",
             Values = new Dictionary<string, string>
             {
