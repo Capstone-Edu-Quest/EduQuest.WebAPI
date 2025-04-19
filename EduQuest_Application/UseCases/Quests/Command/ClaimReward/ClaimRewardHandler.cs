@@ -19,17 +19,19 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
     private readonly IUserRepository _userRepository;
     private readonly ICouponRepository _couponRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILevelRepository _levelRepository;
     private const string key = "name";
     private const string value = "user quest";
 
     public ClaimRewardHandler(IUserQuestRepository userQuestRepository, IMapper mapper, IUserRepository userRepository, 
-        ICouponRepository couponRepository, IUnitOfWork unitOfWork)
+        ICouponRepository couponRepository, IUnitOfWork unitOfWork, ILevelRepository levelRepository)
     {
         _userQuestRepository = userQuestRepository;
         _mapper = mapper;
         _userRepository = userRepository;
         _couponRepository = couponRepository;
         _unitOfWork = unitOfWork;
+        _levelRepository = levelRepository;
     }
 
     public async Task<APIResponse> Handle(ClaimRewardCommand request, CancellationToken cancellationToken)
@@ -108,6 +110,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
                 {
                     user.UserMeta.Exp += BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
                     response.ExpAdded = BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
+                    await HandlerLevelUp(user.UserMeta);
                 }
                 break;
 
@@ -170,6 +173,21 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
 
             default:
                 break;
+        }
+    }
+
+    private async Task HandlerLevelUp(UserMeta meta)
+    {
+        var currentExp = meta.Exp;
+        var currentLevel = await _levelRepository.GetByLevelNum(meta.Level.Value);
+        if(currentLevel == null)
+        {
+            meta.Level = 1;
+        }
+        if(currentExp == currentLevel.Exp)
+        {
+            meta.Level++;
+            meta.Exp = 0;
         }
     }
 }
