@@ -69,7 +69,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<RevenueReportDto> GetRevenueReportAsync(string userId)
 		{
-			var now = DateTime.UtcNow.ToUniversalTime();
+			var now = DateTime.Now.ToUniversalTime();
 			var yearStart = new DateTime(now.Year, 1, 1);
 			var lastYearStart = yearStart.AddYears(-1);
 			var lastYearEnd = yearStart.AddDays(-1);
@@ -122,8 +122,8 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<decimal> GetTotalRevenueByInstructorId(string instructorId)
 		{
-			var now = DateTime.UtcNow.ToUniversalTime();
-			var yearStart = new DateTime(now.Year, 1, 1);
+			var now = DateTime.Now.ToUniversalTime();
+			var yearStart = new DateTime(now.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 			var query = _context.TransactionDetails
 			.Where(t => t.InstructorId == instructorId && t.DeletedAt == null);
 
