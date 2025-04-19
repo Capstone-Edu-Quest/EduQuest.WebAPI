@@ -116,4 +116,10 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
 
         return deletedCount;
     }
+
+    public async Task<Levels?> GetByLevelNum(int level)
+    {
+        var result = await _context.Levels.Where(l => l.Level == level).FirstOrDefaultAsync();
+        return result;
+    }
 }

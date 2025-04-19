@@ -12,6 +12,7 @@ public interface ILevelRepository : IGenericRepository<Levels>
     Task<IEnumerable<Levels>> GetByBatchLevelNumber(List<string> levelIds);
     Task ReArrangeLevelAfterDelete(int level);
     int GetExpByLevel(int level);
+    Task<Levels?> GetByLevelNum(int level);
     Task<LevelExpStatisticDto> GetLevelExpStatistic();
     Task<int> DeleteRangeByListId(List<string> ids);
 }
