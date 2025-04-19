@@ -87,6 +87,14 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, A
             instructorDto.Courses = courseDtos;
             instructorDto.TotalLearners = totalLearners;
             instructorDto.TotalReviews = totalReviews;
+            if (!string.IsNullOrEmpty(user.AssignToExpertId))
+            {
+                var expertUser = await _userRepository.GetById(user.AssignToExpertId);
+                if (expertUser != null)
+                {
+                    instructorDto.ExpertName = expertUser.Username;
+                }
+            }
 
             return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, Constants.MessageCommon.GetSuccesfully, instructorDto, "name", instructorDto.Email ?? "");
         }
