@@ -86,7 +86,7 @@ public class UserController : BaseController
         return Ok(result);
     }
 
-    [HttpGet("cancelInstructorApplication")]
+    [HttpPost("cancelInstructorApplication")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> CancelInstructorApplication([FromBody] CancelApplyInstructor command, CancellationToken cancellationToken = default)
