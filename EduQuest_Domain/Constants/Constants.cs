@@ -97,6 +97,7 @@
 			public const string UpdateFailed = "UPDATE_FAILED";
 			public const string CreateSuccesfully = "CREATED_SUCCESSFULLY";
 			public const string CreateFailed = "CREATED_FAILED";
+			public const string CancelSuccessfully = "CANCEL_SUCCESSFULLY";
 
 			public const string NotFound = "NOT_FOUND";
 			public const string NotEnoughGold = "NOT_ENOUGH_GOLD";
@@ -127,6 +128,7 @@
             public const string WrongPassword = "WRONG_PASSWORD";
             public const string PasswordChanged = "PASSWORD_CHANGED_SUCCESSFULLY";
             public const string InvalidRole = "INVALID_ROLE";
+            public const string HaventApplyInstructor = "HAVENT_APPLIED_INSTRUCTOR";
 
             public const string AlreadyOwnThisItem = "ALREADY_OWN_THIS_ITEM";
             public const string PurchaseItemSuccessfully = "PURCHASE_ITEM_SUCCESSFULLY";

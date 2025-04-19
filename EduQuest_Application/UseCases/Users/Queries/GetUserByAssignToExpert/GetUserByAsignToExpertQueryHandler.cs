@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
