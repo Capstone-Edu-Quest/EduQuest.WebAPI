@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Profiles;
+using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Response.Users;
 
-public class UserResponseDtoForExpert
+public class UserResponseDtoForExpert : IMapFrom<User>, IMapTo<User>
 {
     public string? Id { get; set; }
     public string? Username { get; set; }
@@ -22,7 +23,7 @@ public class UserResponseDtoForExpert
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<User, InstructorProfileDto>()
+        profile.CreateMap<User, UserResponseDtoForExpert>()
             .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates));
     }
 }

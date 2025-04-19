@@ -17,18 +17,21 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
     public string Headline { get; set; }
     public string Description { get; set; }
     public string AvatarUrl { get; set; }
+    public bool isPro { get; set; }
     public int? TotalLearners { get; set; } = 0;
     public int? TotalReviews { get; set; } = 0;
     public int? AvarageReviews { get; set; } = 0;
     public string? AssignToExpertId { get; set; }
     public string? ExpertName { get; set; }
+
     public List<InstructorCertificateDto> InstructorCertificate { get; set; }
     public List<CourseProfileDto> Courses { get; set; }
 
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<User, InstructorProfileDto>()
-            .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates));
+            .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates))
+            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"));
     }
 
 }
