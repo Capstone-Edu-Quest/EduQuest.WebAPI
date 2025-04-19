@@ -24,14 +24,14 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
         var existUser = await _userRepository.GetById(request.InstructorId);
         if (existUser == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", $"User with ID {request.AssignTo}");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "name", request.InstructorId);
 
         }
 
         var existExpert = await _userRepository.GetById(request.AssignTo);
         if (existUser == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "otp", $"User with ID {request.AssignTo}");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "name", request.AssignTo);
 
         }
 

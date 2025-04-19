@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Users.Commands.ApproveBecomeInstructor;
+using EduQuest_Application.UseCases.Users.Commands.AssignInstructorToExpert;
 using EduQuest_Application.UseCases.Users.Commands.BecomeInstructor;
 using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
@@ -39,7 +40,16 @@ public class UserController : BaseController
     [HttpPost("becomeInstructor")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> BecomeInstructor([FromForm] BecomeInstructorCommand command, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> BecomeInstructor([FromForm] AssignIntructorToExpert command, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("assignIntructorToExpert")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AssignInstructorToExpert([FromBody] AssignIntructorToExpert command, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
