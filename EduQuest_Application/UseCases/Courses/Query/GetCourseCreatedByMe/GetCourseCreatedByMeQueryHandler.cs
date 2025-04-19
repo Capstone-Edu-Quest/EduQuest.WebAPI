@@ -42,10 +42,10 @@ namespace EduQuest_Application.UseCases.Courses.Queries
 				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
 				if (courseSta != null)
 				{
-					course.TotalLesson = (int)courseSta.TotalLesson;
-					course.TotalReview = (int)courseSta.TotalReview;
-					course.Rating = (int)courseSta.Rating;
-					course.TotalTime = (int)courseSta.TotalTime;
+					course.TotalLesson = courseSta.TotalLesson;
+					course.TotalReview = courseSta.TotalReview;
+					course.Rating = courseSta.Rating;
+					course.TotalTime = courseSta.TotalTime;
 				}
 			}
 			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, listCourseResponse, "name", $"course created by me");
