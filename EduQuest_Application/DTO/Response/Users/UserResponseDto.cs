@@ -18,6 +18,7 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string Description { get; set; }
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
+    public bool isPro { get; set; }
     public UserStatisticDto statistic { get; set; }
     public List<string> mascotItem { get; set; }
     public List<string> equippedItems { get; set; }
@@ -33,7 +34,8 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
                 .Where(m => m.IsEquipped)
                 .Select(s => s.ShopItemId)
                 .ToList()
-            ));
+            ))
+            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"));
 
 
         profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();
