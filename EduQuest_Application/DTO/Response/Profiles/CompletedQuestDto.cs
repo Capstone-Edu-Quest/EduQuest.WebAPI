@@ -14,11 +14,13 @@ public class CompletedQuestDto : IMapFrom<UserQuest>, IMapTo<UserQuest>
     public string startDate { get; set; }
     public string dueDate { get; set; }
     public bool isCompleted { get; set; }
+    public string completedDate { get; set; }
     public int PointToComplete { get; set; }
     public int CurrentPoint { get; set; }
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<UserQuest, CompletedQuestDto>()
-            .ForMember(dest => dest.QuestValue, opt => opt.MapFrom(src => GeneralHelper.ToArray(src.QuestValues!)));
+            .ForMember(dest => dest.QuestValue, opt => opt.MapFrom(src => GeneralHelper.ToArray(src.QuestValues!)))
+            .ForMember(dest => dest.completedDate, opt => opt.MapFrom(src => src.CompleteDate));
     }
 }
