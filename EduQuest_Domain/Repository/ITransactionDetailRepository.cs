@@ -12,5 +12,6 @@ namespace EduQuest_Domain.Repository
 		Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId);
 		Task<TransactionDetail> GetByTransactionIdAndCourseId(string transactionId, string courseId);
 		Task<(DateTime? CreatedAt, decimal Amount)> GetCourseTransactionInfoAsync(string courseId, string userId);
+		Task<decimal> GetTotalRevenueByInstructorId(string instructorId);
 	}
 }

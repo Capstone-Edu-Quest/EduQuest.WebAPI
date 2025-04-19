@@ -27,7 +27,6 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstr
 
 		public async Task<APIResponse> Handle(GetCourseStatisticForInstructorQuery request, CancellationToken cancellationToken)
 		{
-			var response = new APIResponse();
 			var courseList = await _courseRepository.GetCourseByUserId(request.UserId);
 			var result = new CourseStatisticForInstructor();
 			var listCourseId = courseList.Select(x => x.Id).Distinct().ToList();
@@ -37,7 +36,7 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStatisticForInstr
 			result.LearnerStatus = await _learnerRepository.GetLearnerStatusAsync(listCourseId);
 			result.TopCourseInfo  = await _learnerRepository.GetTop3CoursesAsync(listCourseId);
 
-			return response = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, result, "name", $"course overview");
+			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, result, "name", $"course overview");
 		}
 	}
 }

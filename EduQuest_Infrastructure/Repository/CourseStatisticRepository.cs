@@ -1,5 +1,4 @@
 ﻿using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.User;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
