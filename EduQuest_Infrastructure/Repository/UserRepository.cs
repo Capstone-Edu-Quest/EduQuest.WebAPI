@@ -60,7 +60,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<bool> UpdateUserPackageAccountType(string userId)
     {
-        int affectedRow = await _context.Users.Where(u => u.Id == userId).ExecuteUpdateAsync(u => u.SetProperty(u => u.Package, PackageEnum.Free.ToString()));
+        int affectedRow = await _context.Users.Where(u => u.Id == userId).ExecuteUpdateAsync(u => u.SetProperty(u => u.Package, PackageEnum.Pro.ToString()));
         return affectedRow > 0;
     }
     public async Task<AdminDasboardUsers> GetAdminDashBoardStatistic()
