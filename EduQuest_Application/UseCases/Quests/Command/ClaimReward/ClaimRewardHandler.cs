@@ -184,7 +184,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
         {
             meta.Level = 1;
         }
-        if(currentExp == currentLevel.Exp)
+        if(currentLevel != null && currentExp == currentLevel.Exp)
         {
             meta.Level++;
             meta.Exp = 0;
