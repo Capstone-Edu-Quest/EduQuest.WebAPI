@@ -50,8 +50,18 @@ namespace EduQuest_Application.UseCases.Users.Queries.GetAllUsers
                 instructorDto.TotalLearners = totalLearners;
                 instructorDto.TotalReviews = totalReviews;
 
+                if (!string.IsNullOrEmpty(user.AssignToExpertId))
+                {
+                    var expertUser = await _userRepo.GetById(user.AssignToExpertId);
+                    if (expertUser != null)
+                    {
+                        instructorDto.ExpertName = expertUser.Username;
+                    }
+                }
+
                 instructorDtos.Add(instructorDto);
             }
+
 
             return new APIResponse
             {
