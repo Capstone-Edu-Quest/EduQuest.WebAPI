@@ -42,7 +42,7 @@ public class UserController : BaseController
     [HttpPost("becomeInstructor")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> BecomeInstructor([FromForm] AssignIntructorToExpert command, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> BecomeInstructor([FromForm] BecomeInstructorCommand command, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
