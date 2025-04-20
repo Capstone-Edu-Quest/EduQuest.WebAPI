@@ -2,10 +2,13 @@
 using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress;
 using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
+using EduQuest_Application.UseCases.UserMetas.Queries.GetLeaderboard;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Threading;
 
 namespace EduQuest_API.Controllers;
 
@@ -37,5 +40,10 @@ public class UserMetaController : BaseController
 		var result = await _mediator.Send(new UpdateUserProgressCommand(userId, command), cancellationToken);
 		return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 	}
-
+    [HttpGet("leaderboard")]
+    public async Task<IActionResult> GetLeaderboard(CancellationToken token = default)
+    {
+        var result = await _mediator.Send(new GetLeaderboardQuery(), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
 }
