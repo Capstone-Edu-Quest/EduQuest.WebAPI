@@ -68,7 +68,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = request.UserId,
-                    StudyTimes = request.Info.Time != null ? Convert.ToInt32(request.Info.Time) : (int)material.Duration,
+                    StudyTimes = ((double)(request.Info.Time != null ? request.Info.Time.Value : material.Duration)),
                     Date = now.ToUniversalTime()
                 });
             }
@@ -83,7 +83,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			{
 				courseLearner.TotalTime += material.Duration;
 				userMeta.TotalStudyTime += material.Duration;
-                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, (int)material.Duration);
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, material.Duration.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, (int)material.Duration);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, (int)material.Duration);
             }

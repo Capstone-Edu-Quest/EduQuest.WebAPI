@@ -133,7 +133,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
                 Date = now.ToUniversalTime()
             });
         }
-        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, Convert.ToInt32(request.Attempt.TotalTime));
+        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Attempt.TotalTime);
         await _unitOfWork.SaveChangesAsync();
 
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
