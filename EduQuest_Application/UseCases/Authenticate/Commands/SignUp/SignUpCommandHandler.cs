@@ -15,7 +15,7 @@ using EduQuest_Application.DTO.Response.Users;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 
-public class SignUpCommandHandler 
+public class SignUpCommandHandler : IRequestHandler<SignUpCommand, APIResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;

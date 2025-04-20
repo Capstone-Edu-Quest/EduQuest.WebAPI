@@ -5,6 +5,8 @@ using EduQuest_Domain.Repository;
 using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
+using EduQuest_Application.Abstractions.Firebase;
+using EduQuest_Domain.Models.Notification;
 
 namespace EduQuest_Application.UseCases.Users.Commands.AssignInstructorToExpert;
 
@@ -12,11 +14,13 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
+    private readonly IFireBaseRealtimeService _fireBaseRealtimeService;
 
-    public AssignIntructorToExpertHandler(IUnitOfWork unitOfWork, IUserRepository userRepository)
+    public AssignIntructorToExpertHandler(IUnitOfWork unitOfWork, IUserRepository userRepository, IFireBaseRealtimeService fireBaseRealtimeService)
     {
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _fireBaseRealtimeService = fireBaseRealtimeService;
     }
 
     public async Task<APIResponse> Handle(AssignIntructorToExpert request, CancellationToken cancellationToken)
@@ -39,7 +43,17 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
         existUser.AssignToExpertId = request.AssignTo;
         await _userRepository.Update(existUser);
         await _unitOfWork.SaveChangesAsync();
-
+        await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+        {
+            userId = existExpert.Id,
+            Receiver = existExpert.Id,
+            Content = NotificationMessage.A_STAFF_HAS_ASSIGN_INSTRUCTOR_TO_YOU,
+            Url = "",
+            Values = new Dictionary<string, string>
+            {
+                { "name", existUser.Username },
+            }
+        });
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AssignExpert, existUser, "name", request.AssignTo);
 
     }
