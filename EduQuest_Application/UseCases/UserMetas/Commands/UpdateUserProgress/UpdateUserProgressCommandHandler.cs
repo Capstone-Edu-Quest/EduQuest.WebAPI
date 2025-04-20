@@ -134,8 +134,20 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             {
                 courseLearner.ProgressPercentage = 100;
             }
-            
-            await mediator.Send(new UpdateUsersStreakCommand(userMeta.UserId));
+
+            //await mediator.Send(new UpdateUsersStreakCommand(userMeta.UserId));
+            if (userMeta.LastLearningDay == null)
+            {
+                userMeta.LastLearningDay = DateTime.UtcNow.ToUniversalTime();
+            }
+
+            DateTime lastLearningDay = userMeta.LastLearningDay.Value.Date;
+
+            userMeta.CurrentStreak = (lastLearningDay == DateTime.UtcNow.Date.AddDays(-1)) ? userMeta.CurrentStreak + 1 : 1;
+            userMeta.LastLearningDay = DateTime.UtcNow.ToUniversalTime();
+            userMeta.LongestStreak = Math.Max((byte)userMeta.LongestStreak!, (byte)userMeta.CurrentStreak!);
+
+
             await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);
 
