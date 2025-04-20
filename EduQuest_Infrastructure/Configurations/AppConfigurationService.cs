@@ -221,7 +221,7 @@ namespace EduQuest_Infrastructure
             #region Quartz
             services.AddQuartz( q =>
 			{
-                //string cronExpression = "0 0 5 * * ?";
+                string cronExpression = "0 0 5 * * ?";
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
 
@@ -229,19 +229,14 @@ namespace EduQuest_Infrastructure
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
-                q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
-                    .StartAt(DateBuilder.TodayAt(5, 0, 0))
+                q.AddTrigger(opts => opts.ForJob(resetDailyQuests).WithCronSchedule(cronExpression)
+                    /*.StartAt(DateBuilder.TodayAt(5, 0, 0))
 					.WithDailyTimeIntervalSchedule(x => x
 					.WithIntervalInHours(24)
-					.OnEveryDay()));
+					.OnEveryDay())*/);
 				q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
 					.StartAt(DateBuilder.TodayAt(5, 0, 0))
-					.WithDailyTimeIntervalSchedule(x => x
-					.WithIntervalInHours(24)
-					.OnEveryDay())//.WithCronSchedule(cronExpression)
-				/*.StartNow()
-                .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                .WithDescription("Reset Quests Progress!")*/
+					.WithCronSchedule(cronExpression)
 				);
                 
                 q.AddTrigger(opts => opts
