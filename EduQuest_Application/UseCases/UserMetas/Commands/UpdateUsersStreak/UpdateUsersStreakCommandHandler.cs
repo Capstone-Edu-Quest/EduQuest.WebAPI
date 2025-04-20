@@ -1,5 +1,6 @@
 ﻿using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.Generic;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
@@ -10,18 +11,18 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 
 public class UpdateUsersStreakCommandHandler : IRequestHandler<UpdateUsersStreakCommand, APIResponse>
 {
-    public IGenericRepository<UserMeta> _genericRepo;
+    public IUserMetaRepository userMetaRepository;
     public IUnitOfWork _unitOfWork;
 
-    public UpdateUsersStreakCommandHandler(IGenericRepository<UserMeta> genericRepo, IUnitOfWork unitOfWork)
+    public UpdateUsersStreakCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork)
     {
-        _genericRepo = genericRepo;
+        this.userMetaRepository = userMetaRepository;
         _unitOfWork = unitOfWork;
     }
 
     public async Task<APIResponse> Handle(UpdateUsersStreakCommand request, CancellationToken cancellationToken)
     {
-        var existUser = await _genericRepo.GetById(request.UserId);
+        var existUser = await userMetaRepository.GetByUserId(request.UserId);
         if (existUser == null)
         {
             return new APIResponse
@@ -42,16 +43,16 @@ public class UpdateUsersStreakCommandHandler : IRequestHandler<UpdateUsersStreak
 
         if (existUser.LastLearningDay == null)
         {
-            existUser.LastLearningDay = DateTime.UtcNow;
+            existUser.LastLearningDay = DateTime.UtcNow.ToUniversalTime();
         }
 
         DateTime lastLearningDay = existUser.LastLearningDay.Value.Date;
 
         existUser.CurrentStreak = (lastLearningDay == DateTime.UtcNow.Date.AddDays(-1)) ? existUser.CurrentStreak + 1 : 1;
-        existUser.LastLearningDay = DateTime.UtcNow;
+        existUser.LastLearningDay = DateTime.UtcNow.ToUniversalTime();
         existUser.LongestStreak = Math.Max((byte)existUser.LongestStreak!, (byte)existUser.CurrentStreak!);
 
-        await _genericRepo.Update(existUser);
+        await userMetaRepository.Update(existUser);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
