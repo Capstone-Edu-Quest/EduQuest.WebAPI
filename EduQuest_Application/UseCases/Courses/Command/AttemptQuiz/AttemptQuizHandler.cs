@@ -7,11 +7,6 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.QuestEnum;
 
@@ -76,7 +71,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         attempt.QuizId = quiz.Id;
         attempt.LessonId = lesson.Id;
         attempt.TotalTime = request.Attempt.TotalTime;
-        attempt.AttemptNo = await _quizAttemptRepository.GetAttemptNo(request.Attempt.QuizId, request.LessonId) + 1;
+        attempt.AttemptNo = await _quizAttemptRepository.GetAttemptNo(request.Attempt.QuizId, request.LessonId, request.UserId) + 1;
         List<UserQuizAnswers> userQuizAnswers = new List<UserQuizAnswers>();
         foreach (var item in questions)
         {

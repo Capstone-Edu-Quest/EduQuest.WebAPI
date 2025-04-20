@@ -37,7 +37,7 @@ public class UserMetaController : BaseController
 	public async Task<IActionResult> UpdateUserProgress([FromBody] UpdateUserProgressRequest command, CancellationToken cancellationToken = default)
 	{
 		string userId = User.GetUserIdFromToken().ToString();
-		var result = await _mediator.Send(new UpdateUserProgressCommand("7bd6f347-b27a-4f15-b8cd-b1fea1ab1fc9", command), cancellationToken);
+		var result = await _mediator.Send(new UpdateUserProgressCommand(userId, command), cancellationToken);
 		return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 	}
     [HttpGet("leaderboard")]
