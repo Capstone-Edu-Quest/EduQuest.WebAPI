@@ -176,9 +176,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
 
 
             var (courses, totalItems) = await _courseRepository.SearchCoursesAsync(request.SearchRequest, request.PageNo, request.EachPage);
-            
-
-
+          
             var courseResponses = _mapper.Map<List<CourseSearchResponse>>(courses);
             var courseIds = courseResponses.Select(c => c.Id).ToList();
             var learners = await _learnerRepository.GetByUserIdAndCourseIdsAsync(request.UserId, courseIds);
@@ -189,10 +187,17 @@ namespace EduQuest_Application.UseCases.Courses.Queries.SearchCourse
                     course.ProgressPercentage = progress;
                 
             }
+            if (request.SearchRequest.IsStudying is true)
+            {
+				courseResponses = courseResponses.Where(x => x.ProgressPercentage != null).ToList();
+			} else if (request.SearchRequest.IsStudying is false)
+            {
+				courseResponses = courseResponses.Where(x => x.ProgressPercentage == null).ToList();
+			}
             var result = new PagedList<CourseSearchResponse>
             {
                 Items = courseResponses,
-                TotalItems = totalItems,
+                TotalItems = courseResponses.Count(),
                 CurrentPage = request.PageNo,
                 EachPage = request.EachPage
             };
