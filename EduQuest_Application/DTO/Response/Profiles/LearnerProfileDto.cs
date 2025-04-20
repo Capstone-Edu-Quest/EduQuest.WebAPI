@@ -17,6 +17,7 @@ public class LearnerProfileDto : IMapFrom<User>, IMapTo<User>
     public string Headline { get; set; }
     public string Description { get; set; }
     public string AvatarUrl { get; set; }
+    public bool isPro { get; set; }
     public LeanerProfileStatisticDto statistics { get; set; }
     public List<string> foxItems { get; set; }
     public List<string> equippedItems { get; set; }
@@ -40,6 +41,7 @@ public class LearnerProfileDto : IMapFrom<User>, IMapTo<User>
             .ForMember(dest => dest.foxItems, opt => opt.MapFrom(src => src.MascotItem
                   .Select(s => s.ShopItemId)
                   .ToList()
-              ));
+              ))
+            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"));
     }
 }

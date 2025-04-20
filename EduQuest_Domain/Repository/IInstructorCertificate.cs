@@ -6,5 +6,6 @@ namespace EduQuest_Domain.Repository;
 public interface IInstructorCertificate : IGenericRepository<InstructorCertificate>
 {
     Task BulkCreateAsync(List<InstructorCertificate> certificates);
+    Task<List<InstructorCertificate>> GetByUserIdAsync(string userId);
 }
 

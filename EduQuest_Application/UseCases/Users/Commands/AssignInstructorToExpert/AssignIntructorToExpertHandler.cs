@@ -24,14 +24,14 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
         var existUser = await _userRepository.GetById(request.InstructorId);
         if (existUser == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "name", request.InstructorId);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.NotFound, MessageCommon.NotFound, "name", request.InstructorId);
 
         }
 
         var existExpert = await _userRepository.GetById(request.AssignTo);
-        if (existUser == null)
+        if (existExpert == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.LoginFailed, MessageCommon.LoginFailed, "name", request.AssignTo);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.NotFound, MessageCommon.NotFound, "name", request.AssignTo);
 
         }
 
@@ -40,7 +40,7 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
         await _userRepository.Update(existUser);
         await _unitOfWork.SaveChangesAsync();
 
-        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AssignExpert, existUser, "name", $"User with ID {request.AssignTo}");
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AssignExpert, existUser, "name", request.AssignTo);
 
     }
 }

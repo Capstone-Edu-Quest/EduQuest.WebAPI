@@ -236,7 +236,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     detail.NetAmount = netAmount;
                     detail.SystemShare = netAmount;
                     var subscription = await _subscriptionRepository.GetById(detail.ItemId);
-                    user.Package = GeneralEnums.PackageEnum.Pro.ToString();
+                    user.Package = PackageEnum.Pro.ToString();
                     if (detail.ItemType.ToLower() == ConfigEnum.PriceYearly.ToString().ToLower())
                     {
                         user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddMonths(30);

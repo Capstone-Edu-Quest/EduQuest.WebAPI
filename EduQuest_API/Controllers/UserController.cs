@@ -6,7 +6,9 @@ using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
+using EduQuest_Application.UseCases.Users.Queries.GetInstructorApplication;
 using EduQuest_Application.UseCases.Users.Queries.GetInstructorProfile;
+using EduQuest_Application.UseCases.Users.Queries.GetMyInstructorApplicationQuery;
 using EduQuest_Application.UseCases.Users.Queries.GetUserByAssignToExpert;
 using EduQuest_Application.UseCases.Users.Queries.GetUserByRole;
 using EduQuest_Application.UseCases.Users.Queries.GetUserProfile;
@@ -40,7 +42,7 @@ public class UserController : BaseController
     [HttpPost("becomeInstructor")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> BecomeInstructor([FromForm] AssignIntructorToExpert command, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> BecomeInstructor([FromForm] BecomeInstructorCommand command, CancellationToken cancellationToken = default)
     {
         var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
@@ -73,18 +75,36 @@ public class UserController : BaseController
 		return Ok(result);
 	}
 
+    [Authorize]
+    [HttpGet("myInstructorApplication")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> GetMyInstructorApplication(CancellationToken cancellationToken = default)
+    {
+        string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new GetMyInstructorApplicationQuery(userId), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("cancelInstructorApplication")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> CancelInstructorApplication([FromBody] CancelApplyInstructor command, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
 
     [Authorize]
     [HttpGet("me")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<APIResponse>> GetAccountPreByEvent(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<APIResponse>> GetMyAccount(CancellationToken cancellationToken = default)
     {
         string email = User.GetEmailFromToken().ToString();
         var result = await _mediator.Send(new GetCurrentUserQuery(email), cancellationToken);
         return Ok(result);
     }
-
 
     [HttpGet("profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]

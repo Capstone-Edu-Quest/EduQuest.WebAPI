@@ -20,7 +20,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<List<User>> GetUserByAssignToExpet(string expertId)
     {
-        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId)).ToListAsync();  
+        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending").ToListAsync();  
     }
 
     public async Task<List<User>> GetUserByStatus(string status)
@@ -60,7 +60,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<bool> UpdateUserPackageAccountType(string userId)
     {
-        int affectedRow = await _context.Users.Where(u => u.Id == userId).ExecuteUpdateAsync(u => u.SetProperty(u => u.Package, PackageEnum.Free.ToString()));
+        int affectedRow = await _context.Users.Where(u => u.Id == userId).ExecuteUpdateAsync(u => u.SetProperty(u => u.Package, PackageEnum.Pro.ToString()));
         return affectedRow > 0;
     }
     public async Task<AdminDasboardUsers> GetAdminDashBoardStatistic()
