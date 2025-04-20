@@ -221,7 +221,7 @@ namespace EduQuest_Infrastructure
             #region Quartz
             services.AddQuartz( q =>
 			{
-                string cronExpression = "0 5 11 * * ?";
+                string cronExpression = "0 0 5 * * ?";
 
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");

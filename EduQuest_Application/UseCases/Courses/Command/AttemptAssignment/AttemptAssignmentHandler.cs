@@ -104,11 +104,12 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             if (learner.TotalTime > course.CourseStatistic.TotalTime)
             {
                 learner.TotalTime = course.CourseStatistic.TotalTime;
-				learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
+				
 			}
+            learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
             await _userMetaRepository.Update(userMeta);
         }
-		
+		await _courseRepository.Update(course);
 		var studyTime = await _studyTimeRepository.GetByDate(now);
         if (studyTime != null)
         {
