@@ -63,7 +63,7 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.DuplicateCourseIdOrCourseOrder, Key, "learning path courses");
             }
             #endregion
-            int totalTime = 0;
+            double totalTime = 0;
             List<string> courseIds = new List<string>();
             #region validate if any course is unavailable
             foreach (LearningPathCourse course in learningPathCourses)
@@ -73,7 +73,7 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                     return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
                 }
                 courseIds.Add(course.CourseId);
-                int courseTotalTime = await _courseRepository.GetTotalTime(course.CourseId);
+                double courseTotalTime = await _courseRepository.GetTotalTime(course.CourseId);
                 totalTime += courseTotalTime;
             }
             #endregion

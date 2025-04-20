@@ -81,7 +81,7 @@ namespace EduQuest_Infrastructure.Repository
 			return (firstLesson.Id, firstMaterialId);
 		}
 
-		public async Task<decimal> CalculateMaterialProgressAsync(string lessonId, string materialId, decimal courseTotalTime)
+		public async Task<double> CalculateMaterialProgressAsync(string lessonId, string materialId, double courseTotalTime)
 		{
 			// 1. Lấy lesson hiện tại
 			var currentLesson = await _context.Lessons
@@ -119,7 +119,7 @@ namespace EduQuest_Infrastructure.Repository
 			double totalDuration = lessonMaterials.Sum(lm => lm.Material?.Duration ?? 0);
 
 			// 6. Trả về tỷ lệ
-			return courseTotalTime > 0 ? (decimal)totalDuration / courseTotalTime : 0;
+			return courseTotalTime > 0 ? totalDuration / courseTotalTime : 0;
 		}
 	}
 }

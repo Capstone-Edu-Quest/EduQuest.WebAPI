@@ -26,7 +26,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public string CreatedBy { get; set; }
         public double? Rating { get; set; }
         public int? TotalLesson { get; set; }
-        public int? TotalTime { get; set; }
+        public double? TotalTime { get; set; }
         public int? TotalReview { get; set; }
 
         public void MappingFrom(Profile profile)

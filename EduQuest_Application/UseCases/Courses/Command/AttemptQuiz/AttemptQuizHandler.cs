@@ -143,7 +143,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         }
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
-        learner.ProgressPercentage = (decimal)learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+        learner.ProgressPercentage = learner.TotalTime / course.CourseStatistic.TotalTime * 100;
         if(learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
