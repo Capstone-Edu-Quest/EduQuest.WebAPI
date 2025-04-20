@@ -12,7 +12,7 @@ namespace EduQuest_Domain.Entities
 	{
         public string CourseId { get; set; }
         public int? TotalLesson { get; set; }
-		public int? TotalTime { get; set; }
+		public double? TotalTime { get; set; }
         public int? TotalLearner { get; set; }
 		public double? Rating { get; set; }
         public int? TotalReview { get; set; }

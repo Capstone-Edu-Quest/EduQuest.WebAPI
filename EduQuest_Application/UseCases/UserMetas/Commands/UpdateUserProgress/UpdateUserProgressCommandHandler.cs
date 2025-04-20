@@ -127,7 +127,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;
 
-			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, (decimal)course.CourseStatistic.TotalTime)) * 100, 2);
+			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, (double)course.CourseStatistic.TotalTime)) * 100, 2);
             if (courseLearner.ProgressPercentage > 100)
             {
                 courseLearner.ProgressPercentage = 100;

@@ -26,7 +26,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public int TotalReview { get; set; }
         public string ExpertId { get; set; }
         public string ExpertName { get; set; }
-        public decimal? ProgressPercentage { get; set; }
+        public double? ProgressPercentage { get; set; }
 
         public void MappingFrom(Profile profile)
         {
