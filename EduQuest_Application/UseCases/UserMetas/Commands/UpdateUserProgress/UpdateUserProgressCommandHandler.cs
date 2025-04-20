@@ -111,7 +111,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				if(newLesson != null)
 				{
                     newLessonId = newLesson.Id;
-					newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).Id;
+					newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
 
                 }
 				else

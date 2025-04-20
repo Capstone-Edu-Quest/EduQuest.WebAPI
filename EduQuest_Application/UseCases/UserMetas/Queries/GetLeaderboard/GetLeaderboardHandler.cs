@@ -15,7 +15,7 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.UserMetas.Queries.GetLeaderboard;
 
-public class GetLeaderboardHandler : IRequestHandler<GetCertificatesQuery, APIResponse>
+public class GetLeaderboardHandler : IRequestHandler<GetLeaderboardQuery, APIResponse>
 {
     private readonly IRedisCaching _redis;
     private readonly IMapper _mapper;
@@ -28,7 +28,7 @@ public class GetLeaderboardHandler : IRequestHandler<GetCertificatesQuery, APIRe
         _userRepository = userRepository;
     }
 
-    public async Task<APIResponse> Handle(GetCertificatesQuery request, CancellationToken cancellationToken)
+    public async Task<APIResponse> Handle(GetLeaderboardQuery request, CancellationToken cancellationToken)
     {
         List<(string member, double score, long rank)> result = await _redis.GetTopSortedSetAsync("leaderboard:season1", 100);
         List<String> ids = result.Select(r => r.member).ToList();
