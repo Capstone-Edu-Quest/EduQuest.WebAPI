@@ -51,7 +51,11 @@ namespace EduQuest_Application.UseCases.Payments.Command.CreateCheckout
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "user");
-
+            var transactionPending = await _transactionRepository.CheckTransactionPending(request.UserId);
+            if (transactionPending != null)
+            {
+				return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageError.NeedToCompletePayment, MessageError.NeedToCompletePayment, "name", $"Payment Url {transactionPending.Url}");
+			}
             if (!string.IsNullOrEmpty(request.Request.SuccessUrl) || request.Request.SuccessUrl.Equals("string")) _stripeModel.SuccessUrl = request.Request.SuccessUrl!;
             if (!string.IsNullOrEmpty(request.Request.CancelUrl) || request.Request.CancelUrl.Equals("string")) _stripeModel.CancelUrl = request.Request.CancelUrl!;
 

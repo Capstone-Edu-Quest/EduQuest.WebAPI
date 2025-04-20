@@ -1,4 +1,5 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -68,6 +70,9 @@ namespace EduQuest_Infrastructure.Repository
             return await queries.ToListAsync();
         }
 
-
-    }
+		public async Task<Transaction> CheckTransactionPending(string userId)
+		{
+            return await _context.Transactions.FirstOrDefaultAsync(x => x.UserId == userId && x.Type == TypeTransaction.CheckoutCart.ToString() && x.Status == StatusPayment.Pending.ToString());
+		}
+	}
 }

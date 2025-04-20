@@ -15,5 +15,6 @@ namespace EduQuest_Domain.Repository
 
         Task<Transaction> GetByPaymentIntentId(string paymentIntentId);
 		Task<List<Transaction>> GetTransactionByUserId(string userId);
+		Task<Transaction> CheckTransactionPending(string userId);
 	}
 }
