@@ -1,18 +1,13 @@
 ﻿using AutoMapper;
-using EduQuest_Domain.Models.Response;
-using EduQuest_Domain.Repository.UnitOfWork;
-using EduQuest_Domain.Repository;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EduQuest_Application.Helper;
-using static EduQuest_Domain.Constants.Constants;
-using EduQuest_Domain.Entities;
-using static EduQuest_Domain.Enums.QuestEnum;
 using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
+using MediatR;
+using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_Application.UseCases.Courses.Command.AttemptAssignment;
 
@@ -109,7 +104,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             if (learner.TotalTime > course.CourseStatistic.TotalTime)
             {
                 learner.TotalTime = course.CourseStatistic.TotalTime;
-				learner.ProgressPercentage = learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+				learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
 			}
             await _userMetaRepository.Update(userMeta);
         }
