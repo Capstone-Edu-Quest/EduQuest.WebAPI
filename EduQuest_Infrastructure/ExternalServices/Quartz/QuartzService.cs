@@ -74,7 +74,7 @@ public class QuartzService : IQuartzService
 		.Build();
 		var newTrigger =
 			TriggerBuilder.Create().ForJob(jobKey)
-			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(5))))
+			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddDays(1))))
 			.Build();
 		await scheduler.ScheduleJob(job, newTrigger);
 		Console.WriteLine($"ScheduleJob: Update user package account type with id {jobKey}.");

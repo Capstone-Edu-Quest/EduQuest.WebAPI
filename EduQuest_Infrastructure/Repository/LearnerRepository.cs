@@ -49,7 +49,7 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
 	public async Task<List<CourseLearner>> GetCoursesByUserId(string userId)
 	{
-		return await _context.Learners.Where(x => x.UserId == userId && x.ProgressPercentage != null && x.TotalTime >= 0).ToListAsync();
+		return await _context.Learners.Where(x => x.UserId == userId && x.ProgressPercentage != null && x.TotalTime >= 0 && x.IsActive == true).ToListAsync();
 	}
 
 	public async Task<List<LearnerStatus>> GetLearnerStatusAsync(List<string> courseIds)
