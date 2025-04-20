@@ -67,14 +67,14 @@ namespace EduQuest_Infrastructure.Repository
 			.ToListAsync();
 		}
 
-		public async Task<RevenueReportDto> GetRevenueReportAsync(string userId)
+		public async Task<RevenueReportDto> GetRevenueReportAsync(string userId, string email)
 		{
 			var now = DateTime.Now.ToUniversalTime();
-			var yearStart = new DateTime(now.Year, 1, 1);
+			var yearStart = new DateTime(now.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 			var lastYearStart = yearStart.AddYears(-1);
 			var lastYearEnd = yearStart.AddDays(-1);
 
-			var monthStart = new DateTime(now.Year, now.Month, 1);
+			var monthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 			var lastMonthStart = monthStart.AddMonths(-1);
 			var lastMonthEnd = monthStart.AddDays(-1);
 
@@ -102,7 +102,7 @@ namespace EduQuest_Infrastructure.Repository
 
 			// Available Balance
 			var available = await _context.Transactions
-				.Where(t => t.Type == "Transfer" && t.UserId == userId && t.DeletedAt == null)
+				.Where(t => t.Type == "Transfer" && t.CustomerEmail == email && t.DeletedAt == null)
 				.SumAsync(t => t.NetAmount);
 
 			var pending = totalThisYear - available;
