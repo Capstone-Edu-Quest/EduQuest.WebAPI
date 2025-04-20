@@ -14,7 +14,7 @@ public interface IUserQuestRepository : IGenericRepository<UserQuest>
     Task<PagedList<UserQuest>> GetAllUserQuests(string? title, int? questType, int? type, int? pointToComplete,
         DateTime? startDate, DateTime? dueDate, bool? isComplete, string userId, int page, int eachPage);
 
-    Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint);
+    Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, double addedPoint);
 
     Task<bool> ResetQuestProgress();
     Task<bool> ResetDailyQuests();

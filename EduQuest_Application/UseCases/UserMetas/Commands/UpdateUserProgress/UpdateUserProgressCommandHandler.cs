@@ -59,7 +59,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             var studyTime = await _studyTimeRepository.GetByDate(now);
             if (studyTime != null)
             {
-                studyTime.StudyTimes += request.Info.Time != null ? Convert.ToInt32(request.Info.Time) : (int)material.Duration;
+                studyTime.StudyTimes += (double)request.Info.Time != null ? (double)request.Info.Time : (double)material.Duration;
                 await _studyTimeRepository.Update(studyTime);
             }
             else

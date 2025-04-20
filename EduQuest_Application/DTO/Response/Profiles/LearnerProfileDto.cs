@@ -22,7 +22,7 @@ public class LearnerProfileDto : IMapFrom<User>, IMapTo<User>
     public List<string> foxItems { get; set; }
     public List<string> equippedItems { get; set; }
     public int? TotalDays {  get; set; }
-    public int? TotalMinutes {  get; set; }
+    public double? TotalMinutes {  get; set; }
     public List<LearningHeatmap> learningData { get; set; }
     public List<CompletedQuestDto> completedQuest { get; set; }
     public List<CourseProfileDto> RecentCourses { get; set; }
