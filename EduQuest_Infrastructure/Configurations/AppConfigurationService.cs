@@ -221,7 +221,7 @@ namespace EduQuest_Infrastructure
             #region Quartz
             services.AddQuartz( q =>
 			{
-                string cronExpression = "0 0 5 * * ?";
+                string cronExpression = "0 57 10 * * ?";
 
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
@@ -232,11 +232,9 @@ namespace EduQuest_Infrastructure
                 q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
 
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
-                .StartAt(DateBuilder.TodayAt(5, 0, 0))
                 .WithCronSchedule(cronExpression));
 
 				q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
-					.StartAt(DateBuilder.TodayAt(5, 0, 0))
 					.WithCronSchedule(cronExpression));
                 
                 q.AddTrigger(opts => opts
