@@ -14,22 +14,16 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Payments.Command.Refund
 {
-	public class RerundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
+	public class RefundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
 	{
 		private readonly StripeModel _stripeModel;
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly ILearnerRepository _learnerRepository;
 		private readonly IStripePayment _stripePayment;
 
-		public RerundCommandHandler(IOptions<StripeModel> stripeModel, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, IUnitOfWork unitOfWork, IStripePayment stripePayment)
-		{
-			_stripeModel = stripeModel.Value;
-			_transactionRepository = transactionRepository;
-			_transactionDetailRepository = transactionDetailRepository;
-			_unitOfWork = unitOfWork;
-			_stripePayment = stripePayment;
-		}
+		
 
 		public async Task<APIResponse> Handle(RefundCommand request, CancellationToken cancellationToken)
 		{
@@ -52,6 +46,13 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
 			};
 			await _transactionRepository.Add(newTransaction);
+			var learner = await _learnerRepository.GetByUserIdAndCourseId(transactionExisted.UserId, request.Refund.CourseId);
+			if (learner == null)
+			{
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"User in Course {request.Refund.CourseId}");
+			}
+			learner.IsActive = false;
+			await _learnerRepository.Update(learner);
 			await _unitOfWork.SaveChangesAsync();
 			return new APIResponse
 			{
