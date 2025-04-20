@@ -14,20 +14,27 @@ using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Payments.Command.Refund
 {
-	public class RerundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
+	public class RefundCommandHandler : IRequestHandler<RefundCommand, APIResponse>
 	{
 		private readonly StripeModel _stripeModel;
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly ITransactionDetailRepository _transactionDetailRepository;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly ILearnerRepository _learnerRepository;
+		private readonly IUserRepository _userRepository;
 		private readonly IStripePayment _stripePayment;
 
-		public RerundCommandHandler(IOptions<StripeModel> stripeModel, ITransactionRepository transactionRepository, ITransactionDetailRepository transactionDetailRepository, IUnitOfWork unitOfWork, IStripePayment stripePayment)
+		public RefundCommandHandler(IOptions<StripeModel> stripeModel, 
+			ITransactionRepository transactionRepository, 
+			ITransactionDetailRepository transactionDetailRepository, 
+			IUnitOfWork unitOfWork, ILearnerRepository learnerRepository, IUserRepository userRepository, IStripePayment stripePayment)
 		{
 			_stripeModel = stripeModel.Value;
 			_transactionRepository = transactionRepository;
 			_transactionDetailRepository = transactionDetailRepository;
 			_unitOfWork = unitOfWork;
+			_learnerRepository = learnerRepository;
+			_userRepository = userRepository;
 			_stripePayment = stripePayment;
 		}
 
@@ -42,7 +49,7 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 			}
 
 			var refund = await _stripePayment.CreateRefund(transactionExisted.PaymentIntentId, (long)transactionDetail.NetAmount);
-
+			var user = await _userRepository.GetUserById(transactionExisted.UserId);
 			var newTransaction = new Transaction
 			{
 				Id = refund.Id.ToString(),
@@ -50,8 +57,17 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 				Status = GeneralEnums.StatusPayment.Completed.ToString(),
 				TotalAmount = (decimal)transactionDetail.NetAmount,
 				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
+				CustomerEmail = user.Email,
+				CustomerName = user.Username
 			};
 			await _transactionRepository.Add(newTransaction);
+			var learner = await _learnerRepository.GetByUserIdAndCourseId(transactionExisted.UserId, request.Refund.CourseId);
+			if (learner == null)
+			{
+				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, Constants.MessageCommon.NotFound, MessageCommon.NotFound, "name", $"User in Course {request.Refund.CourseId}");
+			}
+			learner.IsActive = false;
+			await _learnerRepository.Update(learner);
 			await _unitOfWork.SaveChangesAsync();
 			return new APIResponse
 			{

@@ -45,7 +45,7 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, A
 
         if (user.RoleId == "3")
         {
-            int totalMinutes = 0;
+            double totalMinutes = 0;
             var recentCourses = await _learnerRepository.GetRecentCourseByUserId(request.userId);
             var courseDtos = _mapper.Map<List<CourseProfileDto>>(recentCourses.Select(a => a.Courses));
             foreach (var coursedto in courseDtos)

@@ -14,7 +14,7 @@ namespace EduQuest_Domain.Entities
         public int? Gold { get; set; }
         public int? Exp { get; set; }
         public int? Level { get; set; }
-        public int? TotalStudyTime { get; set; }
+        public double? TotalStudyTime { get; set; }
         public int? TotalCourseCreated { get; set; }
 		public int? TotalLearner { get; set; }
 		public int? TotalReview { get; set; }

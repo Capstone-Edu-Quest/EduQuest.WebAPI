@@ -152,7 +152,7 @@ public class RedisCaching : IRedisCaching
 
 
     //Add or update member's score
-    public async Task AddToSortedSetAsync(string key, string member, int score)
+    public async Task AddToSortedSetAsync(string key, string member, double score)
     {
         await _database.SortedSetAddAsync(key, member, score);
     }

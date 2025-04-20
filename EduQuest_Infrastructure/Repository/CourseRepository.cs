@@ -113,7 +113,7 @@ namespace EduQuest_Infrastructure.Repository
             return _context.Courses.Where(course => keywords.Any(keyword => ContentHelper.ConvertVietnameseToEnglish(course.Title.ToLower()).Contains(ContentHelper.ConvertVietnameseToEnglish(keyword.ToLower())))).ToListAsync();
         }
 
-        public async Task<int> GetTotalTime(string courseId)
+        public async Task<double> GetTotalTime(string courseId)
         {
             var result = await _context.Courses.Include(x => x.CourseStatistic).FirstOrDefaultAsync(c => c.Id == courseId);
             var statistic = result.CourseStatistic;

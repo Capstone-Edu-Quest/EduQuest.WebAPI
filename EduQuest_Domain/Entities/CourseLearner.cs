@@ -11,8 +11,8 @@ namespace EduQuest_Domain.Entities
         public bool IsActive { get; set; }
         public string? CurrentLessonId { get; set; } 
         public string? CurrentMaterialId { get; set; }
-        public int? TotalTime { get; set; }
-        public decimal? ProgressPercentage { get; set; }
+        public double? TotalTime { get; set; }
+        public double? ProgressPercentage { get; set; }
 
 		[JsonIgnore]
 		public virtual User Users { get; set; } = null!;

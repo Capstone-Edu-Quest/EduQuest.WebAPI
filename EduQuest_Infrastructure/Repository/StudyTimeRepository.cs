@@ -23,7 +23,7 @@ public class StudyTimeRepository : GenericRepository<StudyTime>, IStudyTimeRepos
     public async Task<StudyTime?> GetByDate(DateTime date)
     {
         var result = await _context.StudyTimes
-            .Where(s => s.Date == date.ToUniversalTime())
+            .Where(s => s.Date.Date == date.Date.ToUniversalTime())
             .FirstOrDefaultAsync();
         return result;
     }

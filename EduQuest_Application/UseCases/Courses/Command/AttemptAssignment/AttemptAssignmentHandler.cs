@@ -1,18 +1,13 @@
 ﻿using AutoMapper;
-using EduQuest_Domain.Models.Response;
-using EduQuest_Domain.Repository.UnitOfWork;
-using EduQuest_Domain.Repository;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EduQuest_Application.Helper;
-using static EduQuest_Domain.Constants.Constants;
-using EduQuest_Domain.Entities;
-using static EduQuest_Domain.Enums.QuestEnum;
 using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
+using MediatR;
+using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_Application.UseCases.Courses.Command.AttemptAssignment;
 
@@ -96,7 +91,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         
-        learner.ProgressPercentage = (decimal)learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+        
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
@@ -104,18 +99,21 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         if (attempNo <= 1)
         {
             var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
-            userMeta.TotalStudyTime += Convert.ToInt32(request.Attempt.TotalTime);
-            learner.TotalTime += Convert.ToInt32(material.Duration);
+            userMeta.TotalStudyTime += request.Attempt.TotalTime;
+            learner.TotalTime += material.Duration;
             if (learner.TotalTime > course.CourseStatistic.TotalTime)
             {
                 learner.TotalTime = course.CourseStatistic.TotalTime;
-            }
+				
+			}
+            learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
             await _userMetaRepository.Update(userMeta);
         }
-        var studyTime = await _studyTimeRepository.GetByDate(now);
+		await _courseRepository.Update(course);
+		var studyTime = await _studyTimeRepository.GetByDate(now);
         if (studyTime != null)
         {
-            studyTime.StudyTimes += Convert.ToInt32(request.Attempt.TotalTime);
+            studyTime.StudyTimes += request.Attempt.TotalTime;
             await _studyTimeRepository.Update(studyTime);
         }
         else

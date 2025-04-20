@@ -48,6 +48,7 @@ using EduQuest_Infrastructure.ExternalServices.BlobStorage;
 using EduQuest_Application.Abstractions.Stripe;
 using EduQuest_Infrastructure.ExternalServices.Payment;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Certificates;
+using Nest;
 
 namespace EduQuest_Infrastructure
 {
@@ -221,25 +222,20 @@ namespace EduQuest_Infrastructure
             services.AddQuartz( q =>
 			{
                 string cronExpression = "0 0 5 * * ?";
+
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
-
                 var checkJobKey = new JobKey("ProvideCertificates");
+
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
+
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
-					.WithCronSchedule(cronExpression)
-					/*.StartNow()
-					.WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                    .WithDescription("Reset Daily Quests!")*/
-                );
-                q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
-                    .WithCronSchedule(cronExpression)
-                    /*.StartNow()
-                    .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
-                    .WithDescription("Reset Quests Progress!")*/
-                );
+                .WithCronSchedule(cronExpression));
+
+				q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
+					.WithCronSchedule(cronExpression));
                 
                 q.AddTrigger(opts => opts
                     .ForJob(checkJobKey)

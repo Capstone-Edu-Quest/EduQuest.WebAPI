@@ -178,6 +178,7 @@
 
 
             public const string CouponCodeExist = "COUPON_CODE_EXIST";
+			public const string NeedToCompletePayment = "NEED_TO_COMPLETE_PAYMENT";
 			public const string CannotUpdateCoupon = "START_TIME_PASSED_ERROR";
 
 			public const string LevelExist = "LEVEL_EXISTED";

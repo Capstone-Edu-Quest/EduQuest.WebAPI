@@ -56,36 +56,10 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
 			}
 
-            //Enum.TryParse(material.Type, out GeneralEnums.TypeOfMaterial typeEnum);
-            //var systemConfig = new SystemConfig();
-            //switch (typeEnum)
-            //{
-            //	case GeneralEnums.TypeOfMaterial.Video:
-            //		courseLearner.TotalTime += request.Info.Time;
-            //		userMeta.TotalStudyTime += request.Info.Time;
-            //		break;
-            //	case GeneralEnums.TypeOfMaterial.Document:
-            //		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Document.ToString());
-            //		courseLearner.TotalTime += (int)systemConfig.Value;
-            //		userMeta.TotalStudyTime += (int)systemConfig.Value;
-            //		break;
-            //	case GeneralEnums.TypeOfMaterial.Assignment:
-            //		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Assignment.ToString());
-            //		courseLearner.TotalTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
-            //		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Assignment.TimeLimit;
-            //		break;
-            //	case GeneralEnums.TypeOfMaterial.Quiz:
-            //		systemConfig = await _systemConfigRepository.GetByName(TypeOfMaterial.Quiz.ToString());
-            //		courseLearner.TotalTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
-            //		userMeta.TotalStudyTime += (int)systemConfig.Value * material.Quiz.TimeLimit;
-            //		break;
-            //	default:
-            //		break;
-            //}
             var studyTime = await _studyTimeRepository.GetByDate(now);
             if (studyTime != null)
             {
-                studyTime.StudyTimes += request.Info.Time != null ? Convert.ToInt32(request.Info.Time) : (int)material.Duration;
+                studyTime.StudyTimes += (double)request.Info.Time != null ? (double)request.Info.Time : (double)material.Duration;
                 await _studyTimeRepository.Update(studyTime);
             }
             else
@@ -100,15 +74,15 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             }
             if (request.Info.Time != null)
 			{
-                courseLearner.TotalTime += (int)material.Duration;
+                courseLearner.TotalTime += material.Duration;
 				userMeta.TotalStudyTime += request.Info.Time;
                 await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
             } else
 			{
-				courseLearner.TotalTime += (int)material.Duration;
-				userMeta.TotalStudyTime += (int)material.Duration;
+				courseLearner.TotalTime += material.Duration;
+				userMeta.TotalStudyTime += material.Duration;
                 await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, (int)material.Duration);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, (int)material.Duration);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, (int)material.Duration);
@@ -153,7 +127,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;
 
-			courseLearner.ProgressPercentage = await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, (decimal)course.CourseStatistic.TotalTime);
+			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, (double)course.CourseStatistic.TotalTime)) * 100, 2);
             if (courseLearner.ProgressPercentage > 100)
             {
                 courseLearner.ProgressPercentage = 100;
