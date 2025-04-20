@@ -9,7 +9,7 @@ namespace EduQuest_Domain.Entities
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public string UserId { get; set; }
-        public int TotalTimes { get; set; }
+        public double? TotalTimes { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }

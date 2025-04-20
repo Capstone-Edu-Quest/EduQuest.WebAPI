@@ -217,7 +217,7 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
         var response = await result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
-    public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, int addedPoint)
+    public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, double addedPoint)
     {
 
         /*var userQuests = await _context.UserQuests

@@ -23,7 +23,7 @@ namespace EduQuest_Application.DTO.Response.Courses
 		public int? TotalLearner { get; set; }
 		public double? Rating { get; set; }
 		public int? TotalReview { get; set; }
-		public int? TotalTime { get; set; }
+		public double? TotalTime { get; set; }
 		public int? TotalLesson { get; set; }
 		public int? TotalInCart { get; set; }
 		public int? TotalInWishList { get; set; }

@@ -39,7 +39,7 @@ public interface IRedisCaching
     Task<bool> DeleteKeyAsync(string key);
     Task<Dictionary<string, string>?> GetAllHashDataAsync(string key);
 
-    Task AddToSortedSetAsync(string key, string member, int score);
+    Task AddToSortedSetAsync(string key, string member, double score);
     Task<long?> GetSortSetRankAsync(string key, string member);
     Task<List<(string member, double score, long rank)>> GetTopSortedSetAsync(string key, int topN);
 }

@@ -68,7 +68,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							Description = lessonRequest.Description,
 							CourseId = existingCourse.Id,
 							Index = i,
-							TotalTime = (int?)materials?.Sum(m => m.Duration) ?? 0
+							TotalTime = materials?.Sum(m => m.Duration) ?? 0
 						};
 						
 						var lessonMaterials = materials.Select(m => new LessonMaterial
