@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Firebase;
 using EduQuest_Application.DTO.Response.Feedbacks;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -19,17 +21,19 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILearnerRepository _learnerRepository;
     private readonly ICourseRepository _courseRepository;
+    private readonly IFireBaseRealtimeService _fireBaseRealtimeService;
     private const string Key = "name";
     private const string value = "feedback";
-    public CreateFeedbackHandler(IFeedbackRepository feedbackRepository, IUserRepository userRepository, 
-        IMapper mapper, IUnitOfWork unitOfWork, ILearnerRepository learnerStatisticRepository, ICourseRepository courseRepository)
+
+    public CreateFeedbackHandler(IFeedbackRepository feedbackRepository, IUserRepository userRepository, IMapper mapper, IUnitOfWork unitOfWork, ILearnerRepository learnerRepository, ICourseRepository courseRepository, IFireBaseRealtimeService fireBaseRealtimeService)
     {
         _feedbackRepository = feedbackRepository;
         _userRepository = userRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _learnerRepository = learnerStatisticRepository;
+        _learnerRepository = learnerRepository;
         _courseRepository = courseRepository;
+        _fireBaseRealtimeService = fireBaseRealtimeService;
     }
 
     public async Task<APIResponse> Handle(CreateFeedbackCommand request, CancellationToken cancellationToken)
@@ -73,7 +77,17 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
 
 			if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                
+                await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+                {
+                    userId = courseStatistic.CreatedBy,
+                    Receiver = courseStatistic.CreatedBy,
+                    Content = NotificationMessage.YOUR_COURSE_WAS_RATED,
+                    Url = "",
+                    Values = new Dictionary<string, string>
+                    {
+                        { "name", user.Username },
+                    }
+                });
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully,
                     _mapper.Map<FeedbackResponse>(newFeedback), Key, value);
             }
