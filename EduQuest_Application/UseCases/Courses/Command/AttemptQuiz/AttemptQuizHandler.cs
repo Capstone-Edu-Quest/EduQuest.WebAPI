@@ -31,7 +31,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
     public AttemptQuizHandler(IQuizRepository quizRepository, ILessonRepository lessonRepository, IQuizAttemptRepository quizAttemptRepository,
-        IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository, 
+        IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository,
         ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
     {
         _quizRepository = quizRepository;
@@ -53,7 +53,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         int CorrectQuestion = 0;
         DateTime now = DateTime.Now;
         var lesson = await _lessonRepository.GetById(request.LessonId);
-        if(lesson == null)
+        if (lesson == null)
         {
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "lesson");
@@ -62,7 +62,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         var material = materials.Where(m => m.QuizId == request.Attempt.QuizId).FirstOrDefault();
         var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == material.Id);
         var quiz = await _quizRepository.GetQuizById(request.Attempt.QuizId);
-        if(lessonMaterial == null ||quiz == null)
+        if (lessonMaterial == null || quiz == null)
         {
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "quiz");
@@ -76,15 +76,15 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         attempt.QuizId = quiz.Id;
         attempt.LessonId = lesson.Id;
         attempt.TotalTime = request.Attempt.TotalTime;
-        attempt.AttemptNo = await _quizAttemptRepository.GetAttemptNo(request.Attempt.QuizId, request.LessonId) +1;
+        attempt.AttemptNo = await _quizAttemptRepository.GetAttemptNo(request.Attempt.QuizId, request.LessonId) + 1;
         List<UserQuizAnswers> userQuizAnswers = new List<UserQuizAnswers>();
         foreach (var item in questions)
         {
-            
+
             var userchoose = request.Attempt.Answers.Where(t => t.QuestionId == item.Id).FirstOrDefault();
             if (userchoose == null) continue;
             var answer = item.Answers.FirstOrDefault(t => t.Id == userchoose!.AnswerId);
-            
+
             if (answer != null && answer.IsCorrect)
             {
                 CorrectQuestion += 1;
@@ -126,25 +126,32 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         string newMaterialId = lessonMaterial.MaterialId;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
         if (lessonMaterial.Index == maxIndex && newLesson != null)
-        {            
-                newLessonId = newLesson.Id;
-                newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
+        {
+            newLessonId = newLesson.Id;
+            newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
+        }
+        if(newLesson == null)
+        {
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
         }
         if (lessonMaterial.Index < maxIndex)
         {
-            newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index +1)).MaterialId;
+            newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
         }
-        
+
         learner.TotalTime += Convert.ToInt32(material.Duration);
-        
-        if(learner.TotalTime > course.CourseStatistic.TotalTime)
+
+        if (learner.TotalTime > course.CourseStatistic.TotalTime)
         {
             learner.TotalTime = course.CourseStatistic.TotalTime;
         }
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         learner.ProgressPercentage = learner.TotalTime / course.CourseStatistic.TotalTime * 100;
-        if(learner.ProgressPercentage > 100)
+        if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
         }
@@ -153,7 +160,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         await _userMetaRepository.Update(userMeta);
 
         var studyTime = await _studyTimeRepository.GetByDate(now);
-        if(studyTime != null)
+        if (studyTime != null)
         {
             studyTime.StudyTimes += request.Attempt.TotalTime;
             await _studyTimeRepository.Update(studyTime);

@@ -82,6 +82,13 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         {
             newLessonId = newLesson.Id;
             newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
+        }
+        if (newLesson == null)
+        {
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
         }
         if (lessonMaterial.Index < maxIndex)
         {
