@@ -96,7 +96,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         
-        learner.ProgressPercentage = learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+        
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
@@ -104,18 +104,20 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         if (attempNo <= 1)
         {
             var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
-            userMeta.TotalStudyTime += Convert.ToInt32(request.Attempt.TotalTime);
-            learner.TotalTime += Convert.ToInt32(material.Duration);
+            userMeta.TotalStudyTime += request.Attempt.TotalTime;
+            learner.TotalTime += material.Duration;
             if (learner.TotalTime > course.CourseStatistic.TotalTime)
             {
                 learner.TotalTime = course.CourseStatistic.TotalTime;
-            }
+				learner.ProgressPercentage = learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+			}
             await _userMetaRepository.Update(userMeta);
         }
-        var studyTime = await _studyTimeRepository.GetByDate(now);
+		
+		var studyTime = await _studyTimeRepository.GetByDate(now);
         if (studyTime != null)
         {
-            studyTime.StudyTimes += Convert.ToInt32(request.Attempt.TotalTime);
+            studyTime.StudyTimes += request.Attempt.TotalTime;
             await _studyTimeRepository.Update(studyTime);
         }
         else
