@@ -222,22 +222,22 @@ namespace EduQuest_Infrastructure
             services.AddQuartz( q =>
 			{
                 string cronExpression = "0 0 5 * * ?";
+
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
-
                 var checkJobKey = new JobKey("ProvideCertificates");
+
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
-                q.AddTrigger(opts => opts.ForJob(resetDailyQuests).WithCronSchedule(cronExpression)
-                    /*.StartAt(DateBuilder.TodayAt(5, 0, 0))
-					.WithDailyTimeIntervalSchedule(x => x
-					.WithIntervalInHours(24)
-					.OnEveryDay())*/);
+
+                q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
+                .StartAt(DateBuilder.TodayAt(5, 0, 0))
+                .WithCronSchedule(cronExpression));
+
 				q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
 					.StartAt(DateBuilder.TodayAt(5, 0, 0))
-					.WithCronSchedule(cronExpression)
-				);
+					.WithCronSchedule(cronExpression));
                 
                 q.AddTrigger(opts => opts
                     .ForJob(checkJobKey)
