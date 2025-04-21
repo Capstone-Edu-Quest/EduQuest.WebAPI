@@ -49,6 +49,7 @@ using EduQuest_Application.Abstractions.Stripe;
 using EduQuest_Infrastructure.ExternalServices.Payment;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Certificates;
 using Nest;
+using EduQuest_Infrastructure.ExternalServices.Quartz.Users;
 
 namespace EduQuest_Infrastructure
 {
@@ -226,10 +227,12 @@ namespace EduQuest_Infrastructure
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
                 var checkJobKey = new JobKey("ProvideCertificates");
+				var Leaderboard = new JobKey("LeaderBoard");
 
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
                 q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
+				q.AddJob<InitializeLeaderboard>(opt => opt.WithIdentity(Leaderboard));
 
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
                 .WithCronSchedule(cronExpression));
@@ -248,6 +251,9 @@ namespace EduQuest_Infrastructure
                         .WithIntervalInMinutes(2)
                         .RepeatForever()
                         .Build()));
+				q.AddTrigger(opts => opts.ForJob(Leaderboard)
+				.StartNow()
+				);
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             #endregion

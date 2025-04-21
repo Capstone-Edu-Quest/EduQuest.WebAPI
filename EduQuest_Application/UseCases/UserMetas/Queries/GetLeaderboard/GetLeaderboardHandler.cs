@@ -45,6 +45,7 @@ public class GetLeaderboardHandler : IRequestHandler<GetLeaderboardQuery, APIRes
                 response.Add(ranking);
             }
         }
+        response = response.Where(r => r.score > 0).OrderBy(r => r.rank).ToList();
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, "name", "leaderboard");
     }
