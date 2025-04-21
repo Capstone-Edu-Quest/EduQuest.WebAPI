@@ -235,8 +235,12 @@ namespace EduQuest_Infrastructure
                 .WithCronSchedule(cronExpression));
 
 				q.AddTrigger(opts => opts.ForJob(resetQuestsProgress)
-					.WithCronSchedule(cronExpression));
-                
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInMinutes(2)
+                        .RepeatForever()
+                        .Build()));
+
                 q.AddTrigger(opts => opts
                     .ForJob(checkJobKey)
                     .StartNow()
