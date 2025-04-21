@@ -78,14 +78,14 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			{
                 courseLearner.TotalTime += material.Duration;
 				userMeta.TotalStudyTime += request.Info.Time;
-                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Info.Time.Value);
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
             } else
 			{
 				courseLearner.TotalTime += material.Duration;
 				userMeta.TotalStudyTime += material.Duration;
-                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, material.Duration.Value);
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, (int)material.Duration);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, (int)material.Duration);
             }

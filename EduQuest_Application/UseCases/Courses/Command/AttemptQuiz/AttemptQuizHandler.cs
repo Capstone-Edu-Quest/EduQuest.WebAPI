@@ -127,7 +127,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
         }
-        if(newLesson == null)
+        if(newLesson == null && lessonMaterial.Index == maxIndex)
         {
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
@@ -170,10 +170,11 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                 Date = now.ToUniversalTime()
             });
         }
-        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Attempt.TotalTime);
+        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
         await _unitOfWork.SaveChangesAsync();
 
-
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
         response.isPassed = true;

@@ -19,7 +19,7 @@ public sealed class UserStatisticUnitTests
     {
         _mockRepository = new Mock<IGenericRepository<UserMeta>>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _handler = new UpdateUsersStreakCommandHandler(_mockRepository.Object, _mockUnitOfWork.Object);
+        _handler = new UpdateUsersStreakCommandHandler((EduQuest_Domain.Repository.IUserMetaRepository)_mockRepository.Object, _mockUnitOfWork.Object);
     }
 
     [Fact]
