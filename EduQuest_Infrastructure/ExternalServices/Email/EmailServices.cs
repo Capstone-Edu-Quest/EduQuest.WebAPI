@@ -26,37 +26,44 @@ namespace EduQuest_Infrastructure.ExternalServices.Email
 
             // Load HTML content from the file
             string htmlContent = @"
-    <!DOCTYPE html>
-    <html lang='en'>
-    <head>
-        <meta charset='UTF-8' />
-        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-        <title>Email Verification</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-            .email-container { max-width: 400px; margin: 0 auto; background-color: white; border-radius: 20px; overflow: hidden; }
-            .email-header { background: linear-gradient(to bottom, #c67130, #d36a2d, #FF6F3C); height: 105px; text-align: center; position: relative; }
-            .email-header img { width: 75px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-            .email-body { padding: 20px; text-align: center; }
-            h1 { font-size: 25px; }
-            p { color: #666; font-size: 14px; line-height: 1.6; }
-            .OTP { font-size: 22px; font-weight: bold; color: #FF6F3C; }
-        </style>
-    </head>
-    <body>
-        <div class='email-container'>
-            <div class='email-header'>
-                <img src='cid:logo3' alt='Logo' />
-            </div>
-            <div class='email-body'>
-                <h1>Verify your email address</h1>
-                <p>Please use this code to verify your account:</p>
-                <h1 class='OTP'>@Model.OTP</h1>
-                <p>This is an automated email. Please do not reply.</p>
-            </div>
-        </div>
-    </body>
-    </html>";
+                <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8' />
+                <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+                <title>Email Verification</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+                    .email-container { max-width: 400px; margin: 0 auto; background-color: white; border-radius: 20px; overflow: hidden; }
+                    .email-header, .email-footer {
+                        background: linear-gradient(to bottom, #c67130, #d36a2d, #FF6F3C);
+                        height: 70px;
+                        text-align: center;
+                        position: relative;
+                    }
+                    /* .email-header { height: 80px; } */
+                    .email-body { padding: 20px; text-align: center; }
+                    h1 { font-size: 25px; }
+                    p { color: #666; font-size: 14px; line-height: 1.6; }
+                    .OTP { font-size: 22px; font-weight: bold; color: #FF6F3C; }
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header'>
+                        <!-- <img src='cid:logo3' alt='Logo' /> -->
+                    </div>
+                    <div class='email-body'>
+                        <h1>Verify your email address</h1>
+                        <p>Please use this code to verify your account:</p>
+                        <h1 class='OTP'>@Model.OTP</h1>
+                        <p>This is an automated email. Please do not reply.</p>
+                    </div>
+                    <div class='email-footer'></div>
+                </div>
+            </body>
+            </html>
+            ";
 
             // Replace placeholders with actual values
             var hrml = htmlContent.Replace("@Model.UserName", username)

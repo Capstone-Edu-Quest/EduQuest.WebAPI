@@ -12,7 +12,7 @@ public class UserStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
     public int? LongestStreak { get; set; }
     public DateTime? LastLearningDay { get; set; }
     public int? TotalCompletedCourses { get; set; }
-    public int? Rank { get; set; } = 0;
+    public long? Rank { get; set; } = 0;
     public BoosterResponseDto Booster { get; set; }
     public int? Gold { get; set; }
     public int? Exp { get; set; }

@@ -19,6 +19,11 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
         _context = context;
     }
 
+    public async Task<double?> TotalLearningTimeByUserId(string userId)
+    {
+        return await _context.Learners.AsNoTracking().Where(x => x.UserId.Equals(userId)).SumAsync(x => x.TotalTime);
+    }
+
     public async Task<CourseLearner?> GetByUserIdAndCourseId(string userId, string courseId)
     {
         return await _context.Learners.AsNoTracking().FirstOrDefaultAsync(a => a.UserId.Equals(userId) && a.CourseId.Equals(courseId));
