@@ -63,7 +63,7 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, A
             learnerDto.TotalDays = studyTimes.Count;
             learnerDto.TotalMinutes = totalMinutes;
             learnerDto.statistics.TotalLearningCourses = await _learnerRepository.CountNumberOfCourseByUserId(request.userId);
-            learnerDto.statistics.TotalLearningTime = await _learnerRepository.TotalLearningTimeByUserId(request.userId);
+            //learnerDto.statistics.TotalLearningTime = await _learnerRepository.TotalLearningTimeByUserId(request.userId);
             learnerDto.RecentCourses = courseDtos;
             learnerDto.learningData = GenerateLearningHeatmap(studyTimes);
             learnerDto.statistics.Rank = await _redis.GetSortSetRankAsync("leaderboard:season1", request.userId);

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 
@@ -12,5 +11,10 @@ public class LeanerProfileStatisticDto : IMapFrom<UserMeta>, IMapTo<UserMeta>
     public double? TotalLearningTime { get; set; } = 0;
     public int? TotalLearningCourses { get; set; }
     public int? FavoriteTopics { get; set; }
+    public void MappingFrom(Profile profile)
+    {
+        profile.CreateMap<UserMeta, LeanerProfileStatisticDto>()
+            .ForMember(dest => dest.TotalLearningTime, opt => opt.MapFrom(src => src.TotalStudyTime));
+    }
 
 }
