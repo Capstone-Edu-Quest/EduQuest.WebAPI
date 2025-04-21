@@ -59,9 +59,10 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			}
 
             var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
+            double times = request.Info.Time != null ? request.Info.Time.Value : material.Duration!.Value;
             if (studyTime != null)
             {
-                studyTime.StudyTimes += (double)request.Info.Time != null ? (double)request.Info.Time : (double)material.Duration;
+                studyTime.StudyTimes += times;
                 await _studyTimeRepository.Update(studyTime);
             }
             else
@@ -70,7 +71,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = request.UserId,
-                    StudyTimes = ((double)(request.Info.Time != null ? request.Info.Time.Value : material.Duration)),
+                    StudyTimes = times,
                     Date = now.ToUniversalTime()
                 });
             }
