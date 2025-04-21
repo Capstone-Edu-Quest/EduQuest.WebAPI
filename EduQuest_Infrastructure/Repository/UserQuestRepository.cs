@@ -219,31 +219,31 @@ public class UserQuestRepository : GenericRepository<UserQuest>, IUserQuestRepos
     }
     public async Task<bool> UpdateUserQuestsProgress(string userId, QuestType questType, double addedPoint)
     {
+        /* int QuestType = (int)questType;
+         var userQuests = await _context.UserQuests
+         .Where(uq => uq.UserId == userId && uq.QuestType == QuestType)
+         .ToListAsync();
 
-        /*var userQuests = await _context.UserQuests
-        .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
-        .ToListAsync();
+         foreach (var userQuest in userQuests)
+         {
+             userQuest.CurrentPoint += Convert.ToInt32(addedPoint);
+             if (userQuest.CurrentPoint >= userQuest.PointToComplete)
+             {
+                 userQuest.IsCompleted = true;
+                 userQuest.CurrentPoint = userQuest.PointToComplete;
+             }   
+         }
 
-        foreach (var userQuest in userQuests)
-        {
-            userQuest.CurrentPoint += addedPoint;
-            if (userQuest.CurrentPoint >= userQuest.PointToComplete)
-            {
-                userQuest.IsCompleted = true;
-                userQuest.CurrentPoint = userQuest.PointToComplete;
-            }   
-        }
-
-        return await _context.SaveChangesAsync() > 0;*/
+         return await _context.SaveChangesAsync() > 0;*/
         int affectedRows = await _context.UserQuests
-        .Where(uq => uq.UserId == userId && uq.Type == (int)questType && uq.IsCompleted == false)
+        .Where(uq => uq.UserId == userId && uq.QuestType == (int)questType && uq.IsCompleted == false)
         .ExecuteUpdateAsync(q => q
             .SetProperty(uq => uq.CurrentPoint, uq => uq.CurrentPoint + addedPoint)
             .SetProperty(uq => uq.IsCompleted, uq => uq.CurrentPoint + addedPoint >= uq.PointToComplete));
 
         return affectedRows > 0;
     }
-    
+
     public async Task<bool> ResetQuestProgress()
     {
         var quests = await _context.UserQuests

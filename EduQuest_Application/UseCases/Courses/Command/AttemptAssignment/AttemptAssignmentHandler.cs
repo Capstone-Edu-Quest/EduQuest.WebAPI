@@ -95,8 +95,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         {
             newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
         }
-        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
-        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
+
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
 
@@ -140,10 +139,13 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             });
         }
         await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
-        await _unitOfWork.SaveChangesAsync();
-
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
+        await _unitOfWork.SaveChangesAsync();
+
+        
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.Complete,
             attempt, "name", "assignment");
     }

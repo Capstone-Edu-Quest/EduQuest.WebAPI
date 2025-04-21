@@ -24,8 +24,6 @@ public class ResetQuestProgress : IJob
     public async Task Execute(IJobExecutionContext context)
     {
         bool result = await _userQuestRepository.ResetQuestProgress();
-        await _emailService.SendEmailVerifyAsync("Reset All UserQuests Task", "minhduylongthuan@gmail.com",
-            "Task run: Reset All UserQuests Progress!", "OTP", "PATH", "logo");
         Console.WriteLine("Task run: Reset All UserQuests Progress!");
     }
 }
