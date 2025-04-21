@@ -58,7 +58,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
 			}
 
-            var studyTime = await _studyTimeRepository.GetByDate(now);
+            var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
             if (studyTime != null)
             {
                 studyTime.StudyTimes += (double)request.Info.Time != null ? (double)request.Info.Time : (double)material.Duration;

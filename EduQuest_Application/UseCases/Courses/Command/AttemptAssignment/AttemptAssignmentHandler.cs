@@ -122,7 +122,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
         await _userMetaRepository.Update(userMeta);
         await _courseRepository.Update(course);
-        var studyTime = await _studyTimeRepository.GetByDate(now);
+        var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
         if (studyTime != null)
         {
             studyTime.StudyTimes += request.Attempt.TotalTime;
@@ -138,7 +138,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
                 Date = now.ToUniversalTime()
             });
         }
-        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
+        //await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
