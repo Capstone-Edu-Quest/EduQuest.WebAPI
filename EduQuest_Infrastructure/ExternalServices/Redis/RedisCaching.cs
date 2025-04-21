@@ -161,7 +161,7 @@ public class RedisCaching : IRedisCaching
     public async Task<long?> GetSortSetRankAsync(string key, string member)
     {
         var rank = await _database.SortedSetRankAsync(key, member, Order.Descending);
-        return rank.HasValue ? rank.Value : 0;
+        return rank.HasValue ? rank.Value + 1 : 0;
     }
 
     //Get top member in leaderboard
