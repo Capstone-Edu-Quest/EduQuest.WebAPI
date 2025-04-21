@@ -24,11 +24,11 @@ namespace EduQuest_API.Controllers;
 public class CouponController : ControllerBase
 {
     private ISender _mediator;
-    private readonly ICouponRepository _couponRepository;
-    public CouponController(ISender mediator, ICouponRepository couponRepository)
+    //private readonly ICouponRepository _couponRepository;
+    public CouponController(ISender mediator/*, ICouponRepository couponRepository*/)
     {
         _mediator = mediator;
-        _couponRepository = couponRepository;
+       // _couponRepository = couponRepository;
     }
 
     [Authorize(Roles = "Staff, Admin")]
@@ -75,7 +75,7 @@ public class CouponController : ControllerBase
         Response.Headers.Add("X-Current-Page", list.CurrentPage.ToString());
         return Ok(result);
     }
-    //[Authorize(Roles ="Learner")]
+    [Authorize(Roles ="Learner")]
     [HttpGet("learner")]
     public async Task<IActionResult> GetCouponByCode([FromQuery] GetByCodeCommand command, CancellationToken token = default)
     {
@@ -83,7 +83,7 @@ public class CouponController : ControllerBase
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? NotFound(result) : Ok(result);
     }
 
-    [HttpPost("test")]
+    /*[HttpPost("test")]
     public async Task<IActionResult> testconsumecoupon([FromQuery] string couponCode,
         [FromQuery] string userId)
     {
@@ -92,5 +92,5 @@ public class CouponController : ControllerBase
             return Ok("success!");
         }
         return BadRequest("Error");
-    }
+    }*/
 }

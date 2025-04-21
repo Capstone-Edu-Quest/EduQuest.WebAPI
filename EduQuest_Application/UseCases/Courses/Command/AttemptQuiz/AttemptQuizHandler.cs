@@ -154,7 +154,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
         await _userMetaRepository.Update(userMeta);
 
-        var studyTime = await _studyTimeRepository.GetByDate(now);
+        var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
         if (studyTime != null)
         {
             studyTime.StudyTimes += request.Attempt.TotalTime;

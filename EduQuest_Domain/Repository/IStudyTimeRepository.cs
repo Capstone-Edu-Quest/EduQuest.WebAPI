@@ -6,5 +6,5 @@ namespace EduQuest_Domain.Repository;
 public interface IStudyTimeRepository : IGenericRepository<StudyTime>
 {
     Task<IList<StudyTime>> GetStudyTimeByUserId(string userId);
-    Task<StudyTime?> GetByDate(DateTime date);
+    Task<StudyTime?> GetByDate(DateTime date, string userId);
 }
