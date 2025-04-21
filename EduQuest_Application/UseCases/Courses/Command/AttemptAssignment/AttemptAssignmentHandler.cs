@@ -6,6 +6,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.QuestEnum;
 
@@ -24,8 +25,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly IMaterialRepository _materialRepository;
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
-    public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, ILessonRepository lessonRepository, IAssignmentAttemptRepository assignmentAttemptRepository, 
-        IMapper mapper, IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, ICourseRepository courseRepository, 
+    public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, ILessonRepository lessonRepository, IAssignmentAttemptRepository assignmentAttemptRepository,
+        IMapper mapper, IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, ICourseRepository courseRepository,
         IUserMetaRepository userMetaRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
     {
         _assignmentRepository = assignmentRepository;
@@ -48,7 +49,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         var lesson = await _lessonRepository.GetById(request.LessonId);
         if (lesson == null)
         {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "lesson");
         }
         var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonMaterials.Select(x => x.MaterialId).ToList());
@@ -57,7 +58,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         var assignment = await _assignmentRepository.GetById(request.Attempt.AssignmentId);
         if (lessonMaterial == null || assignment == null)
         {
-            return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "assignment");
         }
         AssignmentAttempt attempt = new AssignmentAttempt();
@@ -85,7 +86,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
         }
-        if (newLesson == null)
+        if (newLesson == null && lessonMaterial.Index == maxIndex)
         {
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
@@ -94,30 +95,35 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         {
             newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
         }
-        
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
-        
-        
+
+
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
         }
-        if (attempNo <= 1)
+        if (attempNo > 1)
         {
-            var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
-            userMeta.TotalStudyTime += request.Attempt.TotalTime;
-            learner.TotalTime += material.Duration;
-            if (learner.TotalTime > course.CourseStatistic.TotalTime)
-            {
-                learner.TotalTime = course.CourseStatistic.TotalTime;
-				
-			}
-            learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
-            await _userMetaRepository.Update(userMeta);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.OK, MessageCommon.AlreadyExists,
+                MessageCommon.AlreadyExists, "name", "assignemt attemp");
         }
-		await _courseRepository.Update(course);
-		var studyTime = await _studyTimeRepository.GetByDate(now);
+        var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
+
+
+        userMeta.TotalStudyTime += request.Attempt.TotalTime;
+        learner.TotalTime += material.Duration;
+        if (learner.TotalTime > course.CourseStatistic.TotalTime)
+        {
+            learner.TotalTime = course.CourseStatistic.TotalTime;
+
+        }
+        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
+        await _userMetaRepository.Update(userMeta);
+        await _courseRepository.Update(course);
+        var studyTime = await _studyTimeRepository.GetByDate(now);
         if (studyTime != null)
         {
             studyTime.StudyTimes += request.Attempt.TotalTime;
@@ -129,16 +135,16 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.UserId,
-                StudyTimes = Convert.ToInt32(request.Attempt.TotalTime),
+                StudyTimes = request.Attempt.TotalTime,
                 Date = now.ToUniversalTime()
             });
         }
-        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, request.Attempt.TotalTime);
+        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
         await _unitOfWork.SaveChangesAsync();
 
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
-        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.Complete,
             attempt, "name", "assignment");
     }
 }
