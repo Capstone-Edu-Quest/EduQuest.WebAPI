@@ -104,11 +104,11 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         {
             learner.ProgressPercentage = 100;
         }
-        /*if (attempNo > 1)
+        if (attempNo > 1)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.OK, MessageCommon.AlreadyExists,
                 MessageCommon.AlreadyExists, "name", "assignemt attemp");
-        }*/
+        }
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
 
 
