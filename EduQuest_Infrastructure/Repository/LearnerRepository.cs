@@ -101,20 +101,18 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 	public async Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds)
 	{
 		var query = from courseStatistic in _context.CourseStatistics
-					join feedback in _context.Feedbacks
-						on courseStatistic.CourseId equals feedback.CourseId  
 					where courseIds.Contains(courseStatistic.CourseId)
 						  && courseStatistic.DeletedAt == null
-						  && feedback.DeletedAt == null 
-					group new { courseStatistic, feedback } by courseStatistic.CourseId into g
 					select new
 					{
-						CourseId = g.Key,
-						CourseStatistic = g.Select(x => x.courseStatistic).FirstOrDefault(),
-						Feedbacks = g.Select(x => x.feedback).ToList() 
+						CourseId = courseStatistic.CourseId,
+						CourseStatistic = courseStatistic,
+						TotalLearners = _context.Feedbacks.Count(feedback => feedback.CourseId == courseStatistic.CourseId) 
 					};
 
-		var courseData = await query.ToListAsync();
+		var courseData = await query
+			.Where(x => x.TotalLearners > 0) 
+			.ToListAsync();
 
 		var top3Courses = courseData
 			.Select(g => new TopCourseInfo
@@ -123,13 +121,13 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
 				Data = new List<int>
 				{
-				(int)g.CourseStatistic.TotalLearner, 
-				g.Feedbacks.Count(x => x.Rating > 3 && x.Rating <= 5),  // RatingCountThreeToFive từ bảng Feedback
-				g.Feedbacks.Count(x => x.Rating <= 3) // RatingCountOneToThree từ bảng Feedback
+				g.TotalLearners, 
+				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating > 3 && x.Rating <= 5),  
+				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating <= 3) 
 				}
 			})
-			.OrderByDescending(x => x.Data[0])  // Sắp xếp theo LearnerCount
-			.Take(3)  // Lấy top 3 khóa học
+			.OrderByDescending(x => x.Data[0])  
+			.Take(3)  
 			.ToList();
 
 		return top3Courses;
