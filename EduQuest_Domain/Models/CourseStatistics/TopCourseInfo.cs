@@ -9,8 +9,7 @@ namespace EduQuest_Domain.Models.CourseStatistics
 	public class TopCourseInfo
 	{
 		public string Title { get; set; } 
-		public int RatingCountOneToThree { get; set; } 
-		public int RatingCountThreeToFive { get; set; } 
-		public int LearnerCount { get; set; }
+		public List<int> Data { get; set; } 
+		
 	}
 }

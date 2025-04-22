@@ -100,23 +100,37 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
 	public async Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds)
 	{
-		var query = from learner in _context.Learners
-					join courseStatistic in _context.CourseStatistics
-						on learner.CourseId equals courseStatistic.CourseId
-					where courseIds.Contains(learner.CourseId)
-					group new { learner, courseStatistic } by learner.CourseId into g
-					select new TopCourseInfo
+		var query = from courseStatistic in _context.CourseStatistics
+					join feedback in _context.Feedbacks
+						on courseStatistic.CourseId equals feedback.CourseId  
+					where courseIds.Contains(courseStatistic.CourseId)
+						  && courseStatistic.DeletedAt == null
+						  && feedback.DeletedAt == null 
+					group new { courseStatistic, feedback } by courseStatistic.CourseId into g
+					select new
 					{
-						Title = g.FirstOrDefault().courseStatistic.Course.Title,
-						RatingCountOneToThree = g.Count(x => x.courseStatistic.Rating <= 3),
-						RatingCountThreeToFive = g.Count(x => x.courseStatistic.Rating > 3 && x.courseStatistic.Rating <= 5),
-						LearnerCount = g.Count()
+						CourseId = g.Key,
+						CourseStatistic = g.Select(x => x.courseStatistic).FirstOrDefault(),
+						Feedbacks = g.Select(x => x.feedback).ToList() 
 					};
 
-		var top3Courses = await query
-								.OrderByDescending(x => x.LearnerCount) 
-								.Take(3) 
-								.ToListAsync();
+		var courseData = await query.ToListAsync();
+
+		var top3Courses = courseData
+			.Select(g => new TopCourseInfo
+			{
+				Title = g.CourseStatistic?.Course.Title,  
+
+				Data = new List<int>
+				{
+				(int)g.CourseStatistic.TotalLearner, 
+				g.Feedbacks.Count(x => x.Rating > 3 && x.Rating <= 5),  // RatingCountThreeToFive từ bảng Feedback
+				g.Feedbacks.Count(x => x.Rating <= 3) // RatingCountOneToThree từ bảng Feedback
+				}
+			})
+			.OrderByDescending(x => x.Data[0])  // Sắp xếp theo LearnerCount
+			.Take(3)  // Lấy top 3 khóa học
+			.ToList();
 
 		return top3Courses;
 	}
