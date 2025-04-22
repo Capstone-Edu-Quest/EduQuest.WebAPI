@@ -1,6 +1,7 @@
 ﻿using EduQuest_Application.DTO.Response.Revenue;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.CourseStatistics;
 using EduQuest_Domain.Models.Revenue;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -51,6 +53,55 @@ namespace EduQuest_Infrastructure.Repository
 							   })
 					   .FirstOrDefaultAsync();
 			return (result.CreatedAt, result.Amount);
+		}
+
+		public async Task<List<CourseRevenue>> GetCourseRevenue(List<string> courseIds)
+		{
+			var courseQuery = await (from course in _context.Courses
+									 where courseIds.Contains(course.Id)
+									 select new
+									 {
+										 course.Id,
+										 CourseName = course.Title
+									 }).ToListAsync();
+
+			var transactionDetails = await _context.TransactionDetails
+				.Where(td => courseIds.Contains(td.ItemId) && td.ItemType == ItemTypeTransactionDetail.Course.ToString())
+				.ToListAsync();
+
+			var transactionIds = transactionDetails
+				.Select(td => td.TransactionId)
+				.Distinct()
+				.ToList();
+
+			var refundTransactions = await _context.Transactions
+			.Where(t => t.Type == TypeTransaction.Refund.ToString() && t.BaseTransactionId != null && transactionIds.Contains(t.BaseTransactionId))
+			.ToListAsync();
+			var grouped = transactionDetails
+			.GroupBy(td => td.ItemId)
+			.ToDictionary(g => g.Key, g => new
+			{
+				TotalSales = g.Count(),
+				TotalRevenue = g.Sum(td => td.InstructorShare)
+			});
+				var refundGrouped = refundTransactions
+			.GroupBy(t => t.BaseTransactionId)
+			.Select(g => g.Key)
+			.ToHashSet();
+
+			var result = courseQuery.Select(c => new CourseRevenue
+			{
+				Title = c.CourseName,
+				TotalSales = grouped.ContainsKey(c.Id) ? grouped[c.Id].TotalSales : 0,
+				TotalRevenue = grouped.ContainsKey(c.Id) ? grouped[c.Id].TotalRevenue : 0,
+				TotalRefund = transactionDetails
+					.Where(td => td.ItemId == c.Id && td.TransactionId != null && refundGrouped.Contains(td.TransactionId))
+					.Select(td => td.TransactionId)
+					.Distinct()
+					.Count()
+			}).ToList();
+
+			return result;
 		}
 
 		public async Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId)

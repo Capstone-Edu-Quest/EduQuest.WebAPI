@@ -23,6 +23,7 @@ using EduQuest_Application.UseCases.Courses.Query.GetLearnerOverviewForInstructo
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Courses.Query.GetQuizAttempts;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
+using EduQuest_Application.UseCases.Revenue.Query.GetCourseRevenue;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Request;
 using MediatR;
@@ -191,6 +192,16 @@ namespace EduQuest_API.Controllers
 		public async Task<IActionResult> GetLearnerDetailInCourse([FromQuery] string userId, string courseId, CancellationToken cancellationToken = default)
 		{
 			var result = await _mediator.Send(new GetLearnerDetailForInstructorQuery(userId, courseId), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("courseRevenue")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> GetCourseRevenue(CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new GetCourseRevenueQuery(userId), cancellationToken);
 			return Ok(result);
 		}
 

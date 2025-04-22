@@ -58,9 +58,13 @@ namespace EduQuest_Application.UseCases.Payments.Command.Refund
 				TotalAmount = (decimal)transactionDetail.NetAmount,
 				Type = GeneralEnums.TypeTransaction.Refund.ToString(),
 				CustomerEmail = user.Email,
-				CustomerName = user.Username
+				CustomerName = user.Username,
+				BaseTransactionId = request.Refund.TransactionId,
 			};
 			await _transactionRepository.Add(newTransaction);
+			transactionDetail.SystemShare = 0;
+			transactionDetail.InstructorShare = 0;
+			await _transactionDetailRepository.Update(transactionDetail);
 			var learner = await _learnerRepository.GetByUserIdAndCourseId(transactionExisted.UserId, request.Refund.CourseId);
 			if (learner == null)
 			{
