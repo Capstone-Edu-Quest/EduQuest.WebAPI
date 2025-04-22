@@ -27,18 +27,26 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStudying
 
 		public async Task<APIResponse> Handle(GetCourseStudyingQuery request, CancellationToken cancellationToken)
 		{
-			var apiResponse = new APIResponse();
-			var coursesLearner = await _learnerRepository.GetCoursesByUserId(request.UserId);
+			var coursesLearner = (await _learnerRepository.GetCoursesByUserId(request.UserId))
+				.OrderByDescending(x => x.CreatedAt)
+				.ToList();
+
 			var listCourseId = coursesLearner.Select(x => x.CourseId).ToList();
+
 			var listCourse = await _courseRepository.GetByListIds(listCourseId);
 
-			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse);
-            var courseIds = listCourseResponse.Select(c => c.Id).ToList();
+			listCourse = listCourseId
+				.Select(id => listCourse.FirstOrDefault(c => c.Id == id))
+				.Where(c => c != null)
+				.ToList();
 
-			//Get all courses that the user is studying
-            var learners = await _learnerRepository.GetByUserIdAndCourseIdsAsync(request.UserId, courseIds);
-            var learnerDict = learners.ToDictionary(x => x.CourseId, x => x.ProgressPercentage);
-            foreach (var course in listCourseResponse)
+			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse);
+
+			var courseIds = listCourseResponse.Select(c => c.Id).ToList();
+			var learners = await _learnerRepository.GetByUserIdAndCourseIdsAsync(request.UserId, courseIds);
+			var learnerDict = learners.ToDictionary(x => x.CourseId, x => x.ProgressPercentage);
+
+			foreach (var course in listCourseResponse)
 			{
                 //var user = await _userRepository.GetById(course.CreatedBy);
                 //course.Author = user!.Username!;
@@ -65,7 +73,7 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStudying
                 if (learnerDict.TryGetValue(course.Id, out var progress))
                     course.ProgressPercentage = progress;
             }
-			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, listCourseResponse, "name", "course studying");
+			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, listCourseResponse, "name", "course studying");
 		}
 	}
 }

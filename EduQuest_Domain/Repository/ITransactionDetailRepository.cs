@@ -15,5 +15,6 @@ namespace EduQuest_Domain.Repository
 		Task<(DateTime? CreatedAt, decimal Amount)> GetCourseTransactionInfoAsync(string courseId, string userId);
 		Task<decimal> GetTotalRevenueByInstructorId(string instructorId);
 		Task<List<CourseRevenue>> GetCourseRevenue(List<string> courseIds);
+		Task<(List<ChartInfo> Earnings, List<ChartInfo> Sales, List<ChartInfo> Refunds)> GetChartRevenue(string instructorId);
 	}
 }
