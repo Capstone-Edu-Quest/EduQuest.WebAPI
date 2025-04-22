@@ -195,15 +195,7 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[HttpGet("courseRevenue")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetCourseRevenue(CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetCourseRevenueQuery(userId), cancellationToken);
-			return Ok(result);
-		}
+		
 
 		[Authorize]
         [HttpPost("")]
