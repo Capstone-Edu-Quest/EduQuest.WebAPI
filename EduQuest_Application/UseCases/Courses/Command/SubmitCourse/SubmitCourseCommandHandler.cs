@@ -36,7 +36,7 @@ public class SubmitCourseCommandHandler : IRequestHandler<SubmitCourseCommand, A
                 new NotificationDto
                 {
                     userId = result.CreatedBy,
-                    Content = "Submit course successfully",
+                    Content = NotificationMessage.SUBMIT_COURSE_SUCCESSFULLY,
                     Receiver = result.CreatedBy,
                     Url = BaseUrl.ShopItemUrl,
                 }
