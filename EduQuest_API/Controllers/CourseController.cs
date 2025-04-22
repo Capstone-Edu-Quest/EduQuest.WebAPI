@@ -296,11 +296,10 @@ namespace EduQuest_API.Controllers
         }
         [Authorize(Roles = "Instructor")]
         [HttpGet("assignment/instructor/unreviewedAttempts")]
-        public async Task<IActionResult> ViewUnreviewedAssignmentAttempts([FromQuery] string assignmentId,
-            [FromQuery] string lessonId,
+        public async Task<IActionResult> ViewUnreviewedAssignmentAttempts([FromQuery] string courseId,
             CancellationToken token = default)
         {
-            var result = await _mediator.Send(new GetAssignmentAttemptsForInsQuery(assignmentId, lessonId), token);
+            var result = await _mediator.Send(new GetAssignmentAttemptsForInsQuery(courseId), token);
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
     }
