@@ -245,12 +245,12 @@ namespace EduQuest_API.Controllers
             }
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
-        //[Authorize]
+        [Authorize]
         [HttpPost("assignment/review")]
-        public async Task<IActionResult> AttemptReview([FromBody] GradingAssignmentDto grading, [FromQuery] string userId,
+        public async Task<IActionResult> AttemptReview([FromBody] GradingAssignmentDto grading,
             CancellationToken token = default)
         {
-            //string userId = User.GetUserIdFromToken().ToString();
+            string userId = User.GetUserIdFromToken().ToString();
             var result = await _mediator.Send(new ReviewAssignmentCommand(userId, grading), token);
             if (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.NotFound)
             {
