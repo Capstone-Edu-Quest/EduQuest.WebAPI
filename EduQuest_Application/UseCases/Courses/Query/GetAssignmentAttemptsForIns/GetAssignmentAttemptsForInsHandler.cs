@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Materials;
 using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -42,6 +43,12 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
         }
 
         var lessons = course.Lessons;
+
+        List<LessonMaterial> lessonMaterials = new List<LessonMaterial>();
+        foreach( var lesson in lessons)
+        {
+            lessonMaterials.AddRange(lesson.LessonMaterials);
+        }
         List<string> materialIds = new List<string>();
         foreach(var lesson in lessons)
         {
@@ -54,8 +61,9 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
         List<AssignmentResponse> responses = new List< AssignmentResponse >();
         foreach (var material in materials)
         {
+            var lessonId = lessonMaterials.Where(l => l.MaterialId == material.Id).FirstOrDefault().LessonId;
             var assignment = material.Assignment;
-            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts(lessons.Select(l => l.Id).ToList());
+            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts("lesson", assignment!.Id);
             List<AssignmentAttemptResponseForInstructor> attempts = _mapper.Map<List<AssignmentAttemptResponseForInstructor>>(assignmentAttempts);
             AssignmentResponse dto = _mapper.Map<AssignmentResponse>(assignment);
             dto.attempts = attempts;
