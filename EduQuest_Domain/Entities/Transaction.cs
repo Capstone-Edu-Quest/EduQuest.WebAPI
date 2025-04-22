@@ -16,6 +16,7 @@ namespace EduQuest_Domain.Entities
 		public string? CustomerEmail { get; set; }
 		public string? CustomerName { get; set; }
 		public string? Url { get; set; }
+		public string? BaseTransactionId { get; set; }
 
 		[JsonIgnore]
 		public virtual User User { get; set; } = null;
