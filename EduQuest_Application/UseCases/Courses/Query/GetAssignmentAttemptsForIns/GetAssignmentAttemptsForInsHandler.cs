@@ -63,7 +63,7 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
         {
             var lessonId = lessonMaterials.Where(l => l.MaterialId == material.Id).FirstOrDefault().LessonId;
             var assignment = material.Assignment;
-            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts("lesson", assignment!.Id);
+            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts(lessonId, assignment!.Id);
             List<AssignmentAttemptResponseForInstructor> attempts = _mapper.Map<List<AssignmentAttemptResponseForInstructor>>(assignmentAttempts);
             AssignmentResponse dto = _mapper.Map<AssignmentResponse>(assignment);
             dto.attempts = attempts;
