@@ -21,38 +21,50 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
     private readonly IMaterialRepository _materialRepository;
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
     private readonly IMapper _mapper;
+    private readonly ICourseRepository _courseRepository;
 
     public GetAssignmentAttemptsForInsHandler(ILessonRepository lessonRepository, IMaterialRepository materialRepository, 
-        IAssignmentAttemptRepository assignmentAttemptRepository, IMapper mapper)
+        IAssignmentAttemptRepository assignmentAttemptRepository, IMapper mapper, ICourseRepository courseRepository)
     {
         _lessonRepository = lessonRepository;
         _materialRepository = materialRepository;
         _assignmentAttemptRepository = assignmentAttemptRepository;
         _mapper = mapper;
+        _courseRepository = courseRepository;
     }
 
     public async Task<APIResponse> Handle(GetAssignmentAttemptsForInsQuery request, CancellationToken cancellationToken)
     {
-        var lesson = await _lessonRepository.GetById(request.LessonId);
-        var material = await _materialRepository.GetMaterialByAssignmentId(request.AssignmentId);
-        if(material == null)
+        var course = await _courseRepository.GetById(request.courseId);
+        if(course == null)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,MessageCommon.NotFound, "name", "assignment");
-        }
-        string? lessonMaterialId = lesson.LessonMaterials.Where(lm => lm.MaterialId == material.Id).FirstOrDefault().MaterialId;
-        if(lessonMaterialId == null)
-        {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", "assignment");
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", $"course with id{request.courseId}");
         }
 
-        var assignment = material.Assignment;
-        var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts(request.LessonId, request.AssignmentId);
-        List<AssignmentAttemptResponseForInstructor> attempts = _mapper.Map<List<AssignmentAttemptResponseForInstructor>>(assignmentAttempts);
-        AssignmentResponse response = _mapper.Map<AssignmentResponse>(assignment);
-        response.attempts = attempts;
+        var lessons = course.Lessons;
+        List<string> materialIds = new List<string>();
+        foreach(var lesson in lessons)
+        {
+            List<string> temp = lesson.LessonMaterials.Select(l => l.MaterialId).ToList();
+            materialIds.AddRange(temp);
+        }
+        var materials = await _materialRepository.GetMaterialsByIds(materialIds);
+        materials = materials.Where(m => m.AssignmentId != null).ToList();
+
+        List<AssignmentResponse> responses = new List< AssignmentResponse >();
+        foreach (var material in materials)
+        {
+            var assignment = material.Assignment;
+            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts(lessons.Select(l => l.Id).ToList());
+            List<AssignmentAttemptResponseForInstructor> attempts = _mapper.Map<List<AssignmentAttemptResponseForInstructor>>(assignmentAttempts);
+            AssignmentResponse dto = _mapper.Map<AssignmentResponse>(assignment);
+            dto.attempts = attempts;
+            responses.Add(dto);
+        }
+        
         
 
 
-        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully, response, "name", "assignment");
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully, responses, "name", "assignment");
     }
 }

@@ -5,12 +5,10 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttemptsForIn
 
 public class GetAssignmentAttemptsForInsQuery : IRequest<APIResponse>
 {
-    public string AssignmentId { get; set; }
-    public string LessonId { get; set; }
+    public string courseId { get; set; }
 
-    public GetAssignmentAttemptsForInsQuery(string assignmentId, string lessonId)
+    public GetAssignmentAttemptsForInsQuery(string courseId)
     {
-        AssignmentId = assignmentId;
-        LessonId = lessonId;
+        this.courseId = courseId;
     }
 }
