@@ -9,8 +9,8 @@ namespace EduQuest_Domain.Models.CourseStatistics
 	public class CourseRevenue
 	{
         public string Title { get; set; }
-        public int TotalSales { get; set; }
-        public int TotalRefund { get; set; }
-        public int TotalRevenue { get; set; }
+        public int? TotalSales { get; set; }
+        public decimal? TotalRefund { get; set; }
+        public decimal? TotalRevenue { get; set; }
     }
 }

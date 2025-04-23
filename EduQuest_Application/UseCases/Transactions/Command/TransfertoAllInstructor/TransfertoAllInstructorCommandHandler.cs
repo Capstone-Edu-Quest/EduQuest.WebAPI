@@ -55,7 +55,8 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 					Type = GeneralEnums.TypeTransaction.Transfer.ToString(),
 					UserId = "3b7d5b9c-c7bf-494b-9a75-e931d4a5cb22",
 					CustomerEmail = instructor.Email,
-					CustomerName = instructor.Username
+					CustomerName = instructor.Username,
+					BaseTransactionId = request.TransactionId
 				};
 
                 //await _firebaseRealtimeService.PushNotificationAsync(

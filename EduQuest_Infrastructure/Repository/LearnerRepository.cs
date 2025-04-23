@@ -100,23 +100,35 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
 	public async Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds)
 	{
-		var query = from learner in _context.Learners
-					join courseStatistic in _context.CourseStatistics
-						on learner.CourseId equals courseStatistic.CourseId
-					where courseIds.Contains(learner.CourseId)
-					group new { learner, courseStatistic } by learner.CourseId into g
-					select new TopCourseInfo
+		var query = from courseStatistic in _context.CourseStatistics
+					where courseIds.Contains(courseStatistic.CourseId)
+						  && courseStatistic.DeletedAt == null
+					select new
 					{
-						Title = g.FirstOrDefault().courseStatistic.Course.Title,
-						RatingCountOneToThree = g.Count(x => x.courseStatistic.Rating <= 3),
-						RatingCountThreeToFive = g.Count(x => x.courseStatistic.Rating > 3 && x.courseStatistic.Rating <= 5),
-						LearnerCount = g.Count()
+						CourseId = courseStatistic.CourseId,
+						CourseStatistic = courseStatistic,
+						TotalLearners = _context.Feedbacks.Count(feedback => feedback.CourseId == courseStatistic.CourseId) 
 					};
 
-		var top3Courses = await query
-								.OrderByDescending(x => x.LearnerCount) 
-								.Take(3) 
-								.ToListAsync();
+		var courseData = await query
+			.Where(x => x.TotalLearners > 0) 
+			.ToListAsync();
+
+		var top3Courses = courseData
+			.Select(g => new TopCourseInfo
+			{
+				Title = g.CourseStatistic?.Course.Title,  
+
+				Data = new List<int>
+				{
+				g.TotalLearners, 
+				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating > 3 && x.Rating <= 5),  
+				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating <= 3) 
+				}
+			})
+			.OrderByDescending(x => x.Data[0])  
+			.Take(3)  
+			.ToList();
 
 		return top3Courses;
 	}

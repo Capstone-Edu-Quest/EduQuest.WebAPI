@@ -178,10 +178,10 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                             systemShare = Math.Round(courseNetAmount * ((decimal)(courseFeeForPlatForm.Value) / 100), 2);
                             instructorShare = courseNetAmount - systemShare;
                             //Update for transaction detail
-                            detail.StripeFee = stripeFeeForInstructor;
+                            detail.StripeFee = Math.Round((decimal)stripeFeeForInstructor, 2);
                             detail.NetAmount = courseNetAmount;
                             detail.SystemShare = systemShare;
-                            detail.InstructorShare = instructorShare;
+                            detail.InstructorShare = Math.Round((decimal)instructorShare, 2);
                         }
                         var firstLessonAndMaterialId = await _lessonRepository.GetFirstLessonAndMaterialIdInCourseAsync(course.Id);
                         //if (firstLessonAndMaterialId.lessonId == null && firstLessonAndMaterialId.materialId == null)

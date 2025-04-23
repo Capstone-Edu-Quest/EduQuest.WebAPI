@@ -1,6 +1,8 @@
 ﻿using EduQuest_Application.DTO.Response.Revenue;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.CourseStatistics;
 using EduQuest_Domain.Models.Revenue;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
@@ -8,9 +10,11 @@ using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -51,6 +55,55 @@ namespace EduQuest_Infrastructure.Repository
 							   })
 					   .FirstOrDefaultAsync();
 			return (result.CreatedAt, result.Amount);
+		}
+
+		public async Task<List<CourseRevenue>> GetCourseRevenue(List<string> courseIds)
+		{
+			var courseQuery = await (from course in _context.Courses
+									 where courseIds.Contains(course.Id)
+									 select new
+									 {
+										 course.Id,
+										 CourseName = course.Title
+									 }).ToListAsync();
+
+			var transactionDetails = await _context.TransactionDetails
+				.Where(td => courseIds.Contains(td.ItemId) && td.ItemType == ItemTypeTransactionDetail.Course.ToString())
+				.ToListAsync();
+
+			var transactionIds = transactionDetails
+				.Select(td => td.TransactionId)
+				.Distinct()
+				.ToList();
+
+			var refundTransactions = await _context.Transactions
+			.Where(t => t.Type == TypeTransaction.Refund.ToString() && t.BaseTransactionId != null && transactionIds.Contains(t.BaseTransactionId))
+			.ToListAsync();
+			var grouped = transactionDetails
+			.GroupBy(td => td.ItemId)
+			.ToDictionary(g => g.Key, g => new
+			{
+				TotalSales = g.Count(),
+				TotalRevenue = g.Sum(td => td.InstructorShare)
+			});
+				var refundGrouped = refundTransactions
+			.GroupBy(t => t.BaseTransactionId)
+			.Select(g => g.Key)
+			.ToHashSet();
+
+			var result = courseQuery.Select(c => new CourseRevenue
+			{
+				Title = c.CourseName,
+				TotalSales = grouped.ContainsKey(c.Id) ? grouped[c.Id].TotalSales : 0,
+				TotalRevenue = grouped.ContainsKey(c.Id) ? grouped[c.Id].TotalRevenue : 0,
+				TotalRefund = transactionDetails
+					.Where(td => td.ItemId == c.Id && td.TransactionId != null && refundGrouped.Contains(td.TransactionId))
+					.Select(td => td.TransactionId)
+					.Distinct()
+					.Count()
+			}).ToList();
+
+			return result;
 		}
 
 		public async Task<List<InstructorTransferInfo>> GetGroupedInstructorTransfersByTransactionId(string transactionId)
@@ -136,6 +189,65 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			if (oldValue == 0) return newValue > 0 ? 100 : 0;
 			return Math.Round((newValue - oldValue) / oldValue * 100, 2);
+		}
+
+		public async Task<(List<ChartInfo> Earnings, List<ChartInfo> Sales, List<ChartInfo> Refunds)> GetChartRevenue(string instructorId)
+		{
+			// Lấy toàn bộ dữ liệu TransactionDetail theo InstructorId
+			var details = await _context.TransactionDetails
+				.Where(t => t.InstructorId == instructorId && t.ItemType == ItemTypeTransactionDetail.Course.ToString() && t.DeletedAt == null)
+				.ToListAsync();
+
+			// Earnings
+			var earnings = details
+				.Where(x => x.CreatedAt.HasValue)
+				.GroupBy(t => new { t.CreatedAt.Value.Year, t.CreatedAt.Value.Month })
+				.Select(g => new ChartInfo
+				{
+					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
+					Count = g.Sum(x => x.InstructorShare ?? 0).ToString("0.##")
+				})
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.ToList();
+
+			// Sales
+			var sales = details
+				.Where(x => x.CreatedAt.HasValue)
+				.GroupBy(t => new { t.CreatedAt.Value.Year, t.CreatedAt.Value.Month })
+				.Select(g => new ChartInfo
+				{
+					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
+					Count = g.Sum(x => x.Amount).ToString("0.##")
+				})
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.ToList();
+
+			// Refunds: Lấy tất cả transactionId từ transactionDetail
+			var transactionIds = details
+				.Select(x => x.TransactionId)
+				.Where(id => !string.IsNullOrEmpty(id))
+				.Distinct()
+				.ToList();
+
+			var refunds = await _context.Transactions
+				.Where(t => t.Type == "Refund"
+					&& t.DeletedAt == null
+					&& t.BaseTransactionId != null
+					&& transactionIds.Contains(t.BaseTransactionId))
+				.ToListAsync();
+
+			var refundGroup = refunds
+				.Where(x => x.CreatedAt.HasValue)
+				.GroupBy(t => new { t.CreatedAt.Value.Year, t.CreatedAt.Value.Month })
+				.Select(g => new ChartInfo
+				{
+					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
+					Count = g.Sum(t => t.TotalAmount).ToString("0.##")
+				})
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.ToList();
+
+			return (earnings, sales, refundGroup);
 		}
 	}
 }

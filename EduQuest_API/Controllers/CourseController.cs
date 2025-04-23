@@ -23,6 +23,7 @@ using EduQuest_Application.UseCases.Courses.Query.GetLearnerOverviewForInstructo
 using EduQuest_Application.UseCases.Courses.Query.GetLessonMaterials;
 using EduQuest_Application.UseCases.Courses.Query.GetQuizAttempts;
 using EduQuest_Application.UseCases.Expert.Commands.ApproveCourse;
+using EduQuest_Application.UseCases.Revenue.Query.GetCourseRevenue;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Request;
 using MediatR;
@@ -193,6 +194,8 @@ namespace EduQuest_API.Controllers
 			var result = await _mediator.Send(new GetLearnerDetailForInstructorQuery(userId, courseId), cancellationToken);
 			return Ok(result);
 		}
+
+		
 
 		[Authorize]
         [HttpPost("")]
