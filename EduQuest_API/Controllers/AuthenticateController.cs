@@ -1,7 +1,4 @@
 ﻿using Application.UseCases.Authenticate.Commands.SignInWithGoogle;
-using EduQuest_Application.Abstractions.Firebase;
-using EduQuest_Application.DTO.Request.Authenticate;
-using EduQuest_Application.Helper;
 using EduQuest_Application.UseCases.Authenticate.Commands.ChangePassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.LogOut;
 using EduQuest_Application.UseCases.Authenticate.Commands.RefreshToken;
