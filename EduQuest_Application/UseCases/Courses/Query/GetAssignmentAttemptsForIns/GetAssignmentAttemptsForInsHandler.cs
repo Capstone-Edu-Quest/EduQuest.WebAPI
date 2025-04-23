@@ -6,28 +6,21 @@ using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetAssignmentAttemptsForIns;
 
 public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentAttemptsForInsQuery, APIResponse>
 {
-    private readonly ILessonRepository _lessonRepository;
     private readonly IMaterialRepository _materialRepository;
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
     private readonly IMapper _mapper;
     private readonly ICourseRepository _courseRepository;
 
-    public GetAssignmentAttemptsForInsHandler(ILessonRepository lessonRepository, IMaterialRepository materialRepository, 
-        IAssignmentAttemptRepository assignmentAttemptRepository, IMapper mapper, ICourseRepository courseRepository)
+    public GetAssignmentAttemptsForInsHandler(IMaterialRepository materialRepository, IAssignmentAttemptRepository assignmentAttemptRepository, 
+        IMapper mapper, ICourseRepository courseRepository)
     {
-        _lessonRepository = lessonRepository;
         _materialRepository = materialRepository;
         _assignmentAttemptRepository = assignmentAttemptRepository;
         _mapper = mapper;
@@ -57,7 +50,7 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
         }
         var materials = await _materialRepository.GetMaterialsByIds(materialIds);
         materials = materials.Where(m => m.AssignmentId != null).ToList();
-
+        UnreviewedAssignmentAttempt responseDto = new UnreviewedAssignmentAttempt();
         List<AssignmentResponse> responses = new List< AssignmentResponse >();
         foreach (var material in materials)
         {
@@ -67,15 +60,18 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
             List<AssignmentAttemptResponseForInstructor> attempts = _mapper.Map<List<AssignmentAttemptResponseForInstructor>>(assignmentAttempts);
             AssignmentResponse dto = _mapper.Map<AssignmentResponse>(assignment);
             dto.attempts = attempts;
+            dto.LessonName = lessons.FirstOrDefault(l => l.Id == lessonId).Name;
             if(dto.attempts.Count > 0)
             {
                 responses.Add(dto);
             }
         }
-        
+        responseDto.CourseName = course.Title;
+        responseDto.CourseId = course.Id;
+        responseDto.Assignments = responses;
         
 
 
-        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully, responses, "name", "assignment");
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully, responseDto, "name", "assignment");
     }
 }
