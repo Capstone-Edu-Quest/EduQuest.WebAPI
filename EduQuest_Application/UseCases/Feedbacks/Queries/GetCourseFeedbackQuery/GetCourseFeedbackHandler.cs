@@ -29,26 +29,6 @@ public class GetCourseFeedbackHandler : IRequestHandler<GetCourseFeedbackQuery, 
         {
             var result = await _feedbackRepository.GetByCourseId(request.courseId, request.PageNo, request.PageSize, request.Rating, request.Feedback);
 
-            /*if (result == null)
-            {
-                return new APIResponse
-                {
-                    IsError = true,
-                    Payload = null,
-                    Errors = new ErrorResponse
-                    {
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        StatusResponse = HttpStatusCode.BadRequest,
-                        Message = MessageCommon.NotFound
-                    },
-                    Message = new MessageResponse
-                    {
-                        content = MessageCommon.GetFailed,
-                        values = new Dictionary<string, string> { { "name", "feedback" } }
-                    }
-                };
-            }*/
-
             List<FeedbackResponse> responseDto = new List<FeedbackResponse>();
             var temp = result.Items.ToList();
             foreach (var item in temp)

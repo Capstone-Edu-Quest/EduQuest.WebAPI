@@ -45,11 +45,12 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
 
             //validate if user is exsist
             User? user = await _userRepository.GetById(request.UserId)!;
-            if(user == null)
+            if (user == null)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.Unauthorized, Key, value);
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed,
+                    MessageCommon.Unauthorized, Key, value);
             }
-            
+
 
             #region filter duplicated courseId and duplicated course order
             int before = learningPathCourses.Count;
@@ -60,7 +61,8 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             int after = learningPathCourses.Count;
             if(before > after)
             {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageError.DuplicateCourseIdOrCourseOrder, Key, "learning path courses");
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, 
+                    MessageError.DuplicateCourseIdOrCourseOrder, Key, "learning path courses");
             }
             #endregion
             double totalTime = 0;
@@ -70,7 +72,8 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             {
                 if (!await _courseRepository.IsExist(course.CourseId))
                 {
-                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, MessageCommon.NotFound, Key, value);
+                    return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, 
+                        MessageCommon.NotFound, Key, $"course with id: {course.Id}");
                 }
                 courseIds.Add(course.CourseId);
                 double courseTotalTime = await _courseRepository.GetTotalTime(course.CourseId);
@@ -103,12 +106,14 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
                     myLearningPathResponse, Key, value);
             }
 
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.DeleteFailed, MessageCommon.CreateFailed, Key, value);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed,
+                MessageCommon.CreateFailed, Key, value);
         
         }
         catch (Exception ex)
         {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, ex.Message, Key, value);
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.CreateFailed, 
+                ex.Message, Key, value);
         }
     }
 }
