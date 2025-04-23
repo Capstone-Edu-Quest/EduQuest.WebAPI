@@ -9,6 +9,7 @@ using EduQuest_Application.UseCases.Authenticate.Commands.ResetPassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword;
 using EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 using EduQuest_Application.UseCases.Authenticate.Commands.ValidateChangePassword;
+using EduQuest_Application.UseCases.Authenticate.Commands.ValidateSignUp;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,15 @@ public class AuthenticateController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> SignUp([FromBody] SignUpCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("sign-up/validate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignUpValidation([FromBody] ValidateSignUpCommand request, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(request, cancellationToken);
         return Ok(result);

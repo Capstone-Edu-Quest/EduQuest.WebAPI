@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.Abstractions.Authentication;
+using EduQuest_Application.Abstractions.Email;
+using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Application.DTO.Response;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -10,8 +12,7 @@ using MediatR;
 using EduQuest_Application.Helper;
 using static EduQuest_Domain.Constants.Constants;
 using System.Net;
-using EduQuest_Application.ExternalServices.QuartzService;
-using EduQuest_Application.DTO.Response.Users;
+using StackExchange.Redis;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.SignUp;
 
@@ -19,17 +20,15 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, APIResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IJwtProvider _jwtProvider;
-    private readonly IMapper _mapper;
-    private readonly IQuartzService _quartzService;
+    private readonly IRedisCaching _redisCaching;
+    private readonly IEmailService _emailService;
 
-    public SignUpCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IJwtProvider jwtProvider, IMapper mapper, IQuartzService quartzService)
+    public SignUpCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IRedisCaching redisCaching, IEmailService emailService)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
-        _jwtProvider = jwtProvider;
-        _mapper = mapper;
-        _quartzService = quartzService;
+        _redisCaching = redisCaching;
+        _emailService = emailService;
     }
 
     public async Task<APIResponse> Handle(SignUpCommand request, CancellationToken cancellationToken)
@@ -52,57 +51,29 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, APIResponse>
 
         AuthenHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        var userId = Guid.NewGuid().ToString();
-        var newUser = new User
+        var otp = AuthenHelper.GenerateOTP();
+
+        // send OTP via email
+        var sendTask = _emailService.SendEmailVerifyAsync(
+            "SIGN UP VERIFICATION OTP",
+            request.Email,
+            "",
+            otp,
+            "./VerifyWithOTP.cshtml",
+            "./LOGO 3.png"
+        );
+
+        var hashEntries = new[]
         {
-            Id = userId,
-            Email = request.Email,
-            Username = request.FullName,
-            AvatarUrl = null,
-            Status = AccountStatus.Active.ToString(),
-            RoleId = ((int)GeneralEnums.UserRole.Learner).ToString(),
-            Package = GeneralEnums.PackageEnum.Free.ToString(),
-            PasswordHash = Convert.ToBase64String(passwordHash),
-            PasswordSalt = Convert.ToBase64String(passwordSalt),
-            UserMeta = new UserMeta
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserId = userId,
-                CurrentStreak = 0,
-                LongestStreak = 0,
-                TotalCompletedCourses = 0,
-                Gold = 0,
-                Exp = 0,
-                Level = 1,
-                TotalStudyTime = 0,
-                TotalCourseCreated = 0,
-                TotalLearner = 0,
-                TotalReview = 0,
-                LastActive = DateTime.UtcNow.ToUniversalTime(),
-                CreatedAt = DateTime.Now.ToUniversalTime(),
-                UpdatedAt = DateTime.Now.ToUniversalTime(),
-            },
-            FavoriteList = new FavoriteList
-            {
-                UserId = userId
-            }
+            new HashEntry("otp", otp),
+            new HashEntry("fullname", request.FullName),
+            new HashEntry("email", request.Email),
+            new HashEntry("passwordHash", Convert.ToBase64String(passwordHash)),
+            new HashEntry("passwordSalt", Convert.ToBase64String(passwordSalt))
         };
 
-        await _userRepository.Add(newUser);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _redisCaching.HashSetAsync($"SignUp_{request.Email}", hashEntries, 300);
 
-        var tokenResponse = await _jwtProvider.GenerateTokensForUser(newUser.Id, newUser.Email, Guid.NewGuid().ToString());
-
-        var userDTO = _mapper.Map<UserResponseDto>(newUser);
-        await _quartzService.AddAllQuestsToNewUser(userId);
-        return new APIResponse
-        {
-            IsError = false,
-            Payload = new LoginResponseDto
-            {
-                UserData = userDTO,
-                Token = tokenResponse
-            }
-        };
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SentOtpSuccessfully, null, "name", "user");
     }
 }
