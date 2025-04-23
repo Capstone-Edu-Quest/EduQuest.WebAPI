@@ -251,6 +251,7 @@ namespace EduQuest_Infrastructure
                         .WithIntervalInMinutes(2)
                         .RepeatForever()
                         .Build()));
+
 				q.AddTrigger(opts => opts.ForJob(Leaderboard)
 				.StartNow()
 				);
