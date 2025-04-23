@@ -7,6 +7,7 @@ using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -22,7 +23,7 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
 
 	public async Task<PagedList<Feedback>> GetByCourseId(string courseId, int pageNo, int pageSize, int? rating, string? feedback)
     {
-        var result = _context.Feedbacks.Include(f => f.User).Where(f => f.CourseId == courseId);
+        var result = _context.Feedbacks.Where(f => f.CourseId == courseId);
 
         if (rating.HasValue)
         {
@@ -90,5 +91,9 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
     {
         var result = await _context.Feedbacks.FindAsync(feedbackId);
         return UserId == result!.UserId ? true : false;
+    }
+	public async Task<List<Feedback>> GetAllByCourseId(string courseId)
+    {
+		return await _context.Feedbacks.Where(f => f.CourseId == courseId).ToListAsync();
     }
 }
