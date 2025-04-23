@@ -30,65 +30,68 @@ namespace EduQuest_Infrastructure.Repository
 
         public async Task<(List<Course> Courses, int TotalItems)> SearchCoursesAsync(SearchCourseRequestDto request, int pageNo, int eachPage)
         {
-            var query = _context.Courses
-                .AsNoTracking();
+			var query = _context.Courses
+		.AsNoTracking()
+		.Where(x => x.DeletedAt == null);
 
-            if (!string.IsNullOrWhiteSpace(request.KeywordName))
-            {
-                var keyword = ContentHelper.ConvertVietnameseToEnglish(request.KeywordName.ToLower());
-                query = query.Where(x =>
-                    ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(keyword));
-            }
+			// Apply date filters
+			if (request.DateFrom.HasValue)
+				query = query.Where(x => x.UpdatedAt >= request.DateFrom.Value);
 
-            if (request.DateFrom.HasValue)
-                query = query.Where(x => x.UpdatedAt >= request.DateFrom.Value);
+			if (request.DateTo.HasValue)
+				query = query.Where(x => x.UpdatedAt <= request.DateTo.Value);
 
-            if (request.DateTo.HasValue)
-                query = query.Where(x => x.UpdatedAt <= request.DateTo.Value);
+			if (request.IsPublic.HasValue)
+			{
+				var isPublic = request.IsPublic.Value;
+				query = query.Where(x =>
+					isPublic ? x.Status == StatusCourse.Public.ToString() : x.Status != StatusCourse.Public.ToString());
+			}
 
-            if (request.IsPublic.HasValue)
-            {
-                var isPublic = request.IsPublic.Value;
-                query = query.Where(x =>
-                    isPublic ? x.Status == StatusCourse.Public.ToString() : x.Status != StatusCourse.Public.ToString());
-            }
+			if (request.Rating.HasValue)
+				query = query.Where(x => x.CourseStatistic.Rating >= request.Rating.Value);
 
-            if (!string.IsNullOrWhiteSpace(request.Author))
-            {
-                var author = ContentHelper.ConvertVietnameseToEnglish(request.Author.ToLower());
-                query = query.Where(x =>
-                    ContentHelper.ConvertVietnameseToEnglish(x.User.Username.ToLower()).Contains(author));
-            }
+			if (request.TagListId != null && request.TagListId.Any())
+			{
+				var tagList = request.TagListId;
+				query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
+			}
 
-            if (request.Rating.HasValue)
-                query = query.Where(x => x.CourseStatistic.Rating >= request.Rating.Value);
+			var courses = await query.ToListAsync();
 
-            if (request.TagListId != null && request.TagListId.Any())
-            {
-                var tagList = request.TagListId;
-                query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
-            }
+			if (!string.IsNullOrWhiteSpace(request.KeywordName) || !string.IsNullOrWhiteSpace(request.Author))
+			{
+				var keyword = ContentHelper.ConvertVietnameseToEnglish(request.KeywordName?.ToLower());
+				var author = ContentHelper.ConvertVietnameseToEnglish(request.Author?.ToLower());
 
-            if (request.Sort != null)
-            {
-                var sortType = (SortCourse)request.Sort;
-                query = sortType switch
-                {
-                    SortCourse.NewestCourses => query.OrderByDescending(x => x.CreatedAt),
-                    SortCourse.MostReviews => query.OrderByDescending(x => x.CourseStatistic.TotalReview),
-                    SortCourse.HighestRated => query.OrderByDescending(x => x.CourseStatistic.Rating),
-                    _ => query.OrderByDescending(x => x.CreatedAt)
-                };
-            }
+				courses = courses
+					.Where(x =>
+						(string.IsNullOrWhiteSpace(request.KeywordName) || ContentHelper.ConvertVietnameseToEnglish(x.Title.ToLower()).Contains(keyword)) &&
+						(string.IsNullOrWhiteSpace(request.Author) || ContentHelper.ConvertVietnameseToEnglish(x.User.Username.ToLower()).Contains(author))
+					)
+					.ToList();
+			}
 
-            var totalItems = await query.CountAsync();
-            var pagedCourses = await query
-                .Skip((pageNo - 1) * eachPage)
-                .Take(eachPage)
-                .ToListAsync();
+			if (request.Sort != null)
+			{
+				var sortType = (SortCourse)request.Sort;
+				courses = sortType switch
+				{
+					SortCourse.NewestCourses => courses.OrderByDescending(x => x.CreatedAt).ToList(),
+					SortCourse.MostReviews => courses.OrderByDescending(x => x.CourseStatistic.TotalReview).ToList(),
+					SortCourse.HighestRated => courses.OrderByDescending(x => x.CourseStatistic.Rating).ToList(),
+					_ => courses.OrderByDescending(x => x.CreatedAt).ToList(),
+				};
+			}
 
-            return (pagedCourses, totalItems);
-        }
+			var totalItems = courses.Count;
+			var pagedCourses = courses
+				.Skip((pageNo - 1) * eachPage)
+				.Take(eachPage)
+				.ToList();
+
+			return (pagedCourses, totalItems);
+		}
 
 
 
