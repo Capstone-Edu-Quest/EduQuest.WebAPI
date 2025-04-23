@@ -101,31 +101,43 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 	public async Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds)
 	{
 		var query = from courseStatistic in _context.CourseStatistics
-					where courseIds.Contains(courseStatistic.CourseId)
-						  && courseStatistic.DeletedAt == null
+					where courseIds.Contains(courseStatistic.CourseId) && courseStatistic.DeletedAt == null
 					select new
 					{
-						CourseId = courseStatistic.CourseId,
-						CourseStatistic = courseStatistic,
-						TotalLearners = _context.Feedbacks.Count(feedback => feedback.CourseId == courseStatistic.CourseId) 
+						courseStatistic.CourseId,
+						courseStatistic.TotalLearner,
+						courseStatistic.Course,
 					};
 
 		var courseData = await query
-			.Where(x => x.TotalLearners > 0) 
+			.Where(x => x.TotalLearner > 0)  
+			.ToListAsync();
+
+		var feedbackCounts = await _context.Feedbacks
+			.Where(f => courseIds.Contains(f.CourseId))  // Filter by courseIds
+			.GroupBy(f => f.CourseId)
+			.Select(g => new
+			{
+				CourseId = g.Key,
+				RatingCountThreeToFive = g.Count(x => x.Rating > 3 && x.Rating <= 5),
+				RatingCountOneToThree = g.Count(x => x.Rating <= 3)
+			})
 			.ToListAsync();
 
 		var top3Courses = courseData
-			.Select(g => new TopCourseInfo
-			{
-				Title = g.CourseStatistic?.Course.Title,  
-
-				Data = new List<int>
+			.GroupJoin(feedbackCounts,
+				course => course.CourseId,
+				feedback => feedback.CourseId,
+				(course, feedbackGroup) => new TopCourseInfo
 				{
-				g.TotalLearners, 
-				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating > 3 && x.Rating <= 5),  
-				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating <= 3) 
-				}
-			})
+					Title = course.Course.Title,
+					Data = new List<int>
+					{
+					(int)course.TotalLearner,  
+                    feedbackGroup.Any() ? feedbackGroup.First().RatingCountThreeToFive : 0,  
+                    feedbackGroup.Any() ? feedbackGroup.First().RatingCountOneToThree : 0  
+					}
+				})
 			.OrderByDescending(x => x.Data[0])  
 			.Take(3)  
 			.ToList();
