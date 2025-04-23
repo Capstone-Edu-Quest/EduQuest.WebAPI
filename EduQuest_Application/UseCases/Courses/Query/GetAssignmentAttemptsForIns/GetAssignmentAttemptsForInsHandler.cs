@@ -61,7 +61,8 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
             AssignmentResponse dto = _mapper.Map<AssignmentResponse>(assignment);
             dto.attempts = attempts;
             dto.LessonName = lessons.FirstOrDefault(l => l.Id == lessonId).Name;
-            if(dto.attempts.Count > 0)
+            dto.LessonIndex = lessons.FirstOrDefault(l => l.Id == lessonId).Index;
+            if (dto.attempts.Count > 0)
             {
                 responses.Add(dto);
             }
