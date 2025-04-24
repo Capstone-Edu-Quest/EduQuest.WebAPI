@@ -51,10 +51,11 @@ namespace EduQuest_Application.UseCases.Payments.Command.StripeExpress
 					ReturnUrl = _stripeModel.SuccessUrl,
 					Type = "account_onboarding"
 				};
+				var accountLink = await _accountLinkService.CreateAsync(accountLinkOptions);
 				user.StripeAccountId = account.Id;
+				user.StripeAccountUrl = accountLink.Url;
 				await _userRepository.Update(user);
 				await _unitOfWork.SaveChangesAsync();
-				var accountLink = await _accountLinkService.CreateAsync(accountLinkOptions);
 				return new APIResponse
 				{
 					IsError = false,
