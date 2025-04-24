@@ -43,20 +43,42 @@ public class FeedbackRepository : GenericRepository<Feedback>, IFeedbackReposito
 
 	public async Task<List<ChartInfo>> GetCourseRatingOverTimeAsync(string courseId)
 	{
-		var query = from feedback in _context.Feedbacks
-					where feedback.CourseId == courseId
-					group feedback by new
-					{
-						Year = ((DateTime)feedback.UpdatedAt).Year,
-						Month = ((DateTime)feedback.UpdatedAt).Month
-					} into g
-					select new ChartInfo
-					{
-						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
-						Count = g.Count().ToString()
-					};
+		var now = DateTime.Now.ToUniversalTime();
+		var sixMonthsAgo = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-5);
 
-		return await query.ToListAsync();
+		var last6Months = Enumerable.Range(0, 6)
+			.Select(i => now.AddMonths(-i))
+			.Select(d => new { Year = d.Year, Month = d.Month })
+			.OrderBy(d => d.Year).ThenBy(d => d.Month)
+			.ToList();
+
+		var rawData = await (from feedback in _context.Feedbacks
+							 where feedback.CourseId == courseId
+								&& feedback.UpdatedAt != null
+								&& feedback.UpdatedAt >= sixMonthsAgo
+							 group feedback by new
+							 {
+								 Year = feedback.UpdatedAt.Value.Year,
+								 Month = feedback.UpdatedAt.Value.Month
+							 } into g
+							 select new
+							 {
+								 g.Key.Year,
+								 g.Key.Month,
+								 Count = g.Count()
+							 }).ToListAsync();
+
+		var result = last6Months.Select(m =>
+		{
+			var match = rawData.FirstOrDefault(x => x.Year == m.Year && x.Month == m.Month);
+			return new ChartInfo
+			{
+				Time = $"{DateTimeHelper.GetMonthName(m.Month)} {m.Year}",
+				Count = match?.Count.ToString() ?? "0"
+			};
+		}).ToList();
+
+		return result;
 	}
 
 	public async Task<List<CourseRatingOverTime>> GetMyCoursesRatingOverTimeAsync(List<string> courseIds)
