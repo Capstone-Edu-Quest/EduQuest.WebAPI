@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EduQuest_Application.Abstractions.Redis;
+﻿using EduQuest_Application.Abstractions.Redis;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
@@ -17,7 +16,6 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly IAssignmentRepository _assignmentRepository;
     private readonly ILessonRepository _lessonRepository;
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
-    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserQuestRepository _userQuestRepository;
     private readonly ICourseRepository _courseRepository;
@@ -26,13 +24,12 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
     public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, ILessonRepository lessonRepository, IAssignmentAttemptRepository assignmentAttemptRepository,
-        IMapper mapper, IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, ICourseRepository courseRepository,
+        IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, ICourseRepository courseRepository,
         IUserMetaRepository userMetaRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
     {
         _assignmentRepository = assignmentRepository;
         _lessonRepository = lessonRepository;
         _assignmentAttemptRepository = assignmentAttemptRepository;
-        _mapper = mapper;
         _unitOfWork = unitOfWork;
         _userQuestRepository = userQuestRepository;
         _courseRepository = courseRepository;
@@ -138,7 +135,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
                 Date = now.ToUniversalTime()
             });
         }
-        //await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
+        await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
