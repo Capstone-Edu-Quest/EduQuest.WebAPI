@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Response;
 using EduQuest_Application.DTO.Response.Courses;
-using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
