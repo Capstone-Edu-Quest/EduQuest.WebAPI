@@ -55,9 +55,12 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			var courseLearner = course.CourseLearners.FirstOrDefault(x => x.UserId == request.UserId);
 			if(courseLearner == null)
 			{
-				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
+				return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
 			}
-
+            if(courseLearner.TotalTime.Value >= course.CourseStatistic.TotalTime.Value)
+            {
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
+            }
             var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
             double times = request.Info.Time != null ? request.Info.Time.Value : material.Duration!.Value;
             if (studyTime != null)

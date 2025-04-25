@@ -42,6 +42,11 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     public async Task<APIResponse> Handle(AttemptAssignmentCommand request, CancellationToken cancellationToken)
     {
         int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId, request.UserId) + 1;
+        if (attempNo > 1)
+        {
+            return GeneralHelper.CreateErrorResponse(HttpStatusCode.OK, MessageCommon.AlreadyExists,
+                MessageCommon.AlreadyExists, "name", "assignemt attemp");
+        }
         DateTime now = DateTime.Now;
         var lesson = await _lessonRepository.GetById(request.LessonId);
         if (lesson == null)
@@ -101,14 +106,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         {
             learner.ProgressPercentage = 100;
         }
-        if (attempNo > 1)
-        {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.OK, MessageCommon.AlreadyExists,
-                MessageCommon.AlreadyExists, "name", "assignemt attemp");
-        }
+        
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
-
-
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
         learner.TotalTime += material.Duration;
         if (learner.TotalTime > course.CourseStatistic.TotalTime)
