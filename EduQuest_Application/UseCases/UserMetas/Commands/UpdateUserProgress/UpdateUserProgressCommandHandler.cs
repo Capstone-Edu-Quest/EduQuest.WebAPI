@@ -57,7 +57,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			{
 				return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
 			}
-            if(courseLearner.TotalTime.Value == course.CourseStatistic.TotalTime.Value)
+            if(courseLearner.TotalTime.Value >= course.CourseStatistic.TotalTime.Value)
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
             }
