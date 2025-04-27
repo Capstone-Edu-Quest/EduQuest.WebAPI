@@ -5,6 +5,7 @@ using EduQuest_Application.UseCases.Users.Commands.BecomeInstructor;
 using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
 using EduQuest_Application.UseCases.Users.Commands.UpdateStatus;
 using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
+using EduQuest_Application.UseCases.Users.Commands.UpdateUserRole;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
 using EduQuest_Application.UseCases.Users.Queries.GetInstructorApplication;
@@ -175,10 +176,9 @@ public class UserController : BaseController
     [HttpPut("switch")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<APIResponse>> SwitchRole([FromBody] string accestoken, string roleId,CancellationToken cancellationToken = default)
+    public async Task<ActionResult<APIResponse>> SwitchRole([FromBody] SwitchRoleCommand command,CancellationToken cancellationToken = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
-        var result = await _mediator.Send(new SwitchRoleCommand { accessToken = accestoken, userId = userId, RoleId = roleId }, cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
     }
 

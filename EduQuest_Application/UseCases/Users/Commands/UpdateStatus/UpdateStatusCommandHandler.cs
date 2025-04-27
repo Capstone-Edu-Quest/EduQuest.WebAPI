@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Users;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Users.Commands.UpdateStatus;
@@ -26,11 +28,13 @@ public class UpdateStatusCommandHandler : IRequestHandler<UpdateStatusCommand, A
         var user = await _userRepo.GetById(request.UserId);
         if (user == null)
         {
-            return new APIResponse
-            {
-                IsError = true,
-                Message = new MessageResponse { content = MessageCommon.NotFound, values = new { name = "user" } }
-            };
+            return GeneralHelper.CreateErrorResponse(
+                HttpStatusCode.NotFound,
+                MessageCommon.NotFound,
+                MessageCommon.NotFound,
+                "name",
+                request.UserId
+            );
         }
 
         user.Status = request.Status;
@@ -38,11 +42,12 @@ public class UpdateStatusCommandHandler : IRequestHandler<UpdateStatusCommand, A
         await _userRepo.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new APIResponse
-        {
-            IsError = false,
-            Payload = _mapper.Map<UserResponseDto>(user),
-            Message = new MessageResponse { content = MessageCommon.UpdateSuccesfully, values = new { name = "user status" } }
-        };
+        return GeneralHelper.CreateSuccessResponse(
+            HttpStatusCode.OK,
+            MessageCommon.UpdateSuccesfully,
+            null,
+            "user",
+            user.Username
+        );
     }
 }
