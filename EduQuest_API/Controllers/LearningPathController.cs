@@ -37,7 +37,7 @@ public class LearningPathController : Controller
         [FromQuery, AllowNull] bool? isPublic,
         [FromQuery, AllowNull] bool? isEnrolled,
         [FromQuery, AllowNull] bool? createdByExpert,
-        //[FromQuery] string UserId,
+        //[FromQuery] string userId,
         [FromQuery, Range(1, int.MaxValue)] int pageNo = 1, int eachPage = 10, CancellationToken cancellationToken = default)
     {
         string userId = User.GetUserIdFromToken().ToString();
@@ -84,12 +84,6 @@ public class LearningPathController : Controller
         var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId, keyWord), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
-
-    /*[HttpGet("dup")]
-    public async Task<IActionResult> GetMyDuplicatedLearningPath([FromQuery, Required] string UserId, CancellationToken token = default)
-    {
-        throw new NotImplementedException();
-    }*/
 
     [Authorize]
     [HttpPost]

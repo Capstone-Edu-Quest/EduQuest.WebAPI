@@ -5,6 +5,7 @@ using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -23,7 +24,7 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .Include(l => l.Tags)
             .Include(l => l.LearningPathCourses)
             .Include(l => l.User)
-            .FirstOrDefaultAsync(l=> l.Id == LearningPathId);
+            .FirstOrDefaultAsync(l => l.Id == LearningPathId);
         return result;
     }
 
@@ -34,7 +35,7 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         return await result.ToListAsync();
     }
 
-    public Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, bool? isPulic, bool? isEnrolled,
+    public async Task<PagedList<LearningPath>> GetMyLearningPaths(string UserId, string? keyWord, bool? isPulic, bool? isEnrolled,
         bool? CreatedByExpert, int page, int eachPage)
     {
         var result = _context.LearningPaths.Include(l => l.User).Include(l => l.LearningPathCourses)
@@ -53,20 +54,23 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
                      where r.IsPublic == isPulic
                      select r;
         }
-        if(isEnrolled.HasValue)
+        if (isEnrolled.HasValue && isEnrolled.Value == true)
         {
-            result = from r in result
+            /*result = from r in result
                      where r.IsEnrolled == isEnrolled
-                     select r;
+                     select r;*/
+            var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
+            var result2 = _context.LearningPaths.Where(l => l.Id == learningPathId);
+            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         }
-        if(CreatedByExpert.HasValue)
+        if (CreatedByExpert.HasValue)
         {
             result = from r in result
                      where r.CreatedByExpert == CreatedByExpert
                      select r;
         }
-        
-        var response = result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
+
+        var response = await result.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         return response;
     }
 
@@ -103,22 +107,31 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         return UserId == result!.UserId ? true : false;
     }
 
-	public async Task<LearningPath> GetMySpecificLearningPath(string userId, string learningId)
-	{
+    public async Task<LearningPath> GetMySpecificLearningPath(string userId, string learningId)
+    {
         return await _context.LearningPaths.Include(x => x.LearningPathCourses).FirstOrDefaultAsync(x => x.UserId == userId && x.Id == learningId);
-	}
+    }
 
-    public async Task<LearningPath?> EnrollLearningPath(string learningPathId)
+    public async Task<LearningPath?> EnrollLearningPath(string learningPathId, string userId)
     {
         var learningPath = await _context.LearningPaths.Where(l => l.Id == learningPathId).FirstOrDefaultAsync();
-        if(learningPath != null)
+        if (learningPath != null)
         {
             learningPath.IsEnrolled = true;
+            if (learningPath.Enrollers.IsNullOrEmpty())
+            {
+                Enroller newEnroller = new Enroller { UserId = userId, LearningPathId = learningPathId };
+                List<Enroller> newEnrollers = [newEnroller];
+                learningPath.Enrollers = newEnrollers;
+            }
+            else
+            {
+                learningPath.Enrollers.Add(new Enroller { LearningPathId = learningPathId, UserId = userId });
+            }
 
-            await _context.LearningPaths
-                .Where(l => l.Id != learningPathId)
-                .ExecuteUpdateAsync(g => g.SetProperty(l => l.IsEnrolled, false));
-
+            var removeEnroll = await _context.Enrollers
+                .Where(l => l.LearningPathId != learningPathId && l.UserId == userId).ToListAsync();
+            _context.RemoveRange(removeEnroll);
             await _context.SaveChangesAsync();
             return learningPath;
         }

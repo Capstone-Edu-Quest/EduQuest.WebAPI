@@ -38,7 +38,6 @@ using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Infrastructure.ExternalServices.Quartz;
 using Quartz;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
-using EduQuest_Application.Helper;
 using Infrastructure.ExternalServices.Email.Setting;
 using EduQuest_Application.Abstractions.Email;
 using EduQuest_Infrastructure.ExternalServices.Email;
@@ -253,8 +252,7 @@ namespace EduQuest_Infrastructure
                         .Build()));
 
 				q.AddTrigger(opts => opts.ForJob(Leaderboard)
-				.StartNow()
-				);
+				.StartNow());
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             #endregion
