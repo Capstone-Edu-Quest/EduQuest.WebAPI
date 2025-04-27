@@ -44,18 +44,10 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
         }
-
-        bool isOwner = await _learningPathRepository.IsOwner(request.UserId, request.LearningPathId);
-        bool isExpert = int.TryParse(user.RoleId, out int roleId) && roleId == (int)UserRole.Expert;
-
-        if (!isOwner || isExpert)
-        {
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
-        }
         #endregion
 
         //validate Learing path exist 
-        var learningPath = await _learningPathRepository.EnrollLearningPath(request.LearningPathId);
+        var learningPath = await _learningPathRepository.EnrollLearningPath(request.LearningPathId, request.UserId);
         if (learningPath == null)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
