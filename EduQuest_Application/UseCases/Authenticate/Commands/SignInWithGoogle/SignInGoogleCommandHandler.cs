@@ -149,7 +149,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddMinutes(15)
             };
 
@@ -157,7 +157,7 @@ namespace Application.UseCases.Authenticate.Commands.SignInWithGoogle
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddMonths(3)
             };
 

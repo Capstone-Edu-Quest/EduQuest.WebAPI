@@ -101,7 +101,7 @@ public class ValidateSignUpCommandHandler : IRequestHandler<ValidateSignUpComman
         {
             HttpOnly = true, 
             Secure = true,
-            SameSite = SameSiteMode.Strict, 
+            SameSite = SameSiteMode.None, 
             Expires = DateTime.UtcNow.AddMinutes(15) 
         };
 
@@ -109,7 +109,7 @@ public class ValidateSignUpCommandHandler : IRequestHandler<ValidateSignUpComman
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddMonths(3) 
         };
 
