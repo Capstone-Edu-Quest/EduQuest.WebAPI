@@ -99,7 +99,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             userQuizAnswers.Add(userQuizAnswer);
             attempt.Answers = userQuizAnswers;
         }
-
+        attempNo = attempt.AttemptNo;
+     
 
         double CorrectPercentage = Math.Round((double)CorrectQuestion / TotalQuestion * 100, 2);
         attempt.Percentage = CorrectPercentage;
@@ -112,6 +113,12 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             response.isPassed = false;
             return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
             response, "name", "quiz");
+        }
+        if (attempNo > 1)
+        {
+            response.isPassed = true;
+            return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
+                response, "name", "quiz");
         }
 
         var course = await _courseRepository.GetById(lesson.CourseId);
@@ -137,7 +144,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
         }
 
-        learner.TotalTime += Convert.ToInt32(material.Duration);
+        learner.TotalTime += material.Duration;
 
         if (learner.TotalTime > course.CourseStatistic.TotalTime)
         {
