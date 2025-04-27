@@ -12,14 +12,12 @@ public class ReviewAssignmentHandler : IRequestHandler<ReviewAssignmentCommand, 
 {
     private readonly IReviewAssignmentRepository _reviewAssignmentRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAssignmentRepository _assignmentRepository;
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
     public ReviewAssignmentHandler(IReviewAssignmentRepository reviewAssignmentRepository, IUnitOfWork unitOfWork,
-        IAssignmentRepository assignmentRepository, IAssignmentAttemptRepository assignmentAttemptRepository)
+        IAssignmentAttemptRepository assignmentAttemptRepository)
     {
         _reviewAssignmentRepository = reviewAssignmentRepository;
         _unitOfWork = unitOfWork;
-        _assignmentRepository = assignmentRepository;
         _assignmentAttemptRepository = assignmentAttemptRepository;
     }
 

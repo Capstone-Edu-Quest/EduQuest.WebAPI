@@ -27,6 +27,13 @@ namespace EduQuest_Domain.Enums
 			Staff = 6
 		}
 
+		public enum StripeAccountStatus
+		{
+			Complete = 1,
+			Restricted = 2
+
+		}
+
 		#endregion
 
 		#region Course

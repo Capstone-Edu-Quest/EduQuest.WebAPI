@@ -6,6 +6,8 @@ namespace EduQuest_Application.DTO.Response.Materials;
 
 public class AssignmentResponse :IMapFrom<Assignment>
 {
+    public string LessonName { get; set; }
+    public int LessonIndex { get; set; }
     public string Id { get; set; }
     public double? TimeLimit { get; set; }
     public string? Question { get; set; }

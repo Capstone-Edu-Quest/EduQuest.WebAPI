@@ -36,20 +36,42 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
     public async Task<List<ChartInfo>> GetCourseEnrollOverTimeAsync(string courseId)
 	{
-		var query = from learner in _context.Learners
-					where learner.CourseId == courseId 
-					group learner by new
-					{
-						Year = learner.UpdatedAt.Value.Year,
-						Month = learner.UpdatedAt.Value.Month
-					} into g
-					select new ChartInfo
-					{
-						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
-						Count = g.Count().ToString() 
-					};
+		var now = DateTime.Now.ToUniversalTime();
+		var sixMonthsAgo = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-5);
 
-		return await query.ToListAsync();
+		var last6Months = Enumerable.Range(0, 6)
+			.Select(i => now.AddMonths(-i))
+			.Select(d => new { Year = d.Year, Month = d.Month })
+			.OrderBy(d => d.Year).ThenBy(d => d.Month)
+			.ToList();
+
+		var rawData = await (from learner in _context.Learners
+							 where learner.CourseId == courseId
+								&& learner.UpdatedAt != null
+								&& learner.UpdatedAt >= sixMonthsAgo
+							 group learner by new
+							 {
+								 Year = learner.UpdatedAt.Value.Year,
+								 Month = learner.UpdatedAt.Value.Month
+							 } into g
+							 select new
+							 {
+								 g.Key.Year,
+								 g.Key.Month,
+								 Count = g.Count()
+							 }).ToListAsync();
+
+		var result = last6Months.Select(m =>
+		{
+			var match = rawData.FirstOrDefault(x => x.Year == m.Year && x.Month == m.Month);
+			return new ChartInfo
+			{
+				Time = $"{DateTimeHelper.GetMonthName(m.Month)} {m.Year}",
+				Count = match?.Count.ToString() ?? "0"
+			};
+		}).ToList();
+
+		return result;
 	}
 
 	public async Task<List<CourseLearner>> GetCoursesByUserId(string userId)
@@ -82,50 +104,83 @@ public class LearnerRepository : GenericRepository<CourseLearner>, ILearnerRepos
 
 	public async Task<List<ChartInfo>> GetMyCoursesEnrollOverTimeAsync(List<string> courseIds)
 	{
-		var query = from learner in _context.Learners
-					where courseIds.Contains(learner.CourseId)
-					group learner by new
-					{
-						Year = learner.UpdatedAt.Value.Year, 
-						Month = learner.UpdatedAt.Value.Month
-					} into g
-					select new ChartInfo
-					{
-						Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
-						Count = g.Count().ToString() 
-					};
+		var now = DateTime.Now.ToUniversalTime();
+		var sixMonthsAgo = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-5);
 
-		return await query.ToListAsync();
+		var last6Months = Enumerable.Range(0, 6)
+			.Select(i => now.AddMonths(-i))
+			.Select(d => new { Year = d.Year, Month = d.Month })
+			.OrderBy(d => d.Year).ThenBy(d => d.Month)
+			.ToList();
+
+		var rawData = await (from learner in _context.Learners
+							 where learner.UpdatedAt != null
+								&& courseIds.Contains(learner.CourseId)
+								&& learner.UpdatedAt >= sixMonthsAgo
+							 group learner by new
+							 {
+								 Year = learner.UpdatedAt.Value.Year,
+								 Month = learner.UpdatedAt.Value.Month
+							 } into g
+							 select new
+							 {
+								 g.Key.Year,
+								 g.Key.Month,
+								 Count = g.Count()
+							 }).ToListAsync();
+
+		var result = last6Months.Select(m =>
+		{
+			var match = rawData.FirstOrDefault(x => x.Year == m.Year && x.Month == m.Month);
+			return new ChartInfo
+			{
+				Time = $"{DateTimeHelper.GetMonthName(m.Month)} {m.Year}",
+				Count = match?.Count.ToString() ?? "0"
+			};
+		}).ToList();
+		return result;
 	}
 
 	public async Task<List<TopCourseInfo>> GetTop3CoursesAsync(List<string> courseIds)
 	{
 		var query = from courseStatistic in _context.CourseStatistics
-					where courseIds.Contains(courseStatistic.CourseId)
-						  && courseStatistic.DeletedAt == null
+					where courseIds.Contains(courseStatistic.CourseId) && courseStatistic.DeletedAt == null
 					select new
 					{
-						CourseId = courseStatistic.CourseId,
-						CourseStatistic = courseStatistic,
-						TotalLearners = _context.Feedbacks.Count(feedback => feedback.CourseId == courseStatistic.CourseId) 
+						courseStatistic.CourseId,
+						courseStatistic.TotalLearner,
+						courseStatistic.Course,
 					};
 
 		var courseData = await query
-			.Where(x => x.TotalLearners > 0) 
+			.Where(x => x.TotalLearner > 0)  
+			.ToListAsync();
+
+		var feedbackCounts = await _context.Feedbacks
+			.Where(f => courseIds.Contains(f.CourseId))  // Filter by courseIds
+			.GroupBy(f => f.CourseId)
+			.Select(g => new
+			{
+				CourseId = g.Key,
+				RatingCountThreeToFive = g.Count(x => x.Rating > 3 && x.Rating <= 5),
+				RatingCountOneToThree = g.Count(x => x.Rating <= 3)
+			})
 			.ToListAsync();
 
 		var top3Courses = courseData
-			.Select(g => new TopCourseInfo
-			{
-				Title = g.CourseStatistic?.Course.Title,  
-
-				Data = new List<int>
+			.GroupJoin(feedbackCounts,
+				course => course.CourseId,
+				feedback => feedback.CourseId,
+				(course, feedbackGroup) => new TopCourseInfo
 				{
-				g.TotalLearners, 
-				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating > 3 && x.Rating <= 5),  
-				_context.Feedbacks.Count(x => x.CourseId == g.CourseId && x.Rating <= 3) 
-				}
-			})
+					Title = course.Course.Title,
+					Data = new List<int>
+					{
+					(int)course.TotalLearner,  
+                    feedbackGroup.Any() ? feedbackGroup.First().RatingCountThreeToFive : 0,  
+                    feedbackGroup.Any() ? feedbackGroup.First().RatingCountOneToThree : 0  
+					}
+				})
 			.OrderByDescending(x => x.Data[0])  
 			.Take(3)  
 			.ToList();

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 using Stripe.TestHelpers;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.ExternalServices.Payment;
 
@@ -70,6 +71,6 @@ public class StripePayment : IStripePayment
 		var account = await accountService.GetAsync(accountId);
 
 		// Có thể dùng account.DetailsSubmitted, account.Capabilities, account.Requirements để kiểm tra thêm
-		return account.Requirements?.DisabledReason == null ? "Complete" : "Restricted";
+		return account.Requirements?.DisabledReason == null ? StripeAccountStatus.Complete.ToString() : StripeAccountStatus.Restricted.ToString();
 	}
 }
