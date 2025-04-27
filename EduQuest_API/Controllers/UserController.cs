@@ -3,6 +3,7 @@ using EduQuest_Application.UseCases.Users.Commands.ApproveBecomeInstructor;
 using EduQuest_Application.UseCases.Users.Commands.AssignInstructorToExpert;
 using EduQuest_Application.UseCases.Users.Commands.BecomeInstructor;
 using EduQuest_Application.UseCases.Users.Commands.SwitchRole;
+using EduQuest_Application.UseCases.Users.Commands.UpdateStatus;
 using EduQuest_Application.UseCases.Users.Commands.UpdateUser;
 using EduQuest_Application.UseCases.Users.Queries.GetAllUsers;
 using EduQuest_Application.UseCases.Users.Queries.GetCurrentUser;
@@ -12,6 +13,7 @@ using EduQuest_Application.UseCases.Users.Queries.GetMyInstructorApplicationQuer
 using EduQuest_Application.UseCases.Users.Queries.GetUserByAssignToExpert;
 using EduQuest_Application.UseCases.Users.Queries.GetUserByRole;
 using EduQuest_Application.UseCases.Users.Queries.GetUserProfile;
+using EduQuest_Application.UseCases.Users.Queries.SearchUser;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using MediatR;
@@ -30,6 +32,29 @@ public class UserController : BaseController
 		_mediator = mediator;
 
 	}
+
+    [Authorize]
+    [HttpPut("status")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> UpdateUserStatus([FromBody] UpdateStatusCommand command, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+
+
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<APIResponse>> SearchUser([FromQuery] SearchUserQuery query, CancellationToken cancellationToken = default)
+    {
+        var result = await _mediator.Send(query, cancellationToken);
+        return Ok(result);
+    }
+
+
     [HttpGet("assignToExpert")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
