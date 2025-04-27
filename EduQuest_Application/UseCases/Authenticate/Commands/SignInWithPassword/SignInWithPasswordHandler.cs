@@ -56,7 +56,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
             {
                 HttpOnly = true, 
                 Secure = true,
-                SameSite = SameSiteMode.Strict, 
+                SameSite = SameSiteMode.None, 
                 Expires = DateTime.UtcNow.AddMinutes(15) 
             };
 
@@ -64,7 +64,7 @@ namespace EduQuest_Application.UseCases.Authenticate.Commands.SignInWithPassword
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddMonths(3)
             };
 
