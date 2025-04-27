@@ -36,7 +36,7 @@
             public const string YOUR_COURSE_WAS_REJECTED = "YOUR_COURSE_WAS_REJECTED";
             public const string A_STAFF_HAS_ASSIGN_COURSE_TO_YOU= "A_STAFF_HAS_ASSIGN_COURSE_TO_YOU";
             public const string A_STAFF_HAS_ASSIGN_INSTRUCTOR_TO_YOU= "A_STAFF_HAS_ASSIGN_INSTRUCTOR_TO_YOU";
-            public const string CHECK_OUT_SUCCESSFULLY = "SUBMIT_COURSE_SUCCESSFULLY";
+            public const string CHECK_OUT_SUCCESSFULLY = "CHECK_OUT_SUCCESSFULLY";
             public const string BUY_COURSE_SUCCESSFULLY = "BUY_COURSE_SUCCESSFULLY";
             public const string COMPLETED_COURSE_SUCCESSFULLY = "COMPLETED_COURSE_SUCCESSFULLY";
             public const string BUY_COURSE_FAILED = "BUY_COURSE_FAILED";
