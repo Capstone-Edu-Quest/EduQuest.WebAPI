@@ -53,7 +53,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 				{
-					await _lessonRepository.DeleteStagesByCourseId(existingCourse.Id);
+					await _lessonRepository.DeleteLessonByCourseId(existingCourse.Id);
 					int TotalLesson = 0;
 					for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
 					{
@@ -138,7 +138,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					var newLessons = new List<Lesson>();
 					if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 					{
-						await _lessonRepository.DeleteStagesByCourseId(existingCourse.Id);
+						await _lessonRepository.DeleteLessonByCourseId(existingCourse.Id);
 						int TotalLesson = 0;
 						for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
 						{

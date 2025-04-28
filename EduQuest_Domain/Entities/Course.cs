@@ -32,8 +32,7 @@ namespace EduQuest_Domain.Entities
 		public virtual ICollection<Feedback>? Feedbacks { get; set; }
 		[JsonIgnore]
 		public virtual ICollection<Tag>? Tags { get; set; }
-		[JsonIgnore]
-		public virtual ICollection<Item>? Items { get; set; }
+		
 		[JsonIgnore]
 		public virtual ICollection<Cart>? Carts { get; set; }
 		[JsonIgnore]
