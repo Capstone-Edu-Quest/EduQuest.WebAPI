@@ -21,8 +21,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		private readonly ILessonMaterialRepository _lessonMaterialRepository;
 		private readonly IMaterialRepository _materialRepository;
 		private readonly IUserMetaRepository _userMetaRepository;
+		private readonly ITagRepository _tagRepository;
 
-		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper, ILessonRepository lessonRepository, ILessonMaterialRepository lessonMaterialRepository, IMaterialRepository materialRepository, IUserMetaRepository userMetaRepository)
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper, ILessonRepository lessonRepository, ILessonMaterialRepository lessonMaterialRepository, IMaterialRepository materialRepository, IUserMetaRepository userMetaRepository, ITagRepository tagRepository)
 		{
 			_courseRepository = courseRepository;
 			_unitOfWork = unitOfWork;
@@ -31,6 +32,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			_lessonMaterialRepository = lessonMaterialRepository;
 			_materialRepository = materialRepository;
 			_userMetaRepository = userMetaRepository;
+			_tagRepository = tagRepository;
 		}
 
 		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
@@ -42,6 +44,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found {request.CourseInfo.CourseId}", "name", "Course");
 			}
 			var courseResponse = new CourseResponseForUpdate();
+			var listTag = await _tagRepository.GetByIdsAsync(request.CourseInfo.TagIds);
 			if (existingCourse.Status.ToLower() != GeneralEnums.StatusCourse.Public.ToString().ToLower())
 			{
 				existingCourse.Title = request.CourseInfo.Title;
@@ -49,6 +52,8 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
 				existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 				existingCourse.Price = request.CourseInfo.Price;
+				existingCourse.Tags.Clear();
+				existingCourse.Tags = listTag;
 
 				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
@@ -134,6 +139,8 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
 					existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 					existingCourse.Price = request.CourseInfo.Price;
+					existingCourse.Tags.Clear();
+					existingCourse.Tags = listTag;
 
 					var newLessons = new List<Lesson>();
 					if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())

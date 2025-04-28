@@ -18,19 +18,22 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
 		private readonly IUserMetaRepository _userMetaRepository;
+		private readonly ITagRepository _tagRepository;
 
-		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository, IUserMetaRepository userMetaRepository)
+		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository, IUserMetaRepository userMetaRepository, ITagRepository tagRepository)
 		{
 			_courseRepository = courseRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_userRepository = userRepository;
 			_userMetaRepository = userMetaRepository;
+			_tagRepository = tagRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
 		{
 			var course = _mapper.Map<Course>(request.CourseRequest);
+			var listTag = await _tagRepository.GetByIdsAsync(request.CourseRequest.TagIds);
 			course.Requirement = ContentHelper.JoinStrings(request.CourseRequest.RequirementList, '.');
 			
 			var user = await _userRepository.GetById(request.UserId);
@@ -39,6 +42,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			course.Id = Guid.NewGuid().ToString();
 			course.Version = 1;
 			//course.LastUpdated = DateTime.Now.ToUniversalTime();
+			course.Tags = listTag;
 			course.Status = GeneralEnums.StatusCourse.Draft.ToString();
 			course.CourseStatistic = new CourseStatistic
 			{

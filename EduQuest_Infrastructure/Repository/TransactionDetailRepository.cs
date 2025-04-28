@@ -193,15 +193,16 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<(List<ChartInfo> Earnings, List<ChartInfo> Sales, List<ChartInfo> Refunds)> GetChartRevenue(string instructorId)
 		{
+			// Lấy toàn bộ dữ liệu TransactionDetail theo InstructorId
 			var details = await _context.TransactionDetails
-		.Where(t => t.InstructorId == instructorId && t.ItemType == ItemTypeTransactionDetail.Course.ToString() && t.DeletedAt == null)
-		.ToListAsync();
+				.Where(t => t.InstructorId == instructorId && t.ItemType == ItemTypeTransactionDetail.Course.ToString() && t.DeletedAt == null)
+				.ToListAsync();
 
 			// Tính toán 6 tháng gần nhất
 			var currentDate = DateTime.Now;
 			var lastSixMonths = Enumerable.Range(0, 6)
 				.Select(i => currentDate.AddMonths(-i))
-				.OrderByDescending(date => date)
+				.OrderBy(date => date)  // Sắp xếp từ trước đến hiện tại
 				.ToList();
 
 			// Earnings
@@ -213,7 +214,7 @@ namespace EduQuest_Infrastructure.Repository
 					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 					Count = g.Sum(x => x.InstructorShare ?? 0).ToString("0.##")
 				})
-				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))  // Sắp xếp từ trước đến hiện tại
 				.ToList();
 
 			// Sales
@@ -225,7 +226,7 @@ namespace EduQuest_Infrastructure.Repository
 					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 					Count = g.Sum(x => x.Amount).ToString("0.##")
 				})
-				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))  // Sắp xếp từ trước đến hiện tại
 				.ToList();
 
 			// Refunds: Lấy tất cả transactionId từ transactionDetail
@@ -250,7 +251,7 @@ namespace EduQuest_Infrastructure.Repository
 					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 					Count = g.Sum(t => t.TotalAmount).ToString("0.##")
 				})
-				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))  // Sắp xếp từ trước đến hiện tại
 				.ToList();
 
 			// Chèn dữ liệu vào những tháng không có thông qua 6 tháng gần nhất
@@ -266,20 +267,21 @@ namespace EduQuest_Infrastructure.Repository
 						chart.Add(new ChartInfo
 						{
 							Time = chartMonth,
-							Count = "0" // Nếu không có dữ liệu, set giá trị 0
+							Count = "0" 
 						});
 					}
 				}
 			}
 
-			// Sắp xếp lại theo thời gian (theo tháng gần nhất đến xa nhất)
+			// Sắp xếp lại theo thời gian từ trước đến hiện tại
 			foreach (var chart in allCharts)
 			{
-				chart.Sort((x, y) => DateTime.Compare(DateTime.ParseExact(y.Time, "MMMM yyyy", CultureInfo.InvariantCulture),
-					DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture)));
+				chart.Sort((x, y) => DateTime.Compare(DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture),
+					DateTime.ParseExact(y.Time, "MMMM yyyy", CultureInfo.InvariantCulture)));
 			}
 
 			return (earnings, sales, refundGroup);
 		}
+
 	}
 }
