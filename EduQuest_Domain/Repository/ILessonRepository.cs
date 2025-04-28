@@ -12,7 +12,7 @@ namespace EduQuest_Domain.Repository
 	{
 		Task<List<Lesson>> GetByCourseId(string id);
 		Task<int?> GetMaxLevelInThisCourse(string id);
-		Task<bool> DeleteStagesByCourseId(string courseId);
+		Task<bool> DeleteLessonByCourseId(string courseId);
 		Task<Lesson> GetByLessonIdAsync(string lessonId);
 		Task<List<LessonMaterial>> GetMaterialsByLessonId(string lessonId);
 		Task<Lesson> GetFirstLesson(string courseId);

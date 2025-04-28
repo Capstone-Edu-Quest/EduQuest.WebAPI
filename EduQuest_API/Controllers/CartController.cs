@@ -23,7 +23,7 @@ namespace EduQuest_API.Controllers
 		}
 
 		[HttpGet("")]
-		public async Task<IActionResult> Register(CancellationToken cancellationToken = default)
+		public async Task<IActionResult> GetMyCart(CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetCartByUserIdQuery(userId), cancellationToken);

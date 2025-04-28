@@ -20,7 +20,7 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
-		public async Task<bool> DeleteStagesByCourseId(string courseId)
+		public async Task<bool> DeleteLessonByCourseId(string courseId)
 		{
 			var stages = _context.Lessons.Where(x => x.CourseId == courseId).ToList();
 

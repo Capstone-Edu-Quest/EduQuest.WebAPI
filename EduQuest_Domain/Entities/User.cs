@@ -42,8 +42,7 @@ namespace EduQuest_Domain.Entities
 		[JsonIgnore]
 		public virtual ICollection<Mascot>? MascotItem { get; set; } = null!;
         
-        [JsonIgnore]
-		public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
+       
 		[JsonIgnore]
 		public virtual ICollection<UserQuest>? UserQuests { get; set; }
 		

@@ -7,13 +7,12 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 {
 	public class EntityTypeConfiguration :
 		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<Subscription>,
-		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>, IEntityTypeConfiguration<Advertise>,
+		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>,
 		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<CartItem>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
-		IEntityTypeConfiguration<Item>, IEntityTypeConfiguration<CourseLearner>,
-		IEntityTypeConfiguration<LearningHistory>, IEntityTypeConfiguration<Material>, IEntityTypeConfiguration<LearningPath>,
+		IEntityTypeConfiguration<CourseLearner>
+		, IEntityTypeConfiguration<Material>, IEntityTypeConfiguration<LearningPath>,
 		IEntityTypeConfiguration<Question>, IEntityTypeConfiguration<Quiz>, IEntityTypeConfiguration<QuizAttempt>,
-		 IEntityTypeConfiguration<SearchHistory>, IEntityTypeConfiguration<Setting>,
 		IEntityTypeConfiguration<Lesson>, IEntityTypeConfiguration<Tag>, IEntityTypeConfiguration<Transaction>, IEntityTypeConfiguration<TransactionDetail>,
 		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
@@ -106,14 +105,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 				.WithMany(p => p.Answers)
 				.HasForeignKey(d => d.QuestionId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
-		}
-		#endregion
-
-		#region Advertise
-		public void Configure(EntityTypeBuilder<Advertise> builder)
-		{
-
-			
 		}
 		#endregion
 
@@ -239,15 +230,6 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region Item
-		public void Configure(EntityTypeBuilder<Item> builder)
-		{
-
-
-		}
-		#endregion
-
-	
 
 		#region Learner
 		public void Configure(EntityTypeBuilder<CourseLearner> builder)
@@ -283,13 +265,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         }
         #endregion
 
-        #region LearningHistory
-        public void Configure(EntityTypeBuilder<LearningHistory> builder)
-		{
-			
-
-		}
-		#endregion
+        
 
 		#region Material
 		public void Configure(EntityTypeBuilder<Material> builder)
@@ -384,22 +360,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		}
 		#endregion
 
-		#region SearchHistory
-		public void Configure(EntityTypeBuilder<SearchHistory> builder)
-		{
-
-
-		}
-		#endregion
-
-		#region Setting
-		public void Configure(EntityTypeBuilder<Setting> builder)
-		{
-
-
-		}
-		#endregion
-
+		
 		#region Stage
 		public void Configure(EntityTypeBuilder<Lesson> builder)
 		{
