@@ -155,8 +155,8 @@ namespace EduQuest_Infrastructure.Repository
 
 			// Available Balance
 			var available = await _context.Transactions
-				.Where(t => t.Type == "Transfer" && t.CustomerEmail == email && t.DeletedAt == null)
-				.SumAsync(t => t.NetAmount);
+				.Where(t => t.Type == "Transfer" && t.CustomerEmail == email)
+				.SumAsync(t => t.TotalAmount);
 
 			var pending = totalThisYear - available;
 
@@ -193,10 +193,16 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<(List<ChartInfo> Earnings, List<ChartInfo> Sales, List<ChartInfo> Refunds)> GetChartRevenue(string instructorId)
 		{
-			// Lấy toàn bộ dữ liệu TransactionDetail theo InstructorId
 			var details = await _context.TransactionDetails
-				.Where(t => t.InstructorId == instructorId && t.ItemType == ItemTypeTransactionDetail.Course.ToString() && t.DeletedAt == null)
-				.ToListAsync();
+		.Where(t => t.InstructorId == instructorId && t.ItemType == ItemTypeTransactionDetail.Course.ToString() && t.DeletedAt == null)
+		.ToListAsync();
+
+			// Tính toán 6 tháng gần nhất
+			var currentDate = DateTime.Now;
+			var lastSixMonths = Enumerable.Range(0, 6)
+				.Select(i => currentDate.AddMonths(-i))
+				.OrderByDescending(date => date)
+				.ToList();
 
 			// Earnings
 			var earnings = details
@@ -246,6 +252,32 @@ namespace EduQuest_Infrastructure.Repository
 				})
 				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
 				.ToList();
+
+			// Chèn dữ liệu vào những tháng không có thông qua 6 tháng gần nhất
+			var allCharts = new[] { earnings, sales, refundGroup };
+
+			foreach (var chart in allCharts)
+			{
+				foreach (var month in lastSixMonths)
+				{
+					var chartMonth = $"{DateTimeHelper.GetMonthName(month.Month)} {month.Year}";
+					if (!chart.Any(x => x.Time == chartMonth))
+					{
+						chart.Add(new ChartInfo
+						{
+							Time = chartMonth,
+							Count = "0" // Nếu không có dữ liệu, set giá trị 0
+						});
+					}
+				}
+			}
+
+			// Sắp xếp lại theo thời gian (theo tháng gần nhất đến xa nhất)
+			foreach (var chart in allCharts)
+			{
+				chart.Sort((x, y) => DateTime.Compare(DateTime.ParseExact(y.Time, "MMMM yyyy", CultureInfo.InvariantCulture),
+					DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture)));
+			}
 
 			return (earnings, sales, refundGroup);
 		}
