@@ -27,7 +27,9 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IStudyTimeRepository _studyTimeRepository;
 		private readonly IMediator mediator;
 
-        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
+        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, 
+            ILessonRepository lessonRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, 
+            IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
         {
             _userMetaRepository = userMetaRepository;
             _unitOfWork = unitOfWork;
@@ -55,9 +57,12 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			var courseLearner = course.CourseLearners.FirstOrDefault(x => x.UserId == request.UserId);
 			if(courseLearner == null)
 			{
-				return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
+				return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
 			}
-
+            if(courseLearner.TotalTime.Value >= course.CourseStatistic.TotalTime.Value)
+            {
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
+            }
             var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
             double times = request.Info.Time != null ? request.Info.Time.Value : material.Duration!.Value;
             if (studyTime != null)
@@ -75,49 +80,28 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     Date = now.ToUniversalTime()
                 });
             }
-            if (request.Info.Time != null)
-			{
-                courseLearner.TotalTime += material.Duration;
-				userMeta.TotalStudyTime += request.Info.Time;
-                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
-                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
-                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
-            } else
-			{
-				courseLearner.TotalTime += material.Duration;
-				userMeta.TotalStudyTime += material.Duration;
-                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
-                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, (int)material.Duration);
-                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, (int)material.Duration);
-            }
-			if(material.Type == TypeOfMaterial.Quiz.ToString() || material.Type == TypeOfMaterial.Assignment.ToString())
-			{
-                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
-                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
-            }
-            if (courseLearner.TotalTime > course.CourseStatistic.TotalTime)
-            {
-                courseLearner.TotalTime = course.CourseStatistic.TotalTime;
-            }
-            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
-            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
             
+            var currentLesson = course.Lessons!.Where(l => l.Id == courseLearner.CurrentLessonId).FirstOrDefault();
 			int maxIndex = lesson.LessonMaterials.Count - 1;
             string newLessonId = request.Info.LessonId;
 			string newMaterialId = request.Info.MaterialId;
-            LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Info.MaterialId);
+            LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == courseLearner.CurrentMaterialId);
             var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
+            if (temp == null)//only happened when re learning courses materials when undon courses
+            {
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
+            }
             if (temp != null && temp.Index == maxIndex)
             {
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
-				if(newLesson != null)
+				if(newLesson != null && currentLesson.Index < newLesson.Index)
 				{
                     newLessonId = newLesson.Id;
 					newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
 
                 }
-				else
+				if(newLesson == null)
 				{
 					await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
                     await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
@@ -147,7 +131,33 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             userMeta.CurrentStreak = (lastLearningDay == DateTime.UtcNow.Date.AddDays(-1)) ? userMeta.CurrentStreak + 1 : 1;
             userMeta.LastLearningDay = DateTime.UtcNow.ToUniversalTime();
             userMeta.LongestStreak = Math.Max((byte)userMeta.LongestStreak!, (byte)userMeta.CurrentStreak!);
-
+            if (request.Info.Time != null)
+            {
+                courseLearner.TotalTime += material.Duration;
+                userMeta.TotalStudyTime += request.Info.Time;
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
+                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
+                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
+            }
+            else
+            {
+                courseLearner.TotalTime += material.Duration;
+                userMeta.TotalStudyTime += material.Duration;
+                await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
+                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, (int)material.Duration);
+                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, (int)material.Duration);
+            }
+            if (material.Type == TypeOfMaterial.Quiz.ToString() || material.Type == TypeOfMaterial.Assignment.ToString())
+            {
+                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
+                await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
+            }
+            if (courseLearner.TotalTime > course.CourseStatistic.TotalTime)
+            {
+                courseLearner.TotalTime = course.CourseStatistic.TotalTime;
+            }
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
 
             await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);

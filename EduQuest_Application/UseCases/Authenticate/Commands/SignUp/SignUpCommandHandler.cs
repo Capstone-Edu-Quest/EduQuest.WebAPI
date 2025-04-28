@@ -72,7 +72,7 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, APIResponse>
             new HashEntry("passwordSalt", Convert.ToBase64String(passwordSalt))
         };
 
-        await _redisCaching.HashSetAsync($"SignUp_{request.Email}", hashEntries, 300);
+        await _redisCaching.HashSetAsync($"SignUp_{request.Email}", hashEntries, 60);
 
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SentOtpSuccessfully, null, "name", "user");
     }

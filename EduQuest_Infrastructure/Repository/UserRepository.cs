@@ -18,6 +18,52 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         _context = context;
     }
 
+    public async Task<List<User>> SearchUsersAsync(
+            string? username,
+            string? email,
+            string? phone,
+            string? status,
+            string? roleId)
+    {
+        // Start with all users
+        IQueryable<User> query = _context.Users.AsNoTracking();
+
+        // Apply filters if they are provided
+        if (!string.IsNullOrWhiteSpace(username))
+        {
+            query = query.Where(u => u.Username.Contains(username));
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            query = query.Where(u => u.Email.Contains(email));
+        }
+
+        if (!string.IsNullOrWhiteSpace(phone))
+        {
+            query = query.Where(u => u.Phone.Contains(phone));
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = query.Where(u => u.Status == status);
+        }
+
+        if (!string.IsNullOrWhiteSpace(roleId))
+        {
+            query = query.Where(u => u.RoleId == roleId);
+        }
+
+        // Get total count for pagination
+        int totalCount = await query.CountAsync();
+
+        // Apply pagination
+        var users = await query
+            .ToListAsync();
+
+        return users;
+    }
+
     public async Task<List<User>> GetUserByAssignToExpet(string expertId)
     {
         return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending").ToListAsync();  

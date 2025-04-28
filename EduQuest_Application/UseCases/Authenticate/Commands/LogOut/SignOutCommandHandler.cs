@@ -5,6 +5,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
@@ -14,12 +15,14 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
 {
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IRedisCaching _redisCaching;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUnitOfWork _unitOfWork;
 
-    public SignOutCommandHandler(IRefreshTokenRepository refreshTokenRepository, IRedisCaching redisCaching, IUnitOfWork unitOfWork)
+    public SignOutCommandHandler(IRefreshTokenRepository refreshTokenRepository, IRedisCaching redisCaching, IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork)
     {
         _refreshTokenRepository = refreshTokenRepository;
         _redisCaching = redisCaching;
+        _httpContextAccessor = httpContextAccessor;
         _unitOfWork = unitOfWork;
     }
 
@@ -29,6 +32,10 @@ public class SignOutCommandHandler : IRequestHandler<SignOutCommand, APIResponse
         //await _redisCaching.SetAsync(accessTokenHashKey, true, 5);
         var tokenId = AuthenHelper.ExtractIdFromRefreshToken(request.refreshToken);
         var tokenEntity = await _refreshTokenRepository.GetById(tokenId);
+
+        _httpContextAccessor.HttpContext!.Response.Cookies.Delete("access_token");
+        _httpContextAccessor.HttpContext.Response.Cookies.Delete("refresh_token");
+
         if (tokenEntity == null)
         {
             return new APIResponse

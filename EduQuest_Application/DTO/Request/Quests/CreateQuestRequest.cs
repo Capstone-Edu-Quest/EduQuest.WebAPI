@@ -9,6 +9,7 @@ namespace EduQuest_Application.DTO.Request.Quests
     {
         public string? Id { get; set; }
         [Required(ErrorMessage = MessageError.ValueRequired)]
+        [Length(3, 250, ErrorMessage ="Length must between 3 and 250 characters!")]
         public string? Title { get; set; } //change name to title
 
         [Required(ErrorMessage = MessageError.ValueRequired)]

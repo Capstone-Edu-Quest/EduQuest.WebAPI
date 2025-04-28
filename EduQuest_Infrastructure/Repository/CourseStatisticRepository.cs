@@ -20,12 +20,21 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.CourseStatistics.FirstOrDefaultAsync(x => x.CourseId.Equals(courseId));
 		}
 
-		public async Task<(int totalLearner, decimal avgRating)> GetTotalLearnerForInstructor(List<string> courseIds)
-		{
-			var statistic = await _context.CourseStatistics.Where(x => courseIds.Contains(x.CourseId)).ToListAsync();
-			var totalLearner= (int)statistic.Sum(x => x.TotalLearner);
-			var avgReview = (int)statistic.Average(x => x.Rating);
-			return (totalLearner, avgReview);
-		}
-	}
+        public async Task<(int totalLearner, decimal avgRating)> GetTotalLearnerForInstructor(List<string> courseIds)
+        {
+            var statistic = await _context.CourseStatistics
+                .Where(x => courseIds.Contains(x.CourseId))
+                .ToListAsync();
+
+            // Check if the collection is empty to avoid calling Average() on an empty sequence
+            var totalLearner = statistic.Sum(x => x.TotalLearner.GetValueOrDefault());
+
+            // Safely calculate average or return 0 if the collection is empty
+            decimal avgReview = (decimal)(statistic.Any() ? statistic.Average(x => x.Rating.GetValueOrDefault()) : 0);
+
+            return (totalLearner, avgReview);
+        }
+
+
+    }
 }

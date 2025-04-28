@@ -13,6 +13,7 @@ using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.ExternalServices.QuartzService;
+using Microsoft.AspNetCore.Http;
 
 namespace EduQuest_Application.UseCases.Authenticate.Commands.ValidateSignUp;
 
@@ -22,15 +23,17 @@ public class ValidateSignUpCommandHandler : IRequestHandler<ValidateSignUpComman
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtProvider _jwtProvider;
     private readonly IRedisCaching _redisCaching;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
     private readonly IQuartzService _quartzService;
 
-    public ValidateSignUpCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IJwtProvider jwtProvider, IRedisCaching redisCaching, IMapper mapper, IQuartzService quartzService)
+    public ValidateSignUpCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IJwtProvider jwtProvider, IRedisCaching redisCaching, IHttpContextAccessor httpContextAccessor, IMapper mapper, IQuartzService quartzService)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _jwtProvider = jwtProvider;
         _redisCaching = redisCaching;
+        _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _quartzService = quartzService;
     }
@@ -90,6 +93,28 @@ public class ValidateSignUpCommandHandler : IRequestHandler<ValidateSignUpComman
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var tokenResponse = await _jwtProvider.GenerateTokensForUser(newUser.Id, newUser.Email, Guid.NewGuid().ToString());
+
+        var accessToken = tokenResponse.AccessToken;
+        var refreshToken = tokenResponse.RefreshToken;
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true, 
+            Secure = true,
+            SameSite = SameSiteMode.None, 
+            Expires = DateTime.UtcNow.AddMinutes(15) 
+        };
+
+        var refreshCookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddMonths(3) 
+        };
+
+        _httpContextAccessor.HttpContext!.Response.Cookies.Append("access_token", accessToken, cookieOptions);
+        _httpContextAccessor.HttpContext!.Response.Cookies.Append("refresh_token", refreshToken, refreshCookieOptions);
         var userDTO = _mapper.Map<UserResponseDto>(newUser);
 
         await _quartzService.AddAllQuestsToNewUser(userId);
