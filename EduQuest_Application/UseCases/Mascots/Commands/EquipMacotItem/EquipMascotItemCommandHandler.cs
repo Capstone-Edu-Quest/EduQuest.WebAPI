@@ -30,17 +30,20 @@ public class EquipMascotItemCommandHandler : IRequestHandler<EquipMascotItemComm
 
     public async Task<APIResponse> Handle(EquipMascotItemCommand request, CancellationToken cancellationToken)
     {
-        //if (!request.ItemIds.Any() || request.UserId == null)
-        //{
-        //    return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.OK, MessageCommon.NotFound,
-        //    MessageCommon.NotFound, "name", "item");
-        //}
+        if (request.ItemIds == null || !request.ItemIds.Any())
+        {
+            var userMascots = await _mascotInventoryRepository.GetMascotEquippedByUserIdAsync(request.UserId);
+            var result = _mapper.Map<List<UserMascotDto>>(userMascots);
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, result, "name", "item");
+        }
 
         await _mascotInventoryRepository.UpdateRangeMascot(request.ItemIds, request.UserId);
         await _unitOfWork.SaveChangesAsync();
-        var userMascots = await _mascotInventoryRepository.GetMascotByUserIdAndItemIdAsync(request.UserId, request.ItemIds);
-        var result = _mapper.Map<List<UserMascotDto>>(userMascots);
-        return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.UpdateSuccesfully,
-            result, "name", "item");
+
+        var updatedMascots = await _mascotInventoryRepository.GetMascotByUserIdAndItemIdAsync(request.UserId, request.ItemIds);
+        var resultUpdate = _mapper.Map<List<UserMascotDto>>(updatedMascots);
+
+        return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, resultUpdate, "name", "item");
     }
+
 }

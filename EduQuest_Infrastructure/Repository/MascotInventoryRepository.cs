@@ -56,4 +56,10 @@ public class MascotInventoryRepository : GenericRepository<Mascot>, IMascotInven
         return await _context.Mascots.AsNoTracking()
             .Where(i => i.UserId == userId && shopItemId.Contains(i.ShopItemId)).ToListAsync();
     }
+
+    public async Task<IEnumerable<Mascot>> GetMascotEquippedByUserIdAsync(string userId)
+    {
+        return await _context.Mascots.AsNoTracking()
+            .Where(i => i.UserId == userId && i.IsEquipped == true).ToListAsync();
+    }
 }
