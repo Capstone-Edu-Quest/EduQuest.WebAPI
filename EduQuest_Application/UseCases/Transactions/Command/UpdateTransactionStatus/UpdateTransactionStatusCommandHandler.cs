@@ -240,14 +240,14 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                     if (detail.ItemType.ToLower() == ConfigEnum.PriceYearly.ToString().ToLower())
                     {
                         user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddMonths(30);
-                    }
+						await _quartzService.UpdateUserPackageAccountMonthly(user.Id);
+					}
                     else if (detail.ItemType.ToLower() == ConfigEnum.PriceMonthly.ToString().ToLower())
                     {
                         user.PackageExperiedDate = DateTime.Now.ToUniversalTime().AddYears(1);
-                    }
+						await _quartzService.UpdateUserPackageAccountYearLy(user.Id);
+					}
                     await _userRepository.Update(user);
-                    await _quartzService.UpdateUserPackageAccountType(user.Id);
-
                 }
             }
             var result = await _unitOfWork.SaveChangesAsync() > 0;
