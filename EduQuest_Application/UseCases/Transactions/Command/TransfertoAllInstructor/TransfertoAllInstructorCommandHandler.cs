@@ -1,8 +1,6 @@
-﻿using EduQuest_Application.Abstractions.Firebase;
-using EduQuest_Application.Helper;
+﻿using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
-using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -51,6 +49,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 				{
 					Id = Guid.NewGuid().ToString(),
 					TotalAmount = item.TotalInstructorShare,
+					NetAmount = item.TotalInstructorShare,
 					Status = GeneralEnums.StatusPayment.Completed.ToString(),
 					Type = GeneralEnums.TypeTransaction.Transfer.ToString(),
 					UserId = "3b7d5b9c-c7bf-494b-9a75-e931d4a5cb22",

@@ -7,7 +7,6 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using Stripe;
 using static EduQuest_Domain.Constants.Constants;
-using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Payments.Query
 {
@@ -30,7 +29,7 @@ namespace EduQuest_Application.UseCases.Payments.Query
 
 			var user = await _userRepository.GetUserById(request.UserId);
 			string status = "";
-			string? stripeAccountUrl = null;
+			
 
 			if (user.StripeAccountId == null)
 			{
@@ -38,10 +37,9 @@ namespace EduQuest_Application.UseCases.Payments.Query
 			}
 
 			status = await _stripePayment.GetStatus(user.StripeAccountId);
-			if (status == StripeAccountStatus.Restricted.ToString())
-			{
-				stripeAccountUrl = user.StripeAccountUrl;
-			}
+			
+			var stripeAccountUrl = user.StripeAccountUrl;
+			
 
 			var responseData = new
 			{
