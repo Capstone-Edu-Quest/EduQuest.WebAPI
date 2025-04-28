@@ -15,4 +15,5 @@ public interface ILevelRepository : IGenericRepository<Levels>
     Task<Levels?> GetByLevelNum(int level);
     Task<LevelExpStatisticDto> GetLevelExpStatistic();
     Task<int> DeleteRangeByListId(List<string> ids);
+    Task<int> GetMaxLevelNumber();
 }

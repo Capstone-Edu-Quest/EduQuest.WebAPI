@@ -180,14 +180,15 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
     {
         var currentExp = meta.Exp;
         var currentLevel = await _levelRepository.GetByLevelNum(meta.Level.Value);
+        int maxLevel = await _levelRepository.GetMaxLevelNumber();
         if(currentLevel == null)
         {
             meta.Level = 1;
         }
-        if(currentLevel != null && currentExp == currentLevel.Exp)
+        if(currentLevel != null && currentExp >= currentLevel.Exp && currentLevel.Level < maxLevel)
         {
             meta.Level++;
-            meta.Exp = 0;
+            meta.Exp -= currentLevel.Exp;
         }
     }
 }

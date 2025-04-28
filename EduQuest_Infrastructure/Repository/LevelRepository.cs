@@ -122,4 +122,8 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
         var result = await _context.Levels.Where(l => l.Level == level).FirstOrDefaultAsync();
         return result;
     }
+    public async Task<int> GetMaxLevelNumber()
+    {
+        return await _context.Levels.CountAsync();
+    }
 }
