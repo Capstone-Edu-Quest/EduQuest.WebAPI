@@ -2,7 +2,6 @@
 
 using EduQuest_Application.ExternalServices.QuartzService;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Entities;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Payment;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Quests;
 using EduQuest_Infrastructure.ExternalServices.Quartz.Users;
@@ -65,7 +64,7 @@ public class QuartzService : IQuartzService
         Console.WriteLine($"ScheduleJob: Update All UserQuests with id {jobKey}.");
     }
 
-	public async Task UpdateUserPackageAccountType(string userId)
+	public async Task UpdateUserPackageAccountMonthly(string userId)
 	{
 		var jobKey = new JobKey(userId);
 		IScheduler scheduler = await _schedulerFactory.GetScheduler();
@@ -105,9 +104,24 @@ public class QuartzService : IQuartzService
 		.Build();
 		var newTrigger =
 			TriggerBuilder.Create().ForJob(jobKey)
-			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(5))))
+			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddMinutes(2))))
 			.Build();
 		await scheduler.ScheduleJob(job, newTrigger);
 		Console.WriteLine($"ScheduleJob: Transfer to all instructors with id {jobKey}.");
+	}
+
+	public async Task UpdateUserPackageAccountYearLy(string userId)
+	{
+		var jobKey = new JobKey(userId);
+		IScheduler scheduler = await _schedulerFactory.GetScheduler();
+		IJobDetail job = JobBuilder.Create<UpdateUserPackageAccountType>()
+		.WithIdentity(jobKey)
+		.Build();
+		var newTrigger =
+			TriggerBuilder.Create().ForJob(jobKey)
+			.WithSchedule(CronScheduleBuilder.CronSchedule(DateTimeHelper.GetCronExpression(DateTime.Now.AddDays(2))))
+			.Build();
+		await scheduler.ScheduleJob(job, newTrigger);
+		Console.WriteLine($"ScheduleJob: Update user package account type with id {jobKey}.");
 	}
 }
