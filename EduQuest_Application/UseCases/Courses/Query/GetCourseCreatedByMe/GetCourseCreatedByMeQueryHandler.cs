@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
@@ -35,7 +36,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries
 
 				var user = await _userRepository.GetById(course.CreatedBy);
 				course.Author = user!.Username!;
-
+				
 				var courseSta = await _courseStatisticRepository.GetByCourseId(course.Id);
 				if (courseSta != null)
 				{

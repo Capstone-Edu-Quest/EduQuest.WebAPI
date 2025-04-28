@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EduQuest_Application.Mappings;
+using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Response
 {
-	public class TagResponse
+	public class TagResponse : IMapFrom<Tag>, IMapTo<Tag>
 	{
         public string Name { get; set; }
     }
