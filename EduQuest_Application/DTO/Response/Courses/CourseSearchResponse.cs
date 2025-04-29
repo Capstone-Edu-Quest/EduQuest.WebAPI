@@ -27,8 +27,9 @@ namespace EduQuest_Application.DTO.Response.Courses
         public string ExpertId { get; set; }
         public string ExpertName { get; set; }
         public double? ProgressPercentage { get; set; }
+		public List<TagResponse>? ListTag { get; set; }
 
-        public void MappingFrom(Profile profile)
+		public void MappingFrom(Profile profile)
         {
             profile.CreateMap<Course, CourseSearchResponse>()
             .ForMember(dest => dest.IsPublic, opt => opt.MapFrom(src => src.Status == StatusCourse.Public.ToString()))
@@ -37,7 +38,8 @@ namespace EduQuest_Application.DTO.Response.Courses
             .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))
             .ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview))
             .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.User.Username))
-            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.CourseStatistic.Rating));
+			.ForMember(dest => dest.ListTag, opt => opt.MapFrom(src => src.Tags))
+			.ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.CourseStatistic.Rating));
         }
     }
 }

@@ -18,10 +18,8 @@ namespace EduQuest_Domain.Entities
         public int? TotalCourseCreated { get; set; }
 		public int? TotalLearner { get; set; }
 		public int? TotalReview { get; set; }
-        public double? TotalRevenue { get; set; }
 		public DateTime LastActive { get; set; }
-        public decimal? HeldAmount { get; set; }
-        public decimal? PaidAmount { get; set; }
+       
         [JsonIgnore]
 		public virtual User User { get; set; } = null!;
 		[JsonIgnore]

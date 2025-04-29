@@ -13,6 +13,12 @@ public interface IUserRepository : IGenericRepository<User>
     Task<User> GetUserById(string userId);
     Task<bool> UpdateUserPackageAccountType(string userId);
     Task<List<User>> GetByRoleId(string roleId);
+    Task<List<User>> SearchUsersAsync(
+            string? username,
+            string? email,
+            string? phone,
+            string? status,
+            string? roleId);
 
     //Dashboard
     Task<AdminDasboardUsers> GetAdminDashBoardStatistic();

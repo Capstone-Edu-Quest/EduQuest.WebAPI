@@ -13,7 +13,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 {
-    public class CreateLeaningMaterialCommandHandler : IRequestHandler<CreateLeaningMaterialCommand, APIResponse>
+    public class CreateMaterialCommandHandler : IRequestHandler<CreateLeaningMaterialCommand, APIResponse>
     {
         private readonly IMaterialRepository _materialRepository;
         private readonly ISystemConfigRepository _systemConfigRepository;
@@ -25,7 +25,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 		private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-		public CreateLeaningMaterialCommandHandler(IMaterialRepository materialRepository, 
+		public CreateMaterialCommandHandler(IMaterialRepository materialRepository, 
 			ISystemConfigRepository systemConfigRepository, 
 			ILessonRepository stageRepository, 
 			IAssignmentRepository assignmentRepository, 

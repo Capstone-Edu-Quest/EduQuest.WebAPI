@@ -17,27 +17,23 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
-		private readonly IUserMetaRepository _userStatisticRepository;
-		
+		private readonly IUserMetaRepository _userMetaRepository;
+		private readonly ITagRepository _tagRepository;
 
-		public CreateCourseCommandHandler(ICourseRepository courseRepository, 
-			IMapper mapper, 
-			IUnitOfWork unitOfWork, 
-			IUserRepository userRepository, 
-			IUserMetaRepository userStatisticRepository 
-			)
+		public CreateCourseCommandHandler(ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository, IUserMetaRepository userMetaRepository, ITagRepository tagRepository)
 		{
 			_courseRepository = courseRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_userRepository = userRepository;
-			_userStatisticRepository = userStatisticRepository;
-			
+			_userMetaRepository = userMetaRepository;
+			_tagRepository = tagRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
 		{
 			var course = _mapper.Map<Course>(request.CourseRequest);
+			var listTag = await _tagRepository.GetByIdsAsync(request.CourseRequest.TagIds);
 			course.Requirement = ContentHelper.JoinStrings(request.CourseRequest.RequirementList, '.');
 			
 			var user = await _userRepository.GetById(request.UserId);
@@ -46,6 +42,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			course.Id = Guid.NewGuid().ToString();
 			course.Version = 1;
 			//course.LastUpdated = DateTime.Now.ToUniversalTime();
+			course.Tags = listTag;
 			course.Status = GeneralEnums.StatusCourse.Draft.ToString();
 			course.CourseStatistic = new CourseStatistic
 			{
@@ -61,10 +58,10 @@ namespace EduQuest_Application.UseCases.Courses.Command.CreateCourse
 			};
 			await _courseRepository.Add(course);
 			
-			//User Statistic
-			var userStatistic = await _userStatisticRepository.GetByUserId(user.Id);
-			userStatistic!.TotalCourseCreated++;
-			await _userStatisticRepository.Update(userStatistic);
+			//User Meta
+			var userMeta = await _userMetaRepository.GetByUserId(user.Id);
+			userMeta!.TotalCourseCreated++;
+			await _userMetaRepository.Update(userMeta);
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse

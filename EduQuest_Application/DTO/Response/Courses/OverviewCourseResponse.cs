@@ -29,6 +29,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public double? TotalTime { get; set; }
         public int? TotalReview { get; set; }
 		public int? TotalLearner { get; set; }
+		public List<TagResponse>? ListTag { get; set; }
 
 		public void MappingFrom(Profile profile)
         {
@@ -38,6 +39,7 @@ namespace EduQuest_Application.DTO.Response.Courses
             .ForMember(dest => dest.TotalLesson, opt => opt.MapFrom(src => src.CourseStatistic.TotalLesson))
             .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))
 			.ForMember(dest => dest.TotalLearner, opt => opt.MapFrom(src => src.CourseStatistic.TotalLearner))
+			.ForMember(dest => dest.ListTag, opt => opt.MapFrom(src => src.Tags))
 			.ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview));
             //profile.CreateMap<PagedList<Course>, PagedList<FavoriteCourseResponse>>().ReverseMap();
         }

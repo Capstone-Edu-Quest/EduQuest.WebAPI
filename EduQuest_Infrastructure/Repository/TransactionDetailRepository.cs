@@ -155,8 +155,8 @@ namespace EduQuest_Infrastructure.Repository
 
 			// Available Balance
 			var available = await _context.Transactions
-				.Where(t => t.Type == "Transfer" && t.CustomerEmail == email && t.DeletedAt == null)
-				.SumAsync(t => t.NetAmount);
+				.Where(t => t.Type == "Transfer" && t.CustomerEmail == email)
+				.SumAsync(t => t.TotalAmount);
 
 			var pending = totalThisYear - available;
 
@@ -198,6 +198,13 @@ namespace EduQuest_Infrastructure.Repository
 				.Where(t => t.InstructorId == instructorId && t.ItemType == ItemTypeTransactionDetail.Course.ToString() && t.DeletedAt == null)
 				.ToListAsync();
 
+			// Tính toán 6 tháng gần nhất
+			var currentDate = DateTime.Now;
+			var lastSixMonths = Enumerable.Range(0, 6)
+				.Select(i => currentDate.AddMonths(-i))
+				.OrderBy(date => date)  // Sắp xếp từ trước đến hiện tại
+				.ToList();
+
 			// Earnings
 			var earnings = details
 				.Where(x => x.CreatedAt.HasValue)
@@ -207,7 +214,7 @@ namespace EduQuest_Infrastructure.Repository
 					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 					Count = g.Sum(x => x.InstructorShare ?? 0).ToString("0.##")
 				})
-				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))  // Sắp xếp từ trước đến hiện tại
 				.ToList();
 
 			// Sales
@@ -219,7 +226,7 @@ namespace EduQuest_Infrastructure.Repository
 					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 					Count = g.Sum(x => x.Amount).ToString("0.##")
 				})
-				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))  // Sắp xếp từ trước đến hiện tại
 				.ToList();
 
 			// Refunds: Lấy tất cả transactionId từ transactionDetail
@@ -244,10 +251,37 @@ namespace EduQuest_Infrastructure.Repository
 					Time = $"{DateTimeHelper.GetMonthName(g.Key.Month)} {g.Key.Year}",
 					Count = g.Sum(t => t.TotalAmount).ToString("0.##")
 				})
-				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))
+				.OrderBy(x => DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture))  // Sắp xếp từ trước đến hiện tại
 				.ToList();
+
+			// Chèn dữ liệu vào những tháng không có thông qua 6 tháng gần nhất
+			var allCharts = new[] { earnings, sales, refundGroup };
+
+			foreach (var chart in allCharts)
+			{
+				foreach (var month in lastSixMonths)
+				{
+					var chartMonth = $"{DateTimeHelper.GetMonthName(month.Month)} {month.Year}";
+					if (!chart.Any(x => x.Time == chartMonth))
+					{
+						chart.Add(new ChartInfo
+						{
+							Time = chartMonth,
+							Count = "0" 
+						});
+					}
+				}
+			}
+
+			// Sắp xếp lại theo thời gian từ trước đến hiện tại
+			foreach (var chart in allCharts)
+			{
+				chart.Sort((x, y) => DateTime.Compare(DateTime.ParseExact(x.Time, "MMMM yyyy", CultureInfo.InvariantCulture),
+					DateTime.ParseExact(y.Time, "MMMM yyyy", CultureInfo.InvariantCulture)));
+			}
 
 			return (earnings, sales, refundGroup);
 		}
+
 	}
 }
