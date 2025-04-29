@@ -100,7 +100,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             attempt.Answers = userQuizAnswers;
         }
         attempNo = attempt.AttemptNo;
-     
+
 
         double CorrectPercentage = Math.Round((double)CorrectQuestion / TotalQuestion * 100, 2);
         attempt.Percentage = CorrectPercentage;
@@ -134,10 +134,12 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
         }
-        if(newLesson == null && lessonMaterial.Index == maxIndex)
+        if (newLesson == null && lessonMaterial.Index == maxIndex)
         {
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
         }
         if (lessonMaterial.Index < maxIndex)
         {
@@ -183,9 +185,11 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Attempt.TotalTime);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Attempt.TotalTime);
         await _unitOfWork.SaveChangesAsync();
 
-        
+
         response.isPassed = true;
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
             response, "name", "quiz");
