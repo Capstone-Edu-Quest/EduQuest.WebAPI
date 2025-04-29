@@ -90,6 +90,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         }
         if (newLesson == null && lessonMaterial.Index == maxIndex)
         {
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
+            await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
         }
@@ -139,6 +141,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Attempt.TotalTime);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Attempt.TotalTime);
         await _unitOfWork.SaveChangesAsync();
 
         
