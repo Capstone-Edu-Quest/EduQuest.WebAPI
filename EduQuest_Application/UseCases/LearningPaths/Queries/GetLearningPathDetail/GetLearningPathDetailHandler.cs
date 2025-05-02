@@ -50,6 +50,37 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                 learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
                 learningPathCourse.RequirementList = course.Requirement.Split(",").ToList();
                 learningPathCourse.Author = course.User.Username;
+                if(!string.IsNullOrEmpty(request.UserId))
+                {
+                    var learner = course.CourseLearners.Where(c => c.UserId == request.UserId).FirstOrDefault();
+                    if (learner != null)
+                    {
+                        learningPathCourse.ProgressPercentage = learner.ProgressPercentage.Value;
+                    }
+                    else
+                    {
+                        learningPathCourse.ProgressPercentage = -1;
+                    }
+                    var lp = learningPath.Enrollers
+                    .FirstOrDefault(c => c.CourseId == course.Id && c.UserId == request.UserId && c.LearningPathId == learningPath.Id);
+                    if(lp != null)
+                    {
+                        learningPathCourse.DueDate = lp.DueDate != null ? lp.DueDate.Value : null;
+                        learningPathCourse.IsOverDue = lp.IsOverDue;
+                        learningPathCourse.IsCompleted = lp.IsCompleted;
+                    }
+                    else
+                    {
+                        learningPathCourse.DueDate = null;
+                        learningPathCourse.IsOverDue = false;
+                        learningPathCourse.IsCompleted = false;
+                    }
+                    
+                }
+                /*else
+                {
+                    learningPathCourse.ProgressPercentage = -1;
+                }*/
                 return learningPathCourse;
             }).ToList();
 
@@ -57,7 +88,8 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             response.TotalCourses = learningPathCourses.Count;
             response.Courses = learningPathCourses.OrderBy(r => r.Order).ToList();
             response.CreatedBy = _mapper.Map<CommonUserResponse>(learningPath.User);
-            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.GetSuccesfully,
+            response.TotalEnroller = learningPath.Enrollers.DistinctBy(l => l.UserId).Count();
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, Key, value);
         }
         catch (Exception ex)

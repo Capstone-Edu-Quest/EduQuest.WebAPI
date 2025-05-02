@@ -289,10 +289,10 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 
 		}
-
         public void Configure(EntityTypeBuilder<Enroller> builder)
         {
-            builder.HasKey(fl => new { fl.LearningPathId, fl.UserId });
+
+
         }
         #endregion
 

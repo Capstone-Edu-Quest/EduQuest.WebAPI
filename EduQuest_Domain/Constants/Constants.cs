@@ -174,9 +174,10 @@
 			public const string DescriptionRequired = "DESCRIPTION_REQUIRED";
 			public const string ValueRequired = "FIELD_REQUIRED";
             public const string DuplicateCourseIdOrCourseOrder = "DETECT_DUPLICATE_COURSE_ID_AND_COURSE_ORDER";
+			public const string EnrolledLPUpdateBlock = "ENROLLED_LEARNING_PATH_UPDATE_PROHIBITION";
             public static int NameMaxLength = 500;
             public static int DescriptionMaxLength = 2500;
-
+			public static int MinimumLearningTimeDaily = 180; //minute = 3 hours
 
             public const string CouponCodeExist = "COUPON_CODE_EXIST";
 			public const string NeedToCompletePayment = "NEED_TO_COMPLETE_PAYMENT";

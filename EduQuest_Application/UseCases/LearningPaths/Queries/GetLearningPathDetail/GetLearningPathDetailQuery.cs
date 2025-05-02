@@ -8,9 +8,12 @@ namespace EduQuest_Application.UseCases.LearningPaths.Queries.GetLearningPathDet
 public class GetLearningPathDetailQuery : IRequest<APIResponse>
 {
     public string LearningPathId { get; set; }
+    public string UserId { get; set; }
 
-    public GetLearningPathDetailQuery(string learningPathId)
+
+    public GetLearningPathDetailQuery(string learningPathId, string userId)
     {
         LearningPathId = learningPathId;
+        UserId = userId;
     }
 }
