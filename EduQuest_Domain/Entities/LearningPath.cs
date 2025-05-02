@@ -16,7 +16,6 @@ namespace EduQuest_Domain.Entities
         public DateTime? DeletedAt { get; set; }
 		public bool IsPublic { get; set; }
 		public bool IsEnrolled { get; set; }
-		public bool IsLocked { get; set; }
 		public bool CreatedByExpert { get; set; }
 
         [JsonIgnore]
@@ -26,6 +25,8 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
 		public virtual ICollection<Tag> Tags { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Enroller> Enrollers { get; set; }
 	}
 	
 }

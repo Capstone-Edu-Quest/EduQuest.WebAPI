@@ -5,7 +5,6 @@ using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace EduQuest_Infrastructure.Repository;
 
@@ -56,12 +55,12 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         }
         if (isEnrolled.HasValue && isEnrolled.Value == true)
         {
-            result = from r in result
-                     where r.IsEnrolled == isEnrolled
-                     select r;
-            /*var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
+            /* result = from r in result
+                      where r.IsEnrolled == isEnrolled
+                      select r;*/
+            var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
             var result2 = _context.LearningPaths.Where(l => l.Id == learningPathId);
-            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);*/
+            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         }
         if (CreatedByExpert.HasValue)
         {
@@ -123,23 +122,9 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         }
         learningPath.IsEnrolled = true;
 
-        await _context.LearningPaths
+        await _context.Enrollers
             .Where(l => l.Id != learningPathId && l.UserId == userId)
-            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsEnrolled, false));
-
-        var learningPathIds = await _context.LearningPaths
-            .Where(l => l.Id != learningPathId && l.UserId == userId)
-            .Select(l => l.Id).ToListAsync();
-
-        var removeDueDates = await _context.LearningPathCourses
-            .Where(l => learningPathIds.Contains(l.LearningPathId))
-            .ToListAsync();
-
-        foreach (var course in removeDueDates)
-        {
-            course.DueDate = null;
-            course.IsOverDue = false;
-        }
+            .ExecuteDeleteAsync();
 
         await _context.SaveChangesAsync();
         return learningPath;
@@ -149,26 +134,9 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
     {
         var currentDate = DateTime.Now.ToUniversalTime();
 
-        int updatedCount = await _context.LearningPathCourses
+        int updatedCount = await _context.Enrollers
             .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
-
-        var learningPathIds = await _context.LearningPathCourses
-            .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
-            .Select(l => l.LearningPathId)
-            .Distinct()
-            .ToListAsync();
-
-        var learningPaths = await _context.LearningPaths
-            .Where(l => learningPathIds.Contains(l.Id))
-            .ToListAsync();
-
-        foreach (var path in learningPaths)
-        {
-            path.IsLocked = true;
-        }
-
-        await _context.SaveChangesAsync();
         return updatedCount;
     }
     public async Task<int> UpdateLeanringPathIsComplete(string userId)
@@ -177,7 +145,7 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         var learningPathIds = await _context.LearningPaths.Where(l => l.UserId == userId)
             .Select(l => l.Id)
             .Distinct().ToListAsync();
-        int updatedCount = await _context.LearningPathCourses
+        int updatedCount = await _context.Enrollers
             .Where(l => !l.IsCompleted && !l.IsOverDue && learningPathIds.Contains(l.LearningPathId))
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsCompleted, true));
         return updatedCount;

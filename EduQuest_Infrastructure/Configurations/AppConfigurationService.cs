@@ -202,6 +202,8 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 			services.AddScoped<IReviewAssignmentRepository, ReviewAssignmentRepository>();
 			services.AddScoped<IInstructorCertificate, InstructorCertificateRepository>();
+			services.AddScoped<IEnrollerRepository, EnrollerRepository>();
+
 
             services.AddSingleton(provider =>
 			{
@@ -255,7 +257,7 @@ namespace EduQuest_Infrastructure
 				q.AddTrigger(opts => opts.ForJob(Leaderboard)
 				.StartNow());
 
-                q.AddTrigger(opts => opts
+				q.AddTrigger(opts => opts
                     .ForJob(LearningPathDueDate)
                     .StartNow()
                     .WithSimpleSchedule(x => x

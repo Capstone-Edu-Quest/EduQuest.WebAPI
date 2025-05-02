@@ -61,7 +61,8 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                     {
                         learningPathCourse.ProgressPercentage = -1;
                     }
-                    var lp = learningPath.LearningPathCourses.FirstOrDefault(c => c.CourseId == course.Id);
+                    var lp = learningPath.Enrollers
+                    .FirstOrDefault(c => c.CourseId == course.Id && c.UserId == request.UserId && c.LearningPathId == learningPath.Id);
                     learningPathCourse.DueDate = lp.DueDate != null ? lp.DueDate.Value : null;
                     learningPathCourse.IsOverDue = lp.IsOverDue;
                     learningPathCourse.IsCompleted = lp.IsCompleted;
@@ -77,6 +78,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             response.TotalCourses = learningPathCourses.Count;
             response.Courses = learningPathCourses.OrderBy(r => r.Order).ToList();
             response.CreatedBy = _mapper.Map<CommonUserResponse>(learningPath.User);
+            response.TotalEnroller = learningPath.Enrollers.DistinctBy(l => l.UserId).Count();
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, Key, value);
         }

@@ -17,7 +17,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		IEntityTypeConfiguration<UserMeta>, IEntityTypeConfiguration<RefreshToken>,
 		IEntityTypeConfiguration<SystemConfig>, IEntityTypeConfiguration<Mascot>, IEntityTypeConfiguration<Coupon>, IEntityTypeConfiguration<UserCoupon>, IEntityTypeConfiguration<UserQuest>,
 		IEntityTypeConfiguration<Report>, IEntityTypeConfiguration<Booster>, IEntityTypeConfiguration<AssignmentAttempt>, IEntityTypeConfiguration<AssignmentPeerReview>,
-		IEntityTypeConfiguration<UserQuizAnswers>
+		IEntityTypeConfiguration<UserQuizAnswers>, IEntityTypeConfiguration<Enroller>
 
     {
 		#region Role
@@ -289,6 +289,11 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 
 
 		}
+        public void Configure(EntityTypeBuilder<Enroller> builder)
+        {
+
+
+        }
         #endregion
 
         #region LearningPathCourse
