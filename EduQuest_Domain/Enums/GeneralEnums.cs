@@ -151,6 +151,14 @@ namespace EduQuest_Domain.Enums
         }
 		#endregion
 
-		
+		#region Tag
+		public enum TagType
+		{
+			Expertise = 1,
+			Free = 2,
+		}
+		#endregion
+
+
 	}
 }
