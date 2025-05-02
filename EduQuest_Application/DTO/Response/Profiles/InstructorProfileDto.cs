@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
@@ -24,7 +25,7 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
     public string? AssignToExpertId { get; set; }
     public string? RejectedReason { get; set; }
     public string? ExpertName { get; set; }
-
+    public List<UserTagDto> Tags { get; set; }
     public List<InstructorCertificateDto> InstructorCertificate { get; set; }
     public List<CourseProfileDto> Courses { get; set; }
 
@@ -32,7 +33,14 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
     {
         profile.CreateMap<User, InstructorProfileDto>()
             .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates))
-            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"));
+            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"))
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
+                src.UserTags.Select(ut => new UserTagDto
+                {
+                    TagId = ut.Tag.Id,
+                    TagName = ut.Tag.Name
+                })
+            )); 
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Helper;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Constants;
@@ -95,6 +96,7 @@ public class UserSearchResultDto : IMapFrom<User>, IMapTo<User>
     public int TotalCourses { get; set; }
     public int TotalLearners { get; set; }
     public int TotalReviews { get; set; }
+    public List<UserTagDto> Tags { get; set; }
 
     public void MappingFrom(Profile profile)
     {
