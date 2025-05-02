@@ -6,7 +6,7 @@ namespace EduQuest_Domain.Repository;
 
 public interface IUserRepository : IGenericRepository<User>
 {
-    Task<List<User>> GetUserByAssignToExpet(string expertId, string tagId);
+    Task<List<User>> GetUserByAssignToExpet(string expertId);
     Task<List<User>> GetUserByStatus(string status);
     Task<User?> GetUserByEmailAsync(string email);
     Task<List<User>?> GetByUserIds(List<string> ids);

@@ -12,6 +12,6 @@ public class UpdateUserCommand : IRequest<APIResponse>
     public string? Phone { get; set; }
     public string Headline { get; set; }
     public string Description { get; set; }
-    public string TagId { get; set; }
+    public List<string?>? Tags { get; set; }
 
 }

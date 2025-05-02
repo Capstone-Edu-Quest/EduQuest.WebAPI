@@ -65,9 +65,9 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return users;
     }
 
-    public async Task<List<User>> GetUserByAssignToExpet(string expertId, string tagId)
+    public async Task<List<User>> GetUserByAssignToExpet(string expertId)
     {
-        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending" && (tagId == null || x.ExpertiseTagId == tagId)).ToListAsync();
+        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending").ToListAsync();
     }
     public async Task<List<User>> GetUserByStatus(string status)
     {

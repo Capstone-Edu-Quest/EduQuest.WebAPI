@@ -10,5 +10,6 @@ public class BecomeInstructorCommand : IRequest<APIResponse>
     public string Headline { get; set; }
     public string Description { get; set; }
     public string Phone { get; set; }
+    public List<string?> Tag { get; set; }
     public List<IFormFile> CertificateFiles { get; set; } = new();
 }

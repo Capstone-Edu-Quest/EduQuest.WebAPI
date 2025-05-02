@@ -24,11 +24,8 @@ namespace EduQuest_Domain.Entities
 		public string Package { get; set; }
         public DateTime? PackageExperiedDate { get; set; }
 
-        public string? ExpertiseTagId { get; set; }
-
-        [ForeignKey("ExpertiseTagId")]
         [JsonIgnore]
-        public virtual Tag? ExpertiseTag { get; set; }
+        public virtual ICollection<UserTag> UserTags { get; set; } = new List<UserTag>();
 
 
         [JsonIgnore]

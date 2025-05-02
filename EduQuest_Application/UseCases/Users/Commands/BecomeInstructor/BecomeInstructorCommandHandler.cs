@@ -22,16 +22,26 @@ public class BecomeInstructorCommandHandler : IRequestHandler<BecomeInstructorCo
     private readonly ICourseRepository _courseRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserTagRepository _userTagRepository;
 
-    public BecomeInstructorCommandHandler(IUserRepository userRepository, IAzureBlobStorage azureBlobStorage, IInstructorCertificate instructorCertificate, ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork)
+    public BecomeInstructorCommandHandler(
+        IUserRepository userRepository,
+        IAzureBlobStorage azureBlobStorage,
+        IInstructorCertificate instructorCertificate,
+        ICourseRepository courseRepository,
+        IUserTagRepository userTagRepository,
+        IMapper mapper,
+        IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _azureBlobStorage = azureBlobStorage;
         _instructorCertificate = instructorCertificate;
         _courseRepository = courseRepository;
+        _userTagRepository = userTagRepository; 
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
+
 
     public async Task<APIResponse> Handle(BecomeInstructorCommand request, CancellationToken cancellationToken)
     {
@@ -77,12 +87,23 @@ public class BecomeInstructorCommandHandler : IRequestHandler<BecomeInstructorCo
             };
             instructorCertificates.Add(certificate);
         }
+
+
         await _instructorCertificate.BulkCreateAsync(instructorCertificates);
 
         existUser.Headline = request.Headline;
         existUser.Phone = request.Phone;
         existUser.Description = request.Description;
         existUser.Status = AccountStatus.Pending.ToString();
+
+        var userTags = request.Tag
+                    .Where(tagId => !string.IsNullOrEmpty(tagId))
+                    .Select(tagId => new UserTag
+                    {
+                        UserId = request.UserId,
+                        TagId = tagId!
+                    }).ToList();
+        await _userTagRepository.UpdateRangeAsync(userTags);
         await _userRepository.Update(existUser);
         await _unitOfWork.SaveChangesAsync();
 
