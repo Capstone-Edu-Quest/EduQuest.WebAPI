@@ -171,11 +171,17 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return result;
     }
 
-    public async Task<List<User>> GetByRoleId(string roleId, string? tagId)
+    //public async Task<List<User>> GetByRoleId(string roleId, string? tagId)
+    //{
+    //    return await _context.Users
+    //        .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId==tagId))
+    //        .ToListAsync();
+    //}
+
+    public async Task<List<User>> GetByRoleId(string roleId)
     {
         return await _context.Users
-            .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId==tagId))
+            .Where(x => x.RoleId == roleId)
             .ToListAsync();
     }
-
 }
