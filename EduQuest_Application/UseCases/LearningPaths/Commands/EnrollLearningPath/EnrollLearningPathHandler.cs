@@ -50,11 +50,16 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
         }
         var courses = await _learningPathRepository.GetLearningPathCourse(request.LearningPathId);
-
+        if(learningPath.Enrollers != null && learningPath.Enrollers.FirstOrDefault(e => e.UserId == request.UserId) != null)
+        {
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AlreadyExists, null, Key, value);
+        }
         // Calculate DueDate for each course based on the accumulated learning days
+        List<Enroller> enrollers = new List<Enroller>();
         foreach (var lp in learningPath.LearningPathCourses.OrderBy(l => l.CourseOrder))
         {
             double? totalTime = 0;
+            Enroller enroller = new Enroller();
             var course = courses.FirstOrDefault(c => c.Id == lp.CourseId);
             totalTime = course!.CourseStatistic.TotalTime;
 
@@ -63,12 +68,27 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
             acummulateDate += learningDate;
 
             // Set the DueDate for the current course
-            lp.DueDate = now.AddDays(acummulateDate).ToUniversalTime();
+            enroller.DueDate = now.AddDays(acummulateDate).ToUniversalTime();
             var learner = course.CourseLearners!.FirstOrDefault(c => c.UserId == request.UserId);
             if (learner != null && learner.ProgressPercentage >= 100)
             {
-                lp.IsCompleted = true;
+                enroller.IsCompleted = true;
             }
+            enroller.CourseOrder = lp.CourseOrder;
+            enroller.CourseId = lp.CourseId;
+            enroller.LearningPathId = lp.LearningPathId;
+            enroller.UserId = request.UserId;
+            enroller.Id = Guid.NewGuid().ToString();
+            enroller.CreatedAt = now;
+            enrollers.Add(enroller);
+        }
+        if(learningPath.Enrollers.Count > 0)
+        {
+            learningPath.Enrollers.Concat(enrollers);
+        }
+        else
+        {
+            learningPath.Enrollers = enrollers;
         }
         await _unitOfWork.SaveChangesAsync();
         MyLearningPathResponse response = _mapper.Map<MyLearningPathResponse>(learningPath);

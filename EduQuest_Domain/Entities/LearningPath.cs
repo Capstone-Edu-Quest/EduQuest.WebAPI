@@ -26,6 +26,8 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
 		public virtual ICollection<Tag> Tags { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Enroller> Enrollers { get; set; }
 	}
 	
 }

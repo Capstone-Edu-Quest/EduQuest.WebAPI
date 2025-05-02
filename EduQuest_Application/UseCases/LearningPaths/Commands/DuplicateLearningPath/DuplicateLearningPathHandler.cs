@@ -56,12 +56,6 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
             newLearningPath.TotalTimes = temp.TotalTimes;
             List<CreateCourseLearningPath> newLPC = _mapper.Map<List<CreateCourseLearningPath>>(temp.LearningPathCourses);
             List<LearningPathCourse> learningPathCourses = _mapper.Map<List<LearningPathCourse>>(newLPC);
-            foreach(var item in learningPathCourses)
-            {
-                item.IsOverDue = false;
-                item.IsCompleted = false;
-                item.DueDate = null;
-            }
             newLearningPath.LearningPathCourses = learningPathCourses;
             newLearningPath.Tags = temp.Tags;
             //saving
