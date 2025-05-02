@@ -68,10 +68,10 @@ public class LearningPathController : Controller
 
     [HttpGet("detail")]
     public async Task<IActionResult> GetLearningPathDetail([FromQuery] string learningPathId,
-        [FromQuery] string? userId, 
+        //[FromQuery] string? userId, 
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new GetLearningPathDetailQuery(learningPathId, userId), token);
         if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
         {
@@ -130,24 +130,24 @@ public class LearningPathController : Controller
         var result = await _mediator.Send(new DeleteLearningPathCommand(learningPathId, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
-    //[Authorize]
+    [Authorize(Roles = "Learner")]
     [HttpPost("enroll")]
     public async Task<IActionResult> EnrollLearningpath([FromQuery, Required] string learningPathId,
-                                                        [FromQuery] string userId,
+                                                        //[FromQuery] string userId,
                                                         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new EnrollLearningPathCommand(learningPathId, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
 
-    //[Authorize(Roles ="Learner")]
+    [Authorize(Roles ="Learner")]
     [HttpPost("reEnroll")]
     public async Task<IActionResult> ReEnrollLearningPath([FromQuery, Required] string learningPathId,
-                                                        [FromQuery] string userId,
+                                                        //[FromQuery] string userId,
                                                         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new ReEnrollLearningPathCommand(learningPathId, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }

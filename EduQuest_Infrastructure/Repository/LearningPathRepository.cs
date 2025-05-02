@@ -55,12 +55,12 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         }
         if (isEnrolled.HasValue && isEnrolled.Value == true)
         {
-            result = from r in result
-                     where r.IsEnrolled == isEnrolled
-                     select r;
-            /*var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
+            /* result = from r in result
+                      where r.IsEnrolled == isEnrolled
+                      select r;*/
+            var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
             var result2 = _context.LearningPaths.Where(l => l.Id == learningPathId);
-            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);*/
+            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         }
         if (CreatedByExpert.HasValue)
         {
