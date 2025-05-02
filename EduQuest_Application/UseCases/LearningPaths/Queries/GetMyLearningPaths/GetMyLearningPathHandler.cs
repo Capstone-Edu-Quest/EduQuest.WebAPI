@@ -37,6 +37,8 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
                 MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(item);
                 myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
                 myLearningPathResponse.CreatedBy = userResponse;
+                var enroll = item.Enrollers.Where(e => e.UserId == request.UserId).FirstOrDefault();
+                myLearningPathResponse.IsEnrolled = enroll != null;
                 responseDto.Add(myLearningPathResponse);
             }
             PagedList<MyLearningPathResponse> response = new PagedList<MyLearningPathResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);

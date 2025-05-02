@@ -85,6 +85,16 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             }).ToList();
 
             // parse learningPathCourses, CreatedBy and TotalCourses
+            if (!string.IsNullOrEmpty(request.UserId))
+            {
+                var enroll = learningPath.Enrollers.Where(l => l.UserId == request.UserId).FirstOrDefault();
+                response.IsEnrolled = enroll != null;
+            }
+            else
+            {
+                response.IsEnrolled = false;
+            }
+            
             response.TotalCourses = learningPathCourses.Count;
             response.Courses = learningPathCourses.OrderBy(r => r.Order).ToList();
             response.CreatedBy = _mapper.Map<CommonUserResponse>(learningPath.User);
