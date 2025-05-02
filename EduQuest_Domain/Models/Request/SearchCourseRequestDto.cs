@@ -17,5 +17,6 @@ public class SearchCourseRequestDto
     public string? Author { get; set; }
     public int? Rating { get; set; }
     public int? Sort { get; set; }
+    public int? TagType { get; set; }
 
 }

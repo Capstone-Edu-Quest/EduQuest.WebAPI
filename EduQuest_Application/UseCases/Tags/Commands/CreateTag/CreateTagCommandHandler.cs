@@ -32,8 +32,6 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, APIResp
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = request.TagName,
-                Level = request.Level,
-                Grade = request.Grade,
                 Type = tagType
             };
 

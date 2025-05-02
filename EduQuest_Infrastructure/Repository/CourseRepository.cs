@@ -51,6 +51,12 @@ namespace EduQuest_Infrastructure.Repository
 			if (request.Rating.HasValue)
 				query = query.Where(x => x.CourseStatistic.Rating >= request.Rating.Value);
 
+			if (request.TagType != null)
+			{
+				var type = Enum.GetName(typeof(TagType), request.TagType);
+				query = query.Where(x => x.Tags.Any(tag => tag.Type == type));
+			}
+
 			if (request.TagListId != null && request.TagListId.Any())
 			{
 				var tagList = request.TagListId;

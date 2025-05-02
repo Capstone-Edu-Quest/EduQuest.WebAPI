@@ -29,7 +29,7 @@ namespace EduQuest_Infrastructure.Repository
         }
 
 
-        public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage, int? Level, int? Grade, int? Type)
+        public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage, int? Type)
         {
             var query = _context.Tags.AsQueryable();
 
@@ -37,14 +37,6 @@ namespace EduQuest_Infrastructure.Repository
             {
                 query = query.Where(c => c.Id == Id);
             }
-			if (Level.HasValue)
-			{
-				query = query.Where(c => c.Level == Level);
-			}
-			if (Grade.HasValue)
-			{
-				query = query.Where(c => c.Grade == Grade);
-			}
 			if (Type.HasValue)
 			{
 				var typeName = Enum.GetName(typeof(TagType), Type.Value);
