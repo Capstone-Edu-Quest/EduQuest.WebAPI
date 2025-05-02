@@ -18,6 +18,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public decimal Price { get; set; }
         public bool IsPublic { get; set; }
         public decimal? DiscountPrice { get; set; }
+        public string? RejectedReason { get; set; }
         public AuthorCourseResponse? Author { get; set; }
         public List<LessonCourseResponse>? ListLesson { get; set; }
         public List<TagResponse>? ListTag { get; set; }

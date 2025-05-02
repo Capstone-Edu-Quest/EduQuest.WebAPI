@@ -24,6 +24,7 @@ namespace EduQuest_Application.DTO.Response.Courses
 		public string Author { get; set; }
 		public string? Status { get; set; }
         public string CreatedBy { get; set; }
+        public string? RejectedReason { get; set; }
         public double? Rating { get; set; }
         public int? TotalLesson { get; set; }
         public double? TotalTime { get; set; }

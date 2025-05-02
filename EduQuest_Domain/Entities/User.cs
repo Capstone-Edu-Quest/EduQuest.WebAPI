@@ -17,7 +17,8 @@ namespace EduQuest_Domain.Entities
         public string Status { get; set; } = null!;
         public string? Description { get; set; }
         public string? AssignToExpertId { get; set; }
-		public string? RoleId { get; set; }
+        public string? RejectedReason { get; set; }
+        public string? RoleId { get; set; }
         public string? StripeAccountId { get; set; }
         public string? StripeAccountUrl { get; set; }
 		public string Package { get; set; }

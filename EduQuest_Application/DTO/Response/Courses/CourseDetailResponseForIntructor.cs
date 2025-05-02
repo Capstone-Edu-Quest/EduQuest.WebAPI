@@ -22,7 +22,8 @@ namespace EduQuest_Application.DTO.Response.Courses
 		public List<TagResponse>? ListTag { get; set; }
 		public int? TotalLearner { get; set; }
 		public double? Rating { get; set; }
-		public int? TotalReview { get; set; }
+        public string? RejectedReason { get; set; }
+        public int? TotalReview { get; set; }
 		public double? TotalTime { get; set; }
 		public int? TotalLesson { get; set; }
 		public int? TotalInCart { get; set; }
