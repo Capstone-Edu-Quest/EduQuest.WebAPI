@@ -199,7 +199,7 @@ namespace EduQuest_Infrastructure.Repository
 				.ToListAsync();
 
 			// Tính toán 6 tháng gần nhất
-			var currentDate = DateTime.Now;
+			var currentDate = DateTime.Now.ToUniversalTime();
 			var lastSixMonths = Enumerable.Range(0, 6)
 				.Select(i => currentDate.AddMonths(-i))
 				.OrderBy(date => date)  // Sắp xếp từ trước đến hiện tại
