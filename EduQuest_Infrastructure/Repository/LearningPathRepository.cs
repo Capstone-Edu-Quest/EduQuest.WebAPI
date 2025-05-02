@@ -122,10 +122,6 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         }
         learningPath.IsEnrolled = true;
 
-        await _context.Enrollers
-            .Where(l => l.Id != learningPathId && l.UserId == userId)
-            .ExecuteDeleteAsync();
-
         await _context.SaveChangesAsync();
         return learningPath;
     }
