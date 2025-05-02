@@ -45,101 +45,42 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 				return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, "Not owner", MessageCommon.NotOwner, "name", "material");
 			}
 
-			var oldMaterial = await _materialRepository.GetMataterialQuizAssById(request.Material.Id);
-			var value = await _systemConfigRepository.GetByName(oldMaterial.Type!);  
+			var material = await _materialRepository.GetMataterialQuizAssById(request.Material.Id);
+			var value = await _systemConfigRepository.GetByName(material.Type!);
 
-			//Check hasLearners
-			var lessons = oldMaterial.LessonMaterials.Select(x => x.Lesson);
-			var listCourse = new List<Course>();
-			bool hasLearners = false;
-			var courseIds = lessons.Select(l => l.CourseId).Distinct();
-			foreach (var courseId in courseIds)
-			{
-				var course = await _courseRepository.GetCourseLearnerByCourseId(courseId);
-				hasLearners = course.CourseLearners != null && course.CourseLearners.Any();
-				if (hasLearners) continue;
-			}
-			Material newMaterial = new Material();
-			if (hasLearners)
-			{
-				newMaterial.Id = Guid.NewGuid().ToString();
-				newMaterial.Title = request.Material.Title;
-				newMaterial.Description = request.Material.Description;
-				newMaterial.Type = oldMaterial.Type;
-				newMaterial.Duration = 0;
-				newMaterial.UserId = request.UserId;
-				newMaterial.OriginalMaterialId = oldMaterial.Id;
-				newMaterial.Version = oldMaterial.Version + 1;
-				await _materialRepository.Add(newMaterial);
-			} else
-			{
-				oldMaterial.Title = request.Material.Title;
-				oldMaterial.Description = request.Material.Description;
-			}
-			switch (Enum.Parse(typeof(TypeOfMaterial), oldMaterial.Type))
+			material.Title = request.Material.Title;
+			material.Description = request.Material.Description;
+
+			switch (Enum.Parse(typeof(TypeOfMaterial), material.Type))
 			{
 				case TypeOfMaterial.Document:
-					if (hasLearners)
-					{
-						newMaterial = await ProcessDocumentMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					} else
-					{
-						oldMaterial = await ProcessDocumentMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
-					
+					material = await ProcessDocumentMaterialAsync(request.Material, value, material);
 					break;
 
 				case TypeOfMaterial.Quiz:
-					if (hasLearners)
-					{
-						newMaterial = await ProcessQuizMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
-					else
-					{
-						oldMaterial = await ProcessQuizMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
+					material = await ProcessQuizMaterialAsync(request.Material, value, material);
 					break;
 
 				case TypeOfMaterial.Video:
-					if (hasLearners)
-					{
-						newMaterial = await ProcessVideoMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
-					else
-					{
-						oldMaterial = await ProcessVideoMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
+					material = await ProcessVideoMaterialAsync(request.Material, value, material);
 					break;
 
 				case TypeOfMaterial.Assignment:
-					if (hasLearners)
-					{
-						newMaterial = await ProcessAssignmentMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
-					else
-					{
-						oldMaterial = await ProcessAssignmentMaterialAsync(request.Material, value, oldMaterial, newMaterial, hasLearners);
-					}
+					material = await ProcessAssignmentMaterialAsync(request.Material, value, material);
 					break;
 
 				default:
 					break;
 			}
-			if (hasLearners)
-			{
-				await _materialRepository.Update(newMaterial);
-			} else
-			{
-				await _materialRepository.Update(oldMaterial);
-			}
-			
+
+			await _materialRepository.Update(material);
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 			return new APIResponse
 			{
 				IsError = !result,
-				Payload = result ? (hasLearners ? newMaterial : oldMaterial) : null,
+				Payload = result ? material : null,
 				Errors = result ? null : new ErrorResponse
 				{
 					StatusResponse = HttpStatusCode.BadRequest,
@@ -154,128 +95,95 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			};
 		}
 
-		private async Task<Material> ProcessDocumentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig systemConfig, Material oldMaterial, Material? newMaterial, bool hasLearners)
+		private async Task<Material> ProcessDocumentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
-			if (!hasLearners)
-			{
-				oldMaterial.Content = item.Content;
-				return oldMaterial;
-			} else {
-				newMaterial.Content = item.Content;
-				newMaterial.Duration = (int)systemConfig.Value!;
-				return newMaterial;
-			}
+			material.Content = item.Content;
+			material.Duration = (int)config.Value!;
+			return material;
 		}
 
-		private async Task<Material> ProcessQuizMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig systemConfig, Material oldMaterial, Material? newMaterial, bool hasLearners)
+		private async Task<Material> ProcessQuizMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
-			Quiz quiz = new Quiz(), newQuiz = new Quiz();
-			if (!hasLearners)
-			{
-				oldMaterial.Duration = (int)(item.Quiz!.TimeLimit! * (systemConfig?.Value ?? 1));
+			// Update thời lượng
+			material.Duration = (int)(item.Quiz!.TimeLimit! * (config?.Value ?? 1));
 
-				quiz = await _quizRepository.GetQuizById(oldMaterial.QuizId);
-				if (quiz != null)
-				{
-					quiz = _mapper.Map<Quiz>(item.Quiz);
-				}
+			// Lấy quiz hiện tại và cập nhật lại
+			var quiz = await _quizRepository.GetQuizById(material.QuizId);
+			if (quiz != null)
+			{
+				// Cập nhật lại quiz
+				_mapper.Map(item.Quiz, quiz);
 				await _quizRepository.Update(quiz);
 
-				//Delete answer on this course
-				foreach(var question in quiz.Questions)
+				// Xoá toàn bộ answer cũ
+				foreach (var question in quiz.Questions)
 				{
-					var listAnswerForThisQuestion = await _answerRepository.GetListAnswerByQuestionId(question.Id);
-					var listId = listAnswerForThisQuestion.Select(x => x.Id);
-					await _answerRepository.Delete(listId);
+					var listAnswer = await _answerRepository.GetListAnswerByQuestionId(question.Id);
+					var listAnswerIds = listAnswer.Select(a => a.Id);
+					await _answerRepository.Delete(listAnswerIds);
 				}
-				await _unitOfWork.SaveChangesAsync();
-				//Delete question on this course
+
+				// Xoá toàn bộ question cũ
 				quiz.Questions.Clear();
-			} else
-			{
-				newQuiz = _mapper.Map<Quiz>(item.Quiz!);
-				newQuiz.Id = Guid.NewGuid().ToString();
-				newMaterial.QuizId = newQuiz.Id;
-				await _quizRepository.Add(newQuiz);
+				await _unitOfWork.SaveChangesAsync();
 			}
 
-			// Add new Questions for the quiz
-			var questions = _mapper.Map<List<Question>>(item.Quiz.Questions);
-			foreach (var question in questions)
+			// Tạo mới câu hỏi
+			var newQuestions = _mapper.Map<List<Question>>(item.Quiz.Questions);
+			foreach (var question in newQuestions)
 			{
 				question.Id = Guid.NewGuid().ToString();
-				if (hasLearners)
-				{
-					question.QuizId = newQuiz.Id;
-				} else
-				{
-					question.QuizId = quiz.Id;
-				}
-				
+				question.QuizId = quiz!.Id;
 			}
-			await _questionRepository.CreateRangeAsync(questions);
+			await _questionRepository.CreateRangeAsync(newQuestions);
 
-			// Add answers for the questions
-			var answers = new List<Answer>();
+			// Tạo mới câu trả lời
+			var allAnswers = new List<Answer>();
 			foreach (var questionRequest in item.Quiz.Questions)
 			{
-				var question = questions.First(q => q.QuestionTitle == questionRequest.QuestionTitle);
-				var answersForQuestion = _mapper.Map<List<Answer>>(questionRequest.Answers);
+				var targetQuestion = newQuestions.First(q => q.QuestionTitle == questionRequest.QuestionTitle);
+				var answers = _mapper.Map<List<Answer>>(questionRequest.Answers);
 
-				foreach (var answer in answersForQuestion)
+				foreach (var answer in answers)
 				{
 					answer.Id = Guid.NewGuid().ToString();
-					answer.QuestionId = question.Id;
+					answer.QuestionId = targetQuestion.Id;
 				}
 
-				answers.AddRange(answersForQuestion);
+				allAnswers.AddRange(answers);
 			}
+			await _answerRepository.CreateRangeAsync(allAnswers);
 
-			await _answerRepository.CreateRangeAsync(answers);
 			await _unitOfWork.SaveChangesAsync();
-			return hasLearners ? newMaterial : oldMaterial;
+			return material;
 		}
 
-		private async Task<Material> ProcessVideoMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig systemConfig, Material oldMaterial, Material? newMaterial, bool hasLearners)
+
+		private async Task<Material> ProcessVideoMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
-			if (!hasLearners)
-			{
-				oldMaterial.Duration = item.Video!.Duration;
-				oldMaterial.UrlMaterial = item.Video.UrlMaterial;
-				oldMaterial.Thumbnail = item.Video.Thumbnail;
-			} else
-			{
-				newMaterial.Duration = item.Video!.Duration;
-				newMaterial.UrlMaterial = item.Video.UrlMaterial;
-				newMaterial.Thumbnail = item.Video.Thumbnail;
-			}
+			material.Duration = item.Video!.Duration;
+			material.UrlMaterial = item.Video.UrlMaterial;
+			material.Thumbnail = item.Video.Thumbnail;
 
 			if (item.Quiz != null)
 			{
-				await ProcessQuizMaterialAsync(item, systemConfig, oldMaterial, newMaterial, hasLearners);
+				await ProcessQuizMaterialAsync(item, config, material);
 			}
-			return hasLearners ? newMaterial : oldMaterial;
+			return material;
 		}
 
-		private async Task<Material> ProcessAssignmentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig systemConfig, Material oldMaterial, Material? newMaterial, bool hasLearners)
+
+		private async Task<Material> ProcessAssignmentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
-			if (!hasLearners)
-			{
-				var oldAssignment = oldMaterial.Assignment;
-				oldAssignment = _mapper.Map<Assignment>(item.Assignment);
-				await _assignmentRepository.Update(oldAssignment);
-			}
-			else
-			{
-				newMaterial.Duration = (int)(item.Assignment!.TimeLimit! * systemConfig.Value!);
-				var newAssignment = _mapper.Map<Assignment>(item.Assignment);
-				newAssignment.Id = Guid.NewGuid().ToString();
-				newMaterial.AssignmentId = newAssignment.Id;
-				newMaterial.Assignment = newAssignment;
-				await _assignmentRepository.Add(newAssignment);
-			}
-			return hasLearners ? newMaterial : oldMaterial;
-		}
+			var assignment = _mapper.Map<Assignment>(item.Assignment);
+			assignment.Id = material.Assignment?.Id ?? Guid.NewGuid().ToString();
 
+			material.AssignmentId = assignment.Id;
+			material.Assignment = assignment;
+			material.Duration = (int)(item.Assignment!.TimeLimit! * config.Value!);
+
+			await _assignmentRepository.Update(assignment);
+			return material;
+		}
 	}
 }
