@@ -3,6 +3,7 @@ using EduQuest_Application.DTO.Response;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Application.DTO.Response.Materials;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -56,6 +57,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.Rating = course.CourseStatistic.Rating;
 			courseResponse.TotalTime = course.CourseStatistic.TotalTime;
 			courseResponse.LastUpdated = course.UpdatedAt;
+			
 
 			if (courseLearner != null)
 			{
@@ -202,7 +204,8 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 			courseResponse.ListTag = course.Tags?.Select(tag => new TagResponse
 			{
-				Name = tag.Name
+				Name = tag.Name,
+				Type = tag.Type,
 			}).ToList() ?? new List<TagResponse>();
 
 			//Chưa có data fb

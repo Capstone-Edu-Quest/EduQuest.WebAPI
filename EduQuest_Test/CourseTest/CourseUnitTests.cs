@@ -22,6 +22,7 @@ public class CourseUnitTests
     private readonly Mock<IUserMetaRepository> _userStatisticRepositoryMock;
     private readonly CreateCourseCommandHandler _handler;
     private readonly UpdateCourseCommandHandler _updateCourseHandler;
+    private readonly Mock<ITagRepository> _tagRepositoryMock;
 
     public CourseUnitTests()
     {
@@ -33,6 +34,7 @@ public class CourseUnitTests
         _learningMaterialRepositoryMock = new Mock<IMaterialRepository>();
         _mapperMock = new Mock<IMapper>();
         _userStatisticRepositoryMock = new Mock<IUserMetaRepository>();
+        _tagRepositoryMock = new Mock<ITagRepository>();
 
         //_handler = new CreateCourseCommandHandler(
         //    _courseRepositoryMock.Object,

@@ -202,6 +202,8 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 			services.AddScoped<IReviewAssignmentRepository, ReviewAssignmentRepository>();
 			services.AddScoped<IInstructorCertificate, InstructorCertificateRepository>();
+			services.AddScoped<IEnrollerRepository, EnrollerRepository>();
+
 
             services.AddSingleton(provider =>
 			{
@@ -226,13 +228,14 @@ namespace EduQuest_Infrastructure
                 var resetDailyQuests = new JobKey("resetDailyQuests");
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
                 var checkJobKey = new JobKey("ProvideCertificates");
+				var LearningPathDueDate = new JobKey("LearningPathDueDate");
 				var Leaderboard = new JobKey("LeaderBoard");
 
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
-                q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
+                q.AddJob<UpdateLearningPathCourseDueDate>(opts => opts.WithIdentity(checkJobKey));
 				q.AddJob<InitializeLeaderboard>(opt => opt.WithIdentity(Leaderboard));
-
+				q.AddJob<UpdateLearningPathCourseDueDate>(opts => opts.WithIdentity(LearningPathDueDate));
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
                 .WithCronSchedule(cronExpression));
 
@@ -253,6 +256,14 @@ namespace EduQuest_Infrastructure
 
 				q.AddTrigger(opts => opts.ForJob(Leaderboard)
 				.StartNow());
+
+				q.AddTrigger(opts => opts
+                    .ForJob(LearningPathDueDate)
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInMinutes(5)
+                        .RepeatForever()
+                        .Build()));
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             #endregion

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Certificates;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;

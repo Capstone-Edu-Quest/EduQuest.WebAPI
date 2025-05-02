@@ -16,9 +16,12 @@ internal class ProvideCertificate : IJob
     private readonly ICertificateRepository _certificateRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IFireBaseRealtimeService _fireBaseRealtimeService;
+    private readonly ILearningPathRepository _learningPathRepository;
     private readonly ILogger<ProvideCertificate> _logger;
 
-    public ProvideCertificate(ISchedulerFactory scheduler, ILearnerRepository learnerRepository, ICertificateRepository certificateRepository, ICourseRepository courseRepository, IFireBaseRealtimeService fireBaseRealtimeService, ILogger<ProvideCertificate> logger)
+    public ProvideCertificate(ISchedulerFactory scheduler, ILearnerRepository learnerRepository,
+        ICertificateRepository certificateRepository, ICourseRepository courseRepository,
+        IFireBaseRealtimeService fireBaseRealtimeService, ILogger<ProvideCertificate> logger, ILearningPathRepository learningPathRepository)
     {
         _scheduler = scheduler;
         _learnerRepository = learnerRepository;
@@ -26,6 +29,7 @@ internal class ProvideCertificate : IJob
         _courseRepository = courseRepository;
         _fireBaseRealtimeService = fireBaseRealtimeService;
         _logger = logger;
+        _learningPathRepository = learningPathRepository;
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -45,6 +49,7 @@ internal class ProvideCertificate : IJob
             {
                 continue;
             }
+            await _learningPathRepository.UpdateLeanringPathIsComplete(entry.UserId);
             var newCertificate = new Certificate
             {
                 Id = Guid.NewGuid().ToString(),

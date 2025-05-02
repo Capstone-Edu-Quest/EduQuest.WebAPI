@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Lessons;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.CourseStatistics;
@@ -7,7 +8,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.DTO.Response.Courses
 {
-	public class CourseDetailResponseForIntructor : IMapFrom<Course>, IMapTo<Course>
+    public class CourseDetailResponseForIntructor : IMapFrom<Course>, IMapTo<Course>
 	{
 		public string Id { get; set; }
 		public string Title { get; set; } = string.Empty;

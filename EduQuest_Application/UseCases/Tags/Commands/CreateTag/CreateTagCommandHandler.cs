@@ -5,6 +5,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Tags.Commands.CreateTag;
 
@@ -24,12 +25,14 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, APIResp
     public async Task<APIResponse> Handle(CreateTagCommand request, CancellationToken cancellationToken)
     {
         var existTag = await _tagRepository.GetTagByName(request.TagName!);
+        var tagType = Enum.GetName(typeof(TagType), request.Type);
         if (existTag == null)
         {
             var tagEntity = new Tag
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = request.TagName,
+                Type = tagType
             };
 
             await _tagRepository.Add(tagEntity);

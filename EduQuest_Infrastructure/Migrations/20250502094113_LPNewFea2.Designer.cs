@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502094113_LPNewFea2")]
+    partial class LPNewFea2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -476,9 +479,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("RejectedReason")
-                        .HasColumnType("text");
-
                     b.Property<string>("Requirement")
                         .HasColumnType("text");
 
@@ -605,61 +605,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("DeletedAt");
 
                     b.ToTable("CourseStatistic");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.Enroller", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("CourseOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsOverDue")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LearningPathId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("LearningPathId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Enrollers");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
@@ -845,6 +790,15 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOverDue")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LearningPathId")
                         .IsRequired()
@@ -1565,6 +1519,12 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("Grade")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Level")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1752,9 +1712,6 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RejectedReason")
                         .HasColumnType("text");
 
                     b.Property<string>("RoleId")
@@ -2229,33 +2186,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("EduQuest_Domain.Entities.Enroller", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.LearningPath", "LearningPath")
-                        .WithMany("Enrollers")
-                        .HasForeignKey("LearningPathId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("LearningPath");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
@@ -2673,8 +2603,6 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPath", b =>
                 {
-                    b.Navigation("Enrollers");
-
                     b.Navigation("LearningPathCourses");
                 });
 

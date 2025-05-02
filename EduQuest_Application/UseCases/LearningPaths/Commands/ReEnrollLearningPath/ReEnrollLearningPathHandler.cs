@@ -1,17 +1,22 @@
-﻿using System.Net;
-using AutoMapper;
+﻿using AutoMapper;
+using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository.UnitOfWork;
+using EduQuest_Domain.Repository;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.Response;
-using EduQuest_Domain.Repository;
-using EduQuest_Domain.Repository.UnitOfWork;
-using MediatR;
 using static EduQuest_Domain.Constants.Constants;
+using System.Net;
 
-namespace EduQuest_Application.UseCases.LearningPaths.Commands.EnrollLearningPath;
+namespace EduQuest_Application.UseCases.LearningPaths.Commands.ReEnrollLearningPath;
 
-public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathCommand, APIResponse>
+public class ReEnrollLearningPathHandler : IRequestHandler<ReEnrollLearningPathCommand, APIResponse>
 {
     private readonly ILearningPathRepository _learningPathRepository;
     private readonly IUserRepository _userRepository;
@@ -21,20 +26,20 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
     private const string Key = "name";
     private const string value = "learning path";
 
-    public EnrollLearningPathHandler(ILearningPathRepository learningPathRepository, IMapper mapper, 
-        IUserRepository userRepository, IUnitOfWork unitOfWork, IEnrollerRepository enrollerRepository)
+    public ReEnrollLearningPathHandler(ILearningPathRepository learningPathRepository, IUserRepository userRepository, 
+        IUnitOfWork unitOfWork, IMapper mapper, IEnrollerRepository enrollerRepository)
     {
         _learningPathRepository = learningPathRepository;
         _userRepository = userRepository;
-        _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
         _enrollerRepository = enrollerRepository;
     }
 
-    public async Task<APIResponse> Handle(EnrollLearningPathCommand request, CancellationToken cancellationToken)
+    public async Task<APIResponse> Handle(ReEnrollLearningPathCommand request, CancellationToken cancellationToken)
     {
         #region validate
-        
+
         //validate owner
         User? user = await _userRepository.GetById(request.UserId);
 
@@ -46,22 +51,24 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
         DateTime now = DateTime.Now;
         int acummulateDate = 0;
         //validate Learing path exist 
-        var learningPath = await _learningPathRepository.EnrollLearningPath(request.LearningPathId, request.UserId);
+        var learningPath = await _learningPathRepository.GetById(request.LearningPathId);
         if (learningPath == null)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
         }
         var courses = await _learningPathRepository.GetLearningPathCourse(request.LearningPathId);
-        if(learningPath.Enrollers != null && learningPath.Enrollers.FirstOrDefault(e => e.UserId == request.UserId) != null)
+        if (learningPath.Enrollers == null || learningPath.Enrollers.FirstOrDefault(e => e.UserId == request.UserId) == null)
         {
-            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AlreadyExists, null, Key, value);
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.NotFound, null, Key, value);
         }
         // Calculate DueDate for each course based on the accumulated learning days
-        List<Enroller> enrollers = new List<Enroller>();
+        var enrollers = await _enrollerRepository.GetByLearningPathId(request.LearningPathId, request.UserId);
         foreach (var lp in learningPath.LearningPathCourses.OrderBy(l => l.CourseOrder))
         {
             double? totalTime = 0;
-            Enroller enroller = new Enroller();
+            Enroller enroller = enrollers!
+                .Where(e => e.CourseId! == lp.CourseId!)
+                .FirstOrDefault()!;
             var course = courses.FirstOrDefault(c => c.Id == lp.CourseId);
             totalTime = course!.CourseStatistic.TotalTime;
 
@@ -76,15 +83,8 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
             {
                 enroller.IsCompleted = true;
             }
-            enroller.CourseOrder = lp.CourseOrder;
-            enroller.CourseId = lp.CourseId;
-            enroller.LearningPathId = lp.LearningPathId;
-            enroller.UserId = request.UserId;
-            enroller.Id = Guid.NewGuid().ToString();
-            enroller.CreatedAt = now.ToUniversalTime();
-            enrollers.Add(enroller);
+            enroller.IsOverDue = false;
         }
-        await _enrollerRepository.CreateRangeAsync(enrollers);
         await _unitOfWork.SaveChangesAsync();
         MyLearningPathResponse response = _mapper.Map<MyLearningPathResponse>(learningPath);
         response.CreatedBy = _mapper.Map<CommonUserResponse>(user);
@@ -104,3 +104,4 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
         return temp + sub;
     }
 }
+
