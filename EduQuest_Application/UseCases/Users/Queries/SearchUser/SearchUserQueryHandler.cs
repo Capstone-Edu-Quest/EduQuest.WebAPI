@@ -100,7 +100,14 @@ public class UserSearchResultDto : IMapFrom<User>, IMapTo<User>
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<User, UserSearchResultDto>();
+        profile.CreateMap<User, UserSearchResultDto>()
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
+                src.UserTags.Select(ut => new UserTagDto
+                {
+                    TagId = ut.Tag.Id,
+                    TagName = ut.Tag.Name
+                })
+            ));
     }
 }
 
