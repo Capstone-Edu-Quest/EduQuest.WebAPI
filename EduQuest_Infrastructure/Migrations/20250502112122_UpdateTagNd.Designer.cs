@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502112122_UpdateTagNd")]
+    partial class UpdateTagNd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -604,6 +607,21 @@ namespace EduQuest_Infrastructure.Migrations
                     b.ToTable("CourseStatistic");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.Enroller", b =>
+                {
+                    b.Property<string>("LearningPathId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("LearningPathId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Enrollers");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
                 {
                     b.Property<string>("Id")
@@ -737,9 +755,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<bool>("IsEnrolled")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsLocked")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean");
 
@@ -787,15 +802,6 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsOverDue")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LearningPathId")
                         .IsRequired()
@@ -2177,6 +2183,25 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.Enroller", b =>
+                {
+                    b.HasOne("EduQuest_Domain.Entities.LearningPath", "LearningPath")
+                        .WithMany("Enrollers")
+                        .HasForeignKey("LearningPathId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduQuest_Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningPath");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.FavoriteList", b =>
                 {
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
@@ -2594,6 +2619,8 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.LearningPath", b =>
                 {
+                    b.Navigation("Enrollers");
+
                     b.Navigation("LearningPathCourses");
                 });
 

@@ -205,8 +205,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			courseResponse.ListTag = course.Tags?.Select(tag => new TagResponse
 			{
 				Name = tag.Name,
-				Level = tag.Level,
-				Grade = tag.Grade,
 				Type = tag.Type,
 			}).ToList() ?? new List<TagResponse>();
 
