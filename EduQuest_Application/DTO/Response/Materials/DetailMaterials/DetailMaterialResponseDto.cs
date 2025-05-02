@@ -29,6 +29,7 @@ public class DetailMaterialResponseDto : IMapFrom<Material>, IMapTo<Material>
 			opt.MapFrom(src => new VideoTypeDto
 			{
 				UrlMaterial = src.UrlMaterial,
+				Thumbnail = src.Thumbnail,	
 			});
 		});
 		//.ForPath(dest => dest.Video.Duration, opt => opt.MapFrom(src => src.Duration));
