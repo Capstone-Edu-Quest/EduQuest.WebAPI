@@ -174,7 +174,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     public async Task<List<User>> GetByRoleId(string roleId, string? tagId)
     {
         return await _context.Users
-            .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId.Equals(tagId)))
+            .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId==tagId))
             .ToListAsync();
     }
 
