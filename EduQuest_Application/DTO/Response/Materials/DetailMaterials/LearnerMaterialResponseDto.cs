@@ -30,8 +30,8 @@ public class LearnerMaterialResponseDto : IMapFrom<Material>, IMapTo<Material>
         profile.CreateMap<Material, LearnerMaterialResponseDto>()
         .ForMember(dest => dest.Quiz, opt => opt.MapFrom(src => src.Quiz))
         .ForMember(dest => dest.Assignment, opt => opt.MapFrom(src => src.Assignment))
-        .ForPath(dest => dest.Video.UrlMaterial, opt => opt.MapFrom(src => src.UrlMaterial))
-        .ForPath(dest => dest.Video.Duration, opt => opt.MapFrom(src => src.Duration));
+        .ForPath(dest => dest.Video.UrlMaterial, opt => opt.MapFrom(src => src.UrlMaterial));
+        //.ForPath(dest => dest.Video.Duration, opt => opt.MapFrom(src => src.Duration));
 
     }
 }
