@@ -123,7 +123,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 
 				var oldMaterialIds = new List<string>();
 
-				var lessons = existingCourse.Lessons;
+				var lessons = existingCourse.Lessons.OrderBy(l => l.Index);
 				foreach(var lesson in lessons)
 				{
 					var materialIds = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
