@@ -11,7 +11,7 @@ namespace EduQuest_Application.UseCases.Users.Queries.GetUserByRole
 	public class GetUserByRoleQuery : IRequest<APIResponse>
 	{
         public string RoleId { get; set; }
-        public string TagId { get; set; }
+        //public string? TagId { get; set; }
 
 	}
 }

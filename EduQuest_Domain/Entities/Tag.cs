@@ -12,8 +12,7 @@ namespace EduQuest_Domain.Entities
         public string? Type { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<User> Users { get; set; } = new List<User>();
-
+        public virtual ICollection<UserTag> UserTags { get; set; } = new List<UserTag>();
 
         [JsonIgnore]
 		public virtual ICollection<Course> Courses { get; set; }

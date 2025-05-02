@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Helper;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Constants;
@@ -95,10 +96,18 @@ public class UserSearchResultDto : IMapFrom<User>, IMapTo<User>
     public int TotalCourses { get; set; }
     public int TotalLearners { get; set; }
     public int TotalReviews { get; set; }
+    public List<UserTagDto> Tags { get; set; }
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<User, UserSearchResultDto>();
+        profile.CreateMap<User, UserSearchResultDto>()
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
+                src.UserTags.Select(ut => new UserTagDto
+                {
+                    TagId = ut.Tag.Id,
+                    TagName = ut.Tag.Name
+                })
+            ));
     }
 }
 

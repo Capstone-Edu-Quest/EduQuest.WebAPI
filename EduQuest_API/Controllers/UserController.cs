@@ -182,14 +182,14 @@ public class UserController : BaseController
         return Ok(result);
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPut("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> UpdateUser([FromBody] UpdateUserCommand command, CancellationToken cancellationToken = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
-        command.Id = userId;
+        //string userId = User.GetUserIdFromToken().ToString();
+        //command.Id = userId;
         var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
     }

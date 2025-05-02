@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502141206_minorMinor")]
+    partial class minorMinor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1729,6 +1732,9 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<string>("ExpertiseTagId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Headline")
                         .HasColumnType("text");
 
@@ -1782,6 +1788,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("ExpertiseTagId");
 
                     b.HasIndex("LevelId");
 
@@ -1998,43 +2006,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasIndex("QuizAttemptId");
 
                     b.ToTable("UserQuizAnswers");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserTag", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TagId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("TagId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTag");
                 });
 
             modelBuilder.Entity("LearningPathTag", b =>
@@ -2544,6 +2515,10 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.User", b =>
                 {
+                    b.HasOne("EduQuest_Domain.Entities.Tag", "ExpertiseTag")
+                        .WithMany("Users")
+                        .HasForeignKey("ExpertiseTagId");
+
                     b.HasOne("EduQuest_Domain.Entities.Levels", "Level")
                         .WithMany("Users")
                         .HasForeignKey("LevelId");
@@ -2555,6 +2530,8 @@ namespace EduQuest_Infrastructure.Migrations
                     b.HasOne("EduQuest_Domain.Entities.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId");
+
+                    b.Navigation("ExpertiseTag");
 
                     b.Navigation("Level");
 
@@ -2627,25 +2604,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("Answer");
 
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("EduQuest_Domain.Entities.UserTag", b =>
-                {
-                    b.HasOne("EduQuest_Domain.Entities.Tag", "Tag")
-                        .WithMany("UserTags")
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EduQuest_Domain.Entities.User", "User")
-                        .WithMany("UserTags")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tag");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LearningPathTag", b =>
@@ -2773,7 +2731,7 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Tag", b =>
                 {
-                    b.Navigation("UserTags");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Transaction", b =>
@@ -2812,8 +2770,6 @@ namespace EduQuest_Infrastructure.Migrations
                     b.Navigation("UserMeta");
 
                     b.Navigation("UserQuests");
-
-                    b.Navigation("UserTags");
                 });
 
             modelBuilder.Entity("EduQuest_Domain.Entities.UserMeta", b =>

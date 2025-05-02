@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Mascot;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
@@ -19,6 +20,7 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
     public bool isPro { get; set; }
+    public List<UserTagDto> Tags { get; set; }
     public UserStatisticDto statistic { get; set; }
     public List<string> mascotItem { get; set; }
     public List<string> equippedItems { get; set; }
@@ -35,7 +37,16 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
                 .Select(s => s.ShopItemId)
                 .ToList()
             ))
-            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"));
+            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"))
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
+                src.UserTags
+                    .Where(ut => ut.Tag != null) 
+                    .Select(ut => new UserTagDto
+                    {
+                        TagId = ut.Tag!.Id,
+                        TagName = ut.Tag.Name
+                    })
+            ));
 
 
         profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();
