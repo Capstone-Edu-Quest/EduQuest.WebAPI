@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Response;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Lessons;
 using EduQuest_Application.DTO.Response.Materials;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -12,7 +12,7 @@ using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructor
 {
-	public class GetCourseDetailForIntructorQueryHandler : IRequestHandler<GetCourseDetailForIntructorQuery, APIResponse>
+    public class GetCourseDetailForIntructorQueryHandler : IRequestHandler<GetCourseDetailForIntructorQuery, APIResponse>
 	{
 		private readonly ICourseRepository _courseRepository;
 		private readonly ILessonRepository _lessonRepository;

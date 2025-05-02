@@ -36,14 +36,13 @@ public class CourseUnitTests
         _userStatisticRepositoryMock = new Mock<IUserMetaRepository>();
         _tagRepositoryMock = new Mock<ITagRepository>();
 
-        _handler = new CreateCourseCommandHandler(
-            _courseRepositoryMock.Object,
-            _mapperMock.Object,
-            _unitOfWorkMock.Object,
-            _userRepositoryMock.Object,
-            _userStatisticsMock.Object,
-            _tagRepositoryMock.Object
-        );
+        //_handler = new CreateCourseCommandHandler(
+        //    _courseRepositoryMock.Object,
+        //    _mapperMock.Object,
+        //    _unitOfWorkMock.Object,
+        //    _userRepositoryMock.Object,
+        //    _userStatisticsMock.Object
+        //);
 
         //_updateCourseHandler = new UpdateCourseCommandHandler(
         //    _courseRepositoryMock.Object,
