@@ -15,4 +15,6 @@ public interface ILearningPathRepository: IGenericRepository<LearningPath>
     Task<LearningPath> GetMySpecificLearningPath(string userId, string learningId);
 
     Task<LearningPath?> EnrollLearningPath(string  learningPathId, string userId);
+    Task<int> UpdateLearningPathCourseDueDate();
+    Task<int> UpdateLeanringPathIsComplete(string userId);
 }

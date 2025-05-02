@@ -23,6 +23,10 @@ public class LearningPathCourseResponse : IMapFrom<Course>
     public double? Rating { get; set; } = 0;
     public int TotalLesson { get; set; } = 0;
     public int TotalTime { get; set; } = 0;
+    public double ProgressPercentage { get; set; } = -1;
+    public DateTime? DueDate { get; set; }
+    public bool IsOverDue { get; set; }
+    public bool IsCompleted { get; set; }
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<Course, LearningPathCourseResponse>()

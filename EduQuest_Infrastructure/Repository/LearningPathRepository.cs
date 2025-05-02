@@ -56,12 +56,12 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         }
         if (isEnrolled.HasValue && isEnrolled.Value == true)
         {
-            /*result = from r in result
+            result = from r in result
                      where r.IsEnrolled == isEnrolled
-                     select r;*/
-            var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
+                     select r;
+            /*var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
             var result2 = _context.LearningPaths.Where(l => l.Id == learningPathId);
-            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
+            return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);*/
         }
         if (CreatedByExpert.HasValue)
         {
@@ -114,27 +114,72 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
 
     public async Task<LearningPath?> EnrollLearningPath(string learningPathId, string userId)
     {
-        var learningPath = await _context.LearningPaths.Where(l => l.Id == learningPathId).FirstOrDefaultAsync();
-        if (learningPath != null)
-        {
-            learningPath.IsEnrolled = true;
-            if (learningPath.Enrollers.IsNullOrEmpty())
-            {
-                Enroller newEnroller = new Enroller { UserId = userId, LearningPathId = learningPathId };
-                List<Enroller> newEnrollers = [newEnroller];
-                learningPath.Enrollers = newEnrollers;
-            }
-            else
-            {
-                learningPath.Enrollers.Add(new Enroller { LearningPathId = learningPathId, UserId = userId });
-            }
+        var learningPath = await _context.LearningPaths
+            .FirstOrDefaultAsync(l => l.Id == learningPathId);
 
-            var removeEnroll = await _context.Enrollers
-                .Where(l => l.LearningPathId != learningPathId && l.UserId == userId).ToListAsync();
-            _context.RemoveRange(removeEnroll);
-            await _context.SaveChangesAsync();
-            return learningPath;
+        if (learningPath == null)
+        {
+            return null;
         }
-        return null;
+        learningPath.IsEnrolled = true;
+
+        await _context.LearningPaths
+            .Where(l => l.Id != learningPathId && l.UserId == userId)
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsEnrolled, false));
+
+        var learningPathIds = await _context.LearningPaths
+            .Where(l => l.Id != learningPathId && l.UserId == userId)
+            .Select(l => l.Id).ToListAsync();
+
+        var removeDueDates = await _context.LearningPathCourses
+            .Where(l => learningPathIds.Contains(l.LearningPathId))
+            .ToListAsync();
+
+        foreach (var course in removeDueDates)
+        {
+            course.DueDate = null;
+            course.IsOverDue = false;
+        }
+
+        await _context.SaveChangesAsync();
+        return learningPath;
+    }
+
+    public async Task<int> UpdateLearningPathCourseDueDate()
+    {
+        var currentDate = DateTime.Now.ToUniversalTime();
+
+        int updatedCount = await _context.LearningPathCourses
+            .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
+
+        var learningPathIds = await _context.LearningPathCourses
+            .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
+            .Select(l => l.LearningPathId)
+            .Distinct()
+            .ToListAsync();
+
+        var learningPaths = await _context.LearningPaths
+            .Where(l => learningPathIds.Contains(l.Id))
+            .ToListAsync();
+
+        foreach (var path in learningPaths)
+        {
+            path.IsLocked = true;
+        }
+
+        await _context.SaveChangesAsync();
+        return updatedCount;
+    }
+    public async Task<int> UpdateLeanringPathIsComplete(string userId)
+    {
+        var currentDate = DateTime.Now.ToUniversalTime();
+        var learningPathIds = await _context.LearningPaths.Where(l => l.UserId == userId)
+            .Select(l => l.Id)
+            .Distinct().ToListAsync();
+        int updatedCount = await _context.LearningPathCourses
+            .Where(l => !l.IsCompleted && !l.IsOverDue && learningPathIds.Contains(l.LearningPathId))
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsCompleted, true));
+        return updatedCount;
     }
 }
