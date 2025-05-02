@@ -79,7 +79,7 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
             enroller.LearningPathId = lp.LearningPathId;
             enroller.UserId = request.UserId;
             enroller.Id = Guid.NewGuid().ToString();
-            enroller.CreatedAt = now;
+            enroller.CreatedAt = now.ToUniversalTime();
             enrollers.Add(enroller);
         }
         if(learningPath.Enrollers.Count > 0)
@@ -90,6 +90,7 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
         {
             learningPath.Enrollers = enrollers;
         }
+        await _learningPathRepository.Update(learningPath);
         await _unitOfWork.SaveChangesAsync();
         MyLearningPathResponse response = _mapper.Map<MyLearningPathResponse>(learningPath);
         response.CreatedBy = _mapper.Map<CommonUserResponse>(user);
