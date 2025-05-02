@@ -9,7 +9,10 @@ public class TagDto : IMapFrom<Tag>, IMapTo<Tag>
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public int Courses { get; set; }
+	public int? Level { get; set; }
+	public int? Grade { get; set; }
+	public string? Type { get; set; }
+	public int Courses { get; set; }
 
     public void MappingFrom(Profile profile)
     {

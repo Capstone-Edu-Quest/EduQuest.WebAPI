@@ -45,6 +45,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			}
 			var courseResponse = new CourseResponseForUpdate();
 			var listTag = await _tagRepository.GetByIdsAsync(request.CourseInfo.TagIds);
+			existingCourse.Tags.Clear();
+			existingCourse.Tags = listTag;
+
 			if (existingCourse.Status.ToLower() != GeneralEnums.StatusCourse.Public.ToString().ToLower())
 			{
 				existingCourse.Title = request.CourseInfo.Title;
@@ -52,8 +55,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
 				existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 				existingCourse.Price = request.CourseInfo.Price;
-				existingCourse.Tags.Clear();
-				existingCourse.Tags = listTag;
+				
 
 				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
@@ -139,9 +141,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
 					existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 					existingCourse.Price = request.CourseInfo.Price;
-					existingCourse.Tags.Clear();
-					existingCourse.Tags = listTag;
-
+					
 					var newLessons = new List<Lesson>();
 					if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 					{
