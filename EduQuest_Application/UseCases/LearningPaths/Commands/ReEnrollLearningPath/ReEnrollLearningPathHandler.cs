@@ -69,21 +69,24 @@ public class ReEnrollLearningPathHandler : IRequestHandler<ReEnrollLearningPathC
             Enroller enroller = enrollers!
                 .Where(e => e.CourseId! == lp.CourseId!)
                 .FirstOrDefault()!;
-            var course = courses.FirstOrDefault(c => c.Id == lp.CourseId);
-            totalTime = course!.CourseStatistic.TotalTime;
-
-            // Get the number of learning days required based on the total time
-            int learningDate = GetLearningDate(totalTime);
-            acummulateDate += learningDate;
-
-            // Set the DueDate for the current course
-            enroller.DueDate = now.AddDays(acummulateDate).ToUniversalTime();
-            var learner = course.CourseLearners!.FirstOrDefault(c => c.UserId == request.UserId);
-            if (learner != null && learner.ProgressPercentage >= 100)
+            if(enroller.IsOverDue)
             {
-                enroller.IsCompleted = true;
+                var course = courses.FirstOrDefault(c => c.Id == lp.CourseId);
+                totalTime = course!.CourseStatistic.TotalTime;
+
+                // Get the number of learning days required based on the total time
+                int learningDate = GetLearningDate(totalTime);
+                acummulateDate += learningDate;
+
+                // Set the DueDate for the current course
+                enroller.DueDate = now.AddDays(acummulateDate).ToUniversalTime();
+                var learner = course.CourseLearners!.FirstOrDefault(c => c.UserId == request.UserId);
+                if (learner != null && learner.ProgressPercentage >= 100)
+                {
+                    enroller.IsCompleted = true;
+                }
+                enroller.IsOverDue = false;
             }
-            enroller.IsOverDue = false;
         }
         await _unitOfWork.SaveChangesAsync();
         MyLearningPathResponse response = _mapper.Map<MyLearningPathResponse>(learningPath);

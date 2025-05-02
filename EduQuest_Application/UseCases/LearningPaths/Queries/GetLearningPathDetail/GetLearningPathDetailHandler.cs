@@ -63,9 +63,19 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                     }
                     var lp = learningPath.Enrollers
                     .FirstOrDefault(c => c.CourseId == course.Id && c.UserId == request.UserId && c.LearningPathId == learningPath.Id);
-                    learningPathCourse.DueDate = lp.DueDate != null ? lp.DueDate.Value : null;
-                    learningPathCourse.IsOverDue = lp.IsOverDue;
-                    learningPathCourse.IsCompleted = lp.IsCompleted;
+                    if(lp != null)
+                    {
+                        learningPathCourse.DueDate = lp.DueDate != null ? lp.DueDate.Value : null;
+                        learningPathCourse.IsOverDue = lp.IsOverDue;
+                        learningPathCourse.IsCompleted = lp.IsCompleted;
+                    }
+                    else
+                    {
+                        learningPathCourse.DueDate = null;
+                        learningPathCourse.IsOverDue = false;
+                        learningPathCourse.IsCompleted = false;
+                    }
+                    
                 }
                 /*else
                 {
