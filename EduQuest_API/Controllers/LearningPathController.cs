@@ -86,7 +86,8 @@ public class LearningPathController : Controller
         [FromQuery, AllowNull] string? keyWord,
         CancellationToken token = default)
     {
-        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId, keyWord), token);
+        string userId2 = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId, keyWord, userId2), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
     [HttpGet("enroller")]

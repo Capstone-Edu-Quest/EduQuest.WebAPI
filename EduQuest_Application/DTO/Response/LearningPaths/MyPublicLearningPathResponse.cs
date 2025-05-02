@@ -14,6 +14,7 @@ public class MyPublicLearningPathResponse: IMapFrom<LearningPath>
     public int TotalCourses { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public bool IsEnrolled { get; set; }
     public bool CreatedByExpert { get; set; }
     public List<LearningPathCoursePreview> LearningPathCourses { get; set; } = new List<LearningPathCoursePreview>();
     public CommonUserResponse CreatedBy { get; set; } = new CommonUserResponse();

@@ -58,8 +58,8 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             /* result = from r in result
                       where r.IsEnrolled == isEnrolled
                       select r;*/
-            var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).FirstOrDefault()?.LearningPathId;
-            var result2 = _context.LearningPaths.Where(l => l.Id == learningPathId);
+            var learningPathId = _context.Enrollers.Where(e => e.UserId == UserId).Select(l => l.LearningPathId);
+            var result2 = _context.LearningPaths.Where(l => learningPathId.Contains(l.Id));
             return await result2.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
         }
         if (CreatedByExpert.HasValue)
