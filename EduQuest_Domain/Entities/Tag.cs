@@ -7,8 +7,11 @@ namespace EduQuest_Domain.Entities
 	public partial class Tag: BaseEntity
 	{
 		public string Name { get; set; }
+        public int? Level { get; set; }
+        public int? Grade { get; set; }
+        public string? Type { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
 		public virtual ICollection<Course> Courses { get; set; }
 
         [JsonIgnore]

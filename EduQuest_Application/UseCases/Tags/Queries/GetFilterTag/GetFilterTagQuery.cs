@@ -9,16 +9,22 @@ public class GetFilterTagQuery : IRequest<APIResponse>
     public int? EachPage { get; set; } = 10;
     public string? TagId { get; set; }
     public string? Name { get; set; }
+	public int? Level { get; set; }
+	public int? Grade { get; set; }
+	public int? Type { get; set; }
 
-    public GetFilterTagQuery()
+	public GetFilterTagQuery()
     {
     }
 
-    public GetFilterTagQuery(int? page, int? eachPage, string? tagId, string? name)
-    {
-        Page = page ?? 1;
-        EachPage = eachPage ?? 10;
-        TagId = tagId;
-        Name = name;
-    }
+	public GetFilterTagQuery(int? page, int? eachPage, string? tagId, string? name, int? level, int? grade, int? type)
+	{
+		Page = page;
+		EachPage = eachPage;
+		TagId = tagId;
+		Name = name;
+		Level = level;
+		Grade = grade;
+		Type = type;
+	}
 }

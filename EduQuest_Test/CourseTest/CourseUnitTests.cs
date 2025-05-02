@@ -34,13 +34,13 @@ public class CourseUnitTests
         _mapperMock = new Mock<IMapper>();
         _userStatisticRepositoryMock = new Mock<IUserMetaRepository>();
 
-        _handler = new CreateCourseCommandHandler(
-            _courseRepositoryMock.Object,
-            _mapperMock.Object,
-            _unitOfWorkMock.Object,
-            _userRepositoryMock.Object,
-            _userStatisticsMock.Object
-        );
+        //_handler = new CreateCourseCommandHandler(
+        //    _courseRepositoryMock.Object,
+        //    _mapperMock.Object,
+        //    _unitOfWorkMock.Object,
+        //    _userRepositoryMock.Object,
+        //    _userStatisticsMock.Object
+        //);
 
         //_updateCourseHandler = new UpdateCourseCommandHandler(
         //    _courseRepositoryMock.Object,

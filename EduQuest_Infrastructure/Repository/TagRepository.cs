@@ -1,15 +1,11 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Repository;
-using EduQuest_Infrastructure.Extensions;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -33,7 +29,7 @@ namespace EduQuest_Infrastructure.Repository
         }
 
 
-        public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage)
+        public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage, int? Level, int? Grade, int? Type)
         {
             var query = _context.Tags.AsQueryable();
 
@@ -41,13 +37,43 @@ namespace EduQuest_Infrastructure.Repository
             {
                 query = query.Where(c => c.Id == Id);
             }
-            if (!string.IsNullOrEmpty(Name))
-            {
-                query = query.Where(c => c.Name.Contains(Name));
-            }
+			if (Level.HasValue)
+			{
+				query = query.Where(c => c.Level == Level);
+			}
+			if (Grade.HasValue)
+			{
+				query = query.Where(c => c.Grade == Grade);
+			}
+			if (Type.HasValue)
+			{
+				var typeName = Enum.GetName(typeof(TagType), Type.Value);
+				if (!string.IsNullOrEmpty(typeName))
+				{
+					query = query.Where(c => c.Type == typeName);
+				}
+			}
 
-            return await query.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
-            //return new PagedList<Tag>(await query.ToListAsync(), query.Count(), (int)page!, (int)eachPage!);
-        }
+			var tags = await query.ToListAsync();
+			if (!string.IsNullOrEmpty(Name))
+			{
+				var name = ContentHelper.ConvertVietnameseToEnglish(Name?.ToLower());
+				tags = tags
+				.Where(x =>
+						(string.IsNullOrWhiteSpace(Name) || ContentHelper.ConvertVietnameseToEnglish(x.Name.ToLower()).Contains(name))
+					)
+					.ToList();
+			}
+			var totalItems = tags.Count;
+			var pagedTags = tags
+				.Skip((page - 1) * eachPage)
+				.Take(eachPage)
+				.ToList();
+
+			return new PagedList<Tag>(pagedTags, totalItems, page, eachPage);
+
+			//return await query.Pagination(page, eachPage).ToPagedListAsync(page, eachPage);
+			//return new PagedList<Tag>(await query.ToListAsync(), query.Count(), (int)page!, (int)eachPage!);
+		}
     }
 }
