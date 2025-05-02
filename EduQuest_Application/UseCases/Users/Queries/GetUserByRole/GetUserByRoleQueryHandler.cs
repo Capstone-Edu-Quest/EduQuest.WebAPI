@@ -26,7 +26,7 @@ namespace EduQuest_Application.UseCases.Users.Queries.GetUserByRole
 
 		public async Task<APIResponse> Handle(GetUserByRoleQuery request, CancellationToken cancellationToken)
 		{
-			var user = await _userRepository.GetByRoleId(request.RoleId);
+			var user = await _userRepository.GetByRoleId(request.RoleId, request.TagId);
 			var response = _mapper.Map<List<UserBasicResponseDto>>(user);
 			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, response, "name", "User with Role ${request.RoleId}");
 		}

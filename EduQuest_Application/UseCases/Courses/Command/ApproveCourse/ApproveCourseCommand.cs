@@ -7,5 +7,6 @@ public class ApproveCourseCommand : IRequest<APIResponse>
 {
     public string CourseId { get; set; } = null!;
     public bool isApprove { get; set; }
+    public string? RejectedReason { get; set; }
 }
 

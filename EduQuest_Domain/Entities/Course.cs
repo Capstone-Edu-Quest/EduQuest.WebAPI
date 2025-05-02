@@ -14,6 +14,7 @@ namespace EduQuest_Domain.Entities
         public string Status { get; set; }
         public string CreatedBy { get; set; }
         public string? AssignTo { get; set; }
+        public string? RejectedReason { get; set; }
 		public int? Version { get; set; }
 		public string? OriginalCourseId { get; set; }
 
