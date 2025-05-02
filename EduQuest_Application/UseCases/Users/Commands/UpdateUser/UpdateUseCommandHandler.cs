@@ -45,6 +45,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, APIRe
         if (!string.IsNullOrWhiteSpace(request.Description))
             existingUser.Description = request.Description;
 
+        if (!string.IsNullOrWhiteSpace(request.TagId))
+            existingUser.ExpertiseTagId = request.TagId;
+
         await _userRepo.Update(existingUser);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -165,9 +165,9 @@ public class UserController : BaseController
 	[HttpGet("byRoleId")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<ActionResult<APIResponse>> GetUserByRoleId([FromQuery] string roleId, CancellationToken cancellationToken = default)
+	public async Task<ActionResult<APIResponse>> GetUserByRoleId([FromQuery] GetUserByRoleQuery query, CancellationToken cancellationToken = default)
 	{
-		var result = await _mediator.Send(new GetUserByRoleQuery(roleId), cancellationToken);
+		var result = await _mediator.Send(query, cancellationToken);
 		return Ok(result);
 	}
 
