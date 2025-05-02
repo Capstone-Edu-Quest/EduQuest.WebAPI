@@ -24,6 +24,13 @@ namespace EduQuest_Domain.Entities
 		public string Package { get; set; }
         public DateTime? PackageExperiedDate { get; set; }
 
+        public string? ExpertiseTagId { get; set; }
+
+        [ForeignKey("ExpertiseTagId")]
+        [JsonIgnore]
+        public virtual Tag? ExpertiseTag { get; set; }
+
+
         [JsonIgnore]
 		public virtual Role? Role { get; set; } = null!;
 		[JsonIgnore]
@@ -33,9 +40,9 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
 		public virtual Levels? Level { get; set; } = null!;
-		
-		
-		[JsonIgnore]
+
+
+        [JsonIgnore]
 		public virtual UserMeta? UserMeta { get; set; } = null!;
 		[JsonIgnore]
 		public virtual Subscription? Subscription { get; set; } = null!;

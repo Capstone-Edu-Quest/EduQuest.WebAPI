@@ -5,6 +5,7 @@ using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using Nest;
+using Stripe;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository;
@@ -64,11 +65,10 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return users;
     }
 
-    public async Task<List<User>> GetUserByAssignToExpet(string expertId)
+    public async Task<List<User>> GetUserByAssignToExpet(string expertId, string tagId)
     {
-        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending").ToListAsync();  
+        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending" && (tagId == null || x.ExpertiseTagId == tagId)).ToListAsync();
     }
-
     public async Task<List<User>> GetUserByStatus(string status)
     {
         var result = _context.Users.AsQueryable().AsNoTracking();
@@ -171,8 +171,11 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return result;
     }
 
-	public async Task<List<User>> GetByRoleId(string roleId)
-	{
-        return await _context.Users.Where(x => x.RoleId == roleId).ToListAsync();
-	}
+    public async Task<List<User>> GetByRoleId(string roleId, string? tagId)
+    {
+        return await _context.Users
+            .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId.Equals(tagId)))
+            .ToListAsync();
+    }
+
 }

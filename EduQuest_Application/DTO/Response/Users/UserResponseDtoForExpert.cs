@@ -18,13 +18,18 @@ public class UserResponseDtoForExpert : IMapFrom<User>, IMapTo<User>
     public string RoleId { get; set; }
     public string? AssignToExpertId { get; set; }
     public string? ExpertName { get; set; }
+    public string? ExpertiseTagId { get; set; }
+    public string? ExpertiseTag { get; set; }
+
     public List<InstructorCertificateDto> InstructorCertificate { get; set; }
 
 
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<User, UserResponseDtoForExpert>()
-            .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates));
+            .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates))
+            .ForMember(dest => dest.ExpertiseTag, opt => opt.MapFrom(src => src.ExpertiseTag.Name));
+
     }
 }
 

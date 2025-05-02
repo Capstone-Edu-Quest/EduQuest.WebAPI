@@ -12,6 +12,10 @@ namespace EduQuest_Domain.Entities
         public string? Type { get; set; }
 
         [JsonIgnore]
+        public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+
+        [JsonIgnore]
 		public virtual ICollection<Course> Courses { get; set; }
 
         [JsonIgnore]
