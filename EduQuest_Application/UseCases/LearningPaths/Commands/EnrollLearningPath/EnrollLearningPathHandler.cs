@@ -63,7 +63,12 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
             acummulateDate += learningDate;
 
             // Set the DueDate for the current course
-            lp.DueDate = now.AddDays(acummulateDate);
+            lp.DueDate = now.AddDays(acummulateDate).ToUniversalTime();
+            var learner = course.CourseLearners!.FirstOrDefault(c => c.UserId == request.UserId);
+            if (learner != null && learner.ProgressPercentage >= 100)
+            {
+                lp.IsCompleted = true;
+            }
         }
         await _unitOfWork.SaveChangesAsync();
         MyLearningPathResponse response = _mapper.Map<MyLearningPathResponse>(learningPath);

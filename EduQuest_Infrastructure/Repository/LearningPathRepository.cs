@@ -147,10 +147,39 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
 
     public async Task<int> UpdateLearningPathCourseDueDate()
     {
-        return await _context.LearningPathCourses
-            .Where(l => l.DueDate != null && l.DueDate!.Value.Date <= DateTime.Now.Date.ToUniversalTime()
-            && l.IsCompleted == false)
-            .ExecuteUpdateAsync(q => q
-            .SetProperty(l => l.IsOverDue, true));
+        var currentDate = DateTime.Now.ToUniversalTime();
+
+        int updatedCount = await _context.LearningPathCourses
+            .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
+
+        var learningPathIds = await _context.LearningPathCourses
+            .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
+            .Select(l => l.LearningPathId)
+            .Distinct()
+            .ToListAsync();
+
+        var learningPaths = await _context.LearningPaths
+            .Where(l => learningPathIds.Contains(l.Id))
+            .ToListAsync();
+
+        foreach (var path in learningPaths)
+        {
+            path.IsLocked = true;
+        }
+
+        await _context.SaveChangesAsync();
+        return updatedCount;
+    }
+    public async Task<int> UpdateLeanringPathIsComplete(string userId)
+    {
+        var currentDate = DateTime.Now.ToUniversalTime();
+        var learningPathIds = await _context.LearningPaths.Where(l => l.UserId == userId)
+            .Select(l => l.Id)
+            .Distinct().ToListAsync();
+        int updatedCount = await _context.LearningPathCourses
+            .Where(l => !l.IsCompleted && !l.IsOverDue && learningPathIds.Contains(l.LearningPathId))
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsCompleted, true));
+        return updatedCount;
     }
 }

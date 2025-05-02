@@ -50,18 +50,26 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                 learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
                 learningPathCourse.RequirementList = course.Requirement.Split(",").ToList();
                 learningPathCourse.Author = course.User.Username;
-                var learner = course.CourseLearners.Where(c => c.UserId == request.UserId).FirstOrDefault();
-                if (learner != null)
+                if(!string.IsNullOrEmpty(request.UserId))
                 {
-                    learningPathCourse.ProgressPercentage = learner.ProgressPercentage.Value;
+                    var learner = course.CourseLearners.Where(c => c.UserId == request.UserId).FirstOrDefault();
+                    if (learner != null)
+                    {
+                        learningPathCourse.ProgressPercentage = learner.ProgressPercentage.Value;
+                    }
+                    else
+                    {
+                        learningPathCourse.ProgressPercentage = -1;
+                    }
+                    var lp = learningPath.LearningPathCourses.FirstOrDefault(c => c.CourseId == course.Id);
+                    learningPathCourse.DueDate = lp.DueDate != null ? lp.DueDate.Value : null;
+                    learningPathCourse.IsOverDue = lp.IsOverDue;
+                    learningPathCourse.IsCompleted = lp.IsCompleted;
                 }
-                else
+                /*else
                 {
                     learningPathCourse.ProgressPercentage = -1;
-                }
-                var lp = learningPath.LearningPathCourses.FirstOrDefault(c => c.CourseId == course.Id);
-                learningPathCourse.DueDate = lp.DueDate.Value;
-                learningPathCourse.IsOverDue = lp.IsOverDue;
+                }*/
                 return learningPathCourse;
             }).ToList();
 
