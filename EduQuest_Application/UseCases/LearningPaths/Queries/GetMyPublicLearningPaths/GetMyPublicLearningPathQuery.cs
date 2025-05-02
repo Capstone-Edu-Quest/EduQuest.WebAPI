@@ -8,9 +8,11 @@ public class GetMyPublicLearningPathQuery: IRequest<APIResponse>
 {
     public string? UserId { get; set; }
     public string? KeyWord { get; set; }
-    public GetMyPublicLearningPathQuery(string? userId, string? keyWord)
+    public string? CurrentUserId { get; set; }
+    public GetMyPublicLearningPathQuery(string? userId, string? keyWord, string? currentUserId)
     {
         UserId = userId;
         KeyWord = keyWord;
+        CurrentUserId = currentUserId;
     }
 }

@@ -33,6 +33,15 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
                 MyPublicLearningPathResponse myLearningPathResponse = _mapper.Map<MyPublicLearningPathResponse>(item);
                 myLearningPathResponse.CreatedBy = userResponse;
                 myLearningPathResponse.TotalCourses = item.LearningPathCourses.Count;
+                if(request.CurrentUserId != null)
+                {
+                    var enroll = item.Enrollers.Where(l => l.UserId == request.CurrentUserId).FirstOrDefault();    
+                    myLearningPathResponse.IsEnrolled = enroll != null;
+                }
+                else
+                {
+                    myLearningPathResponse.IsEnrolled = false;  
+                }
                 responseDto.Add(myLearningPathResponse);
             }
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.GetSuccesfully,
