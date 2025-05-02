@@ -50,6 +50,18 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                 learningPathCourse.Order = tempCourse?.CourseOrder ?? -1; // -1 if not found
                 learningPathCourse.RequirementList = course.Requirement.Split(",").ToList();
                 learningPathCourse.Author = course.User.Username;
+                var learner = course.CourseLearners.Where(c => c.UserId == request.UserId).FirstOrDefault();
+                if (learner != null)
+                {
+                    learningPathCourse.ProgressPercentage = learner.ProgressPercentage.Value;
+                }
+                else
+                {
+                    learningPathCourse.ProgressPercentage = -1;
+                }
+                var lp = learningPath.LearningPathCourses.FirstOrDefault(c => c.CourseId == course.Id);
+                learningPathCourse.DueDate = lp.DueDate.Value;
+                learningPathCourse.IsOverDue = lp.IsOverDue;
                 return learningPathCourse;
             }).ToList();
 
@@ -57,7 +69,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             response.TotalCourses = learningPathCourses.Count;
             response.Courses = learningPathCourses.OrderBy(r => r.Order).ToList();
             response.CreatedBy = _mapper.Map<CommonUserResponse>(learningPath.User);
-            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK,MessageCommon.GetSuccesfully,
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.GetSuccesfully,
                 response, Key, value);
         }
         catch (Exception ex)

@@ -56,7 +56,6 @@ namespace EduQuest_Infrastructure.Persistence
         public virtual DbSet<AssignmentAttempt> AssignmentAttempts { get; set; }
         public virtual DbSet<UserQuizAnswers> UserQuizAnswers { get; set; } = null!;
         public virtual DbSet<AssignmentPeerReview> AssignmentPeerReviews { get; set; } = null!;
-        public virtual DbSet<Enroller> Enrollers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

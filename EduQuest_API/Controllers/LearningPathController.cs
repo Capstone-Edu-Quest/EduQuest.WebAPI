@@ -65,9 +65,12 @@ public class LearningPathController : Controller
     }
 
     [HttpGet("detail")]
-    public async Task<IActionResult> GetLearningPathDetail([FromQuery] string learningPathId, CancellationToken token = default)
+    public async Task<IActionResult> GetLearningPathDetail([FromQuery] string learningPathId,
+        [FromQuery] string userId, 
+        CancellationToken token = default)
     {
-        var result = await _mediator.Send(new GetLearningPathDetailQuery(learningPathId), token);
+        //string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new GetLearningPathDetailQuery(learningPathId, userId), token);
         if (result.Errors != null && result.Errors.StatusResponse == HttpStatusCode.NotFound)
         {
             return NotFound(result);
@@ -121,10 +124,10 @@ public class LearningPathController : Controller
     [Authorize]
     [HttpPost("enroll")]
     public async Task<IActionResult> EnrollLearningpath([FromQuery, Required] string learningPathId,
-                                                        //[FromQuery] string userId,
+                                                        [FromQuery] string userId,
                                                         CancellationToken token = default)
     {
-        string userId = User.GetUserIdFromToken().ToString();
+        //string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new EnrollLearningPathCommand(learningPathId, userId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }

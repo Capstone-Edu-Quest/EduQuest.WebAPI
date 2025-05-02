@@ -48,6 +48,10 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
             }
+            if(learingPath.IsEnrolled)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageError.EnrolledLPUpdateBlock, Key, value);
+            }
             //validate owner
             User? user = await _userRepository.GetById(request.UserId);
 
