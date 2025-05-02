@@ -65,9 +65,9 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return users;
     }
 
-    public async Task<List<User>> GetUserByAssignToExpet(string expertId, string tagId)
+    public async Task<List<User>> GetUserByAssignToExpet(string expertId)
     {
-        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending" && (tagId == null || x.ExpertiseTagId == tagId)).ToListAsync();
+        return await _context.Users.AsNoTracking().Where(x => x.AssignToExpertId.Equals(expertId) && x.Status.ToLower() == "pending").ToListAsync();
     }
     public async Task<List<User>> GetUserByStatus(string status)
     {
@@ -171,11 +171,17 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return result;
     }
 
-    public async Task<List<User>> GetByRoleId(string roleId, string? tagId)
+    //public async Task<List<User>> GetByRoleId(string roleId, string? tagId)
+    //{
+    //    return await _context.Users
+    //        .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId==tagId))
+    //        .ToListAsync();
+    //}
+
+    public async Task<List<User>> GetByRoleId(string roleId)
     {
         return await _context.Users
-            .Where(x => x.RoleId == roleId && (tagId == null || x.ExpertiseTagId==tagId))
+            .Where(x => x.RoleId == roleId)
             .ToListAsync();
     }
-
 }

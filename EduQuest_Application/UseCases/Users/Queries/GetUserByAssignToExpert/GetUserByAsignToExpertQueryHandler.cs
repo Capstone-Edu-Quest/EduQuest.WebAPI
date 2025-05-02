@@ -22,7 +22,7 @@ public class GetUserByAsignToExpertQueryHandler : IRequestHandler<GetUserByAsign
 
     public async Task<APIResponse> Handle(GetUserByAsignToExpertQuery request, CancellationToken cancellationToken)
     {
-        var existUsers = await _userRepository.GetUserByAssignToExpet(request.expertId, request.tagId);
+        var existUsers = await _userRepository.GetUserByAssignToExpet(request.expertId);
         var mappedResult = _mapper.Map<List<UserResponseDtoForExpert>>(existUsers);
 
         foreach (var user in mappedResult)
