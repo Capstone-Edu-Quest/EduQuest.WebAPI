@@ -48,7 +48,6 @@ public class DuplicateLearningPathHandler : IRequestHandler<DuplicateLearningPat
             newLearningPath.Id = Guid.NewGuid().ToString();
             newLearningPath.UserId = request.UserId;
             newLearningPath.IsEnrolled = false;
-            newLearningPath.IsLocked = false;
             newLearningPath.IsPublic = temp.IsPublic;
             newLearningPath.CreatedAt = DateTime.Now.ToUniversalTime();
             newLearningPath.Name = temp.Name;

@@ -85,7 +85,6 @@ public class CreateLearningPathHandler : IRequestHandler<CreateLearningPathComma
             learningPath.CreatedByExpert = true ? int.Parse(user.RoleId!) == (int)UserRole.Expert : false;            
             learningPath.TotalTimes = totalTime;
             learningPath.IsEnrolled = false;
-            learningPath.IsLocked = false;
             learningPath.Id = Guid.NewGuid().ToString();
             learningPath.CreatedAt = DateTime.Now.ToUniversalTime();
             learningPath.UserId = request.UserId;

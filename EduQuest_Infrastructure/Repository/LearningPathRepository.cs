@@ -137,23 +137,6 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
         int updatedCount = await _context.Enrollers
             .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
-
-        var learningPathIds = await _context.Enrollers
-            .Where(l => l.DueDate != null && l.DueDate.Value <= currentDate && !l.IsCompleted)
-            .Select(l => l.LearningPathId)
-            .Distinct()
-            .ToListAsync();
-
-        var learningPaths = await _context.LearningPaths
-            .Where(l => learningPathIds.Contains(l.Id))
-            .ToListAsync();
-
-        foreach (var path in learningPaths)
-        {
-            path.IsLocked = true;
-        }
-
-        await _context.SaveChangesAsync();
         return updatedCount;
     }
     public async Task<int> UpdateLeanringPathIsComplete(string userId)
