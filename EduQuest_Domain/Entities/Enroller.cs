@@ -16,6 +16,7 @@ public class Enroller : BaseEntity
     public DateTime? DueDate { get; set; }
     public bool IsOverDue { get; set; } = false;
     public bool IsCompleted { get; set; } = false;
+    public DateTime? EnrollDate { get; set; }
 
     [JsonIgnore]
     public virtual LearningPath LearningPath { get; set; }
