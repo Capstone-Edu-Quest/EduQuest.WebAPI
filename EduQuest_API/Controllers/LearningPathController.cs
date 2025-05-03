@@ -91,13 +91,13 @@ public class LearningPathController : Controller
         var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId, keyWord, userId2), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
-    //[Authorize]
+    [Authorize]
     [HttpGet("byCourseId")]
     public async Task<IActionResult> GetMyLearningPathByCourseId([FromQuery, Required] string courseId,
-        [FromQuery] string userId,
+        //[FromQuery] string userId,
         CancellationToken token = default)
     {
-        //string userId = User.GetUserIdFromToken().ToString();
+        string userId = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new GetByCourseIdQuery(userId, courseId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
