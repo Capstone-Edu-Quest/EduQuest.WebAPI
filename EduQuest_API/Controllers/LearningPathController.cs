@@ -7,6 +7,7 @@ using EduQuest_Application.UseCases.LearningPaths.Commands.DuplicateLearningPath
 using EduQuest_Application.UseCases.LearningPaths.Commands.EnrollLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Commands.ReEnrollLearningPath;
 using EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
+using EduQuest_Application.UseCases.LearningPaths.Queries.GetByCourseId;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetEnrolledLearners;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetLearningPathDetail;
 using EduQuest_Application.UseCases.LearningPaths.Queries.GetMyLearningPaths;
@@ -88,6 +89,16 @@ public class LearningPathController : Controller
     {
         string userId2 = User.GetUserIdFromToken().ToString();
         var result = await _mediator.Send(new GetMyPublicLearningPathQuery(userId, keyWord, userId2), token);
+        return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+    }
+    //[Authorize]
+    [HttpGet("byCourseId")]
+    public async Task<IActionResult> GetMyLearningPathByCourseId([FromQuery, Required] string courseId,
+        [FromQuery] string userId,
+        CancellationToken token = default)
+    {
+        //string userId = User.GetUserIdFromToken().ToString();
+        var result = await _mediator.Send(new GetByCourseIdQuery(userId, courseId), token);
         return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
     }
     [HttpGet("enroller")]
