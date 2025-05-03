@@ -82,6 +82,7 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
             enroller.UserId = request.UserId;
             enroller.Id = Guid.NewGuid().ToString();
             enroller.CreatedAt = now.ToUniversalTime();
+            enroller.EnrollDate = now.ToUniversalTime();
             enrollers.Add(enroller);
         }
         await _enrollerRepository.CreateRangeAsync(enrollers);
