@@ -8,6 +8,7 @@ using EduQuest_Application.UseCases.Quests.Queries.GetAllSystemQuests;
 using EduQuest_Application.UseCases.Quests.Queries.GetAllUserQuests;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Pagination;
+using EduQuest_Domain.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
+using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_API.Controllers
 {
@@ -25,7 +27,6 @@ namespace EduQuest_API.Controllers
         public QuestController(ISender mediator)
         {
             _mediator = mediator;
-
         }
 
         [Authorize(Roles ="Staff, Admin")]
@@ -119,5 +120,14 @@ namespace EduQuest_API.Controllers
             }
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
         }
+        /*[HttpPost("Test/claim")]
+        public async Task<IActionResult> ClaimRewardTest(
+            [FromQuery] string userId,
+            CancellationToken token = default)
+        {
+
+            var result = await _userQuestRepository.UpdateUserQuestsProgress(userId, QuestType.STAGE, 1);
+            return Ok(result);
+        }*/
     }
 }

@@ -89,10 +89,12 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             {
                 var enroll = learningPath.Enrollers.Where(l => l.UserId == request.UserId).FirstOrDefault();
                 response.IsEnrolled = enroll != null;
+                response.EnrollDate = enroll != null ? enroll.DueDate : null;
             }
             else
             {
                 response.IsEnrolled = false;
+                response.EnrollDate = null;
             }
             
             response.TotalCourses = learningPathCourses.Count;
