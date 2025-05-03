@@ -27,6 +27,7 @@ public class LearningPathCourseResponse : IMapFrom<Course>
     public DateTime? DueDate { get; set; }
     public bool IsOverDue { get; set; }
     public bool IsCompleted { get; set; }
+    public string? CertificateId { get; set; }
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<Course, LearningPathCourseResponse>()

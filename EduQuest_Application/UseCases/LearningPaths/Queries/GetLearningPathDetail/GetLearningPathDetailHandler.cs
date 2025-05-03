@@ -56,6 +56,8 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                     if (learner != null)
                     {
                         learningPathCourse.ProgressPercentage = learner.ProgressPercentage.Value;
+                        var certificate = course.Certificates.Where(c => c.UserId == request?.UserId).FirstOrDefault();
+                        learningPathCourse.CertificateId = certificate?.Id;
                     }
                     else
                     {
