@@ -19,4 +19,9 @@ public class EnrollerRepository : GenericRepository<Enroller>, IEnrollerReposito
         return await _context.Enrollers.Where(e => e.LearningPathId == learningPathId && e.UserId == userId)
             .ToListAsync();
     }
+    public async Task<List<Enroller>?> GetByLearningPathId(string learningPathId)
+    {
+        return await _context.Enrollers.Where(e => e.LearningPathId == learningPathId)
+            .ToListAsync();
+    }
 }

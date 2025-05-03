@@ -17,15 +17,17 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEnrollerRepository _enrollerRepository;
     private const string Key = "name";
     private const string value = "learning path";
     public DeleteLearningPathHandler(ILearningPathRepository learningPathRepository,
-        IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository)
+        IMapper mapper, IUnitOfWork unitOfWork, IUserRepository userRepository, IEnrollerRepository enrollerRepository)
     {
         _learningPathRepository = learningPathRepository;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _enrollerRepository = enrollerRepository;
     }
 
     public async Task<APIResponse> Handle(DeleteLearningPathCommand request, CancellationToken cancellationToken)
@@ -50,6 +52,11 @@ public class DeleteLearningPathHandler : IRequestHandler<DeleteLearningPathComma
             }
             #endregion
             int coursesCount = learningPath.LearningPathCourses.Count();
+            var enrollers = await _enrollerRepository.GetByLearningPathId(request.LearningPathId);
+            if(enrollers != null)
+            {
+                _enrollerRepository.DeleteRange(enrollers);
+            }
             await _learningPathRepository.Delete(learningPath.Id);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {

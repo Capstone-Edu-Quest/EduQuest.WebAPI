@@ -40,6 +40,7 @@ public class GetMyLearningPathHandler : IRequestHandler<GetMyLearningPathQuery, 
                 var enroll = item.Enrollers.Where(e => e.UserId == request.UserId).FirstOrDefault();
                 myLearningPathResponse.IsEnrolled = enroll != null;
                 myLearningPathResponse.EnrollDate = enroll != null ? enroll.EnrollDate : null;
+                myLearningPathResponse.TotalEnroller = item.Enrollers.DistinctBy(e => e.UserId).Count();
                 responseDto.Add(myLearningPathResponse);
             }
             PagedList<MyLearningPathResponse> response = new PagedList<MyLearningPathResponse>(responseDto, result.TotalItems, result.CurrentPage, result.EachPage);
