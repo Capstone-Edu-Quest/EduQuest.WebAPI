@@ -146,4 +146,12 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsCompleted, true));
         return updatedCount;
     }
+
+    public async Task<List<LearningPath>?> GetByCourseId(string courseId, string userId)
+    {
+        var Ids = await _context.Enrollers.Where(l => l.CourseId == courseId && l.UserId == userId)
+            .Select(l => l.LearningPathId).ToListAsync();
+        return await _context.LearningPaths.Where(l => Ids.Contains(l.Id))
+            .ToListAsync();
+    }
 }
