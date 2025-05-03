@@ -38,6 +38,7 @@ public class GetMyPublicLearningPathHandler : IRequestHandler<GetMyPublicLearnin
                     var enroll = item.Enrollers.Where(l => l.UserId == request.CurrentUserId).FirstOrDefault();    
                     myLearningPathResponse.IsEnrolled = enroll != null;
                     myLearningPathResponse.EnrollDate = enroll != null ? enroll.EnrollDate : null;
+                    myLearningPathResponse.TotalEnroller = item.Enrollers.DistinctBy(e => e.UserId).Count();
                 }
                 else
                 {
