@@ -11,6 +11,7 @@ using EduQuest_Domain.Entities;
 using EduQuest_Application.DTO.Response.LearningPaths;
 using EduQuest_Application.Helper;
 using static EduQuest_Domain.Enums.GeneralEnums;
+using Stripe;
 
 namespace EduQuest_Application.UseCases.LearningPaths.Commands.UpdateLearningPath;
 
@@ -22,11 +23,12 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICourseRepository _courseRepository;
+    private readonly IEnrollerRepository _enrollerRepository;
     private const string Key = "name";
     private const string value = "learning path";
-    public UpdateLearningPathHandler(ILearningPathRepository learningPathRepository, 
+    public UpdateLearningPathHandler(ILearningPathRepository learningPathRepository,
         IUserRepository userRepository,
-        IMapper mapper, IUnitOfWork unitOfWork, 
+        IMapper mapper, IUnitOfWork unitOfWork, IEnrollerRepository enrollerRepository,
         ICourseStatisticRepository courseStatisticRepository, ICourseRepository courseRepository)
     {
         _learningPathRepository = learningPathRepository;
@@ -35,6 +37,7 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
         _courseStatisticRepository = courseStatisticRepository;
         _userRepository = userRepository;
         _courseRepository = courseRepository;
+        _enrollerRepository = enrollerRepository;
     }
 
     public async Task<APIResponse> Handle(UpdateLearningPathCommand request, CancellationToken cancellationToken)
@@ -48,10 +51,6 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);
             }
-            if(learingPath.IsEnrolled)
-            {
-                return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageError.EnrolledLPUpdateBlock, Key, value);
-            }
             //validate owner
             User? user = await _userRepository.GetById(request.UserId);
 
@@ -59,7 +58,7 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UserDontHavePer, Key, value);
             }
-
+            List<Enroller> addedCourses = new List<Enroller>();
             bool isOwner = await _learningPathRepository.IsOwner(request.UserId, request.LearningPathId);
             bool isExpert = int.TryParse(user.RoleId, out int roleId) && roleId == (int)UserRole.Expert;
             bool createdByExpert = learingPath.CreatedByExpert == true;
@@ -84,6 +83,42 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             int Flag = 100;
             foreach (var updatecourse in request.LearningPathRequest.Courses)
             {
+                //delete course
+                if (updatecourse.Action == "delete")
+                {
+                    LearningPathCourse? temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId);
+                    if (temp == null)
+                    {
+                        continue;
+                        /*return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);*/
+                    }
+                    var enrollers = await _enrollerRepository.GetByCourseId(learingPath.Id, updatecourse.CourseId);
+                    if (enrollers != null)
+                    {
+                        _enrollerRepository.DeleteRange(enrollers);
+                    }
+                    learingPath.LearningPathCourses.Remove(temp);
+                    var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
+                    learingPath.TotalTimes -= cs.TotalTime!.Value;
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                //update course order/position
+                if (updatecourse.Action == "update")
+                {
+                    LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
+                    temp.CourseOrder = updatecourse.CourseOrder;
+                    var updateEnrollers = await _enrollerRepository.GetByCourseId(learingPath.Id, updatecourse.CourseId);
+                    if (updateEnrollers != null)
+                    {
+                        foreach (var item in updateEnrollers)
+                        {
+                            item.CourseOrder = updatecourse.CourseOrder;
+                        }
+                        await _enrollerRepository.UpdateRangeAsync(updateEnrollers);
+                    }
+                    await _unitOfWork.SaveChangesAsync();
+                }
                 //add new courses: new courses get to the bottom of the courses order
                 if (updatecourse.Action == "add")
                 {
@@ -98,26 +133,36 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                     learingPath.LearningPathCourses.Add(_mapper.Map<LearningPathCourse>(updatecourse));
                     var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
                     learingPath.TotalTimes += cs.TotalTime!.Value;
-                    Flag += 1;
-                }
-                if (updatecourse.Action == "delete")
-                {
-                    LearningPathCourse? temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId);
-                    if(temp == null)
-                    {
-                        continue;
-                        /*return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.UpdateFailed, MessageCommon.NotFound, Key, value);*/
-                    }
-                    learingPath.LearningPathCourses.Remove(temp);
-                    var cs = await _courseStatisticRepository.GetByCourseId(updatecourse.CourseId);
-                    learingPath.TotalTimes -= cs.TotalTime!.Value;
-                }
+                    var Ids = await _enrollerRepository.GetEnrollerIds(learingPath.Id);
 
-                //update course order/position
-                if (updatecourse.Action == "update")
-                {
-                    LearningPathCourse temp = courses.FirstOrDefault(c => c.CourseId == updatecourse.CourseId)!;
-                    temp.CourseOrder = updatecourse.CourseOrder;
+                    if (Ids != null)
+                    {
+                        foreach (var item in Ids)
+                        {
+                            Enroller newEnroller = new Enroller();
+                            newEnroller.CourseId = updatecourse.CourseId;
+                            newEnroller.LearningPathId = learingPath.Id;
+                            newEnroller.UserId = item.UserId;
+                            newEnroller.EnrollDate = item.EnrollDate;
+                            newEnroller.Id = Guid.NewGuid().ToString();
+                            newEnroller.CreatedAt = DateTime.Now.ToUniversalTime();
+                            newEnroller.EnrollDate = item.EnrollDate!.Value.ToUniversalTime();
+                            newEnroller.IsOverDue = false;
+                            newEnroller.CourseOrder = updatecourse.CourseOrder;
+                            int addedDate = await _enrollerRepository.GetTotalLearningDay(learingPath.Id, item.UserId);
+                            int courseLearingDate = GetLearningDate(cs.TotalTime);
+                            addedDate += courseLearingDate;
+                            newEnroller.DueDate = item.DueDate!.Value.AddDays(addedDate).ToUniversalTime();
+                            var courseData = await _courseRepository.GetById(updatecourse.CourseId);
+                            var learner = courseData.CourseLearners!.FirstOrDefault(c => c.UserId == request.UserId);
+                            if (learner != null && learner.ProgressPercentage >= 100)
+                            {
+                                newEnroller.IsCompleted = true;
+                            }
+                            addedCourses.Add(newEnroller);
+                        }
+                    }
+                    Flag += 1;
                 }
             }
             List<string> courseIds = new List<string>();
@@ -130,6 +175,11 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
             for (int i = 0; i < orderedCourses.Count; i++)
             {
                 orderedCourses[i].CourseOrder = i;
+                var temp = addedCourses.FirstOrDefault(e => e.CourseId == orderedCourses[i].CourseId);
+                if (temp != null)
+                {
+                    temp.CourseOrder = i;
+                }
                 courseIds.Add(orderedCourses[i].CourseId);
             }
 
@@ -154,21 +204,30 @@ public class UpdateLearningPathHandler : IRequestHandler<UpdateLearningPathComma
                 learingPath.Tags.Remove(tag);
             }
             await _learningPathRepository.Update(learingPath);
-            if (await _unitOfWork.SaveChangesAsync() > 0)
-            {
-                
-                CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
-                MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learingPath);
-                myLearningPathResponse.TotalCourses = learingPath.LearningPathCourses.Count;
-                myLearningPathResponse.CreatedBy = userResponse;
-                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully,
-                    myLearningPathResponse, Key, value);
-            }
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, MessageCommon.UpdateFailed, Key, value);
+            await _enrollerRepository.CreateRangeAsync(addedCourses);
+            await _unitOfWork.SaveChangesAsync();
+
+            CommonUserResponse userResponse = _mapper.Map<CommonUserResponse>(user);
+            MyLearningPathResponse myLearningPathResponse = _mapper.Map<MyLearningPathResponse>(learingPath);
+            myLearningPathResponse.TotalCourses = learingPath.LearningPathCourses.Count;
+            myLearningPathResponse.CreatedBy = userResponse;
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully,
+                myLearningPathResponse, Key, value);
         }
         catch (Exception ex)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, ex.Message, Key, value);
         }
+    }
+    private int GetLearningDate(double? total)
+    {
+        int DailyLearningDay = MessageError.MinimumLearningTimeDaily;
+
+        // Calculate the number of full learning days
+        int temp = Convert.ToInt32(total / DailyLearningDay);
+
+        // Add an extra day if there is remaining time to learn
+        int sub = (total % DailyLearningDay) > 0 ? 1 : 0;
+        return temp + sub;
     }
 }
