@@ -96,6 +96,7 @@ public class BecomeInstructorCommandHandler : IRequestHandler<BecomeInstructorCo
         existUser.Description = request.Description;
         existUser.Status = AccountStatus.Pending.ToString();
 
+        await _userTagRepository.DeleteByUserIdAsync(existUser.Id);
         var userTags = request.Tag
                     .Where(tagId => !string.IsNullOrEmpty(tagId))
                     .Select(tagId => new UserTag
