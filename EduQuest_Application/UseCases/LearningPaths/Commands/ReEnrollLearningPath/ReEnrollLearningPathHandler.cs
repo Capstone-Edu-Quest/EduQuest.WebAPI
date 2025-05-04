@@ -81,6 +81,7 @@ public class ReEnrollLearningPathHandler : IRequestHandler<ReEnrollLearningPathC
                     enroller.IsCompleted = true;
                 }
                 enroller.IsOverDue = false;
+                enroller.IsReminded = false;
             }
         }
         await _unitOfWork.SaveChangesAsync();

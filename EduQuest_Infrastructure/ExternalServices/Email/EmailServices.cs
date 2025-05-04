@@ -100,7 +100,7 @@ namespace EduQuest_Infrastructure.ExternalServices.Email
         }
 
         public async Task SendEmailWarningLearningPathOverDueAsync(string subject, string recipientEmail,
-            string learningPath, string path, string logoPath)
+            string learningPath, string url, string course, string path, string logoPath)
         {
             // Create a new email message
             var message = new MimeMessage();
@@ -157,8 +157,8 @@ namespace EduQuest_Infrastructure.ExternalServices.Email
     <div class='email-container'>
         <div class='email-body'>
             <h1>Enrolled Learning Path OverDue</h1>
-            <p>Your @Model.LearningPath due date is passed. To reschedule the due date, please go to the eduquest page or click the button below.</p>
-            <a href='https://edu-quest-webui.vercel.app/' class='button'>Reschedule learning path</a>
+            <p>Your @Model.LearningPath learning path due date for Course @Model.CourseName is passed. To reschedule the due date, please go to the eduquest page or click the button below.</p>
+            <a href='https://edu-quest-webui.vercel.app/learning-path/@Model.Id' class='button'>Reschedule learning path</a>
             <p>This is an automated email. Please do not reply.</p>
         </div>
     </div>
@@ -167,7 +167,8 @@ namespace EduQuest_Infrastructure.ExternalServices.Email
 ";
 
             // Replace placeholders with actual values
-            var hrml = htmlContent.Replace("@Model.LearningPath", learningPath);
+            var hrml = htmlContent.Replace("@Model.LearningPath", learningPath).Replace("@Model.Id", url)
+                .Replace("@Model.CourseName", course);
 
             // Set the email body with HTML content
             var bodyBuilder = new BodyBuilder

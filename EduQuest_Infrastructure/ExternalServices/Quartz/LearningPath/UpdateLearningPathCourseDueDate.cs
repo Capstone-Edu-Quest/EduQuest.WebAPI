@@ -36,6 +36,7 @@ public class UpdateLearningPathCourseDueDate : IJob
         var overdue = await _learningPathRepository.GetOverDueLeanringPath();
         if (overdue != null)
         {
+            
             foreach (var item in overdue)
             {
                 await _fireBaseRealtimeService.PushNotificationAsync(
@@ -47,15 +48,17 @@ public class UpdateLearningPathCourseDueDate : IJob
                                   Url = "",
                                   Values = new Dictionary<string, string>
                                   {
-                                        { "learning path", item.Name }
+                                        { "learning path", item.LearningPath.Name }
                                   }
                               }
                           );
                 var user = item.User;
-                /*await _emailService.SendEmailWarningLearningPathOverDueAsync(
-                    "LEARNING PATH OVERDUE WARNING EMAIL",user.Email!, item.Name,
+                await _emailService.SendEmailWarningLearningPathOverDueAsync(
+                    "LEARNING PATH OVERDUE WARNING EMAIL", user.Email!, item.LearningPath.Name, item.LearningPathId,
+                    item.Course.Title,
                     "./template/LearningPathDueDateWarning.cshtml",
-                    "./template/LOGO 3.png");*/
+                    "./template/LOGO 3.png");
+                await _learningPathRepository.MarkAsReminded(item.Id);
             }
         }
     }

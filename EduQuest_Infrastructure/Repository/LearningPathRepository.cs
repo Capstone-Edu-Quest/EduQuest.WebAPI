@@ -135,14 +135,11 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
         return updatedCount;
     }
-    public async Task<List<LearningPath>?> GetOverDueLeanringPath()
+    public async Task<List<Enroller>?> GetOverDueLeanringPath()
     {
-        var Ids = await _context.Enrollers.Where(e => e.IsOverDue)
-            .Select(e =>e.LearningPathId)
-            .Distinct()
+        var Ids = await _context.Enrollers.Where(e => e.IsOverDue && !e.IsReminded)
             .ToListAsync();
-        return await _context.LearningPaths.Where(l => Ids.Contains(l.Id))
-            .ToListAsync();
+        return Ids;
     }
     public async Task<int> UpdateLeanringPathIsComplete(string userId)
     {
@@ -162,5 +159,11 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .Select(l => l.LearningPathId).ToListAsync();
         return await _context.LearningPaths.Where(l => Ids.Contains(l.Id))
             .ToListAsync();
+    }
+    public async Task MarkAsReminded(string enrollerId)
+    {
+        int updatedCount = await _context.Enrollers
+            .Where(l => l.Id == enrollerId)
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsReminded, true));
     }
 }
