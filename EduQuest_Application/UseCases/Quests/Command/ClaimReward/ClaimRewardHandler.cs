@@ -179,20 +179,31 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
     private async Task HandlerLevelUp(UserMeta meta)
     {
         var currentExp = meta.Exp;
-        
         int maxLevel = await _levelRepository.GetMaxLevelNumber();
-        while(currentExp > 250)
+        while (currentExp > 250)
         {
             var currentLevel = await _levelRepository.GetByLevelNum(meta.Level.Value);
             if (currentLevel == null)
             {
                 meta.Level = 1;
+                break;
             }
-            if (currentLevel != null && currentExp >= currentLevel.Exp && currentLevel.Level < maxLevel)
+            if (currentExp >= currentLevel.Exp)
             {
-                meta.Level++;
-                meta.Exp -= currentLevel.Exp;
-                currentExp -= currentLevel.Exp;
+                if (currentLevel.Level < maxLevel)
+                {
+                    meta.Level++;
+                    meta.Exp -= currentLevel.Exp;
+                    currentExp -= currentLevel.Exp;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                break;
             }
         }
     }
