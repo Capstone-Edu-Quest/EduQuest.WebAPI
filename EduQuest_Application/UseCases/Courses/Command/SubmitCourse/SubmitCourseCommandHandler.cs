@@ -38,7 +38,7 @@ public class SubmitCourseCommandHandler : IRequestHandler<SubmitCourseCommand, A
                     userId = result.CreatedBy,
                     Content = NotificationMessage.SUBMIT_COURSE_SUCCESSFULLY,
                     Receiver = result.CreatedBy,
-                    Url = BaseUrl.ShopItemUrl,
+                    Url = "/my-courses",
                 }
              );
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SubmitSuccessfully, null, "name", result.Title);

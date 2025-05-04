@@ -48,7 +48,7 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
             userId = existExpert.Id,
             Receiver = existExpert.Id,
             Content = NotificationMessage.A_STAFF_HAS_ASSIGN_INSTRUCTOR_TO_YOU,
-            Url = "",
+            Url = "/approve-instructor",
             Values = new Dictionary<string, string>
             {
                 { "name", existUser.Username },

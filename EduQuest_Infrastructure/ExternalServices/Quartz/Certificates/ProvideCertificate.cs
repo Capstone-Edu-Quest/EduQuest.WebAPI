@@ -50,9 +50,10 @@ internal class ProvideCertificate : IJob
                 continue;
             }
             await _learningPathRepository.UpdateLeanringPathIsComplete(entry.UserId);
+            var certId = Guid.NewGuid().ToString();
             var newCertificate = new Certificate
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = certId,
                 UserId = entry.UserId,
                 CourseId = entry.CourseId,
                 CreatedAt = DateTime.UtcNow.ToUniversalTime(),
@@ -69,7 +70,7 @@ internal class ProvideCertificate : IJob
                                   userId = entry.UserId,
                                   Content = NotificationMessage.COMPLETED_COURSE_SUCCESSFULLY,
                                   Receiver = entry.UserId,
-                                  Url = "",
+                                  Url = $"/c/{certId}",
                                   Values = new Dictionary<string, string>
                                   {
                                         { "certificate", courseName.Title}
