@@ -52,10 +52,10 @@ public class UpdateLearningPathCourseDueDate : IJob
                               }
                           );
                 var user = item.User;
-                await _emailService.SendEmailWarningLearningPathOverDueAsync(
+                /*await _emailService.SendEmailWarningLearningPathOverDueAsync(
                     "LEARNING PATH OVERDUE WARNING EMAIL",user.Email!, item.Name,
                     "./template/LearningPathDueDateWarning.cshtml",
-                    "./template/LOGO 3.png");
+                    "./template/LOGO 3.png");*/
             }
         }
     }
