@@ -46,6 +46,7 @@
             public const string YOUR_COURSE_WAS_RATED = "YOUR_COURSE_WAS_RATED";
             public const string BECOME_INSTRUCTOR_APPROVED = "BECOME_INSTRUCTOR_APPROVED";
             public const string BECOME_INSTRUCTOR_REJECTED = "BECOME_INSTRUCTOR_REJECTED";
+            public const string LEARNING_PATH_OVERDUE = "LEARNING_PATH_OVERDUE";
         }
 
 
