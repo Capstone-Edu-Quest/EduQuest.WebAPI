@@ -19,29 +19,23 @@ public class BecomeInstructorCommandHandler : IRequestHandler<BecomeInstructorCo
     private readonly IUserRepository _userRepository;
     private readonly IAzureBlobStorage _azureBlobStorage;
     private readonly IInstructorCertificate _instructorCertificate;
+    private readonly ITagRepository _tagRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserTagRepository _userTagRepository;
 
-    public BecomeInstructorCommandHandler(
-        IUserRepository userRepository,
-        IAzureBlobStorage azureBlobStorage,
-        IInstructorCertificate instructorCertificate,
-        ICourseRepository courseRepository,
-        IUserTagRepository userTagRepository,
-        IMapper mapper,
-        IUnitOfWork unitOfWork)
+    public BecomeInstructorCommandHandler(IUserRepository userRepository, IAzureBlobStorage azureBlobStorage, IInstructorCertificate instructorCertificate, ITagRepository tagRepository, ICourseRepository courseRepository, IMapper mapper, IUnitOfWork unitOfWork, IUserTagRepository userTagRepository)
     {
         _userRepository = userRepository;
         _azureBlobStorage = azureBlobStorage;
         _instructorCertificate = instructorCertificate;
+        _tagRepository = tagRepository;
         _courseRepository = courseRepository;
-        _userTagRepository = userTagRepository; 
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _userTagRepository = userTagRepository;
     }
-
 
     public async Task<APIResponse> Handle(BecomeInstructorCommand request, CancellationToken cancellationToken)
     {
@@ -94,16 +88,22 @@ public class BecomeInstructorCommandHandler : IRequestHandler<BecomeInstructorCo
         existUser.Headline = request.Headline;
         existUser.Phone = request.Phone;
         existUser.Description = request.Description;
-        existUser.Status = AccountStatus.Pending.ToString();
 
         await _userTagRepository.DeleteByUserIdAsync(existUser.Id);
+        existUser.Status = AccountStatus.Pending.ToString();
+        var validTagIds = (await _tagRepository.GetAllAsync())
+            .Select(tag => tag.Id)
+            .ToHashSet();
+
         var userTags = request.Tag
-                    .Where(tagId => !string.IsNullOrEmpty(tagId))
-                    .Select(tagId => new UserTag
-                    {
-                        UserId = request.UserId,
-                        TagId = tagId!
-                    }).ToList();
+            .Where(tagId => !string.IsNullOrEmpty(tagId) && validTagIds.Equals(tagId))
+            .Select(tagId => new UserTag
+            {
+                UserId = request.UserId,
+                TagId = tagId
+            }).ToList();
+
+
         await _userTagRepository.UpdateRangeAsync(userTags);
         await _userRepository.Update(existUser);
         await _unitOfWork.SaveChangesAsync();
