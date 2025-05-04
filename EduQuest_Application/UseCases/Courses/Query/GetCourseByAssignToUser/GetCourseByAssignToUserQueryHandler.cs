@@ -28,7 +28,7 @@ public class GetCourseByAssignToUserQueryHandler : IRequestHandler<GetCourseByAs
         var mappedResult = _mapper.Map<List<CourseExpertResponseDto>>(result);
         return GeneralHelper.CreateSuccessResponse(
                     HttpStatusCode.OK,
-                    MessageCommon.CreateSuccesfully,
+                    MessageCommon.GetSuccesfully,
                     mappedResult,
                     "name",
                     "courses"
