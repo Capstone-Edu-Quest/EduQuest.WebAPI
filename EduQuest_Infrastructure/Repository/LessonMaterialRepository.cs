@@ -54,6 +54,11 @@ namespace EduQuest_Infrastructure.Repository
 			return materials;
 		}
 
-
+		public async Task<int> GetTotalMaterial(string courseId)
+		{
+			var listLessonId = (await _context.Lessons.Where(x => x.CourseId == courseId).ToListAsync()).Select(x => x.Id);
+			var listLessonMaterial = await _context.LessonMaterials.Where(x => listLessonId.Contains(x.LessonId)).ToListAsync();
+			return listLessonMaterial.Count;
+		}
 	}
 }
