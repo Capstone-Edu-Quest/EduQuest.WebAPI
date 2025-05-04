@@ -1,14 +1,9 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Coupons;
 using EduQuest_Application.DTO.Response.Users;
 using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
-using EduQuest_Domain.Models.Pagination;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Quests;
 
@@ -16,7 +11,7 @@ public class ClaimRewardResponse : IMapFrom<User>
 {
     public int? GoldAdded { get; set; } = 0;
     public int? ExpAdded { get; set; } = 0;
-    public string? Coupon { get; set; }
+    public List<RewardCoupon> Coupon { get; set; } = new List<RewardCoupon>();
     public int? BoosterAdded { get; set; } = 0;
     public UserStatisticDto statistic { get; set; }
     public List<string> mascotItem { get; set; }
