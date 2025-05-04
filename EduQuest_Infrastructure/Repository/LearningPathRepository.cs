@@ -135,6 +135,12 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
         return updatedCount;
     }
+    public async Task<List<Enroller>?> GetOverDueLeanringPath()
+    {
+        var Ids = await _context.Enrollers.Where(e => e.IsOverDue && !e.IsReminded)
+            .ToListAsync();
+        return Ids;
+    }
     public async Task<int> UpdateLeanringPathIsComplete(string userId)
     {
         var currentDate = DateTime.Now.ToUniversalTime();
@@ -145,5 +151,19 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .Where(l => !l.IsCompleted && !l.IsOverDue && learningPathIds.Contains(l.LearningPathId))
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsCompleted, true));
         return updatedCount;
+    }
+
+    public async Task<List<LearningPath>?> GetByCourseId(string courseId, string userId)
+    {
+        var Ids = await _context.Enrollers.Where(l => l.CourseId == courseId && l.UserId == userId)
+            .Select(l => l.LearningPathId).ToListAsync();
+        return await _context.LearningPaths.Where(l => Ids.Contains(l.Id))
+            .ToListAsync();
+    }
+    public async Task MarkAsReminded(string enrollerId)
+    {
+        int updatedCount = await _context.Enrollers
+            .Where(l => l.Id == enrollerId)
+            .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsReminded, true));
     }
 }

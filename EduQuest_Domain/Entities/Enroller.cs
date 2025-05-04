@@ -17,6 +17,7 @@ public class Enroller : BaseEntity
     public bool IsOverDue { get; set; } = false;
     public bool IsCompleted { get; set; } = false;
     public DateTime? EnrollDate { get; set; }
+    public bool IsReminded { get; set; } = false; //if = true, system already reminded user about overdue learningPath
 
     [JsonIgnore]
     public virtual LearningPath LearningPath { get; set; }

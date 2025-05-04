@@ -3,11 +3,6 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -120,6 +115,11 @@ namespace EduQuest_Infrastructure.Repository
 
 			// 6. Trả về tỷ lệ
 			return courseTotalTime > 0 ? totalDuration / courseTotalTime : 0;
+		}
+
+		public async Task<Lesson> GetLessonByCourseIdAndIndex(string courseId, int index)
+		{
+			return await _context.Lessons.FirstOrDefaultAsync(l => l.CourseId == courseId && l.Index == index);
 		}
 	}
 }

@@ -204,6 +204,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 			courseResponse.ListTag = course.Tags?.Select(tag => new TagResponse
 			{
+				Id = tag.Id,
 				Name = tag.Name,
 				Type = tag.Type,
 			}).ToList() ?? new List<TagResponse>();
