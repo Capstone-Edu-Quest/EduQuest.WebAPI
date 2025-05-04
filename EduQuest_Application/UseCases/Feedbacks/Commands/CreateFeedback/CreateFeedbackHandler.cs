@@ -81,7 +81,7 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
                     userId = courseStatistic.CreatedBy,
                     Receiver = courseStatistic.CreatedBy,
                     Content = NotificationMessage.YOUR_COURSE_WAS_RATED,
-                    Url = "",
+                    Url = $"/my-courses/{courseStatistic.Id}",
                     Values = new Dictionary<string, string>
                     {
                         { "name", user.Username },

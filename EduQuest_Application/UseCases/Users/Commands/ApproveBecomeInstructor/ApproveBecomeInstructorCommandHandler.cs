@@ -53,7 +53,7 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
             userId = user.Id,
             Receiver = user.Id,
             Content = message,
-            Url = "",
+            Url = "/become-instructor",
             Values = new Dictionary<string, string>
             {
                 { "name", "" },
