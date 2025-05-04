@@ -74,5 +74,10 @@ namespace EduQuest_Infrastructure.Repository
 		{
             return await _context.Transactions.FirstOrDefaultAsync(x => x.UserId == userId && x.Type == TypeTransaction.CheckoutCart.ToString() && x.Status == StatusPayment.Pending.ToString());
 		}
+
+		public async Task<List<Transaction>> CheckTransfer(string transactionId)
+		{
+			return await _context.Transactions.Where(x => x.Type == GeneralEnums.TypeTransaction.Transfer.ToString() && x.BaseTransactionId  == transactionId).ToListAsync();   
+		}
 	}
 }
