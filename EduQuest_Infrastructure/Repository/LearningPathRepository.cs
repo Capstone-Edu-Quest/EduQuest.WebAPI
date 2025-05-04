@@ -135,6 +135,15 @@ public class LearningPathRepository : GenericRepository<LearningPath>, ILearning
             .ExecuteUpdateAsync(q => q.SetProperty(l => l.IsOverDue, true));
         return updatedCount;
     }
+    public async Task<List<LearningPath>?> GetOverDueLeanringPath()
+    {
+        var Ids = await _context.Enrollers.Where(e => e.IsOverDue)
+            .Select(e =>e.LearningPathId)
+            .Distinct()
+            .ToListAsync();
+        return await _context.LearningPaths.Where(l => Ids.Contains(l.Id))
+            .ToListAsync();
+    }
     public async Task<int> UpdateLeanringPathIsComplete(string userId)
     {
         var currentDate = DateTime.Now.ToUniversalTime();
