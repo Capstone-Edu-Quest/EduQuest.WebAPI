@@ -94,9 +94,6 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 
 					// Lưu bài học vào cơ sở dữ liệu
 					await _lessonRepository.CreateRangeAsync(newLessons);
-
-
-					
 				}
 				existingCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
 				existingCourse.CourseStatistic.TotalLesson = newLessons.Count();
@@ -121,16 +118,16 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					updateMaterialIds.AddRange(lesson.MaterialIds);  // Giữ nguyên tất cả các materialIds
 				}
 
-				var oldMaterialIds = new List<string>();
+				var oldExistMaterialIds = new List<string>();
 
 				var lessons = existingCourse.Lessons.OrderBy(l => l.Index);
 				foreach(var lesson in lessons)
 				{
 					var materialIds = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
-					oldMaterialIds.AddRange(materialIds);
+					oldExistMaterialIds.AddRange(materialIds);
 				}
 
-				var percentage = CompareMaterialIds(updateMaterialIds, oldMaterialIds);
+				var percentage = CompareMaterialIds(updateMaterialIds, oldExistMaterialIds);
 				if(percentage >= 0.3)
 				{
 					return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, $"Update Failed {request.CourseInfo.CourseId}", "name", "Course");
@@ -141,58 +138,98 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					existingCourse.PhotoUrl = request.CourseInfo.PhotoUrl;
 					existingCourse.Requirement = ContentHelper.JoinStrings(request.CourseInfo.RequirementList, '.');
 					existingCourse.Price = request.CourseInfo.Price;
-					
+
+					var listExistingLesson = (await _lessonRepository.GetByCourseId(request.CourseInfo.CourseId))
+					.OrderBy(l => l.Index)
+					.ToList();
+
 					var newLessons = new List<Lesson>();
+
 					if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 					{
-						await _lessonRepository.DeleteLessonByCourseId(existingCourse.Id);
-						int TotalLesson = 0;
-						for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
+						var lessonRequests = request.CourseInfo.LessonCourse;
+
+						// Check trường hợp thêm Lesson mới vào cuối
+						if (lessonRequests.Count > listExistingLesson.Count)
 						{
-							var lessonRequest = request.CourseInfo.LessonCourse[i];
-							var materials = await _materialRepository.GetMaterialsByIds(lessonRequest.MaterialIds);
-							materials = materials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
-
-							var lesson = new Lesson
+							// Thêm các lesson mới vào cuối
+							for (int i = listExistingLesson.Count; i < lessonRequests.Count; i++)
 							{
-								Id = Guid.NewGuid().ToString(),
-								Name = lessonRequest.Name,
-								Description = lessonRequest.Description,
-								CourseId = existingCourse.Id,
-								Index = i + 1,
-								TotalTime = (int?)materials?.Sum(m => m.Duration) ?? 0
-							};
-							TotalLesson += materials.Count();
-							var lessonMaterials = materials.Select(m => new LessonMaterial
-							{
-								LessonId = lesson.Id,
-								MaterialId = m.Id,
-								Index = materials.IndexOf(m),
-								CreatedAt = DateTime.Now.ToUniversalTime(),
-								UpdatedAt = DateTime.Now.ToUniversalTime(),
-							}).ToList();
+								var lessonRequest = lessonRequests[i];
+								var materials = await _materialRepository.GetMaterialsByIds(lessonRequest.MaterialIds);
+								materials = materials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
 
-							lesson.LessonMaterials = lessonMaterials;
+								var lesson = new Lesson
+								{
+									CourseId = request.CourseInfo.CourseId,
+									Name = lessonRequest.Name,
+									Index = i,
+									TotalTime = materials.Sum(m => m.Duration), // ví dụ tính thời gian
+									CreatedAt = DateTime.Now.ToUniversalTime(),
+									UpdatedAt = DateTime.Now.ToUniversalTime(),
+								};
 
-							newLessons.Add(lesson);
+								var lessonMaterials = materials.Select((m, index) => new LessonMaterial
+								{
+									Lesson = lesson,
+									MaterialId = m.Id,
+									Index = index,
+									CreatedAt = DateTime.Now.ToUniversalTime(),
+									UpdatedAt = DateTime.Now.ToUniversalTime()
+								}).ToList();
+
+								lesson.LessonMaterials = lessonMaterials;
+								newLessons.Add(lesson);
+							}
+
+							await _lessonRepository.CreateRangeAsync(newLessons);
 						}
+						// Nếu không thêm lesson mới, chỉ được phép thêm material vào lesson cuối cùng
+						else if (lessonRequests.Count == listExistingLesson.Count)
+						{
+							var lastLessonIndex = listExistingLesson.Count - 1;
+							var lastLesson = listExistingLesson[lastLessonIndex];
+							var lessonRequest = lessonRequests[lastLessonIndex];
 
-						// Lưu bài học vào cơ sở dữ liệu
-						await _lessonRepository.CreateRangeAsync(newLessons);
+							// Chỉ xử lý nếu có thêm material mới
+							var oldMaterialIds = lastLesson.LessonMaterials.Select(lm => lm.MaterialId).ToList();
+							var newMaterialIds = lessonRequest.MaterialIds.Except(oldMaterialIds).ToList();
 
+							if (newMaterialIds.Any())
+							{
+								var newMaterials = await _materialRepository.GetMaterialsByIds(newMaterialIds);
+								var sortedNewMaterials = newMaterials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
 
-						existingCourse.CourseStatistic.TotalTime = newLessons.Sum(c => c.TotalTime);
-						existingCourse.CourseStatistic.TotalLesson = TotalLesson;
+								var newLessonMaterials = sortedNewMaterials.Select((m, index) => new LessonMaterial
+								{
+									LessonId = lastLesson.Id,
+									MaterialId = m.Id,
+									Index = oldMaterialIds.Count + index,
+									CreatedAt = DateTime.Now.ToUniversalTime(),
+									UpdatedAt = DateTime.Now.ToUniversalTime()
+								}).ToList();
 
-						await _courseRepository.Update(existingCourse);
+								await _lessonMaterialRepository.CreateRangeAsync(newLessonMaterials);
+
+								// Update lại lesson
+								lastLesson.TotalTime += sortedNewMaterials.Sum(m => m.Duration); // ví dụ: tính lại tổng thời lượng
+								await _lessonRepository.Update(lastLesson);
+							}
+						}
 					}
+					await _unitOfWork.SaveChangesAsync();
+
+					var finalLessons = await _lessonRepository.GetByCourseId(request.CourseInfo.CourseId);
+					existingCourse.CourseStatistic.TotalTime = finalLessons.Sum(c => c.TotalTime);
+					existingCourse.CourseStatistic.TotalLesson = finalLessons.Count();
+					await _courseRepository.Update(existingCourse);
 
 					var result = await _unitOfWork.SaveChangesAsync();
 					if (result > 0)
 					{
 						var course = await _courseRepository.GetById(request.CourseInfo.CourseId);
 						courseResponse = _mapper.Map<CourseResponseForUpdate>(course);
-						courseResponse.Lessons = newLessons;
+						courseResponse.Lessons = finalLessons;
 						courseResponse.RequirementList = ContentHelper.SplitString(course.Requirement, '.');
 					}
 
