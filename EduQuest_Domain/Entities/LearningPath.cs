@@ -17,6 +17,7 @@ namespace EduQuest_Domain.Entities
 		public bool IsPublic { get; set; }
 		public bool IsEnrolled { get; set; }
 		public bool CreatedByExpert { get; set; }
+		
 
         [JsonIgnore]
         public virtual User User { get; set; }
