@@ -76,45 +76,45 @@ namespace EduQuest_Infrastructure.Repository
 			return (firstLesson.Id, firstMaterialId);
 		}
 
-		public async Task<double> CalculateMaterialProgressAsync(string lessonId, string materialId, double courseTotalTime)
+		public async Task<double> CalculateMaterialProgressAsync(string lessonId, string materialId, int totalMaterial)
 		{
+			if (totalMaterial <= 0) return 0;
+
 			// 1. Lấy lesson hiện tại
 			var currentLesson = await _context.Lessons
 				.AsNoTracking()
 				.FirstOrDefaultAsync(l => l.Id == lessonId);
 
+			if (currentLesson == null) return 0;
+
 			var currentLessonIndex = currentLesson.Index;
 
-			// 2. Lấy index của materialId trong lessonId
+			// 2. Lấy index của materialId trong lesson
 			var targetLessonMaterial = await _context.LessonMaterials
 				.AsNoTracking()
 				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.MaterialId == materialId);
 
+			if (targetLessonMaterial == null) return 0;
 
 			var targetMaterialIndex = targetLessonMaterial.Index;
 
-			// 3. Lấy các lessonId có index nhỏ hơn current
+			// 3. Lấy danh sách lessonId trước bài hiện tại
 			var lessonIdsBefore = await _context.Lessons
 				.AsNoTracking()
 				.Where(l => l.CourseId == currentLesson.CourseId && l.Index < currentLessonIndex)
 				.Select(l => l.Id)
 				.ToListAsync();
 
-			// 4. Truy vấn material từ lesson trước và bài hiện tại
-			var lessonMaterials = await _context.LessonMaterials
+			// 4. Đếm số material đã hoàn thành
+			var completedMaterialCount = await _context.LessonMaterials
 				.AsNoTracking()
-				.Include(lm => lm.Material)
-				.Where(lm =>
-					lessonIdsBefore.Contains(lm.LessonId) || // các bài trước
-					(lm.LessonId == lessonId && lm.Index <= targetMaterialIndex) // bài hiện tại và material đến vị trí chỉ định
-				)
-				.ToListAsync();
+				.CountAsync(lm =>
+					lessonIdsBefore.Contains(lm.LessonId) ||
+					(lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
+				);
 
-			// 5. Tính tổng Duration
-			double totalDuration = lessonMaterials.Sum(lm => lm.Material?.Duration ?? 0);
-
-			// 6. Trả về tỷ lệ
-			return courseTotalTime > 0 ? totalDuration / courseTotalTime : 0;
+			// 5. Trả về tỉ lệ hoàn thành
+			return (double)completedMaterialCount / totalMaterial;
 		}
 
 		public async Task<Lesson> GetLessonByCourseIdAndIndex(string courseId, int index)

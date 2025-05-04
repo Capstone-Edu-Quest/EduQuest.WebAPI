@@ -23,23 +23,31 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly IMaterialRepository _materialRepository;
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
-    public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, ILessonRepository lessonRepository, IAssignmentAttemptRepository assignmentAttemptRepository,
-        IUnitOfWork unitOfWork, IUserQuestRepository userQuestRepository, ICourseRepository courseRepository,
-        IUserMetaRepository userMetaRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
-    {
-        _assignmentRepository = assignmentRepository;
-        _lessonRepository = lessonRepository;
-        _assignmentAttemptRepository = assignmentAttemptRepository;
-        _unitOfWork = unitOfWork;
-        _userQuestRepository = userQuestRepository;
-        _courseRepository = courseRepository;
-        _userMetaRepository = userMetaRepository;
-        _materialRepository = materialRepository;
-        _redis = redis;
-        _studyTimeRepository = studyTimeRepository;
-    }
+	private readonly ILessonMaterialRepository _lessonMaterialRepository;
 
-    public async Task<APIResponse> Handle(AttemptAssignmentCommand request, CancellationToken cancellationToken)
+	public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, 
+        ILessonRepository lessonRepository, 
+        IAssignmentAttemptRepository assignmentAttemptRepository, 
+        IUnitOfWork unitOfWork, 
+        IUserQuestRepository userQuestRepository, 
+        ICourseRepository courseRepository, 
+        IUserMetaRepository userMetaRepository, 
+        IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, ILessonMaterialRepository lessonMaterialRepository)
+	{
+		_assignmentRepository = assignmentRepository;
+		_lessonRepository = lessonRepository;
+		_assignmentAttemptRepository = assignmentAttemptRepository;
+		_unitOfWork = unitOfWork;
+		_userQuestRepository = userQuestRepository;
+		_courseRepository = courseRepository;
+		_userMetaRepository = userMetaRepository;
+		_materialRepository = materialRepository;
+		_redis = redis;
+		_studyTimeRepository = studyTimeRepository;
+		_lessonMaterialRepository = lessonMaterialRepository;
+	}
+
+	public async Task<APIResponse> Handle(AttemptAssignmentCommand request, CancellationToken cancellationToken)
     {
         int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId, request.UserId) + 1;
         if (attempNo > 1)
@@ -117,7 +125,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             learner.TotalTime = course.CourseStatistic.TotalTime;
 
         }
-        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, (double)course.CourseStatistic.TotalTime)) * 100, 2);
+		var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(lesson.CourseId);
+		learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, totalMaterial)) * 100, 2);
         await _userMetaRepository.Update(userMeta);
         await _courseRepository.Update(course);
         var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);

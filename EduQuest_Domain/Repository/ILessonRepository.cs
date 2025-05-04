@@ -17,7 +17,7 @@ namespace EduQuest_Domain.Repository
 		Task<List<LessonMaterial>> GetMaterialsByLessonId(string lessonId);
 		Task<Lesson> GetFirstLesson(string courseId);
 		Task<(string lessonId, string materialId)> GetFirstLessonAndMaterialIdInCourseAsync(string courseId);
-		Task<double> CalculateMaterialProgressAsync(string lessonId, string materialId, double courseTotalTime);
+		Task<double> CalculateMaterialProgressAsync(string lessonId, string materialId, int totalMaterial);
 		Task<Lesson> GetLessonByCourseIdAndIndex(string courseId, int index);
 
 	}
