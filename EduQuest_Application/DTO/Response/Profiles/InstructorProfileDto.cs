@@ -35,11 +35,12 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
             .ForMember(dest => dest.InstructorCertificate, opt => opt.MapFrom(src => src.InstructorCertificates))
             .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"))
             .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
-                src.UserTags.Select(ut => new UserTagDto
-                {
-                    TagId = ut.Tag.Id,
-                    TagName = ut.Tag.Name
-                })
+                src.UserTags.Where(ut => ut.Tag != null)
+                    .Select(ut => new UserTagDto
+                    {
+                        TagId = ut.Tag!.Id,
+                        TagName = ut.Tag.Name
+                    })
             )); 
     }
 

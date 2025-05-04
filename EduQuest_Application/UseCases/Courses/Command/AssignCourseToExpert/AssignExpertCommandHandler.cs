@@ -49,7 +49,7 @@ public class AssignExpertCommandHandler : IRequestHandler<AssignExpertCommand, A
             userId = existUser.Id,
             Receiver = existUser.Id,
             Content = NotificationMessage.A_STAFF_HAS_ASSIGN_COURSE_TO_YOU,
-            Url = "",
+            Url = "/courses-manage/approval",
             Values = new Dictionary<string, string>
             {
                 { "course", existCourse.Title },

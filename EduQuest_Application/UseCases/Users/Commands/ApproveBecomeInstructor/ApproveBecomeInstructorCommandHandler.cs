@@ -35,6 +35,10 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
         ? ((int)GeneralEnums.UserRole.Instructor).ToString()
         : user.RoleId;
         user.Status = request.isApprove ? AccountStatus.Active.ToString() : AccountStatus.Rejected.ToString();
+
+        user.AssignToExpertId = request.isApprove ? user.AssignToExpertId : null;
+        user.RejectedReason = request.isApprove ? null : request.RejectedReason;
+
         await _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
 
@@ -42,15 +46,14 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
             ? NotificationMessage.BECOME_INSTRUCTOR_APPROVED
             : NotificationMessage.BECOME_INSTRUCTOR_REJECTED;
 
-        user.AssignToExpertId = request.isApprove ? user.AssignToExpertId : null;
-        user.RejectedReason = request.isApprove ? null : request.RejectedReason;
+      
 
         await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
         {
             userId = user.Id,
             Receiver = user.Id,
             Content = message,
-            Url = "",
+            Url = "/become-instructor",
             Values = new Dictionary<string, string>
             {
                 { "name", "" },

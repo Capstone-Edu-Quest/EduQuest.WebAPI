@@ -8,5 +8,6 @@ namespace EduQuest_Domain.Repository
 	{
         Task<Tag> GetTagByName(string name);
         Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage, int? Type);
+        Task<List<Tag>> GetAllAsync();
     }
 }

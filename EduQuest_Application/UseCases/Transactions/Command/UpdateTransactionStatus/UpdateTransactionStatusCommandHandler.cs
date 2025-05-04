@@ -206,6 +206,20 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                         course.CourseStatistic.TotalLearner++;
                         await _courseStatisticRepository.Update(course.CourseStatistic);
                         await _courseRepository.Update(course);
+
+                        await _firebaseRealtimeService.PushNotificationAsync(
+                                new NotificationDto
+                                {
+                                    userId = transactionExisted.UserId,
+                                    Content = NotificationMessage.BUY_COURSE_SUCCESSFULLY,
+                                    Receiver = transactionExisted.UserId,
+                                    Url = $"/courses/{course.Id}",
+                                    Values = new Dictionary<string, string>
+                                    {
+                                        { "item", course.Title}
+                                    }
+                                }
+                            );
                     }
                 }
                 myCart.CartItems.Clear();
@@ -214,19 +228,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
 				await _quartzService.TransferToInstructor(transactionExisted.Id);
 
 
-                await _firebaseRealtimeService.PushNotificationAsync(
-                                new NotificationDto
-                                {
-                                    userId = transactionExisted.UserId,
-                                    Content = NotificationMessage.BUY_COURSE_SUCCESSFULLY,
-                                    Receiver = transactionExisted.UserId,
-                                    Url = "",
-                                    Values = new Dictionary<string, string>
-                                    {
-                                        { "item", string.Join(",", purchasedCourseNames)} 
-                                    }
-                                }
-                            );
+                
             }
             else
             {
