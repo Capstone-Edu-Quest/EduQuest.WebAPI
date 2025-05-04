@@ -7,6 +7,7 @@ using EduQuest_Application.Helper;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
+using System.Xml;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
@@ -116,10 +117,12 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 					Materials = materials
 				});
 			}
-			courseResponse.ListLesson = lessonResponses;
+			courseResponse.ListLesson = lessonResponses.OrderBy(l => l.Index).ToList();
 			courseResponse.ListTag = existedCourse.Tags?.Select(tag => new TagResponse
 			{
-				Name = tag.Name
+				Id = tag.Id,
+				Name = tag.Name,
+				Type = tag.Type,
 			}).ToList() ?? new List<TagResponse>();
 			return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, courseResponse, "name", $"course ID {courseResponse.Id}");
 		}
