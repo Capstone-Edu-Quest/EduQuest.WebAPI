@@ -234,7 +234,7 @@ namespace EduQuest_Infrastructure
 
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
-                q.AddJob<UpdateLearningPathCourseDueDate>(opts => opts.WithIdentity(checkJobKey));
+                q.AddJob<ProvideCertificate>(opts => opts.WithIdentity(checkJobKey));
 				q.AddJob<InitializeLeaderboard>(opt => opt.WithIdentity(Leaderboard));
 				q.AddJob<UpdateLearningPathCourseDueDate>(opts => opts.WithIdentity(LearningPathDueDate));
                 q.AddTrigger(opts => opts.ForJob(resetDailyQuests)
