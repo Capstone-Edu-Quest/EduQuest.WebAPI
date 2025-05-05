@@ -8,12 +8,7 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
@@ -283,5 +278,19 @@ namespace EduQuest_Infrastructure.Repository
 			return (earnings, sales, refundGroup);
 		}
 
+		public async Task<List<TransactionDetail>> GetByInstructorId(string instructorId, DateTime? dateFrom, DateTime? dateTo)
+		{
+			var list =  await _context.TransactionDetails.Where(t => t.InstructorId == instructorId && t.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString()).ToListAsync();
+			if(dateFrom.HasValue)
+			{
+				list.Where(x => x.UpdatedAt >= dateFrom);
+			}
+			if (dateTo.HasValue)
+			{
+				list.Where(x => x.UpdatedAt <= dateTo);
+			}
+
+			return list;
+		}
 	}
 }
