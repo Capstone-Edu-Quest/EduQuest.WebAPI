@@ -61,7 +61,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                     }
                     else
                     {
-                        learningPathCourse.ProgressPercentage = -1;
+                        learningPathCourse.ProgressPercentage = null;
                     }
                     var lp = learningPath.Enrollers
                     .FirstOrDefault(c => c.CourseId == course.Id && c.UserId == request.UserId && c.LearningPathId == learningPath.Id);
