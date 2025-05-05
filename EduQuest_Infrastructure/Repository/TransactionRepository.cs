@@ -112,6 +112,16 @@ namespace EduQuest_Infrastructure.Repository
 			}
 
 			var details = await detailQuery.ToListAsync();
+			var instructorIds = details
+					.Where(d => d.InstructorId != null)
+					.Select(d => d.InstructorId)
+					.Distinct()
+					.ToList();
+
+			// Truy vấn users
+			var instructors = await _context.Users
+				.Where(u => instructorIds.Contains(u.Id))
+				.ToDictionaryAsync(u => u.Id, u => u.Username);
 
 			// 6. Kết hợp Transaction với TransactionDetail để trả DTO
 			var result = details.Select(detail =>
@@ -120,6 +130,10 @@ namespace EduQuest_Infrastructure.Repository
 				var isTransferred = _context.Transactions.Any(x =>
 					x.Type == GeneralEnums.TypeTransaction.Transfer.ToString() &&
 					x.BaseTransactionId == transaction.Id);
+
+				var instructorName = (detail.InstructorId != null && instructors.ContainsKey(detail.InstructorId))
+							? instructors[detail.InstructorId]
+							: null;
 
 				return new RevenueTransactionResponseForAdmin
 				{
@@ -132,6 +146,7 @@ namespace EduQuest_Infrastructure.Repository
 					NetAmount = detail.NetAmount,
 					SystemShare = detail.SystemShare,
 					InstructorShare = detail.InstructorShare,
+					InstructorName = instructorName,
 					IsReceive = isTransferred
 				};
 			}).ToList();
