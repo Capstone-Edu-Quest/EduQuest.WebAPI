@@ -26,14 +26,13 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IStudyTimeRepository _studyTimeRepository;
 		private readonly IMediator mediator;
 
-        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, 
-            ILessonRepository lessonRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, 
-            IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
+        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonMaterialRepository lessonMaterialRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
         {
             _userMetaRepository = userMetaRepository;
             _unitOfWork = unitOfWork;
             _courseRepository = courseRepository;
             _lessonRepository = lessonRepository;
+            _lessonMaterialRepository = lessonMaterialRepository;
             _materialRepository = materialRepository;
             _systemConfigRepository = systemConfigRepository;
             _userQuestRepository = userQuestRepository;
@@ -112,7 +111,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			}
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;
-            var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(lesson.CourseId);
+            var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
 			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, totalMaterial)) * 100, 2);
             if (courseLearner.ProgressPercentage > 100)
             {
