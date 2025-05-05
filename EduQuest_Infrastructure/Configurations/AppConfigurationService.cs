@@ -230,7 +230,7 @@ namespace EduQuest_Infrastructure
                 var resetQuestsProgress = new JobKey("resetQuestsProgress");
                 var checkJobKey = new JobKey("ProvideCertificates");
 				var LearningPathDueDate = new JobKey("LearningPathDueDate");
-				//var Leaderboard = new JobKey("LeaderBoard");
+				var Leaderboard = new JobKey("LeaderBoard");
 
                 q.AddJob<ResetQuestProgress>(opts => opts.WithIdentity(resetQuestsProgress));
                 q.AddJob<ResetDailyQuest>(opts => opts.WithIdentity(resetDailyQuests));
@@ -255,8 +255,8 @@ namespace EduQuest_Infrastructure
                         .RepeatForever()
                         .Build()));
 
-				/*q.AddTrigger(opts => opts.ForJob(Leaderboard)
-				.StartNow());*/
+				q.AddTrigger(opts => opts.ForJob(Leaderboard)
+				.StartNow());
 
 				q.AddTrigger(opts => opts
                     .ForJob(LearningPathDueDate)
