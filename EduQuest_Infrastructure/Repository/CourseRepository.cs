@@ -181,14 +181,7 @@ namespace EduQuest_Infrastructure.Repository
             var cartCount = await _context.CartItems
             .Where(cart => cart.CourseId == courseId)
             .CountAsync();
-
-            var transactionCount = await _context.TransactionDetails
-                .Where(t => t.ItemType.ToLower() == GeneralEnums.ItemTypeTransactionDetail.Course.ToString().ToLower() && t.ItemId == courseId)
-                .CountAsync();
-
-            var totalCount = cartCount + transactionCount;
-
-            return totalCount;
+            return cartCount;
         }
         public async Task<AdminDashboardCourses> GetAdminDashBoardStatistic()
         {
