@@ -22,8 +22,17 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		private readonly IMaterialRepository _materialRepository;
 		private readonly IUserMetaRepository _userMetaRepository;
 		private readonly ITagRepository _tagRepository;
+		private readonly ILearnerRepository _learnerRepository;
 
-		public UpdateCourseCommandHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IMapper mapper, ILessonRepository lessonRepository, ILessonMaterialRepository lessonMaterialRepository, IMaterialRepository materialRepository, IUserMetaRepository userMetaRepository, ITagRepository tagRepository)
+		public UpdateCourseCommandHandler(ICourseRepository courseRepository, 
+			IUnitOfWork unitOfWork, 
+			IMapper mapper, 
+			ILessonRepository lessonRepository, 
+			ILessonMaterialRepository lessonMaterialRepository, 
+			IMaterialRepository materialRepository, 
+			IUserMetaRepository userMetaRepository, 
+			ITagRepository tagRepository, 
+			ILearnerRepository learnerRepository)
 		{
 			_courseRepository = courseRepository;
 			_unitOfWork = unitOfWork;
@@ -33,6 +42,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			_materialRepository = materialRepository;
 			_userMetaRepository = userMetaRepository;
 			_tagRepository = tagRepository;
+			_learnerRepository = learnerRepository;
 		}
 
 		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
@@ -220,10 +230,20 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					}
 					await _unitOfWork.SaveChangesAsync();
 
+					//Update course statistic
 					var finalLessons = await _lessonRepository.GetByCourseId(request.CourseInfo.CourseId);
 					existingCourse.CourseStatistic.TotalTime = finalLessons.Sum(c => c.TotalTime);
 					existingCourse.CourseStatistic.TotalLesson = finalLessons.Count();
 					await _courseRepository.Update(existingCourse);
+
+					//Update Learner progress
+					var listLearnerNotComplete = (await _learnerRepository.GetListLearnerOfCourse(request.CourseInfo.CourseId)).Where(l => l.ProgressPercentage < 100);
+					var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(request.CourseInfo.CourseId);
+					foreach(var learner in listLearnerNotComplete)
+					{
+						learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(learner.CurrentLessonId, learner.CurrentMaterialId, totalMaterial)) * 100, 2);
+					}
+					await _learnerRepository.UpdateRangeAsync(listLearnerNotComplete);
 
 					var result = await _unitOfWork.SaveChangesAsync();
 					if (result > 0)
