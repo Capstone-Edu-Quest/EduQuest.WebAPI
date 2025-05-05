@@ -94,7 +94,12 @@ namespace EduQuest_Domain.Enums
 		public enum ItemTypeTransactionDetail
 		{
 			Course = 1,
-			
+		}
+
+		public enum TypeRevenueForAdmin
+		{
+			Course = 1,
+			Package = 2,
 		}
 		#endregion
 
