@@ -163,6 +163,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 								{
 									CourseId = request.CourseInfo.CourseId,
 									Name = lessonRequest.Name,
+									Description = lessonRequest.Description,
 									Index = i,
 									TotalTime = materials.Sum(m => m.Duration), // ví dụ tính thời gian
 									CreatedAt = DateTime.Now.ToUniversalTime(),
@@ -243,21 +244,21 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		{
 			int count = 0;
 
-			int maxLength = Math.Max(updateMaterialIds.Count, oldMaterialIds.Count);
+			//int maxLength = Math.Max(updateMaterialIds.Count, oldMaterialIds.Count);
 
-			for (int i = 0; i < maxLength; i++)
-			{
-				string updateMaterial = i < updateMaterialIds.Count ? updateMaterialIds[i] : null;
-				string oldMaterial = i < oldMaterialIds.Count ? oldMaterialIds[i] : null;
+			//for (int i = 0; i < maxLength; i++)
+			//{
+			//	string updateMaterial = i < updateMaterialIds.Count ? updateMaterialIds[i] : null;
+			//	string oldMaterial = i < oldMaterialIds.Count ? oldMaterialIds[i] : null;
 
-				if (updateMaterial != oldMaterial)
-				{
-					count++;
-				}
-			}
+			//	if (updateMaterial != oldMaterial)
+			//	{
+			//		count++;
+			//	}
+			//}
 
 			count += Math.Abs(updateMaterialIds.Count - oldMaterialIds.Count);
-			var result = count / oldMaterialIds.Count();
+			double result = (double)count / (double)oldMaterialIds.Count();
 			return result;
 		}
 
