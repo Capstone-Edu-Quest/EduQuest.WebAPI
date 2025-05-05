@@ -72,37 +72,35 @@ public class LevelRepository : GenericRepository<Levels>, ILevelRepository
     {
         var result = new LevelExpStatisticDto();
 
-        var totalLevel = await _context.Users.AsNoTracking()
-        .Where(u => u.Level != null)
-        .SumAsync(u => u.Level!.Level);
-
-        var totalExp = await _context.Users.AsNoTracking()
-            .Where(u => u.Level != null)
-            .SumAsync(u => u.Level!.Exp);
-
-        //var avarageExp
-
-        result.TotalEarnedExp = totalLevel;
-        result.TotalEarnedLevel = totalExp;
-        //result.AvarageExpPerDay = totalExp;
-        //result.AverageLevel = totalLevel;
-        var UserLevelChart = new UserLevelDto();
-
-        var numberOfLevel = await _context.Users.AsNoTracking()
-            .Where(u => u.Level != null)
-            .GroupBy(u => u.Level.Level)
-            .Select(a => new UserLevelDto
-            {
-                Level = a.Key,
-                Count = a.Count()
-
-            })
-            .OrderBy(ul => ul.Level)
+        // Lấy tất cả UserMeta có level hợp lệ
+        var userMetas = await _context.UserMetas
+            .AsNoTracking()
+            .Where(um => um.Level != null && um.Exp != null)
             .ToListAsync();
 
-        result.UserLevels = numberOfLevel;
+        if (!userMetas.Any())
+            return result; 
+
+        var totalUsers = userMetas.Count;
+
+        result.TotalEarnedLevel = userMetas.Sum(u => u.Level ?? 0);
+        result.TotalEarnedExp = userMetas.Sum(u => u.Exp ?? 0);
+        result.AverageLevel = (int)Math.Round((double)result.TotalEarnedLevel / totalUsers);
+        result.AvarageExpPerDay = (int)Math.Round((double)result.TotalEarnedExp / totalUsers); 
+
+        result.UserLevels = userMetas
+            .GroupBy(u => u.Level)
+            .Select(g => new UserLevelDto
+            {
+                Level = g.Key ?? 0,
+                Count = g.Count()
+            })
+            .OrderBy(dto => dto.Level)
+            .ToList();
+
         return result;
     }
+
     public async Task<int> DeleteRangeByListId(List<string> ids)
     {
         if (ids == null || !ids.Any())
