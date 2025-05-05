@@ -1,10 +1,7 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.DTO.Request.Revenue;
+using EduQuest_Application.DTO.Response.Revenue;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.Generic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduQuest_Domain.Repository
 {
@@ -16,5 +13,7 @@ namespace EduQuest_Domain.Repository
         Task<Transaction> GetByPaymentIntentId(string paymentIntentId);
 		Task<List<Transaction>> GetTransactionByUserId(string userId);
 		Task<Transaction> CheckTransactionPending(string userId);
+		Task<List<Transaction>> CheckTransfer(string transactionId);
+		Task<List<RevenueTransactionResponseForAdmin>> GetRevenueForAdminAsync(RevenueTransactionForAdmin request);
 	}
 }

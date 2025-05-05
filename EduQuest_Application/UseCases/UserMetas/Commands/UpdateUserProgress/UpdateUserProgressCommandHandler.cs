@@ -1,16 +1,14 @@
-﻿using EduQuest_Domain.Entities;
-using EduQuest_Domain.Enums;
+﻿using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.Helper;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using static EduQuest_Domain.Constants.Constants;
 using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.GeneralEnums;
-using EduQuest_Application.Helper;
 using static EduQuest_Domain.Enums.QuestEnum;
-using EduQuest_Application.Abstractions.Redis;
-using EduQuest_Application.UseCases.UserMetas.Commands.UpdateUsersStreak;
 
 namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 {
@@ -20,6 +18,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICourseRepository _courseRepository;
 		private readonly ILessonRepository _lessonRepository;
+		private readonly ILessonMaterialRepository _lessonMaterialRepository;
 		private readonly IMaterialRepository _materialRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IUserQuestRepository _userQuestRepository;
@@ -27,14 +26,13 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IStudyTimeRepository _studyTimeRepository;
 		private readonly IMediator mediator;
 
-        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, 
-            ILessonRepository lessonRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, 
-            IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
+        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonMaterialRepository lessonMaterialRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
         {
             _userMetaRepository = userMetaRepository;
             _unitOfWork = unitOfWork;
             _courseRepository = courseRepository;
             _lessonRepository = lessonRepository;
+            _lessonMaterialRepository = lessonMaterialRepository;
             _materialRepository = materialRepository;
             _systemConfigRepository = systemConfigRepository;
             _userQuestRepository = userQuestRepository;
@@ -113,8 +111,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			}
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentMaterialId = newMaterialId;
-
-			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, (double)course.CourseStatistic.TotalTime)) * 100, 2);
+            var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
+			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, totalMaterial)) * 100, 2);
             if (courseLearner.ProgressPercentage > 100)
             {
                 courseLearner.ProgressPercentage = 100;

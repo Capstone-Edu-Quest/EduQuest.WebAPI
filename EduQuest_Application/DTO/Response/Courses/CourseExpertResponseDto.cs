@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using static EduQuest_Domain.Enums.GeneralEnums;
@@ -18,14 +19,16 @@ public class CourseExpertResponseDto : IMapFrom<Course>, IMapTo<Course>
     public int TotalLesson { get; set; }
     public int TotalTime { get; set; }
     public int TotalReview { get; set; }
-    //public decimal? ProgressPercentage { get; set; }
+	public List<TagResponse>? ListTag { get; set; }
+	//public decimal? ProgressPercentage { get; set; }
 
-    public void MappingFrom(Profile profile)
+	public void MappingFrom(Profile profile)
     {
         profile.CreateMap<Course, CourseExpertResponseDto>()
             .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.User.Username))
             .ForMember(dest => dest.TotalLesson, opt => opt.MapFrom(src => src.CourseStatistic.TotalLesson))
             .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src => src.CourseStatistic.TotalTime))
-            .ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview));
+            .ForMember(dest => dest.TotalReview, opt => opt.MapFrom(src => src.CourseStatistic.TotalReview))
+			.ForMember(dest => dest.ListTag, opt => opt.MapFrom(src => src.Tags));
     }
 }

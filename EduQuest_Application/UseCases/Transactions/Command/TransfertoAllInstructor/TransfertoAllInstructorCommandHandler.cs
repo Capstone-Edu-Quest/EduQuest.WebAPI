@@ -44,10 +44,10 @@ namespace EduQuest_Application.UseCases.Transactions.Command.TransfertoAllInstru
 				};
 
 				var service = new TransferService();
-				await service.CreateAsync(options, cancellationToken: cancellationToken);
+				var transfer = await service.CreateAsync(options, cancellationToken: cancellationToken);
 				var newTransaction = new Transaction
 				{
-					Id = Guid.NewGuid().ToString(),
+					Id = transfer.Id,
 					TotalAmount = item.TotalInstructorShare,
 					NetAmount = item.TotalInstructorShare,
 					Status = GeneralEnums.StatusPayment.Completed.ToString(),

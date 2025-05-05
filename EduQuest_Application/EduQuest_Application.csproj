@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\AvatarApi\" />
+    <Folder Include="DTO\Request\Revenue\" />
     <Folder Include="DTO\Request\WebStatistics\" />
     <Folder Include="UseCases\LearningPaths\Commands\DuplicateLearningPath\" />
     <Folder Include="UseCases\LearningPaths\Commands\UpdateLearningPath\" />

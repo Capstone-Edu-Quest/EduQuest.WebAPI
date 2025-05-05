@@ -1,14 +1,11 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.DTO.Request.Revenue;
+using EduQuest_Application.DTO.Response.Revenue;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
@@ -73,6 +70,89 @@ namespace EduQuest_Infrastructure.Repository
 		public async Task<Transaction> CheckTransactionPending(string userId)
 		{
             return await _context.Transactions.FirstOrDefaultAsync(x => x.UserId == userId && x.Type == TypeTransaction.CheckoutCart.ToString() && x.Status == StatusPayment.Pending.ToString());
+		}
+
+		public async Task<List<Transaction>> CheckTransfer(string transactionId)
+		{
+			return await _context.Transactions.Where(x => x.Type == GeneralEnums.TypeTransaction.Transfer.ToString() && x.BaseTransactionId  == transactionId).ToListAsync();   
+		}
+
+		public async Task<List<RevenueTransactionResponseForAdmin>> GetRevenueForAdminAsync(RevenueTransactionForAdmin request)
+		{
+			var baseQuery = _context.Transactions
+						.Where(t => t.Status == GeneralEnums.StatusPayment.Completed.ToString());
+
+			// Filter by TransactionType
+			if (request.TransactionType == 1)
+			{
+				baseQuery = baseQuery.Where(t => t.Type == GeneralEnums.TypeTransaction.CheckoutCart.ToString());
+			}
+			else if (request.TransactionType == 2)
+			{
+				baseQuery = baseQuery.Where(t => t.Type.ToLower() == ConfigEnum.PriceMonthly.ToString().ToLower() || t.Type.ToLower() == ConfigEnum.PriceYearly.ToString().ToLower());
+			}
+
+			// 3. Lấy danh sách transaction đủ điều kiện
+			var baseTransactions = await baseQuery.ToListAsync();
+			var transactionIds = baseTransactions.Select(t => t.Id).ToList();
+
+			// 4. Truy vấn TransactionDetail
+			var detailQuery = _context.TransactionDetails
+				.Where(td => transactionIds.Contains(td.TransactionId));
+
+			// 5. Lọc theo UpdatedAt trong TransactionDetail
+			if (request.DateFrom.HasValue)
+			{
+				detailQuery = detailQuery.Where(td => td.UpdatedAt >= request.DateFrom.Value);
+			}
+
+			if (request.DateTo.HasValue)
+			{
+				detailQuery = detailQuery.Where(td => td.UpdatedAt <= request.DateTo.Value);
+			}
+
+			var details = await detailQuery.ToListAsync();
+			var instructorIds = details
+					.Where(d => d.InstructorId != null)
+					.Select(d => d.InstructorId)
+					.Distinct()
+					.ToList();
+
+			// Truy vấn users
+			var instructors = await _context.Users
+				.Where(u => instructorIds.Contains(u.Id))
+				.ToDictionaryAsync(u => u.Id, u => u.Username);
+
+			// 6. Kết hợp Transaction với TransactionDetail để trả DTO
+			var result = details.Select(detail =>
+			{
+				var transaction = baseTransactions.First(t => t.Id == detail.TransactionId);
+				var isTransferred = _context.Transactions.Any(x =>
+					x.Type == GeneralEnums.TypeTransaction.Transfer.ToString() &&
+					x.BaseTransactionId == transaction.Id);
+
+				var instructorName = (detail.InstructorId != null && instructors.ContainsKey(detail.InstructorId))
+							? instructors[detail.InstructorId]
+							: null;
+
+				return new RevenueTransactionResponseForAdmin
+				{
+					Id = detail.Id.ToString(),
+					TransactionId = transaction.Id,
+					Type = transaction.Type == TypeTransaction.CheckoutCart.ToString() ? TypeRevenueForAdmin.Course.ToString() : TypeRevenueForAdmin.Package.ToString(),
+					UpdatedAt = detail.UpdatedAt,
+					Amount = detail.Amount,
+					StripeFee = detail.StripeFee,
+					NetAmount = detail.NetAmount,
+					SystemShare = detail.SystemShare,
+					InstructorShare = detail.InstructorShare,
+					InstructorName = instructorName,
+					IsReceive = isTransferred
+				};
+			}).ToList();
+
+			return result.OrderByDescending(x => x.UpdatedAt).ToList();
+
 		}
 	}
 }

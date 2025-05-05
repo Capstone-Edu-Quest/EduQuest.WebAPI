@@ -33,11 +33,12 @@ namespace EduQuest_Application.DTO.Response.Users
         {
             profile.CreateMap<User, UserBasicResponseDto>()
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
-                src.UserTags.Select(ut => new UserTagDto
-                {
-                    TagId = ut.Tag.Id,
-                    TagName = ut.Tag.Name
-                })
+                src.UserTags.Where(ut => ut.Tag != null)
+                    .Select(ut => new UserTagDto
+                    {
+                        TagId = ut.Tag!.Id,
+                        TagName = ut.Tag.Name
+                    })
             ));
 
         }

@@ -28,6 +28,12 @@ namespace EduQuest_Infrastructure.Repository
             return null;
         }
 
+        public async Task<List<Tag>> GetAllAsync()
+        {
+            var tag = await _context.Tags.ToListAsync();
+            return tag;
+        }
+
 
         public async Task<PagedList<Tag>> GetTagsWithFilters(string? Id, string? Name, int page, int eachPage, int? Type)
         {

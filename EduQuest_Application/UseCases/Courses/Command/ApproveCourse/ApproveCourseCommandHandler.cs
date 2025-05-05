@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Firebase;
+using EduQuest_Application.DTO.Response;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
+using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.Generic;
@@ -17,12 +20,14 @@ public class ApproveCourseCommandHandler : IRequestHandler<ApproveCourseCommand,
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenericRepository<Course> _courseRepository;
+    private readonly IFireBaseRealtimeService _fireBaseRealtimeService;
     private readonly IMapper _mapper;
 
-    public ApproveCourseCommandHandler(IUnitOfWork unitOfWork, IGenericRepository<Course> courseRepository, IMapper mapper)
+    public ApproveCourseCommandHandler(IUnitOfWork unitOfWork, IGenericRepository<Course> courseRepository, IFireBaseRealtimeService fireBaseRealtimeService, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _courseRepository = courseRepository;
+        _fireBaseRealtimeService = fireBaseRealtimeService;
         _mapper = mapper;
     }
 
@@ -71,9 +76,23 @@ public class ApproveCourseCommandHandler : IRequestHandler<ApproveCourseCommand,
         existingCourse.AssignTo = request.isApprove ? existingCourse.AssignTo : null;
         existingCourse.RejectedReason = request.isApprove ? null : request.RejectedReason;
 
+        string message = request.isApprove
+            ? NotificationMessage.YOUR_COURSE_WAS_APPROVED
+            : NotificationMessage.YOUR_COURSE_WAS_REJECTED;
+
         await _courseRepository.Update(existingCourse);
         var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-
+        await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+        {
+            userId = existingCourse.CreatedBy,
+            Receiver = existingCourse.CreatedBy,
+            Content = message,
+            Url = $"/my-courses/{existingCourse.Id}",
+            Values = new Dictionary<string, string>
+            {
+                { "course", existingCourse.Title },
+            }
+        });
         return new APIResponse
         {
             IsError = false,
