@@ -241,7 +241,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 					var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(request.CourseInfo.CourseId);
 					foreach(var learner in listLearnerNotComplete)
 					{
-						learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(learner.CurrentLessonId, learner.CurrentMaterialId, totalMaterial)) * 100, 2);
+						learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressBeforeCurrentAsync(learner.CurrentLessonId, learner.CurrentMaterialId, totalMaterial)) * 100, 2);
 					}
 					await _learnerRepository.UpdateRangeAsync(listLearnerNotComplete);
 
