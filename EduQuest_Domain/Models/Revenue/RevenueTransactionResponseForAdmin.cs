@@ -18,6 +18,7 @@ namespace EduQuest_Application.DTO.Response.Revenue
 		public decimal? SystemShare { get; set; }
 		public decimal? InstructorShare { get; set; }
 		public string? InstructorName { get; set; }
+		public string? LearnerName { get; set; }
 		public bool IsReceive { get; set; }
 	}
 }
