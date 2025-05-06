@@ -147,6 +147,7 @@ namespace EduQuest_Infrastructure.Repository
 					SystemShare = detail.SystemShare,
 					InstructorShare = detail.InstructorShare,
 					InstructorName = instructorName,
+					LearnerName = transaction.User.Username,
 					IsReceive = isTransferred
 				};
 			}).ToList();
