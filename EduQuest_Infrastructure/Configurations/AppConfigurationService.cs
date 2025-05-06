@@ -251,7 +251,7 @@ namespace EduQuest_Infrastructure
                     .ForJob(checkJobKey)
                     .StartNow()
                     .WithSimpleSchedule(x => x
-                        .WithIntervalInMinutes(2)
+                        .WithIntervalInSeconds(5)
                         .RepeatForever()
                         .Build()));
 
