@@ -25,9 +25,11 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
     private readonly IMaterialRepository _materialRepository;
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
+    private readonly ILessonMaterialRepository _lessonMaterialRepository;
     public AttemptQuizHandler(IQuizRepository quizRepository, ILessonRepository lessonRepository, IQuizAttemptRepository quizAttemptRepository,
         IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository,
-        ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository)
+        ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, 
+        ILessonMaterialRepository lessonMaterialRepository)
     {
         _quizRepository = quizRepository;
         _lessonRepository = lessonRepository;
@@ -40,6 +42,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         _materialRepository = materialRepository;
         _redis = redis;
         _studyTimeRepository = studyTimeRepository;
+        _lessonMaterialRepository = lessonMaterialRepository;
     }
 
     public async Task<APIResponse> Handle(AttemptQuizCommand request, CancellationToken cancellationToken)
@@ -154,7 +157,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         }
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
-        learner.ProgressPercentage = learner.TotalTime / course.CourseStatistic.TotalTime * 100;
+        var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
+        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
