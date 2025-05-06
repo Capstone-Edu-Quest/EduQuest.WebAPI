@@ -42,9 +42,8 @@ public class CancelApplyInstructorHandler : IRequestHandler<CancelApplyInstructo
 
         if (request.isCanceled)
         {
-            user.Status = "Active";
+            user.Status = "Cancelled";
             await _userRepo.Update(user);
-
             var userCertificates = await _certificateRepo.GetByUserIdAsync(user.Id);
             if (userCertificates != null && userCertificates.Any())
             {

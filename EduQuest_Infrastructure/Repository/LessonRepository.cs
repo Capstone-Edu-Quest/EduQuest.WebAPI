@@ -121,5 +121,50 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Lessons.FirstOrDefaultAsync(l => l.CourseId == courseId && l.Index == index);
 		}
+
+		public async Task<double> CalculateMaterialProgressBeforeCurrentAsync(string lessonId, string materialId, int totalMaterial)
+		{
+			if (totalMaterial <= 0) return 0;
+
+			// 1. Lấy bài học hiện tại
+			var currentLesson = await _context.Lessons
+				.AsNoTracking()
+				.FirstOrDefaultAsync(l => l.Id == lessonId);
+
+			if (currentLesson == null) return 0;
+
+			var currentLessonIndex = currentLesson.Index;
+
+			// 2. Lấy index của material hiện tại
+			var targetMaterial = await _context.LessonMaterials
+				.AsNoTracking()
+				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.MaterialId == materialId);
+
+			if (targetMaterial == null) return 0;
+
+			var targetMaterialIndex = targetMaterial.Index;
+
+			// 3. Lấy tất cả lesson trước bài hiện tại
+			var lessonIdsBefore = await _context.Lessons
+				.AsNoTracking()
+				.Where(l => l.CourseId == currentLesson.CourseId && l.Index < currentLessonIndex)
+				.Select(l => l.Id)
+				.ToListAsync();
+
+			// 4. Đếm toàn bộ material của các bài học trước
+			var countBeforeLesson = await _context.LessonMaterials
+				.AsNoTracking()
+				.CountAsync(lm => lessonIdsBefore.Contains(lm.LessonId));
+
+			// 5. Cộng thêm các material trong chính bài hiện tại nhưng có index < material hiện tại
+			var countBeforeInCurrentLesson = await _context.LessonMaterials
+				.AsNoTracking()
+				.CountAsync(lm => lm.LessonId == lessonId && lm.Index < targetMaterialIndex);
+
+			var completedMaterial = countBeforeLesson + countBeforeInCurrentLesson;
+
+			// 6. Tính tỷ lệ
+			return (double)completedMaterial / totalMaterial;
+		}
 	}
 }

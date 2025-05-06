@@ -55,7 +55,7 @@ namespace EduQuest_API.Controllers
 		[HttpGet("myRevenueTransaction")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetMyRevenueTransaction([FromQuery] DateTime dateFrom, DateTime dateTo, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> GetMyRevenueTransaction([FromQuery] DateTime? dateFrom, DateTime? dateTo, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetRevenueTransactionQuery(userId, dateFrom, dateTo), cancellationToken);

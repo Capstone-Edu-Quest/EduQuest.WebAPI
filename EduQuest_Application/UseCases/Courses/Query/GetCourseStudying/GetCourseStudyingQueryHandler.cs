@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -37,7 +38,7 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseStudying
 
 			listCourse = listCourseId
 				.Select(id => listCourse.FirstOrDefault(c => c.Id == id))
-				.Where(c => c != null)
+				.Where(c => c != null && c.Status == GeneralEnums.StatusCourse.Public.ToString())
 				.ToList();
 
 			var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(listCourse);
