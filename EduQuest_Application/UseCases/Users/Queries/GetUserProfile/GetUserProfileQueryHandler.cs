@@ -83,10 +83,28 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, A
             int totalLearners = courses.Sum(c => c.CourseLearners?.Count ?? 0);
             int totalReviews = courses.Sum(c => c.Feedbacks?.Count ?? 0);
 
+            int totalRatings = 0;
+            int totalFeedbacks = 0;
+
+            foreach (var course in courses)
+            {
+                if (course.Feedbacks != null)
+                {
+                    totalRatings += course.Feedbacks.Sum(f => f.Rating); 
+                    totalFeedbacks += course.Feedbacks.Count;            
+                }
+            }
+
+            double averageReview = totalFeedbacks > 0
+                ? (double)totalRatings / totalFeedbacks
+                : 0;
+
+
             var instructorDto = _mapper.Map<InstructorProfileDto>(user);
             instructorDto.Courses = courseDtos;
             instructorDto.TotalLearners = totalLearners;
             instructorDto.TotalReviews = totalReviews;
+            instructorDto.AverageReviews = averageReview;
             if (!string.IsNullOrEmpty(user.AssignToExpertId))
             {
                 var expertUser = await _userRepository.GetById(user.AssignToExpertId);

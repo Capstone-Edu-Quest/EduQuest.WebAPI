@@ -24,16 +24,16 @@ public class GetMyInstructorApplicationQueryHandler : IRequestHandler<GetMyInstr
     {
         var user = await _userRepository.GetUserById(request.userId);
 
-        if (user == null || user.Status != "Pending")
-        {
-            return GeneralHelper.CreateErrorResponse(
-                HttpStatusCode.NotFound,
-                MessageCommon.HaventApplyInstructor,
-                MessageCommon.HaventApplyInstructor,
-                "name",
-                request.userId
-            );
-        }
+        //if (user == null || user.Status != "Pending")
+        //{
+        //    return GeneralHelper.CreateErrorResponse(
+        //        HttpStatusCode.NotFound,
+        //        MessageCommon.HaventApplyInstructor,
+        //        MessageCommon.HaventApplyInstructor,
+        //        "name",
+        //        request.userId
+        //    );
+        //}
 
         var result = _mapper.Map<InstructorProfileDto>(user);
         if (!string.IsNullOrEmpty(user.AssignToExpertId))
