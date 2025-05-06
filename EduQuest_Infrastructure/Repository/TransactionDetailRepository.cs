@@ -283,11 +283,11 @@ namespace EduQuest_Infrastructure.Repository
 			var list =  await _context.TransactionDetails.Where(t => t.InstructorId == instructorId && t.ItemType == GeneralEnums.ItemTypeTransactionDetail.Course.ToString()).ToListAsync();
 			if(dateFrom.HasValue)
 			{
-				list.Where(x => x.UpdatedAt >= dateFrom);
+				list = list.Where(x => x.UpdatedAt >= dateFrom.Value).ToList();
 			}
 			if (dateTo.HasValue)
 			{
-				list.Where(x => x.UpdatedAt <= dateTo);
+				list =  list.Where(x => x.UpdatedAt <= dateTo.Value).ToList();
 			}
 
 			return list;

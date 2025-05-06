@@ -25,7 +25,7 @@ namespace EduQuest_Application.UseCases.Revenue.Query.GetRevenueTransaction
 
 		public async Task<APIResponse> Handle(GetRevenueTransactionQuery request, CancellationToken cancellationToken)
 		{
-			var listTransactionDetail = await _transactionDetailRepository.GetByInstructorId(request.UserId, request.DateTo, request.DateFrom);
+			var listTransactionDetail = await _transactionDetailRepository.GetByInstructorId(request.UserId, request.DateFrom, request.DateTo);
 			if(listTransactionDetail is null) return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, listTransactionDetail, "name", "Revenue Transaction");
 			var listResponse = (_mapper.Map<List<RevenueTransaction>>(listTransactionDetail)).OrderByDescending(x => x.UpdatedAt);
 			foreach (var transactionDetail in listResponse)
