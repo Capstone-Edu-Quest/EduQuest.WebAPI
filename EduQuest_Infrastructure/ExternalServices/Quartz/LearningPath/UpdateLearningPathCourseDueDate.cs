@@ -48,7 +48,7 @@ public class UpdateLearningPathCourseDueDate : IJob
                                   Url = "",
                                   Values = new Dictionary<string, string>
                                   {
-                                        { "learning path", item.LearningPath.Name }
+                                        { "learning_path", item.LearningPath.Name }
                                   }
                               }
                           );
