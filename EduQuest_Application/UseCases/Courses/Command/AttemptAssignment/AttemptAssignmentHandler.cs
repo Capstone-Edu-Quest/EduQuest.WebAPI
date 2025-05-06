@@ -110,8 +110,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
 
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
-
-
+        var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
+        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
