@@ -61,7 +61,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
                     }
                     else
                     {
-                        learningPathCourse.ProgressPercentage = -1;
+                        learningPathCourse.ProgressPercentage = null;
                     }
                     var lp = learningPath.Enrollers
                     .FirstOrDefault(c => c.CourseId == course.Id && c.UserId == request.UserId && c.LearningPathId == learningPath.Id);
@@ -91,7 +91,7 @@ public class GetLearningPathDetailHandler : IRequestHandler<GetLearningPathDetai
             {
                 var enroll = learningPath.Enrollers.Where(l => l.UserId == request.UserId).FirstOrDefault();
                 response.IsEnrolled = enroll != null;
-                response.EnrollDate = enroll != null ? enroll.DueDate : null;
+                response.EnrollDate = enroll != null ? enroll.EnrollDate : null;
             }
             else
             {

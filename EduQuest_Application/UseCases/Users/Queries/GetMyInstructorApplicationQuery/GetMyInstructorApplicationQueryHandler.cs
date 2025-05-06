@@ -24,7 +24,7 @@ public class GetMyInstructorApplicationQueryHandler : IRequestHandler<GetMyInstr
     {
         var user = await _userRepository.GetUserById(request.userId);
 
-        if (user == null || user.Status != "Pending")
+        if (user == null || user.Status == "Active" || user.Status == "Cancelled")
         {
             return GeneralHelper.CreateErrorResponse(
                 HttpStatusCode.NotFound,
