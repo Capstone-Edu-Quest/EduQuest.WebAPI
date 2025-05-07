@@ -29,8 +29,10 @@ public class GetCourseByStatusQueryHandler : IRequestHandler<GetCourseByStatusQu
         var exists = await _courseRepository.GetCourseByStatus(request.Status);
 
 
-        var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(exists); //Chưa check Discount Price
-        foreach (var course in listCourseResponse)
+        var listCourseResponse = _mapper.Map<List<CourseSearchResponse>>(exists.OrderByDescending(x => x.UpdatedAt)); //Chưa check Discount Price
+		
+
+		foreach (var course in listCourseResponse)
         {
             var user = await _userRepository.GetById(course.CreatedBy);
             course.Author = user!.Username!;
