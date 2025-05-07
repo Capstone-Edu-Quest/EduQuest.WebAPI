@@ -96,7 +96,7 @@ public class BecomeInstructorCommandHandler : IRequestHandler<BecomeInstructorCo
             .ToHashSet();
 
         var userTags = request.Tag
-            .Where(tagId => !string.IsNullOrEmpty(tagId) && validTagIds.Equals(tagId))
+            .Where(tagId => !string.IsNullOrEmpty(tagId) && validTagIds.Contains(tagId))
             .Select(tagId => new UserTag
             {
                 UserId = request.UserId,
