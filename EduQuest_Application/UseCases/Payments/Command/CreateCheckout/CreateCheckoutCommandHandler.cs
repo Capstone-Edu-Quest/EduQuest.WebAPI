@@ -9,7 +9,6 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Stripe;
-using Stripe.Checkout;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 
