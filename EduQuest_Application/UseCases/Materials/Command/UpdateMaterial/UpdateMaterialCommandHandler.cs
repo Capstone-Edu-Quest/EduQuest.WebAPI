@@ -2,6 +2,7 @@
 using EduQuest_Application.DTO.Request.Materials;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
@@ -21,10 +22,12 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 		private readonly IQuizRepository _quizRepository;
 		private readonly IQuestionRepository _questionRepository;
 		private readonly IAnswerRepository _answerRepository;
+		private readonly ILessonMaterialRepository _lessonMaterialRepository;
+		private readonly ILessonRepository _lessonRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
-		public UpdateMaterialCommandHandler(IMaterialRepository materialRepository, ICourseRepository courseRepository, ISystemConfigRepository systemConfigRepository, IAssignmentRepository assignmentRepository, IQuizRepository quizRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, IUnitOfWork unitOfWork, IMapper mapper)
+		public UpdateMaterialCommandHandler(IMaterialRepository materialRepository, ICourseRepository courseRepository, ISystemConfigRepository systemConfigRepository, IAssignmentRepository assignmentRepository, IQuizRepository quizRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ILessonMaterialRepository lessonMaterialRepository, ILessonRepository lessonRepository, IUnitOfWork unitOfWork, IMapper mapper)
 		{
 			_materialRepository = materialRepository;
 			_courseRepository = courseRepository;
@@ -33,6 +36,8 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			_quizRepository = quizRepository;
 			_questionRepository = questionRepository;
 			_answerRepository = answerRepository;
+			_lessonMaterialRepository = lessonMaterialRepository;
+			_lessonRepository = lessonRepository;
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 		}
@@ -72,7 +77,10 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 				default:
 					break;
 			}
-
+			if(material == null)
+			{
+				return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageError.UsedMaterial, MessageError.UsedMaterial, "name", $"Material {request.Material.Id}");
+			}
 			await _materialRepository.Update(material);
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
@@ -104,6 +112,12 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 
 		private async Task<Material> ProcessQuizMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
+			var isUsed = await IsMaterialUsed(material.Id);
+			if (isUsed)
+			{
+				return null;
+			}
+
 			// Update thời lượng
 			material.Duration = (int)(item.Quiz!.TimeLimit! * (config?.Value ?? 1));
 
@@ -180,6 +194,11 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 
 		private async Task<Material> ProcessAssignmentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
+			var isUsed = await IsMaterialUsed(material.Id);
+			if (isUsed)
+			{
+				return null;
+			}
 			var assignment = _mapper.Map<Assignment>(item.Assignment);
 			assignment.Id = material.Assignment?.Id ?? Guid.NewGuid().ToString();
 
@@ -189,6 +208,24 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 
 			await _assignmentRepository.Update(assignment);
 			return material;
+		}
+
+		private async Task<bool> IsMaterialUsed(string materialId)
+		{
+			var lessonMaterial = await _lessonMaterialRepository.GetLessonMaterialByMaterialId(materialId);
+			if (!lessonMaterial.Any())
+			{
+				return false;
+			}
+			var lessonIds = lessonMaterial.Select(x => x.LessonId).Distinct();
+			var lessons = await _lessonRepository.GetByIdsAsync(lessonIds);
+
+			if (lessons.Any(lesson => lesson.Course.Status == GeneralEnums.StatusCourse.Public.ToString()))
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
