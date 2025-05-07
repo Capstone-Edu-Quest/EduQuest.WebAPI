@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.DTO.Request.Payment;
 using EduQuest_Application.Helper;
+using EduQuest_Application.UseCases.Payments.Command.CancelPayment;
 using EduQuest_Application.UseCases.Payments.Command.CreateCheckout;
 using EduQuest_Application.UseCases.Payments.Command.Refund;
 using EduQuest_Application.UseCases.Payments.Command.StripeExpress;
@@ -59,6 +60,16 @@ namespace EduQuest_API.Controllers
 		public async Task<IActionResult> GetStatusConnectedAccount([FromQuery] string userId, CancellationToken cancellationToken = default)
 		{
 			var result = await _mediator.Send(new GetConnectedAccountStatusQuery(userId), cancellationToken);
+			return Ok(result);
+		}
+
+		[HttpGet("cancelPayment")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> CancelPaymentPending(CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new CancelPaymentCommand(userId), cancellationToken);
 			return Ok(result);
 		}
 	}
