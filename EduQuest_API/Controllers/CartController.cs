@@ -4,6 +4,7 @@ using EduQuest_Application.UseCases.Carts.Query;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Models.Response;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -22,6 +23,7 @@ namespace EduQuest_API.Controllers
 
 		}
 
+		[Authorize]
 		[HttpGet("")]
 		public async Task<IActionResult> GetMyCart(CancellationToken cancellationToken = default)
 		{
