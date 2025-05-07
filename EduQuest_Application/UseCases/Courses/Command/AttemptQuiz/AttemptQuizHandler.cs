@@ -117,12 +117,12 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
             response, "name", "quiz");
         }
-        if (attempNo > 1)
+        /*if (attempNo > 1)
         {
             response.isPassed = true;
             return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
                 response, "name", "quiz");
-        }
+        }*/
 
         var course = await _courseRepository.GetById(lesson.CourseId);
         var learner = course.CourseLearners.FirstOrDefault(l => l.UserId == request.UserId);
