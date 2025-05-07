@@ -57,14 +57,14 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		//[Authorize]
+		[Authorize]
 		[HttpPut("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> UpdateMaterial([FromBody] UpdateLearningMaterialRequest request, CancellationToken cancellationToken = default)
 		{
-			//string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new UpdateMaterialCommand("d6a064c0-fb08-4e8b-8fc5-dc46462deefd", request), cancellationToken);
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new UpdateMaterialCommand(userId, request), cancellationToken);
 
             return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
