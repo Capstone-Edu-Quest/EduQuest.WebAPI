@@ -72,7 +72,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 					currentMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(courseLearner.CurrentLessonId, courseLearner.CurrentMaterialId);
 				}
                 courseResponse.CertificateId = course.Certificates.Where(c => c.UserId == request.UserId).FirstOrDefault() != null ?
-                    course.Certificates.Where(c => c.UserId == request.UserId).FirstOrDefault().UserId : null;
+                    course.Certificates.Where(c => c.UserId == request.UserId).FirstOrDefault().Id : null;
 
             } 
 
