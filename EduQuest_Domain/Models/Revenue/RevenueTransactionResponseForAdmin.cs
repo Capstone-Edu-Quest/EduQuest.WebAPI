@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EduQuest_Application.DTO.Response.Revenue
+﻿namespace EduQuest_Application.DTO.Response.Revenue
 {
 	public class RevenueTransactionResponseForAdmin
 	{
@@ -20,5 +14,6 @@ namespace EduQuest_Application.DTO.Response.Revenue
 		public string? InstructorName { get; set; }
 		public string? LearnerName { get; set; }
 		public bool IsReceive { get; set; }
-	}
+        public bool IsRefund { get; set; }
+    }
 }
