@@ -104,7 +104,7 @@ public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, A
             instructorDto.Courses = courseDtos;
             instructorDto.TotalLearners = totalLearners;
             instructorDto.TotalReviews = totalReviews;
-            instructorDto.AverageReviews = averageReview;
+            instructorDto.AvarageReviews = averageReview;
             if (!string.IsNullOrEmpty(user.AssignToExpertId))
             {
                 var expertUser = await _userRepository.GetById(user.AssignToExpertId);

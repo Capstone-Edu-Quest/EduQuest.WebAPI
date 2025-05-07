@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using EduQuest_Application.Abstractions.AzureBlobStorage;
 using EduQuest_Infrastructure.ExternalServices.BlobStorage.Setting;
 using Microsoft.Extensions.Options;
@@ -46,4 +47,19 @@ public class AzureBlobStorage : IAzureBlobStorage
         var blobClient = _blobContainerClient.GetBlobClient(fileName);
         return blobClient.Uri.ToString();
     }
+
+
+    public async Task UploadBlockAsync(string blobName, string base64BlockId, Stream blockData)
+    {
+        var blobClient = _blobContainerClient.GetBlockBlobClient(blobName);
+        await blobClient.StageBlockAsync(base64BlockId, blockData);
+    }
+
+    public async Task CommitBlockListAsync(string blobName, IEnumerable<string> base64BlockIds, BlobHttpHeaders headers)
+    {
+        var blobClient = _blobContainerClient.GetBlockBlobClient(blobName);
+        await blobClient.CommitBlockListAsync(base64BlockIds, new CommitBlockListOptions { HttpHeaders = headers });
+    }
+
+
 }

@@ -21,7 +21,7 @@ public class InstructorProfileDto : IMapFrom<User>, IMapTo<User>
     public bool isPro { get; set; }
     public int? TotalLearners { get; set; } = 0;
     public int? TotalReviews { get; set; } = 0;
-    public double? AverageReviews { get; set; }
+    public double? AvarageReviews { get; set; }
     public string? AssignToExpertId { get; set; }
     public string? RejectedReason { get; set; }
     public string? ExpertName { get; set; }
