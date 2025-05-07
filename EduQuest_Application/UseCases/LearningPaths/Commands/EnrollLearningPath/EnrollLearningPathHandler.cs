@@ -97,11 +97,11 @@ public class EnrollLearningPathHandler : IRequestHandler<EnrollLearningPathComma
     {
         int DailyLearningDay = MessageError.MinimumLearningTimeDaily;
 
-        // Calculate the number of full learning days
-        int temp = Convert.ToInt32(total / DailyLearningDay);
+        if (total == null || total < 1) 
+        {
+            return 1;
+        }
 
-        // Add an extra day if there is remaining time to learn
-        int sub = (total % DailyLearningDay) > 0 ? 1 : 0;
-        return temp + sub;
+        return (int)Math.Ceiling((double)total / DailyLearningDay);
     }
 }
