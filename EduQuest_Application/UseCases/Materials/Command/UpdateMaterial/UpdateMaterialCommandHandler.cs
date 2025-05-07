@@ -119,8 +119,8 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 				foreach (var question in quiz.Questions)
 				{
 					var listAnswer = await _answerRepository.GetListAnswerByQuestionId(question.Id);
-					var listAnswerIds = listAnswer.Select(a => a.Id);
-					await _answerRepository.Delete(listAnswerIds);
+					//var listAnswerIds = listAnswer.Select(a => a.Id);
+					_answerRepository.DeleteRange(listAnswer);
 				}
 
 				// Xoá toàn bộ question cũ
