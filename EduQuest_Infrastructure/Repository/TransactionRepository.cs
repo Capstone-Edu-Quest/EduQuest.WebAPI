@@ -134,7 +134,7 @@ namespace EduQuest_Infrastructure.Repository
 				var instructorName = (detail.InstructorId != null && instructors.ContainsKey(detail.InstructorId))
 							? instructors[detail.InstructorId]
 							: null;
-
+				var isRefund = (detail.NetAmount != 0 && detail.StripeFee < detail.Amount && detail.SystemShare == 0 && detail.InstructorShare == 0) ? true : false;
 				return new RevenueTransactionResponseForAdmin
 				{
 					Id = detail.Id.ToString(),
@@ -148,7 +148,8 @@ namespace EduQuest_Infrastructure.Repository
 					InstructorShare = detail.InstructorShare,
 					InstructorName = instructorName,
 					LearnerName = transaction.User.Username,
-					IsReceive = isTransferred
+					IsReceive = isTransferred,
+					IsRefund = isRefund,
 				};
 			}).ToList();
 

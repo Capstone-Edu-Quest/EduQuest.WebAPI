@@ -14,5 +14,6 @@
 		public string? InstructorName { get; set; }
 		public string? LearnerName { get; set; }
 		public bool IsReceive { get; set; }
-	}
+        public bool IsRefund { get; set; }
+    }
 }
