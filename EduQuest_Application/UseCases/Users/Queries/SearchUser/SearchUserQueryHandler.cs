@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.Helper;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Constants;
 using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Pagination;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
@@ -31,21 +33,22 @@ public class SearchUserQueryHandler : IRequestHandler<SearchUserQuery, APIRespon
 
     public async Task<APIResponse> Handle(SearchUserQuery request, CancellationToken cancellationToken)
     {
-        // Get users based on filters
-        var users = await _userRepository.SearchUsersAsync(
+        // Get users based on filters with pagination applied
+        var pagedUsers = await _userRepository.SearchUsersAsync(
             request.Username,
             request.Email,
             request.Phone,
             request.Status,
-            request.RoleId);
+            request.RoleId,
+            request.PageNo,
+            request.EachPage);
 
         var userDtos = new List<UserSearchResultDto>();
 
-        foreach (var user in users)
+        foreach (var user in pagedUsers.Users)
         {
             var userDto = _mapper.Map<UserSearchResultDto>(user);
 
-            // Get courses by instructor
             var courses = await _courseRepository.GetCoursesByInstructorIdAsync(user.Id);
             if (courses != null)
             {
@@ -54,7 +57,6 @@ public class SearchUserQueryHandler : IRequestHandler<SearchUserQuery, APIRespon
                 userDto.TotalReviews = courses.Sum(c => c.Feedbacks?.Count ?? 0);
             }
 
-            // Get ExpertName if exists
             if (!string.IsNullOrEmpty(user.AssignToExpertId))
             {
                 var expertUser = await _userRepository.GetById(user.AssignToExpertId);
@@ -67,9 +69,12 @@ public class SearchUserQueryHandler : IRequestHandler<SearchUserQuery, APIRespon
             userDtos.Add(userDto);
         }
 
-        var response = new SearchUserResponse
+        var response = new PagedList<UserSearchResultDto>
         {
-            Users = userDtos
+            Items = userDtos,
+            TotalItems = pagedUsers.TotalCount, 
+            CurrentPage = request.PageNo,
+            EachPage = request.EachPage
         };
 
         return GeneralHelper.CreateSuccessResponse(
@@ -78,6 +83,7 @@ public class SearchUserQueryHandler : IRequestHandler<SearchUserQuery, APIRespon
             response, "name", "");
     }
 }
+
 
 
 
