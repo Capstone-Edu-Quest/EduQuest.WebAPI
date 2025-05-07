@@ -43,6 +43,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, APIRe
         if (!string.IsNullOrWhiteSpace(request.Phone))
             existingUser.Phone = request.Phone;
 
+        if (!string.IsNullOrWhiteSpace(request.Username))
+            existingUser.Username = request.Username;
+
         if (!string.IsNullOrWhiteSpace(request.Headline))
             existingUser.Headline = request.Headline;
 

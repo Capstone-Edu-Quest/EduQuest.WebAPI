@@ -16,6 +16,7 @@ namespace EduQuest_Application.DTO.Response.Revenue
 		public decimal? SystemShare { get; set; }
 		public decimal? InstructorShare { get; set; }
         public bool IsReceive { get; set; }
+        public bool IsRefund { get; set; }
 		public DateTime? ReceiveDate { get; set; }
 
 		//public void Mapping(Profile profile)

@@ -19,17 +19,19 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         _context = context;
     }
 
-    public async Task<List<User>> SearchUsersAsync(
-            string? username,
-            string? email,
-            string? phone,
-            string? status,
-            string? roleId)
+    public async Task<(List<User> Users, int TotalCount)> SearchUsersAsync(
+    string? username,
+    string? email,
+    string? phone,
+    string? status,
+    string? roleId,
+    int pageNo,
+    int eachPage)
     {
         // Start with all users
         IQueryable<User> query = _context.Users.AsNoTracking();
 
-        // Apply filters if they are provided
+        // Apply filters
         if (!string.IsNullOrWhiteSpace(username))
         {
             query = query.Where(u => u.Username.Contains(username));
@@ -55,15 +57,16 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             query = query.Where(u => u.RoleId == roleId);
         }
 
-        // Get total count for pagination
         int totalCount = await query.CountAsync();
 
-        // Apply pagination
         var users = await query
+            .Skip(pageNo * eachPage)
+            .Take(eachPage)
             .ToListAsync();
 
-        return users;
+        return (users, totalCount);
     }
+
 
     public async Task<List<User>> GetUserByAssignToExpet(string expertId)
     {

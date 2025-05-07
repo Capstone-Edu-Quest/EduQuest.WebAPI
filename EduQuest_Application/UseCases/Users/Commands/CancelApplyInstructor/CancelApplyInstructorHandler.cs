@@ -16,13 +16,15 @@ public class CancelApplyInstructorHandler : IRequestHandler<CancelApplyInstructo
 {
     private readonly IUserRepository _userRepo;
     private readonly IInstructorCertificate _certificateRepo;
+    private readonly IUserTagRepository _userTagRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public CancelApplyInstructorHandler(IUserRepository userRepo, IInstructorCertificate certificateRepo, IUnitOfWork unitOfWork, IMapper mapper)
+    public CancelApplyInstructorHandler(IUserRepository userRepo, IInstructorCertificate certificateRepo, IUserTagRepository userTagRepository, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _userRepo = userRepo;
         _certificateRepo = certificateRepo;
+        _userTagRepository = userTagRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -44,6 +46,9 @@ public class CancelApplyInstructorHandler : IRequestHandler<CancelApplyInstructo
         {
             user.Status = "Cancelled";
             await _userRepo.Update(user);
+
+            await _userTagRepository.DeleteByUserIdAsync(user.Id);
+
             var userCertificates = await _certificateRepo.GetByUserIdAsync(user.Id);
             if (userCertificates != null && userCertificates.Any())
             {

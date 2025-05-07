@@ -31,6 +31,11 @@ namespace EduQuest_Infrastructure.Repository
 			return entity != null ? entity.Index : 0;
 		}
 
+		public async Task<List<LessonMaterial>> GetLessonMaterialByMaterialId(string materialId)
+		{
+			return await _context.LessonMaterials.Where(x => x.MaterialId == materialId).ToListAsync();
+		}
+
 		public async Task<List<string>> GetListMaterialIdByLessonId(string lessonId)
 		{
 			var list = await _context.LessonMaterials

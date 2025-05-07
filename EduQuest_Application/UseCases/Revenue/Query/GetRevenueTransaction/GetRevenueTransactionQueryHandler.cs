@@ -33,10 +33,13 @@ namespace EduQuest_Application.UseCases.Revenue.Query.GetRevenueTransaction
 				var course = await _courseRepository.GetById(transactionDetail.ItemId);
 				transactionDetail.Title = course.Title;
 
+				var isRefund = (transactionDetail.NetAmount != 0 && transactionDetail.StripeFee < transactionDetail.Amount && transactionDetail.SystemShare == 0 && transactionDetail.InstructorShare == 0) ? true : false;
+
 				var listTransfer = await _transactionRepository.CheckTransfer(transactionDetail.TransactionId);
 				if (listTransfer.Any())
 				{
 					transactionDetail.IsReceive = true;
+					transactionDetail.IsRefund = isRefund;
 					transactionDetail.ReceiveDate = listTransfer.Where(x => x.UpdatedAt != null).FirstOrDefault().UpdatedAt;
 				}
 				else

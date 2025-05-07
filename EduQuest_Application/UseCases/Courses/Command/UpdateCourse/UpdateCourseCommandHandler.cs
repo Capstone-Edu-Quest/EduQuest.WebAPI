@@ -138,9 +138,9 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				}
 
 				var percentage = CompareMaterialIds(updateMaterialIds, oldExistMaterialIds);
-				if(percentage >= 0.3)
+				if(percentage > 0.3)
 				{
-					return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageCommon.UpdateFailed, $"Update Failed {request.CourseInfo.CourseId}", "name", "Course");
+					return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageError.Over30Percentage, MessageError.Over30Percentage, "name", $"Course ID {request.CourseInfo.CourseId}");
 				} else
 				{
 					existingCourse.Title = request.CourseInfo.Title;

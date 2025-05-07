@@ -189,6 +189,9 @@
 			public const string QuestAlreadyClaimed = "QUEST_ALREADY_CLAIMED";
 
 			public const string CourseExist = "ALREADY_IN_COURSE";
+
+			public const string UsedMaterial = "CANNOT UPDATE USED MATERIAL";
+			public const string Over30Percentage = "CANNOT UPDATE MORE THAN 30% DIFFERENCE FROM OLD MATERIAL";
 		}
 		#endregion
 

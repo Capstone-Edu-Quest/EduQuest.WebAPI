@@ -10,4 +10,6 @@ public class SearchUserQuery : IRequest<APIResponse>
     public string? Phone { get; set; }
     public string? Status { get; set; }
     public string? RoleId { get; set; }
+    public int PageNo { get; set; } = 0;
+    public int EachPage { get; set; } = 10;
 }
