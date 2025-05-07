@@ -68,10 +68,13 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 
 				var materials = new List<MaterialInLessonResponse>();
 
-				var listMaterialId = lessonInCourse.LessonMaterials.Select(x => x.MaterialId).Distinct().ToList();
+				var listMaterialId = lessonInCourse.LessonMaterials.OrderBy(x=> x.Index).Select(x => x.MaterialId).Distinct().ToList();
 				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
+				var sortedMaterials = listMaterial
+					.OrderBy(m => listMaterialId.IndexOf(m.Id))
+					.ToList();
 
-				foreach (var material in listMaterial)
+				foreach (var material in sortedMaterials)
 				{
 					var currentMaterialResponse = new MaterialInLessonResponse
 					{
