@@ -63,7 +63,7 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[HttpGet("cancelPayment")]
+		[HttpPost("cancelPayment")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> CancelPaymentPending(CancellationToken cancellationToken = default)
