@@ -28,6 +28,7 @@ namespace EduQuest_Application.DTO.Response.Courses
         public int? TotalReview { get; set; }
         public double? TotalTime { get; set; }
         public double? Progress { get; set; }
+        public string? CertificateId { get; set; }
 
         public void Mapping(Profile profile)
         {
