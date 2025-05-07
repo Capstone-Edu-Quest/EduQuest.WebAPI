@@ -111,21 +111,26 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			var quiz = await _quizRepository.GetQuizById(material.QuizId);
 			if (quiz != null)
 			{
-				// Cập nhật lại quiz
-				_mapper.Map(item.Quiz, quiz);
-				await _quizRepository.Update(quiz);
+				
 
 				// Xoá toàn bộ answer cũ
-				foreach (var question in quiz.Questions)
+				var questions = quiz.Questions.ToList();
+				foreach (var question in questions)
 				{
-					var listAnswer = await _answerRepository.GetListAnswerByQuestionId(question.Id);
-					//var listAnswerIds = listAnswer.Select(a => a.Id);
-					_answerRepository.DeleteRange(listAnswer);
-				}
+
+                    var listAnswer = question.Answers.ToList();
+                    _answerRepository.DeleteRange(listAnswer);
+                    await _unitOfWork.SaveChangesAsync();
+                }
 
 				// Xoá toàn bộ question cũ
-				quiz.Questions.Clear();
-				await _unitOfWork.SaveChangesAsync();
+				_questionRepository.DeleteRange(questions);
+
+                // Cập nhật lại quiz
+                _mapper.Map(item.Quiz, quiz);
+                await _quizRepository.Update(quiz);
+
+                await _unitOfWork.SaveChangesAsync();
 			}
 
 			// Tạo mới câu hỏi

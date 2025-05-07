@@ -65,7 +65,8 @@ namespace EduQuest_API.Controllers
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new UpdateMaterialCommand(userId, request), cancellationToken);
-			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
+
+            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
 		}
 
         [Authorize]
