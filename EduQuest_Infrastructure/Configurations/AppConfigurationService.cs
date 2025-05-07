@@ -262,7 +262,7 @@ namespace EduQuest_Infrastructure
                     .ForJob(LearningPathDueDate)
                     .StartNow()
                     .WithSimpleSchedule(x => x
-                        .WithIntervalInMinutes(5)
+                        .WithIntervalInSeconds(30)
                         .RepeatForever()
                         .Build()));
             });
