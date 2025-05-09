@@ -97,7 +97,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 
 			foreach (var lesson in course.Lessons.OrderBy(x => x.Index)!)
 			{
-				var lessonInCourse = await _lessonRepository.GetByLessonIdAsync(lesson.Id);
+				//var lessonInCourse = await _lessonRepository.GetByLessonIdAsync(lesson.Id);
 
 				var materials = new List<MaterialInLessonResponse>();
 
