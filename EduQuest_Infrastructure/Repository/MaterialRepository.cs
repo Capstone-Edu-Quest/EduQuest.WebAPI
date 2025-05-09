@@ -22,7 +22,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<List<Material>> GetByUserId(string userId)
 		{
-			return await _context.Materials.Include(x => x.Quiz.Questions).Include(x => x.Assignment).Where(x => x.UserId == userId).ToListAsync();	
+			return await _context.Materials.Where(x => x.UserId == userId).ToListAsync();	
 		}
 
 		public async Task<Material> GetMataterialQuizAssById(string materialId)
@@ -53,17 +53,12 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Material> GetMaterialIncludeQuizAssignment(string materialId)
 		{
-			return await _context.Materials.Include(x => x.Quiz).Include(x => x.Assignment).FirstOrDefaultAsync(x => x.Id == materialId);
+			return await _context.Materials.FirstOrDefaultAsync(x => x.Id == materialId);
 		}
 
 		public async Task<List<Material>> GetMaterialsByType(List<string> materialIds, string type)
 		{
 			return await _context.Materials.Where(x => materialIds.Contains(x.Id) && x.Type == type).ToListAsync();
-		}
-        public async Task<Material?> GetMaterialByAssignmentId(string assignmentId)
-		{
-			var result = await _context.Materials.Where(m => m.AssignmentId == assignmentId).FirstOrDefaultAsync();
-			return result;
 		}
 
     }

@@ -11,7 +11,5 @@ namespace EduQuest_Domain.Entities
 		public string? AnswerLanguage { get; set; }
 		public string? ExpectedAnswer { get; set; }
 
-		[JsonIgnore]
-		public virtual Material Material { get; set; } = null!;
 	}
 }

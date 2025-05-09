@@ -107,13 +107,13 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 					return await ProcessDocumentMaterialAsync(item, value, material);
 
 				case TypeOfMaterial.Video:
-					return await ProcessVideoMaterialAsync(item, value, material);
+					return ProcessVideoMaterialAsync(item, value, material);
 
-				case TypeOfMaterial.Quiz:
+				/*case TypeOfMaterial.Quiz:
 					return await ProcessQuizMaterialAsync(item, value, material);
 
 				case TypeOfMaterial.Assignment:
-					return await ProcessAssignmentMaterialAsync(item, value, material);
+					return await ProcessAssignmentMaterialAsync(item, value, material);*/
 
 				default:
 					material.Duration = 0;
@@ -130,7 +130,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessQuizMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
+		/*private async Task<Material> ProcessQuizMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
 			material.Duration = (int)(item.Quiz!.TimeLimit! * systemConfig.Value!);
 
@@ -167,23 +167,23 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 
 			await _answerRepository.CreateRangeAsync(answers);
 			return material;
-		}
+		}*/
 
-		private async Task<Material> ProcessVideoMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
+		private Material ProcessVideoMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
 			material.Duration = item.Video!.Duration;
 			material.UrlMaterial = item.Video.UrlMaterial;
 			material.Thumbnail = item.Video.Thumbnail;
 
-			if (item.Quiz != null)
+			/*if (item.Quiz != null)
 			{
 				await ProcessQuizMaterialAsync(item, systemConfig, material);
-			}
+			}*/
 
 			return material;
 		}
 
-		private async Task<Material> ProcessAssignmentMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
+		/*private async Task<Material> ProcessAssignmentMaterialAsync(CreateMaterialRequest item, SystemConfig systemConfig, Material material)
 		{
 			material.Duration = (int)(item.Assignment!.TimeLimit! * systemConfig.Value!);
 			var newAssignment = _mapper.Map<Assignment>(item.Assignment);
@@ -191,6 +191,6 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
 			material.AssignmentId = newAssignment.Id;
 			await _assignmentRepository.Add(newAssignment);
 			return material;
-		}
+		}*/
 	}
 }

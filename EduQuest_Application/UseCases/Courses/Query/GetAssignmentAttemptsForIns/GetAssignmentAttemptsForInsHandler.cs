@@ -17,14 +17,16 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
     private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
     private readonly IMapper _mapper;
     private readonly ICourseRepository _courseRepository;
+    private readonly IAssignmentRepository _assignmentRepository;
 
     public GetAssignmentAttemptsForInsHandler(IMaterialRepository materialRepository, IAssignmentAttemptRepository assignmentAttemptRepository, 
-        IMapper mapper, ICourseRepository courseRepository)
+        IMapper mapper, ICourseRepository courseRepository, IAssignmentRepository assignmentRepository)
     {
         _materialRepository = materialRepository;
         _assignmentAttemptRepository = assignmentAttemptRepository;
         _mapper = mapper;
         _courseRepository = courseRepository;
+        _assignmentRepository = assignmentRepository;
     }
 
     public async Task<APIResponse> Handle(GetAssignmentAttemptsForInsQuery request, CancellationToken cancellationToken)
@@ -42,21 +44,23 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
         {
             lessonMaterials.AddRange(lesson.LessonMaterials);
         }
-        List<string> materialIds = new List<string>();
+        List<string> AssignmentIds = new List<string>();
         foreach(var lesson in lessons)
         {
-            List<string> temp = lesson.LessonMaterials.Select(l => l.MaterialId).ToList();
-            materialIds.AddRange(temp);
+            List<string> temp = lesson.LessonMaterials.Select(l => l.AssignmentId!).ToList();
+            AssignmentIds.AddRange(temp);
         }
-        var materials = await _materialRepository.GetMaterialsByIds(materialIds);
-        materials = materials.Where(m => m.AssignmentId != null).ToList();
+        //var materials = await _materialRepository.GetMaterialsByIds(materialIds);
+
+        //materials = materials.Where(m => m.AssignmentId != null).ToList();
+
         UnreviewedAssignmentAttempt responseDto = new UnreviewedAssignmentAttempt();
         List<AssignmentResponse> responses = new List< AssignmentResponse >();
-        foreach (var material in materials)
+        foreach (var assignmentId in AssignmentIds)
         {
-            var lessonId = lessonMaterials.Where(l => l.MaterialId == material.Id).FirstOrDefault().LessonId;
-            var assignment = material.Assignment;
-            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts(lessonId, assignment!.Id);
+            var lessonId = lessonMaterials.Where(l => l.AssignmentId == assignmentId).FirstOrDefault().LessonId;
+            var assignment = await _assignmentRepository.GetById(assignmentId);
+            var assignmentAttempts = await _assignmentAttemptRepository.GetUnreviewedAttempts(lessonId, assignmentId);
             List<AssignmentAttemptResponseForInstructor> attempts = _mapper.Map<List<AssignmentAttemptResponseForInstructor>>(assignmentAttempts);
             AssignmentResponse dto = _mapper.Map<AssignmentResponse>(assignment);
             dto.attempts = attempts;

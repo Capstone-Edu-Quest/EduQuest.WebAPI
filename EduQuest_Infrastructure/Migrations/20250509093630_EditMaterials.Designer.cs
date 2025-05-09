@@ -3,6 +3,7 @@ using System;
 using EduQuest_Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduQuest_Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509093630_EditMaterials")]
+    partial class EditMaterials
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1045,6 +1048,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
+                    b.Property<string>("AssignmentId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
@@ -1062,6 +1068,9 @@ namespace EduQuest_Infrastructure.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<string>("OriginalMaterialId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("QuizId")
                         .HasColumnType("text");
 
                     b.Property<string>("Thumbnail")
@@ -1093,7 +1102,13 @@ namespace EduQuest_Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AssignmentId")
+                        .IsUnique();
+
                     b.HasIndex("DeletedAt");
+
+                    b.HasIndex("QuizId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -2417,11 +2432,23 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Material", b =>
                 {
+                    b.HasOne("EduQuest_Domain.Entities.Assignment", "Assignment")
+                        .WithOne("Material")
+                        .HasForeignKey("EduQuest_Domain.Entities.Material", "AssignmentId");
+
+                    b.HasOne("EduQuest_Domain.Entities.Quiz", "Quiz")
+                        .WithOne("Material")
+                        .HasForeignKey("EduQuest_Domain.Entities.Material", "QuizId");
+
                     b.HasOne("EduQuest_Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Quiz");
 
                     b.Navigation("User");
                 });
@@ -2679,6 +2706,12 @@ namespace EduQuest_Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EduQuest_Domain.Entities.Assignment", b =>
+                {
+                    b.Navigation("Material")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EduQuest_Domain.Entities.AssignmentAttempt", b =>
                 {
                     b.Navigation("Reviewers");
@@ -2748,6 +2781,9 @@ namespace EduQuest_Infrastructure.Migrations
 
             modelBuilder.Entity("EduQuest_Domain.Entities.Quiz", b =>
                 {
+                    b.Navigation("Material")
+                        .IsRequired();
+
                     b.Navigation("Questions");
                 });
 

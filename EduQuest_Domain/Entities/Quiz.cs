@@ -9,10 +9,6 @@ namespace EduQuest_Domain.Entities
 
 		public double? TimeLimit { get; set; }
 		public decimal PassingPercentage { get; set; }
-		
-
-		[JsonIgnore]
-		public virtual Material Material { get; set; } = null!;
 
 		[JsonIgnore]
 		public virtual ICollection<Question> Questions { get; set; }
