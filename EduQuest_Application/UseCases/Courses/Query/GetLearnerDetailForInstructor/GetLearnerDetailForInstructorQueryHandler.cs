@@ -56,10 +56,15 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetLearnerDetailForInstruc
 			var materialIds = (await _lessonMaterialRepository.GetByListLessonId(lessonIds)).Select(x => x.MaterialId).Distinct().ToList();
 
 			//Lọc các QuizId và AssignmentId
-			var quizIds = (await _materialRepository.GetMaterialsByType(materialIds, GeneralEnums.TypeOfMaterial.Quiz.ToString())).Select(x => x.QuizId).ToList();
-			var assignmentIds = (await _materialRepository.GetMaterialsByType(materialIds, GeneralEnums.TypeOfMaterial.Assignment.ToString())).Select(x => x.AssignmentId).ToList();
-
-
+			/*var quizIds = (await _materialRepository.GetMaterialsByType(materialIds, GeneralEnums.TypeOfMaterial.Quiz.ToString())).Select(x => x.QuizId).ToList();
+			var assignmentIds = (await _materialRepository.GetMaterialsByType(materialIds, GeneralEnums.TypeOfMaterial.Assignment.ToString())).Select(x => x.AssignmentId).ToList();*/
+			List<string> quizIds = new List<string>();
+			List<string> assignmentIds = new List<string>();
+			foreach(var lesson in course.Lessons)
+			{
+				assignmentIds.AddRange(lesson.LessonMaterials.Where(l => l.AssignmentId != null).Select(l => l.AssignmentId!).ToList());
+                quizIds.AddRange(lesson.LessonMaterials.Where(l => l.QuizId != null).Select(l => l.QuizId!).ToList());
+            }
 			// Lấy Attempt cho Quiz & Assignment
 			var quizAttempts = await _quizAttemptRepository.GetQuizzesAttempts(quizIds, lessonIds, request.UserId);
 			var assignmentAttempts = await _assignmentAttemptRepository.GetAssignmentAttempts(assignmentIds, lessonIds, request.UserId);

@@ -57,8 +57,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                 MessageCommon.NotFound, "name", "lesson");
         }
         var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonMaterials.Select(x => x.MaterialId).ToList());
-        var material = materials.Where(m => m.QuizId == request.Attempt.QuizId).FirstOrDefault();
-        var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == material.Id);
+       
+        var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.QuizId == request.Attempt.QuizId);
         var quiz = await _quizRepository.GetQuizById(request.Attempt.QuizId);
         if (lessonMaterial == null || quiz == null)
         {
@@ -149,7 +149,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
         }
 
-        learner.TotalTime += material.Duration;
+        learner.TotalTime += request.Attempt.TotalTime;
 
         if (learner.TotalTime > course.CourseStatistic.TotalTime)
         {
@@ -158,7 +158,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
-        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, totalMaterial)) * 100, 2);
+        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateQuizProgressAsync(request.LessonId, request.Attempt.QuizId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;

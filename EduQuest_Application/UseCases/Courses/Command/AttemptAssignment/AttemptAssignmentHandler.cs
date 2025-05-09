@@ -63,10 +63,10 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
                 MessageCommon.NotFound, "name", "lesson");
         }
         var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonMaterials.Select(x => x.MaterialId).ToList());
-        var material = materials.Where(m => m.AssignmentId == request.Attempt.AssignmentId).FirstOrDefault();
-        var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == material.Id);
+        //var material = materials.Where(m => m.AssignmentId == request.Attempt.AssignmentId).FirstOrDefault();
+        var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.AssignmentId == request.Attempt.AssignmentId);
         var assignment = await _assignmentRepository.GetById(request.Attempt.AssignmentId);
-        if (lessonMaterial == null || assignment == null)
+        if (assignment == null)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "assignment");
@@ -111,7 +111,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         learner.CurrentLessonId = newLessonId;
         learner.CurrentMaterialId = newMaterialId;
         var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
-        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.LessonId, material.Id, totalMaterial)) * 100, 2);
+        learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateAssignmentProgressAsync(request.LessonId, request.Attempt.AssignmentId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)
         {
             learner.ProgressPercentage = 100;
@@ -119,7 +119,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
-        learner.TotalTime += material.Duration;
+        learner.TotalTime += assignment.TimeLimit;
         if (learner.TotalTime > course.CourseStatistic.TotalTime)
         {
             learner.TotalTime = course.CourseStatistic.TotalTime;

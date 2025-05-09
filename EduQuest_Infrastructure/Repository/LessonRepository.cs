@@ -116,8 +116,87 @@ namespace EduQuest_Infrastructure.Repository
 			// 5. Trả về tỉ lệ hoàn thành
 			return (double)completedMaterialCount / totalMaterial;
 		}
+        public async Task<double> CalculateAssignmentProgressAsync(string lessonId, string assignmentId, int totalMaterial)
+        {
+            if (totalMaterial <= 0) return 0;
 
-		public async Task<Lesson> GetLessonByCourseIdAndIndex(string courseId, int index)
+            // 1. Lấy lesson hiện tại
+            var currentLesson = await _context.Lessons
+                .AsNoTracking()
+                .FirstOrDefaultAsync(l => l.Id == lessonId);
+
+            if (currentLesson == null) return 0;
+
+            var currentLessonIndex = currentLesson.Index;
+
+            // 2. Lấy index của materialId trong lesson
+            var targetLessonMaterial = await _context.LessonMaterials
+                .AsNoTracking()
+                .FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.AssignmentId == assignmentId);
+
+            if (targetLessonMaterial == null) return 0;
+
+            var targetMaterialIndex = targetLessonMaterial.Index;
+
+            // 3. Lấy danh sách lessonId trước bài hiện tại
+            var lessonIdsBefore = await _context.Lessons
+                .AsNoTracking()
+                .Where(l => l.CourseId == currentLesson.CourseId && l.Index < currentLessonIndex)
+                .Select(l => l.Id)
+                .ToListAsync();
+
+            // 4. Đếm số material đã hoàn thành
+            var completedMaterialCount = await _context.LessonMaterials
+                .AsNoTracking()
+                .CountAsync(lm =>
+                    lessonIdsBefore.Contains(lm.LessonId) ||
+                    (lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
+                );
+
+            // 5. Trả về tỉ lệ hoàn thành
+            return (double)completedMaterialCount / totalMaterial;
+        }
+        public async Task<double> CalculateQuizProgressAsync(string lessonId, string quizId, int totalMaterial)
+        {
+            if (totalMaterial <= 0) return 0;
+
+            // 1. Lấy lesson hiện tại
+            var currentLesson = await _context.Lessons
+                .AsNoTracking()
+                .FirstOrDefaultAsync(l => l.Id == lessonId);
+
+            if (currentLesson == null) return 0;
+
+            var currentLessonIndex = currentLesson.Index;
+
+            // 2. Lấy index của materialId trong lesson
+            var targetLessonMaterial = await _context.LessonMaterials
+                .AsNoTracking()
+                .FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.AssignmentId == quizId);
+
+            if (targetLessonMaterial == null) return 0;
+
+            var targetMaterialIndex = targetLessonMaterial.Index;
+
+            // 3. Lấy danh sách lessonId trước bài hiện tại
+            var lessonIdsBefore = await _context.Lessons
+                .AsNoTracking()
+                .Where(l => l.CourseId == currentLesson.CourseId && l.Index < currentLessonIndex)
+                .Select(l => l.Id)
+                .ToListAsync();
+
+            // 4. Đếm số material đã hoàn thành
+            var completedMaterialCount = await _context.LessonMaterials
+                .AsNoTracking()
+                .CountAsync(lm =>
+                    lessonIdsBefore.Contains(lm.LessonId) ||
+                    (lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
+                );
+
+            // 5. Trả về tỉ lệ hoàn thành
+            return (double)completedMaterialCount / totalMaterial;
+        }
+        public async Task<Lesson> GetLessonByCourseIdAndIndex(string courseId, int index)
 		{
 			return await _context.Lessons.FirstOrDefaultAsync(l => l.CourseId == courseId && l.Index == index);
 		}

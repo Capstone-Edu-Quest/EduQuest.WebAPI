@@ -270,15 +270,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		#region Material
 		public void Configure(EntityTypeBuilder<Material> builder)
 		{
-            builder
-			.HasOne(a => a.Assignment)
-			.WithOne(m => m.Material)
-			.HasForeignKey<Material>(m => m.AssignmentId);
-
-            builder
-            .HasOne(a => a.Quiz)
-            .WithOne(m => m.Material)
-            .HasForeignKey<Material>(m => m.QuizId);
+           
 
         }
 		#endregion

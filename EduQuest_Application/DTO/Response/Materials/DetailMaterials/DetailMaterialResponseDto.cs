@@ -22,8 +22,8 @@ public class DetailMaterialResponseDto : IMapFrom<Material>, IMapTo<Material>
 	public void MappingFrom(Profile profile)
     {
 		profile.CreateMap<Material, DetailMaterialResponseDto>()
-		.ForMember(dest => dest.Quiz, opt => opt.MapFrom(src => src.Quiz))
-		.ForMember(dest => dest.Assignment, opt => opt.MapFrom(src => src.Assignment))
+/*		.ForMember(dest => dest.Quiz, opt => opt.MapFrom(src => src.Quiz))
+		.ForMember(dest => dest.Assignment, opt => opt.MapFrom(src => src.Assignment))*/
 		.ForMember(dest => dest.Video, opt => {
 			opt.PreCondition(src => src.Type == GeneralEnums.TypeOfMaterial.Video.ToString()); // chỉ ánh xạ nếu là video
 			opt.MapFrom(src => new VideoTypeDto

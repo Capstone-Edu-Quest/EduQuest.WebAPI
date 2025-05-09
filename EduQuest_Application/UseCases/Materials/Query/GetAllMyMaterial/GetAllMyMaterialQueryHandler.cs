@@ -50,7 +50,7 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 						m.Title,
 						m.Description,
 					})
-				},
+				}/*,
 				Quiz = new
 				{
 					Total = listMaterial.Count(m => m.Type == TypeOfMaterial.Quiz.ToString()),
@@ -78,7 +78,7 @@ namespace EduQuest_Application.UseCases.Materials.Query.GetAllMyMaterial
 						m.Assignment.AnswerLanguage,
 						Language = m.Assignment!.AnswerLanguage
 					})
-				}
+				}*/
 			};
 
 			return GeneralHelper.CreateSuccessResponse(

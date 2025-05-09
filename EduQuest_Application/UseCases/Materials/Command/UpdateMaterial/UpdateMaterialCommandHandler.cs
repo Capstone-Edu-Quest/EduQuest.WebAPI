@@ -62,17 +62,17 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 					material = await ProcessDocumentMaterialAsync(request.Material, value, material);
 					break;
 
-				case TypeOfMaterial.Quiz:
+				/*case TypeOfMaterial.Quiz:
 					material = await ProcessQuizMaterialAsync(request.Material, value, material);
-					break;
+					break;*/
 
 				case TypeOfMaterial.Video:
-					material = await ProcessVideoMaterialAsync(request.Material, value, material);
+					material = ProcessVideoMaterialAsync(request.Material, value, material);
 					break;
 
-				case TypeOfMaterial.Assignment:
+				/*case TypeOfMaterial.Assignment:
 					material = await ProcessAssignmentMaterialAsync(request.Material, value, material);
-					break;
+					break;*/
 
 				default:
 					break;
@@ -110,7 +110,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			return material;
 		}
 
-		private async Task<Material> ProcessQuizMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
+		/*private async Task<Material> ProcessQuizMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
 			var isUsed = await IsMaterialUsed(material.Id);
 			if (isUsed)
@@ -175,24 +175,24 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 
 			await _unitOfWork.SaveChangesAsync();
 			return material;
-		}
+		}*/
 
 
-		private async Task<Material> ProcessVideoMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
+		private Material ProcessVideoMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
 			material.Duration = item.Video!.Duration;
 			material.UrlMaterial = item.Video.UrlMaterial;
 			material.Thumbnail = item.Video.Thumbnail;
 
-			if (item.Quiz != null)
+			/*if (item.Quiz != null)
 			{
 				await ProcessQuizMaterialAsync(item, config, material);
-			}
+			}*/
 			return material;
 		}
 
 
-		private async Task<Material> ProcessAssignmentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
+		/*private async Task<Material> ProcessAssignmentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
 		{
 			var isUsed = await IsMaterialUsed(material.Id);
 			if (isUsed)
@@ -208,7 +208,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 
 			await _assignmentRepository.Update(assignment);
 			return material;
-		}
+		}*/
 
 		private async Task<bool> IsMaterialUsed(string materialId)
 		{

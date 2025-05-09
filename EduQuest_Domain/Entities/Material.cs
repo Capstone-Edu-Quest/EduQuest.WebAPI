@@ -20,16 +20,13 @@ namespace EduQuest_Domain.Entities
         public string? Thumbnail { get; set; }
 		//Document
         public string? Content { get; set; }
-        public string? AssignmentId { get; set; }
-        public string? QuizId { get; set; }
+        
 
 		[JsonIgnore]
 		public virtual ICollection<LessonMaterial> LessonMaterials { get; set; }
-		[JsonIgnore]
-		public virtual Quiz? Quiz { get; set; } = null;
+		
 		[JsonIgnore]
 		public virtual User? User { get; set; } = null;
-		[JsonIgnore]
-		public virtual Assignment? Assignment { get; set; } = null;
+
 	}
 }
