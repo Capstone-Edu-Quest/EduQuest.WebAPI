@@ -61,34 +61,25 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
             }
-            var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
-            double times = request.Info.Time != null ? request.Info.Time.Value : material.Duration!.Value;
-            if (studyTime != null)
-            {
-                studyTime.StudyTimes += times;
-                await _studyTimeRepository.Update(studyTime);
-            }
-            else
-            {
-                await _studyTimeRepository.Add(new StudyTime
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = request.UserId,
-                    StudyTimes = times,
-                    Date = now.ToUniversalTime()
-                });
-            }
+            
             
             var currentLesson = course.Lessons!.Where(l => l.Id == courseLearner.CurrentLessonId).FirstOrDefault();
 			int maxIndex = lesson.LessonMaterials.Count - 1;
             string newLessonId = request.Info.LessonId;
-			string newMaterialId = request.Info.MaterialId;
-            LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == courseLearner.CurrentMaterialId);
+
+            LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index == courseLearner.CurrentContentIndex);
+            int nextIndex = temp.Index;
+            LessonMaterial ? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Info.MaterialId);
             var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
-            if (temp == null)//only happened when re learning courses materials when undon courses
+
+
+            var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
+            if ( temp == null ||temp.Index >= processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
+                || currentLesson.Index > processingMaterialLesson.Index)//only happened when re learning courses materials when undon courses
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
             }
+
             if (temp != null && temp.Index == maxIndex)
             {
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
@@ -96,8 +87,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				if(newLesson != null && currentLesson.Index < newLesson.Index)
 				{
                     newLessonId = newLesson.Id;
-					newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
-
+                    nextIndex = 0;
                 }
 				if(newLesson == null)
 				{
@@ -107,18 +97,16 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 
             }else if(temp != null && temp.Index < maxIndex)
 			{
-				newMaterialId = lesson.LessonMaterials.Where(l => l.Index == temp.Index + 1).FirstOrDefault()?.MaterialId;
+                nextIndex += 1;
 			}
             courseLearner.CurrentLessonId = newLessonId;
-            courseLearner.CurrentMaterialId = newMaterialId;
+            courseLearner.CurrentContentIndex = nextIndex;
             var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
 			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, totalMaterial)) * 100, 2);
             if (courseLearner.ProgressPercentage > 100)
             {
                 courseLearner.ProgressPercentage = 100;
             }
-
-            //await mediator.Send(new UpdateUsersStreakCommand(userMeta.UserId));
             if (userMeta.LastLearningDay == null)
             {
                 userMeta.LastLearningDay = DateTime.UtcNow.ToUniversalTime();
@@ -159,9 +147,25 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 
             await _courseRepository.Update(course);
 			await _userMetaRepository.Update(userMeta);
+            var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
+            double times = request.Info.Time != null ? request.Info.Time.Value : material.Duration!.Value;
+            if (studyTime != null)
+            {
+                studyTime.StudyTimes += times;
+                await _studyTimeRepository.Update(studyTime);
+            }
+            else
+            {
+                await _studyTimeRepository.Add(new StudyTime
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = request.UserId,
+                    StudyTimes = times,
+                    Date = now.ToUniversalTime()
+                });
+            }
 
-            
-           
+
             var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse
 			{

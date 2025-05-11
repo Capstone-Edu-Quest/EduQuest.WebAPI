@@ -51,7 +51,7 @@ public class GetLessonMaterialsHandler : IRequestHandler<GetLessonMaterialsQuery
         var currentLesson = await _lessonRepository.GetById(learner.CurrentLessonId);
 
         List<LearnerMaterialResponseDto> mapper = _mapper.Map<List<LearnerMaterialResponseDto>>(Materials);
-        var currentMaterial = lessonMaterials.FirstOrDefault(m => m.MaterialId == learner.CurrentMaterialId);
+        var currentMaterial = lessonMaterials.FirstOrDefault(m => m.Index == learner.CurrentContentIndex && m.LessonId == learner.CurrentLessonId);
         if (currentLesson != null && currentLesson.Index > lesson.Index)
         {
             foreach(var item in mapper)

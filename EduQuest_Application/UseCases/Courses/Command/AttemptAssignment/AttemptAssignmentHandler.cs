@@ -57,6 +57,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         }
         DateTime now = DateTime.Now;
         var lesson = await _lessonRepository.GetById(request.LessonId);
+
         if (lesson == null)
         {
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
@@ -83,16 +84,30 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         attempt.CreatedAt = now.ToUniversalTime();
         await _assignmentAttemptRepository.Add(attempt);
 
+
+
         var course = await _courseRepository.GetById(lesson.CourseId);
         var learner = course.CourseLearners.FirstOrDefault(l => l.UserId == request.UserId);
         int maxIndex = lesson.LessonMaterials.Count - 1;
         string newLessonId = lesson.Id;
-        string newMaterialId = lessonMaterial.MaterialId;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
+        LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
+        int nextIndex = temp.Index;
+        LessonMaterial? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.AssignmentId);
+
+        var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
+        var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
+        if (temp == null || temp.Index >= processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
+            || currentLesson.Index > processingMaterialLesson.Index)//only happened when re learning courses materials when undon courses
+        {
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, attempt, "name", "assignment");
+        }
+
+
         if (lessonMaterial.Index == maxIndex && newLesson != null)
         {
             newLessonId = newLesson.Id;
-            newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
+            nextIndex = 0;
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
         }
@@ -105,11 +120,11 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         }
         if (lessonMaterial.Index < maxIndex)
         {
-            newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
+            nextIndex += 1;
         }
 
         learner.CurrentLessonId = newLessonId;
-        learner.CurrentMaterialId = newMaterialId;
+        learner.CurrentContentIndex = nextIndex;
         var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
         learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateAssignmentProgressAsync(request.LessonId, request.Attempt.AssignmentId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)

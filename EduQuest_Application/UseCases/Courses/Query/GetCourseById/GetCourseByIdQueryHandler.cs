@@ -67,9 +67,9 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 				{
 					currentLesson = await _lessonRepository.GetById(courseLearner.CurrentLessonId);
 				}
-				if (courseLearner.CurrentLessonId != null && courseLearner.CurrentMaterialId != null)
+				if (courseLearner.CurrentLessonId != null && courseLearner.CurrentContentIndex != null)
 				{
-					currentMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(courseLearner.CurrentLessonId, courseLearner.CurrentMaterialId);
+					currentMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(courseLearner.CurrentLessonId, courseLearner.CurrentContentIndex);
 				}
                 courseResponse.CertificateId = course.Certificates.Where(c => c.UserId == request.UserId).FirstOrDefault() != null ?
                     course.Certificates.Where(c => c.UserId == request.UserId).FirstOrDefault().Id : null;
@@ -136,7 +136,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						currentMaterialResponse.Version = material.Version;
 						currentMaterialResponse.OriginalMaterialId = material.OriginalMaterialId;
 						
-						var nowMaterialIndex = await _lessonMaterialRepository.GetCurrentMaterialIndex(lesson.Id, material.Id);
+						var nowMaterialIndex = lesson.LessonMaterials.Where(l =>  l.MaterialId == material.Id).FirstOrDefault().Index;
 						if ( (currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
 						{
 							currentMaterialResponse.Status = GeneralEnums.StatusMaterial.Locked.ToString();
