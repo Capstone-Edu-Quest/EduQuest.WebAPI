@@ -197,7 +197,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                             TotalTime = 0,
                             ProgressPercentage = 0,
                             CurrentLessonId = firstLessonAndMaterialId.lessonId != null ? firstLessonAndMaterialId.lessonId : null,
-                            CurrentMaterialId = firstLessonAndMaterialId.materialId != null ?  firstLessonAndMaterialId.materialId : null,
+                            CurrentContentIndex = 0,
                             CreatedAt = DateTime.Now.ToUniversalTime(),
                             UpdatedAt = DateTime.Now.ToUniversalTime(),
 

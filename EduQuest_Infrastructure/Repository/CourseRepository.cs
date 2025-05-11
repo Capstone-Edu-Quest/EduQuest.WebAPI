@@ -243,6 +243,7 @@ namespace EduQuest_Infrastructure.Repository
                 .Where(a => a.Id == courseId)
                 .ExecuteUpdateAsync(a => a.SetProperty(b => b.Status, status));
         }
+
     }
 
 }

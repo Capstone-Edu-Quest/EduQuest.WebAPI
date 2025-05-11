@@ -201,7 +201,7 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.Lessons.FirstOrDefaultAsync(l => l.CourseId == courseId && l.Index == index);
 		}
 
-		public async Task<double> CalculateMaterialProgressBeforeCurrentAsync(string lessonId, string materialId, int totalMaterial)
+		public async Task<double> CalculateMaterialProgressBeforeCurrentAsync(string lessonId, int currentIndex, int totalMaterial)
 		{
 			if (totalMaterial <= 0) return 0;
 
@@ -217,7 +217,7 @@ namespace EduQuest_Infrastructure.Repository
 			// 2. Lấy index của material hiện tại
 			var targetMaterial = await _context.LessonMaterials
 				.AsNoTracking()
-				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.MaterialId == materialId);
+				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.Index == currentIndex);
 
 			if (targetMaterial == null) return 0;
 

@@ -7,6 +7,7 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
+using System.Net;
 using static EduQuest_Domain.Constants.Constants;
 using static EduQuest_Domain.Enums.QuestEnum;
 
@@ -128,12 +129,23 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         var learner = course.CourseLearners.FirstOrDefault(l => l.UserId == request.UserId);
         int maxIndex = lesson.LessonMaterials.Count - 1;
         string newLessonId = lesson.Id;
-        string newMaterialId = lessonMaterial.MaterialId;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
+        LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index == learner.CurrentContentIndex);
+        int nextIndex = temp.Index;
+        LessonMaterial? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.QuizId);
+
+        var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
+        var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
+        if (temp == null || temp.Index >= processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
+            || currentLesson.Index > processingMaterialLesson.Index)//only happened when re learning courses materials when undon courses
+        {
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, attempt, "name", "quiz");
+        }
+
         if (lessonMaterial.Index == maxIndex && newLesson != null)
         {
             newLessonId = newLesson.Id;
-            newMaterialId = newLesson.LessonMaterials.FirstOrDefault(l => l.Index == 0).MaterialId;
+            nextIndex = 0;
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
         }
@@ -146,7 +158,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         }
         if (lessonMaterial.Index < maxIndex)
         {
-            newMaterialId = lesson.LessonMaterials.FirstOrDefault(l => l.Index == (lessonMaterial.Index + 1)).MaterialId;
+            nextIndex += 1;
         }
 
         learner.TotalTime += request.Attempt.TotalTime;
@@ -156,7 +168,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             learner.TotalTime = course.CourseStatistic.TotalTime;
         }
         learner.CurrentLessonId = newLessonId;
-        learner.CurrentMaterialId = newMaterialId;
+        learner.CurrentContentIndex = nextIndex;
         var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
         learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateQuizProgressAsync(request.LessonId, request.Attempt.QuizId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)

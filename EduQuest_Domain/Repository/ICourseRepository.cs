@@ -35,6 +35,5 @@ namespace EduQuest_Domain.Repository
 
         //admin dashboard
         Task<AdminDashboardCourses> GetAdminDashBoardStatistic();
-
     }
 }
