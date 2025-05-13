@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Infrastructure.Repository
 {
-	public class LessonMaterialRepository : GenericRepository<LessonMaterial>, ILessonMaterialRepository
+	public class LessonMaterialRepository : GenericRepository<LessonContent>, ILessonMaterialRepository
 	{
 		private readonly ApplicationDbContext _context;
 
@@ -20,7 +20,7 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
-		public async Task<List<LessonMaterial>> GetByListLessonId(List<string> lessonIds)
+		public async Task<List<LessonContent>> GetByListLessonId(List<string> lessonIds)
 		{
 			return await _context.LessonMaterials.Where(x => lessonIds.Contains(x.LessonId)).ToListAsync();
 		}
@@ -31,7 +31,7 @@ namespace EduQuest_Infrastructure.Repository
 			return entity != null ? entity.Index : 0;
 		}
 
-		public async Task<List<LessonMaterial>> GetLessonMaterialByMaterialId(string materialId)
+		public async Task<List<LessonContent>> GetLessonMaterialByMaterialId(string materialId)
 		{
 			return await _context.LessonMaterials.Where(x => x.MaterialId == materialId).ToListAsync();
 		}

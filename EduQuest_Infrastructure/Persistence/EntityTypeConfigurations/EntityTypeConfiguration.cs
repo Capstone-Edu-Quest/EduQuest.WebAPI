@@ -7,7 +7,7 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 {
 	public class EntityTypeConfiguration :
 		IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<User>, IEntityTypeConfiguration<Subscription>,
-		IEntityTypeConfiguration<Answer>, IEntityTypeConfiguration<Assignment>,
+		IEntityTypeConfiguration<Option>, IEntityTypeConfiguration<Assignment>,
 		IEntityTypeConfiguration<Cart>, IEntityTypeConfiguration<CartItem>, IEntityTypeConfiguration<Certificate>, IEntityTypeConfiguration<Course>, IEntityTypeConfiguration<CourseStatistic>,
 		IEntityTypeConfiguration<FavoriteList>, IEntityTypeConfiguration<Feedback>,
 		IEntityTypeConfiguration<CourseLearner>
@@ -98,11 +98,11 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
         #endregion
 
         #region Answer
-        public void Configure(EntityTypeBuilder<Answer> builder)
+        public void Configure(EntityTypeBuilder<Option> builder)
 		{
 
 			builder.HasOne(d => d.Question)
-				.WithMany(p => p.Answers)
+				.WithMany(p => p.Options)
 				.HasForeignKey(d => d.QuestionId)
 				.OnDelete(DeleteBehavior.ClientSetNull);
 		}
@@ -112,7 +112,11 @@ namespace EduQuest_Infrastructure.Persistence.EntityTypeConfigurations
 		public void Configure(EntityTypeBuilder<Assignment> builder)
 		{
 
-
+			//builder.HasOne(a => a.User)
+			//	.WithMany() 
+			//	.HasForeignKey(a => a.UserId)
+			//	.HasPrincipalKey(u => u.Id) 
+			//	.OnDelete(DeleteBehavior.Cascade);
 		}
         public void Configure(EntityTypeBuilder<AssignmentAttempt> builder)
         {

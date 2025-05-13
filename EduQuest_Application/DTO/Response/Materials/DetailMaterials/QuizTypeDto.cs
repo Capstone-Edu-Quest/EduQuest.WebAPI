@@ -47,7 +47,7 @@ public class QuestionResponseDto : IMapFrom<Question>, IMapTo<Question>
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<Question, QuestionResponseDto>()
-            .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers));
+            .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Options));
             //.AfterMap((src, dest) =>
             //{
             //    dest.Answers ??= new List<AnswerResponseDto>
@@ -62,7 +62,7 @@ public class QuestionResponseDto : IMapFrom<Question>, IMapTo<Question>
     }
 }
 
-public class AnswerResponseDto : IMapTo<Answer>, IMapFrom<Answer>
+public class AnswerResponseDto : IMapTo<Option>, IMapFrom<Option>
 {
     public string Id { get; set; }
     public string AnswerContent { get; set; }

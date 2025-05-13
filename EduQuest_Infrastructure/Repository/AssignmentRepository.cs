@@ -1,13 +1,8 @@
 ﻿using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository;
-using EduQuest_Domain.Repository.UnitOfWork;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -18,6 +13,11 @@ namespace EduQuest_Infrastructure.Repository
 		public AssignmentRepository(ApplicationDbContext context) : base(context)
 		{
 			_context = context;
+		}
+
+		public async Task<List<Assignment>> GetByUserId(string userId)
+		{
+			return await _context.Assignments.Where(x => x.UserId == userId).ToListAsync();
 		}
 	}
 }

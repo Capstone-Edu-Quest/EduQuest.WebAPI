@@ -16,5 +16,5 @@ public class UserQuizAnswers : BaseEntity
     [JsonIgnore]
     public virtual Question Question { get; set; }
     [JsonIgnore]
-    public virtual Answer Answer { get; set; }
+    public virtual Option Answer { get; set; }
 }

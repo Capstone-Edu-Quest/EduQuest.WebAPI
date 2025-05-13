@@ -8,10 +8,9 @@ namespace EduQuest_Domain.Entities
 	{
 		//public string StageId { get; set; }
 		public string Type { get; set; }
-		public string Title { get; set; }
-		public string Description { get; set; }
+		public string? Title { get; set; }
+		public string? Description { get; set; }
         public int? Version { get; set; }
-        public string? OriginalMaterialId { get; set; }
         public double? Duration { get; set; }
         public string UserId { get; set; }
         
@@ -23,10 +22,12 @@ namespace EduQuest_Domain.Entities
         
 
 		[JsonIgnore]
-		public virtual ICollection<LessonMaterial> LessonMaterials { get; set; }
+		public virtual ICollection<LessonContent>? LessonMaterials { get; set; }
 		
 		[JsonIgnore]
 		public virtual User? User { get; set; } = null;
+		[JsonIgnore]
+		public virtual ICollection<Tag>? Tags { get; set; }
 
 	}
 }

@@ -16,7 +16,7 @@ namespace EduQuest_Infrastructure.Persistence
 
 
         public virtual DbSet<Subscription> Subscriptions { get; set; } = null!;
-        public virtual DbSet<Answer> Answers { get; set; } = null!;
+        public virtual DbSet<Option> Answers { get; set; } = null!;
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Cart> Carts { get; set; } = null!;
         public virtual DbSet<CartItem> CartItems { get; set; } = null!;
@@ -32,7 +32,7 @@ namespace EduQuest_Infrastructure.Persistence
         public virtual DbSet<LearningPathCourse> LearningPathCourses { get; set; } = null!;
         public virtual DbSet<InstructorCertificate> InstructorCertificates { get; set; } = null!;
         public virtual DbSet<Levels> Levels { get; set; } = null!;
-		public virtual DbSet<LessonMaterial> LessonMaterials { get; set; } = null!;
+		public virtual DbSet<LessonContent> LessonMaterials { get; set; } = null!;
 		public virtual DbSet<Mascot> Mascots { get; set; } = null!;
         public virtual DbSet<Quest> Quests { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
