@@ -17,31 +17,13 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateMaterial
     {
         private readonly IMaterialRepository _materialRepository;
         private readonly ISystemConfigRepository _systemConfigRepository;
-        private readonly ILessonRepository _stageRepository;
-        private readonly IAssignmentRepository _assignmentRepository;
-		private readonly IQuizRepository _quizRepository;
-		private readonly IQuestionRepository _questionRepository;
-		private readonly IOptionRepository _answerRepository;
 		private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-		public CreateMaterialCommandHandler(IMaterialRepository materialRepository, 
-			ISystemConfigRepository systemConfigRepository, 
-			ILessonRepository stageRepository, 
-			IAssignmentRepository assignmentRepository, 
-			IQuizRepository quizRepository, 
-			IQuestionRepository questionRepository, 
-			IOptionRepository answerRepository, 
-			IMapper mapper, 
-			IUnitOfWork unitOfWork)
+		public CreateMaterialCommandHandler(IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IMapper mapper, IUnitOfWork unitOfWork)
 		{
 			_materialRepository = materialRepository;
 			_systemConfigRepository = systemConfigRepository;
-			_stageRepository = stageRepository;
-			_assignmentRepository = assignmentRepository;
-			_quizRepository = quizRepository;
-			_questionRepository = questionRepository;
-			_answerRepository = answerRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 		}

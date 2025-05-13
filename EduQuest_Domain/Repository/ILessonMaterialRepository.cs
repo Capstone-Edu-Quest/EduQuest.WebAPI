@@ -11,6 +11,7 @@ namespace EduQuest_Domain.Repository
 		Task<List<Material>> GetMaterialsByLessonIdAsync(string lessonId);
 		Task<List<LessonContent>> GetByListLessonId(List<string> lessonIds);
 		Task<int> GetTotalMaterial(string courseId);
-		Task<List<LessonContent>> GetLessonMaterialByMaterialId(string materialId);
+		//Task<List<LessonContent>> GetLessonMaterialByMaterialId(string materialId);
+		Task<bool> IsMaterialUsed(string materialId);
 	}
 }

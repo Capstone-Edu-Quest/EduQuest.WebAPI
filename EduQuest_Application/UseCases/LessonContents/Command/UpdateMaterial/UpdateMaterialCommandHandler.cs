@@ -16,28 +16,14 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
     public class UpdateMaterialCommandHandler : IRequestHandler<UpdateMaterialCommand, APIResponse>
 	{
 		private readonly IMaterialRepository _materialRepository;
-		private readonly ICourseRepository _courseRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
-		private readonly IAssignmentRepository _assignmentRepository;
-		private readonly IQuizRepository _quizRepository;
-		private readonly IQuestionRepository _questionRepository;
-		private readonly IOptionRepository _answerRepository;
-		private readonly ILessonMaterialRepository _lessonMaterialRepository;
-		private readonly ILessonRepository _lessonRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
-		public UpdateMaterialCommandHandler(IMaterialRepository materialRepository, ICourseRepository courseRepository, ISystemConfigRepository systemConfigRepository, IAssignmentRepository assignmentRepository, IQuizRepository quizRepository, IQuestionRepository questionRepository, IOptionRepository answerRepository, ILessonMaterialRepository lessonMaterialRepository, ILessonRepository lessonRepository, IUnitOfWork unitOfWork, IMapper mapper)
+		public UpdateMaterialCommandHandler(IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IMapper mapper)
 		{
 			_materialRepository = materialRepository;
-			_courseRepository = courseRepository;
 			_systemConfigRepository = systemConfigRepository;
-			_assignmentRepository = assignmentRepository;
-			_quizRepository = quizRepository;
-			_questionRepository = questionRepository;
-			_answerRepository = answerRepository;
-			_lessonMaterialRepository = lessonMaterialRepository;
-			_lessonRepository = lessonRepository;
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 		}
@@ -77,10 +63,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 				default:
 					break;
 			}
-			if(material == null)
-			{
-				return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageError.UsedMaterial, MessageError.UsedMaterial, "name", $"Material {request.Material.Id}");
-			}
+			
 			await _materialRepository.Update(material);
 
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
@@ -103,7 +86,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			};
 		}
 
-		private async Task<Material> ProcessDocumentMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
+		private async Task<Material> ProcessDocumentMaterialAsync(UpdateMaterialRequest item, SystemConfig config, Material material)
 		{
 			material.Content = item.Content;
 			material.Duration = (int)config.Value!;
@@ -178,7 +161,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 		}*/
 
 
-		private Material ProcessVideoMaterialAsync(UpdateLearningMaterialRequest item, SystemConfig config, Material material)
+		private Material ProcessVideoMaterialAsync(UpdateMaterialRequest item, SystemConfig config, Material material)
 		{
 			material.Duration = item.Video!.Duration;
 			material.UrlMaterial = item.Video.UrlMaterial;
@@ -210,22 +193,22 @@ namespace EduQuest_Application.UseCases.Materials.Command.UpdateMaterial
 			return material;
 		}*/
 
-		private async Task<bool> IsMaterialUsed(string materialId)
-		{
-			var lessonMaterial = await _lessonMaterialRepository.GetLessonMaterialByMaterialId(materialId);
-			if (!lessonMaterial.Any())
-			{
-				return false;
-			}
-			var lessonIds = lessonMaterial.Select(x => x.LessonId).Distinct();
-			var lessons = await _lessonRepository.GetByIdsAsync(lessonIds);
+		//private async Task<bool> IsMaterialUsed(string materialId)
+		//{
+		//	var lessonMaterial = await _lessonMaterialRepository.GetLessonMaterialByMaterialId(materialId);
+		//	if (!lessonMaterial.Any())
+		//	{
+		//		return false;
+		//	}
+		//	var lessonIds = lessonMaterial.Select(x => x.LessonId).Distinct();
+		//	var lessons = await _lessonRepository.GetByIdsAsync(lessonIds);
 
-			if (lessons.Any(lesson => lesson.Course.Status == GeneralEnums.StatusCourse.Public.ToString()))
-			{
-				return true;
-			}
+		//	if (lessons.Any(lesson => lesson.Course.Status == GeneralEnums.StatusCourse.Public.ToString()))
+		//	{
+		//		return true;
+		//	}
 
-			return false;
-		}
+		//	return false;
+		//}
 	}
 }

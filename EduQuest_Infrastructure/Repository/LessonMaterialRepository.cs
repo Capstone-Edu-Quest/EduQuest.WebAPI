@@ -1,4 +1,5 @@
 ﻿using EduQuest_Domain.Entities;
+using EduQuest_Domain.Enums;
 using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
@@ -31,10 +32,10 @@ namespace EduQuest_Infrastructure.Repository
 			return entity != null ? entity.Index : 0;
 		}
 
-		public async Task<List<LessonContent>> GetLessonMaterialByMaterialId(string materialId)
-		{
-			return await _context.LessonMaterials.Where(x => x.MaterialId == materialId).ToListAsync();
-		}
+		//public async Task<List<LessonContent>> GetLessonMaterialByMaterialId(string materialId)
+		//{
+		//	return await _context.LessonMaterials.Where(x => x.MaterialId == materialId).ToListAsync();
+		//}
 
 		public async Task<List<string>> GetListMaterialIdByLessonId(string lessonId)
 		{
@@ -64,6 +65,15 @@ namespace EduQuest_Infrastructure.Repository
 			var listLessonId = (await _context.Lessons.Where(x => x.CourseId == courseId).ToListAsync()).Select(x => x.Id);
 			var listLessonMaterial = await _context.LessonMaterials.Where(x => listLessonId.Contains(x.LessonId)).ToListAsync();
 			return listLessonMaterial.Count;
+		}
+
+		public async Task<bool> IsMaterialUsed(string materialId)
+		{
+			var isUsed = await _context.LessonMaterials
+				.Where(x => x.MaterialId == materialId)
+				.AnyAsync(lm => lm.Lesson.Course.Status == GeneralEnums.StatusCourse.Public.ToString());
+
+			return isUsed;
 		}
 	}
 }
