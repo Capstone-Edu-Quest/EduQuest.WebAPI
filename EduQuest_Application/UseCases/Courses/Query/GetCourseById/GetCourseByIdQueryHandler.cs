@@ -115,7 +115,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 							Title = material.Title,
 							Description = material.Description,
 							Version = material.Version,
-							OriginalMaterialId = material.OriginalMaterialId,
 							Status = GeneralEnums.StatusMaterial.Locked.ToString(),
 						};
 
@@ -134,7 +133,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 						currentMaterialResponse.Title = material.Title;
 						currentMaterialResponse.Description = material.Description;
 						currentMaterialResponse.Version = material.Version;
-						currentMaterialResponse.OriginalMaterialId = material.OriginalMaterialId;
 						
 						var nowMaterialIndex = lesson.LessonMaterials.Where(l =>  l.MaterialId == material.Id).FirstOrDefault().Index;
 						if ( (currentLesson.Index == lesson.Index && nowMaterialIndex > currentMaterialIndex) || currentLesson.Index < lesson.Index)
@@ -185,7 +183,6 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 							Title = material.Title,
 							Description = material.Description,
 							Version = material.Version,
-							OriginalMaterialId = material.OriginalMaterialId,
 							Status = GeneralEnums.StatusMaterial.Done.ToString(),
 						};
 

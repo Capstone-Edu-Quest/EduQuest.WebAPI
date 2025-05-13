@@ -88,7 +88,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							TotalTime = materials?.Sum(m => m.Duration) ?? 0
 						};
 						
-						var lessonMaterials = materials.Select(m => new LessonMaterial
+						var lessonMaterials = materials.Select(m => new LessonContent
 						{
 							LessonId = lesson.Id,
 							MaterialId = m.Id,
@@ -180,7 +180,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 									UpdatedAt = DateTime.Now.ToUniversalTime(),
 								};
 
-								var lessonMaterials = materials.Select((m, index) => new LessonMaterial
+								var lessonMaterials = materials.Select((m, index) => new LessonContent
 								{
 									Lesson = lesson,
 									MaterialId = m.Id,
@@ -211,7 +211,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 								var newMaterials = await _materialRepository.GetMaterialsByIds(newMaterialIds);
 								var sortedNewMaterials = newMaterials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
 
-								var newLessonMaterials = sortedNewMaterials.Select((m, index) => new LessonMaterial
+								var newLessonMaterials = sortedNewMaterials.Select((m, index) => new LessonContent
 								{
 									LessonId = lastLesson.Id,
 									MaterialId = m.Id,

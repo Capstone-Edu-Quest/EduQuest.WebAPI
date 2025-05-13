@@ -16,6 +16,6 @@ namespace EduQuest_Domain.Entities
 		public virtual Course Course { get; set; } = null;
 		
 		[JsonIgnore]
-		public virtual ICollection<LessonMaterial> LessonMaterials { get; set; }
+		public virtual ICollection<LessonContent> LessonMaterials { get; set; }
     }
 }

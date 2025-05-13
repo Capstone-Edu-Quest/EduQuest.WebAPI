@@ -25,7 +25,7 @@ public class DetailMaterialResponseDto : IMapFrom<Material>, IMapTo<Material>
 /*		.ForMember(dest => dest.Quiz, opt => opt.MapFrom(src => src.Quiz))
 		.ForMember(dest => dest.Assignment, opt => opt.MapFrom(src => src.Assignment))*/
 		.ForMember(dest => dest.Video, opt => {
-			opt.PreCondition(src => src.Type == GeneralEnums.TypeOfMaterial.Video.ToString()); // chỉ ánh xạ nếu là video
+			opt.PreCondition(src => src.Type == GeneralEnums.TypeOfMaterial.Video.ToString());
 			opt.MapFrom(src => new VideoTypeDto
 			{
 				UrlMaterial = src.UrlMaterial,

@@ -91,9 +91,9 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         int maxIndex = lesson.LessonMaterials.Count - 1;
         string newLessonId = lesson.Id;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
-        LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
+        LessonContent? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
         int nextIndex = temp.Index;
-        LessonMaterial? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.AssignmentId);
+        LessonContent? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.AssignmentId);
 
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();

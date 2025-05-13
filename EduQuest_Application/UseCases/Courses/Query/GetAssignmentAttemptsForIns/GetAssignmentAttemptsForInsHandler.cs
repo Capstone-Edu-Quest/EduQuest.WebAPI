@@ -39,7 +39,7 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
 
         var lessons = course.Lessons;
 
-        List<LessonMaterial> lessonMaterials = new List<LessonMaterial>();
+        List<LessonContent> lessonMaterials = new List<LessonContent>();
         foreach( var lesson in lessons)
         {
             lessonMaterials.AddRange(lesson.LessonMaterials);

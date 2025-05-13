@@ -12,6 +12,6 @@ namespace EduQuest_Domain.Entities
 
 		public virtual Quiz Quiz { get; set; } = null!;
 		[JsonIgnore]
-		public virtual ICollection<Answer> Answers { get; set; }
+		public virtual ICollection<Option> Options { get; set; }
 	}
 }

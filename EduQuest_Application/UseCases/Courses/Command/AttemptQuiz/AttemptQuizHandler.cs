@@ -82,7 +82,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
 
             var userchoose = request.Attempt.Answers.Where(t => t.QuestionId == item.Id).FirstOrDefault();
             if (userchoose == null) continue;
-            var answer = item.Answers.FirstOrDefault(t => t.Id == userchoose!.AnswerId);
+            var answer = item.Options.FirstOrDefault(t => t.Id == userchoose!.AnswerId);
 
             if (answer != null && answer.IsCorrect)
             {
@@ -130,9 +130,9 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         int maxIndex = lesson.LessonMaterials.Count - 1;
         string newLessonId = lesson.Id;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
-        LessonMaterial? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index == learner.CurrentContentIndex);
+        LessonContent? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index == learner.CurrentContentIndex);
         int nextIndex = temp.Index;
-        LessonMaterial? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.QuizId);
+        LessonContent? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.QuizId);
 
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
