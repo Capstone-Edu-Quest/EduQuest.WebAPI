@@ -16,8 +16,14 @@ namespace EduQuest_Domain.Entities
 
         [JsonIgnore]
 		public virtual ICollection<Course> Courses { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Material> Materials { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Quiz> Quizzes { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<Assignment> Assignments { get; set; }
 
-        [JsonIgnore]
+		[JsonIgnore]
         public virtual ICollection<LearningPath> LearningPaths { get; set; }
     }
 }
