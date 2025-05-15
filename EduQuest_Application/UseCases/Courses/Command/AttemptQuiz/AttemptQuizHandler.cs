@@ -26,11 +26,11 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
     private readonly IMaterialRepository _materialRepository;
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
-    private readonly ILessonMaterialRepository _lessonMaterialRepository;
+    private readonly ILessonContentRepository _lessonMaterialRepository;
     public AttemptQuizHandler(IQuizRepository quizRepository, ILessonRepository lessonRepository, IQuizAttemptRepository quizAttemptRepository,
         IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository,
         ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, 
-        ILessonMaterialRepository lessonMaterialRepository)
+        ILessonContentRepository lessonMaterialRepository)
     {
         _quizRepository = quizRepository;
         _lessonRepository = lessonRepository;
@@ -57,9 +57,9 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "lesson");
         }
-        var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonMaterials.Select(x => x.MaterialId).ToList());
+        var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonContents.Select(x => x.MaterialId).ToList());
        
-        var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.QuizId == request.Attempt.QuizId);
+        var lessonMaterial = lesson.LessonContents.FirstOrDefault(m => m.QuizId == request.Attempt.QuizId);
         var quiz = await _quizRepository.GetQuizById(request.Attempt.QuizId);
         if (lessonMaterial == null || quiz == null)
         {
@@ -127,12 +127,12 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
 
         var course = await _courseRepository.GetById(lesson.CourseId);
         var learner = course.CourseLearners.FirstOrDefault(l => l.UserId == request.UserId);
-        int maxIndex = lesson.LessonMaterials.Count - 1;
+        int maxIndex = lesson.LessonContents.Count - 1;
         string newLessonId = lesson.Id;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
-        LessonContent? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index == learner.CurrentContentIndex);
+        LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index == learner.CurrentContentIndex);
         int nextIndex = temp.Index;
-        LessonContent? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.QuizId);
+        LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Attempt.QuizId);
 
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
@@ -169,7 +169,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         }
         learner.CurrentLessonId = newLessonId;
         learner.CurrentContentIndex = nextIndex;
-        var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
+        var totalMaterial = await _lessonMaterialRepository.GetTotalContent(course.Id);
         learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateQuizProgressAsync(request.LessonId, request.Attempt.QuizId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)
         {

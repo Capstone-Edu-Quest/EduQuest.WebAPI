@@ -16,12 +16,12 @@ public class GetLessonMaterialsHandler : IRequestHandler<GetLessonMaterialsQuery
     private readonly ILearnerRepository _learnerRepository;
     private readonly ILessonRepository _lessonRepository;
     private readonly IMaterialRepository _materialRepository;
-	private readonly ILessonMaterialRepository _lessonMaterialRepository;
+	private readonly ILessonContentRepository _lessonMaterialRepository;
 	private readonly IMapper _mapper;
     private const string key = "name";
     private const string value = "materials";
 
-	public GetLessonMaterialsHandler(ILearnerRepository learnerRepository, ILessonRepository lessonRepository, IMaterialRepository materialRepository, ILessonMaterialRepository lessonMaterialRepository, IMapper mapper)
+	public GetLessonMaterialsHandler(ILearnerRepository learnerRepository, ILessonRepository lessonRepository, IMaterialRepository materialRepository, ILessonContentRepository lessonMaterialRepository, IMapper mapper)
 	{
 		_learnerRepository = learnerRepository;
 		_lessonRepository = lessonRepository;
@@ -32,8 +32,8 @@ public class GetLessonMaterialsHandler : IRequestHandler<GetLessonMaterialsQuery
 
 	public async Task<APIResponse> Handle(GetLessonMaterialsQuery request, CancellationToken cancellationToken)
     {
-        var lessonMaterials = await _lessonRepository.GetMaterialsByLessonId(request.LessonId);
-		var Materials = await _lessonMaterialRepository.GetMaterialsByLessonIdAsync(request.LessonId);
+        var lessonMaterials = await _lessonRepository.GetContentsByLessonId(request.LessonId);
+		var Materials = await _lessonMaterialRepository.GetContentsByLessonIdAsync(request.LessonId);
 		
 		//var Materials = await _lessonMaterialRepository.GetListMaterialIdByLessonId(request.LessonId);
 		var lesson = await _lessonRepository.GetById(request.LessonId);

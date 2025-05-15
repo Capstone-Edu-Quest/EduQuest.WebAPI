@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Materials
 {
-	public class MaterialInLessonResponse : IMapFrom<Material>, IMapTo<Material>
+	public class ContentInLessonResponse 
 	{
         public string Id { get; set; }
         public string Type { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public double? Duration { get; set; }
-		public int? Version { get; set; }
 		public string? Status { get; set; }
-		public string? OriginalMaterialId { get; set; }
 	}
 }

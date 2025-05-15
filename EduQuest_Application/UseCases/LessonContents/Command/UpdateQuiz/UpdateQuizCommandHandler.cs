@@ -21,14 +21,14 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateQuiz
 		private readonly IQuizRepository _quizRepository;
 		private readonly IQuestionRepository _questionRepository;
 		private readonly IOptionRepository _answerRepository;
-		private readonly ILessonMaterialRepository _lessonMaterialRepository;
+		private readonly ILessonContentRepository _lessonMaterialRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
 		public UpdateQuizCommandHandler(IQuizRepository quizRepository, 
 			IQuestionRepository questionRepository, 
 			IOptionRepository answerRepository, 
-			ILessonMaterialRepository lessonMaterialRepository, 
+			ILessonContentRepository lessonMaterialRepository, 
 			IUnitOfWork unitOfWork, 
 			IMapper mapper)
 		{
@@ -42,7 +42,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateQuiz
 
 		public async Task<APIResponse> Handle(UpdateQuizCommand request, CancellationToken cancellationToken)
 		{
-			var isUsed = await _lessonMaterialRepository.IsMaterialUsed(request.Quiz.Id);
+			var isUsed = await _lessonMaterialRepository.IsLessonContentUsed(request.Quiz.Id);
 			if (isUsed)
 			{
 				return GeneralHelper.CreateErrorResponse(

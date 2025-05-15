@@ -21,11 +21,11 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateAssignment
 		private readonly IAssignmentRepository _assignmentRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
-		private readonly ILessonMaterialRepository _lessonMaterialRepository;
+		private readonly ILessonContentRepository _lessonMaterialRepository;
 
 		public UpdateAssignmentCommandHandler(IAssignmentRepository assignmentRepository, 
 			IUnitOfWork unitOfWork, IMapper mapper, 
-			ILessonMaterialRepository lessonMaterialRepository)
+			ILessonContentRepository lessonMaterialRepository)
 		{
 			_assignmentRepository = assignmentRepository;
 			_unitOfWork = unitOfWork;
@@ -35,7 +35,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateAssignment
 
 		public async Task<APIResponse> Handle(UpdateAssignmentCommand request, CancellationToken cancellationToken)
 		{
-			var isUsed = await _lessonMaterialRepository.IsMaterialUsed(request.Assignment.Id);
+			var isUsed = await _lessonMaterialRepository.IsLessonContentUsed(request.Assignment.Id);
 			if (isUsed)
 			{
 				return GeneralHelper.CreateErrorResponse(

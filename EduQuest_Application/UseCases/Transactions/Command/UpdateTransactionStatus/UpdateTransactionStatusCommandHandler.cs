@@ -183,7 +183,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                             detail.SystemShare = systemShare;
                             detail.InstructorShare = Math.Round((decimal)instructorShare, 2);
                         }
-                        var firstLessonAndMaterialId = await _lessonRepository.GetFirstLessonAndMaterialIdInCourseAsync(course.Id);
+                        var firstLessonAndMaterialId = await _lessonRepository.GetFirstLessonInCourseAsync(course.Id);
                         //if (firstLessonAndMaterialId.lessonId == null && firstLessonAndMaterialId.materialId == null)
                         //{
                         //    return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, $"Not Found Any Lesson", "name", $"Lesson in Course ID {course.Id}");
@@ -196,7 +196,7 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                             IsActive = true,
                             TotalTime = 0,
                             ProgressPercentage = 0,
-                            CurrentLessonId = firstLessonAndMaterialId.lessonId != null ? firstLessonAndMaterialId.lessonId : null,
+                            CurrentLessonId = firstLessonAndMaterialId != null ? firstLessonAndMaterialId.Id : null,
                             CurrentContentIndex = 0,
                             CreatedAt = DateTime.Now.ToUniversalTime(),
                             UpdatedAt = DateTime.Now.ToUniversalTime(),

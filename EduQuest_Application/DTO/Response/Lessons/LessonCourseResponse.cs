@@ -15,7 +15,7 @@ namespace EduQuest_Application.DTO.Response.Lessons
         public int Index { get; set; }
         public string Name { get; set; }
         public double? TotalTime { get; set; }
-        public List<MaterialInLessonResponse> Materials { get; set; }
+        public List<ContentInLessonResponse> Contents { get; set; }
 
     }
 }

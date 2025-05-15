@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Request.Lessons;
+using EduQuest_Application.DTO.Request.Materials;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
@@ -7,8 +9,8 @@ using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
-using Stripe;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 {
@@ -18,21 +20,24 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 		private readonly ILessonRepository _lessonRepository;
-		private readonly ILessonMaterialRepository _lessonMaterialRepository;
+		private readonly ILessonContentRepository _lessonMaterialRepository;
 		private readonly IMaterialRepository _materialRepository;
 		private readonly IUserMetaRepository _userMetaRepository;
 		private readonly ITagRepository _tagRepository;
 		private readonly ILearnerRepository _learnerRepository;
+		private readonly IQuizRepository _quizRepository;
+		private readonly IAssignmentRepository _assignmentRepository;
 
 		public UpdateCourseCommandHandler(ICourseRepository courseRepository, 
-			IUnitOfWork unitOfWork, 
-			IMapper mapper, 
+			IUnitOfWork unitOfWork, IMapper mapper, 
 			ILessonRepository lessonRepository, 
-			ILessonMaterialRepository lessonMaterialRepository, 
+			ILessonContentRepository lessonMaterialRepository, 
 			IMaterialRepository materialRepository, 
 			IUserMetaRepository userMetaRepository, 
 			ITagRepository tagRepository, 
-			ILearnerRepository learnerRepository)
+			ILearnerRepository learnerRepository, 
+			IQuizRepository quizRepository, 
+			IAssignmentRepository assignmentRepository)
 		{
 			_courseRepository = courseRepository;
 			_unitOfWork = unitOfWork;
@@ -43,6 +48,8 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			_userMetaRepository = userMetaRepository;
 			_tagRepository = tagRepository;
 			_learnerRepository = learnerRepository;
+			_quizRepository = quizRepository;
+			_assignmentRepository = assignmentRepository;
 		}
 
 		public async Task<APIResponse> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
@@ -70,13 +77,13 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				var newLessons = new List<Lesson>();
 				if (request.CourseInfo.LessonCourse != null && request.CourseInfo.LessonCourse.Any())
 				{
+
 					await _lessonRepository.DeleteLessonByCourseId(existingCourse.Id);
 					int TotalLesson = 0;
 					for (int i = 0; i < request.CourseInfo.LessonCourse.Count; i++)
 					{
 						var lessonRequest = request.CourseInfo.LessonCourse[i];
-						var materials = await _materialRepository.GetMaterialsByIds(lessonRequest.MaterialIds);
-						materials = materials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
+						var processLessonContent = await GetOrderedContentsAndTotalTime(lessonRequest.ContentIds);
 
 						var lesson = new Lesson
 						{
@@ -85,19 +92,21 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							Description = lessonRequest.Description,
 							CourseId = existingCourse.Id,
 							Index = i,
-							TotalTime = materials?.Sum(m => m.Duration) ?? 0
+							TotalTime = processLessonContent.TotalTime
 						};
-						
-						var lessonMaterials = materials.Select(m => new LessonContent
+
+						var lessonContents = processLessonContent.OrderedContents.Select((x, index) => new LessonContent
 						{
 							LessonId = lesson.Id,
-							MaterialId = m.Id,
-							Index = materials.IndexOf(m),
+							MaterialId = (x.Request.Type == (int)TypeOfMaterial.Video || x.Request.Type == (int)TypeOfMaterial.Document) ? x.Request.Id : null,
+							QuizId = x.Request.Type == (int)TypeOfMaterial.Quiz ? x.Request.Id : null,
+							AssignmentId = x.Request.Type == (int)TypeOfMaterial.Assignment ? x.Request.Id : null,
+							Index = index,
 							CreatedAt = DateTime.Now.ToUniversalTime(),
 							UpdatedAt = DateTime.Now.ToUniversalTime(),
 						}).ToList();
 
-						lesson.LessonMaterials = lessonMaterials;
+						lesson.LessonContents = lessonContents;
 
 						newLessons.Add(lesson);
 					}
@@ -125,7 +134,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 
 				foreach (var lesson in request.CourseInfo.LessonCourse)
 				{
-					updateMaterialIds.AddRange(lesson.MaterialIds);  // Giữ nguyên tất cả các materialIds
+					updateMaterialIds.AddRange(lesson.ContentIds.Select(x => x.Id));  // Giữ nguyên tất cả các materialIds
 				}
 
 				var oldExistMaterialIds = new List<string>();
@@ -133,11 +142,11 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 				var lessons = existingCourse.Lessons.OrderBy(l => l.Index);
 				foreach(var lesson in lessons)
 				{
-					var materialIds = await _lessonMaterialRepository.GetListMaterialIdByLessonId(lesson.Id);
+					var materialIds = await _lessonMaterialRepository.GetListContentIdByLessonId(lesson.Id);
 					oldExistMaterialIds.AddRange(materialIds);
 				}
 
-				var percentage = CompareMaterialIds(updateMaterialIds, oldExistMaterialIds);
+				var percentage = CompareContentIds(updateMaterialIds, oldExistMaterialIds);
 				if(percentage > 0.3)
 				{
 					return apiResponse = GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.BadRequest, MessageError.Over30Percentage, MessageError.Over30Percentage, "name", $"Course ID {request.CourseInfo.CourseId}");
@@ -166,8 +175,7 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							for (int i = listExistingLesson.Count; i < lessonRequests.Count; i++)
 							{
 								var lessonRequest = lessonRequests[i];
-								var materials = await _materialRepository.GetMaterialsByIds(lessonRequest.MaterialIds);
-								materials = materials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
+								var processLessonContent = await GetOrderedContentsAndTotalTime(lessonRequest.ContentIds);
 
 								var lesson = new Lesson
 								{
@@ -175,21 +183,23 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 									Name = lessonRequest.Name,
 									Description = lessonRequest.Description,
 									Index = i,
-									TotalTime = materials.Sum(m => m.Duration), // ví dụ tính thời gian
+									TotalTime = processLessonContent.TotalTime, 
 									CreatedAt = DateTime.Now.ToUniversalTime(),
 									UpdatedAt = DateTime.Now.ToUniversalTime(),
 								};
 
-								var lessonMaterials = materials.Select((m, index) => new LessonContent
+								var lessonContents = processLessonContent.OrderedContents.Select((x, index) => new LessonContent
 								{
-									Lesson = lesson,
-									MaterialId = m.Id,
+									LessonId = lesson.Id,
+									MaterialId = (x.Request.Type == (int)TypeOfMaterial.Video || x.Request.Type == (int)TypeOfMaterial.Document) ? x.Request.Id : null,
+									QuizId = x.Request.Type == (int)TypeOfMaterial.Quiz ? x.Request.Id : null,
+									AssignmentId = x.Request.Type == (int)TypeOfMaterial.Assignment ? x.Request.Id : null,
 									Index = index,
 									CreatedAt = DateTime.Now.ToUniversalTime(),
-									UpdatedAt = DateTime.Now.ToUniversalTime()
+									UpdatedAt = DateTime.Now.ToUniversalTime(),
 								}).ToList();
 
-								lesson.LessonMaterials = lessonMaterials;
+								lesson.LessonContents = lessonContents;
 								newLessons.Add(lesson);
 							}
 
@@ -202,28 +212,35 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 							var lastLesson = listExistingLesson[lastLessonIndex];
 							var lessonRequest = lessonRequests[lastLessonIndex];
 
-							// Chỉ xử lý nếu có thêm material mới
-							var oldMaterialIds = lastLesson.LessonMaterials.Select(lm => lm.MaterialId).ToList();
-							var newMaterialIds = lessonRequest.MaterialIds.Except(oldMaterialIds).ToList();
+							// Lấy tất cả các contentId đang có (MaterialId, QuizId, AssignmentId)
+							var existingContentIds = lastLesson.LessonContents
+								.Select(lm => lm.MaterialId ?? lm.QuizId ?? lm.AssignmentId)
+								.ToList();
 
-							if (newMaterialIds.Any())
+							// Lấy contentId mới chưa tồn tại
+							var newContentRequests = lessonRequest.ContentIds
+								.Where(x => !existingContentIds.Contains(x.Id))
+								.ToList();
+
+							if (newContentRequests.Any())
 							{
-								var newMaterials = await _materialRepository.GetMaterialsByIds(newMaterialIds);
-								var sortedNewMaterials = newMaterials.OrderBy(m => lessonRequest.MaterialIds.IndexOf(m.Id)).ToList();
+								var processLessonContent = await GetOrderedContentsAndTotalTime(newContentRequests);
 
-								var newLessonMaterials = sortedNewMaterials.Select((m, index) => new LessonContent
+								var lessonContents = processLessonContent.OrderedContents.Select((x, index) => new LessonContent
 								{
 									LessonId = lastLesson.Id,
-									MaterialId = m.Id,
-									Index = oldMaterialIds.Count + index,
+									MaterialId = (x.Request.Type == (int)TypeOfMaterial.Video || x.Request.Type == (int)TypeOfMaterial.Document) ? x.Request.Id : null,
+									QuizId = x.Request.Type == (int)TypeOfMaterial.Quiz ? x.Request.Id : null,
+									AssignmentId = x.Request.Type == (int)TypeOfMaterial.Assignment ? x.Request.Id : null,
+									Index = index,
 									CreatedAt = DateTime.Now.ToUniversalTime(),
-									UpdatedAt = DateTime.Now.ToUniversalTime()
+									UpdatedAt = DateTime.Now.ToUniversalTime(),
 								}).ToList();
 
-								await _lessonMaterialRepository.CreateRangeAsync(newLessonMaterials);
+								await _lessonMaterialRepository.CreateRangeAsync(lessonContents);
 
 								// Update lại lesson
-								lastLesson.TotalTime += sortedNewMaterials.Sum(m => m.Duration); // ví dụ: tính lại tổng thời lượng
+								lastLesson.TotalTime += processLessonContent.TotalTime; // ví dụ: tính lại tổng thời lượng
 								await _lessonRepository.Update(lastLesson);
 							}
 						}
@@ -238,10 +255,10 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 
 					//Update Learner progress
 					var listLearnerNotComplete = (await _learnerRepository.GetListLearnerOfCourse(request.CourseInfo.CourseId)).Where(l => l.ProgressPercentage < 100);
-					var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(request.CourseInfo.CourseId);
+					var totalLessonContent = await _lessonMaterialRepository.GetTotalContent(request.CourseInfo.CourseId);
 					foreach(var learner in listLearnerNotComplete)
 					{
-						learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressBeforeCurrentAsync(learner.CurrentLessonId, learner.CurrentContentIndex, totalMaterial)) * 100, 2);
+						learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateContentProgressBeforeCurrentAsync(learner.CurrentLessonId, learner.CurrentContentIndex, totalLessonContent)) * 100, 2);
 					}
 					await _learnerRepository.UpdateRangeAsync(listLearnerNotComplete);
 
@@ -256,11 +273,11 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 
 				}
 
-				return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.CreateSuccesfully, courseResponse, "name", $"New Version of Course ID {existingCourse.Id}");
+				return apiResponse = GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseResponse, "name", $"Course ID {existingCourse.Id}");
 			}
 		}
 
-		private double CompareMaterialIds(List<string> updateMaterialIds, List<string> oldMaterialIds)
+		private double CompareContentIds(List<string> updateMaterialIds, List<string> oldMaterialIds)
 		{
 			int count = 0;
 
@@ -281,6 +298,73 @@ namespace EduQuest_Application.UseCases.Courses.Command.UpdateCourse
 			double result = (double)count / (double)oldMaterialIds.Count();
 			return result;
 		}
+
+		private async Task<(List<(LessonContentRequest Request, object Entity)> OrderedContents, double TotalTime)> GetOrderedContentsAndTotalTime(List<LessonContentRequest> ContentIds)
+		{
+			var materialIds = ContentIds
+				.Where(x => x.Type == (int)TypeOfMaterial.Video || x.Type == (int)TypeOfMaterial.Document)
+				.Select(x => x.Id)
+				.ToList();
+
+			var quizIds = ContentIds
+				.Where(x => x.Type == (int)TypeOfMaterial.Quiz)
+				.Select(x => x.Id)
+				.ToList();
+
+			var assignmentIds = ContentIds
+				.Where(x => x.Type == (int)TypeOfMaterial.Assignment)
+				.Select(x => x.Id)
+				.ToList();
+
+			var materialEntities = await _materialRepository.GetByIdsAsync(materialIds);
+			var quizEntities = await _quizRepository.GetByIdsAsync(quizIds);
+			var assignmentEntities = await _assignmentRepository.GetByIdsAsync(assignmentIds);
+
+			var orderedContents = new List<(LessonContentRequest Request, object Entity)>();
+
+			foreach (var content in ContentIds)
+			{
+				switch (content.Type)
+				{
+					case (int)TypeOfMaterial.Video:
+					case (int)TypeOfMaterial.Document:
+						var material = materialEntities.FirstOrDefault(m => m.Id == content.Id);
+						if (material != null)
+							orderedContents.Add((content, (object)material));
+						break;
+					case (int)TypeOfMaterial.Quiz:
+						var quiz = quizEntities.FirstOrDefault(q => q.Id == content.Id);
+						if (quiz != null)
+							orderedContents.Add((content, (object)quiz));
+						break;
+					case (int)TypeOfMaterial.Assignment:
+						var assignment = assignmentEntities.FirstOrDefault(a => a.Id == content.Id);
+						if (assignment != null)
+							orderedContents.Add((content, (object)assignment));
+						break;
+				}
+			}
+
+			var totalTime = orderedContents.Sum(x =>
+			{
+				switch (x.Request.Type)
+				{
+					case (int)TypeOfMaterial.Video:
+					case (int)TypeOfMaterial.Document:
+						return ((Material)x.Entity).Duration;
+					case (int)TypeOfMaterial.Quiz:
+						return ((Quiz)x.Entity).TimeLimit;
+					case (int)TypeOfMaterial.Assignment:
+						return ((Assignment)x.Entity).TimeLimit;
+					default:
+						return 0;
+				}
+			});
+
+			return (orderedContents, (double)totalTime);
+
+		}
+
 
 
 	}

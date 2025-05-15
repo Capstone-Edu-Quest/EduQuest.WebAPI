@@ -32,7 +32,7 @@ namespace EduQuest_Infrastructure.Persistence
         public virtual DbSet<LearningPathCourse> LearningPathCourses { get; set; } = null!;
         public virtual DbSet<InstructorCertificate> InstructorCertificates { get; set; } = null!;
         public virtual DbSet<Levels> Levels { get; set; } = null!;
-		public virtual DbSet<LessonContent> LessonMaterials { get; set; } = null!;
+		public virtual DbSet<LessonContent> LessonContents { get; set; } = null!;
 		public virtual DbSet<Mascot> Mascots { get; set; } = null!;
         public virtual DbSet<Quest> Quests { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
