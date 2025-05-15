@@ -25,7 +25,16 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 		private readonly IMapper _mapper;
 		private readonly IUserMetaRepository _userStatisticRepository;
 
-		
+		public GetCourseByIdQueryHandler(ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonContentRepository lessonContentRepository, IMaterialRepository materialRepository, IUserRepository userRepository, IMapper mapper, IUserMetaRepository userStatisticRepository)
+		{
+			_courseRepository = courseRepository;
+			_lessonRepository = lessonRepository;
+			_lessonContentRepository = lessonContentRepository;
+			_materialRepository = materialRepository;
+			_userRepository = userRepository;
+			_mapper = mapper;
+			_userStatisticRepository = userStatisticRepository;
+		}
 
 		public async Task<APIResponse> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
 		{
@@ -33,7 +42,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 			var course = await _courseRepository.GetCourseById(request.CourseId);
 			var courseWithLearner = await _courseRepository.GetCourseLearnerByCourseId(request.CourseId);
 			var courseLearner = new CourseLearner();
-			if (courseWithLearner.CourseLearners != null)
+			if (courseWithLearner != null && courseWithLearner.CourseLearners != null)
 			{
 				courseLearner = courseWithLearner.CourseLearners!.FirstOrDefault(x => x.UserId == request.UserId);
 			}
