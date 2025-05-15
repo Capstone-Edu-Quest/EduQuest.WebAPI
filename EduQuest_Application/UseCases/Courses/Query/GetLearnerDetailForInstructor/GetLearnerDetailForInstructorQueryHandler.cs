@@ -1,18 +1,10 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.DTO.Response.Lessons;
-using EduQuest_Application.DTO.Response.Materials;
 using EduQuest_Application.Helper;
-using EduQuest_Domain.Entities;
-using EduQuest_Domain.Enums;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.Courses.Query.GetLearnerDetailForInstructor
@@ -22,7 +14,7 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetLearnerDetailForInstruc
 		private readonly ILessonRepository _lessonRepository;
 		private readonly ICourseRepository _courseRepository;
 		private readonly IMaterialRepository _materialRepository;
-		private readonly ILessonMaterialRepository _lessonMaterialRepository;
+		private readonly ILessonContentRepository _lessonMaterialRepository;
 		private readonly IQuizAttemptRepository _quizAttemptRepository;
 		private readonly IAssignmentAttemptRepository _assignmentAttemptRepository;
 		private readonly IMapper _mapper;
@@ -30,7 +22,7 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetLearnerDetailForInstruc
 		public GetLearnerDetailForInstructorQueryHandler(ILessonRepository lessonRepository, 
 			ICourseRepository courseRepository, 
 			IMaterialRepository materialRepository, 
-			ILessonMaterialRepository lessonMaterialRepository, 
+			ILessonContentRepository lessonMaterialRepository, 
 			IQuizAttemptRepository quizAttemptRepository, 
 			IAssignmentAttemptRepository assignmentAttemptRepository, 
 			IMapper mapper)
@@ -62,8 +54,8 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetLearnerDetailForInstruc
 			List<string> assignmentIds = new List<string>();
 			foreach(var lesson in course.Lessons)
 			{
-				assignmentIds.AddRange(lesson.LessonMaterials.Where(l => l.AssignmentId != null).Select(l => l.AssignmentId!).ToList());
-                quizIds.AddRange(lesson.LessonMaterials.Where(l => l.QuizId != null).Select(l => l.QuizId!).ToList());
+				assignmentIds.AddRange(lesson.LessonContents.Where(l => l.AssignmentId != null).Select(l => l.AssignmentId!).ToList());
+                quizIds.AddRange(lesson.LessonContents.Where(l => l.QuizId != null).Select(l => l.QuizId!).ToList());
             }
 			// Lấy Attempt cho Quiz & Assignment
 			var quizAttempts = await _quizAttemptRepository.GetQuizzesAttempts(quizIds, lessonIds, request.UserId);

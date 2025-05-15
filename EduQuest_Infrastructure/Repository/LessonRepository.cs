@@ -17,15 +17,28 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<bool> DeleteLessonByCourseId(string courseId)
 		{
-			var stages = _context.Lessons.Where(x => x.CourseId == courseId).ToList();
+			var lessons = await _context.Lessons
+		.Where(x => x.CourseId == courseId)
+		.ToListAsync();
 
-			if(stages.Any())
+			if (!lessons.Any())
+				return false;
+
+			var lessonIds = lessons.Select(l => l.Id).ToList();
+
+			var lessonContents = await _context.LessonContents
+				.Where(x => lessonIds.Contains(x.LessonId))
+				.ToListAsync();
+
+			if (lessonContents.Any())
 			{
-				_context.Lessons.RemoveRange(stages);
-				await _context.SaveChangesAsync();
-				return true;
+				_context.LessonContents.RemoveRange(lessonContents);
 			}
-			return false;
+
+			_context.Lessons.RemoveRange(lessons);
+
+			await _context.SaveChangesAsync();
+			return true;
 		}
 
 		public async Task<List<Lesson>> GetByCourseId(string id)
@@ -35,7 +48,7 @@ namespace EduQuest_Infrastructure.Repository
 
 		public async Task<Lesson> GetByLessonIdAsync(string lessonId)
 		{
-			return await _context.Lessons.Include(x => x.LessonMaterials).FirstOrDefaultAsync(x => x.Id == lessonId);
+			return await _context.Lessons.Include(x => x.LessonContents).FirstOrDefaultAsync(x => x.Id == lessonId);
 		}
 
 		public async Task<int?> GetMaxLevelInThisCourse(string id)
@@ -43,42 +56,27 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.Lessons.MaxAsync(s => (int?)s.Index);
 		}
 
-		public async Task<List<LessonContent>> GetMaterialsByLessonId(string lessonId)
+		public async Task<List<LessonContent>> GetContentsByLessonId(string lessonId)
 		{
 			var temp = await _context.Lessons.Where(l => l.Id == lessonId).FirstOrDefaultAsync();
-			List<LessonContent> result = temp!.LessonMaterials.OrderBy(x => x.Index).ToList();
+			List<LessonContent> result = temp!.LessonContents.OrderBy(x => x.Index).ToList();
 			return result;
 		}
 
 		public async Task<Lesson> GetFirstLesson(string courseId)
 		{
-			return await _context.Lessons.Include(x => x.LessonMaterials).FirstOrDefaultAsync(x => x.CourseId == courseId && x.Index == 1);
+			return await _context.Lessons.Include(x => x.LessonContents).FirstOrDefaultAsync(x => x.CourseId == courseId && x.Index == 1);
 		}
 
-		public async Task<(string lessonId, string materialId)> GetFirstLessonAndMaterialIdInCourseAsync(string courseId)
+		public async Task<Lesson> GetFirstLessonInCourseAsync(string courseId)
 		{
-			var firstLesson = await _context.Lessons
-			.Where(lesson => lesson.CourseId == courseId) 
-			.OrderBy(lesson => lesson.Index) 
-			.FirstOrDefaultAsync();
-
-			if (firstLesson == null)
-			{
-				return (null, null);
-			}
-
-			var firstMaterialId = await _context.LessonMaterials
-				.Where(lm => lm.LessonId == firstLesson.Id)
-				.OrderBy(lm => lm.Index) 
-				.Select(lm => lm.MaterialId)
-				.FirstOrDefaultAsync();
-
-			return (firstLesson.Id, firstMaterialId);
+			return await _context.Lessons.FirstOrDefaultAsync(lesson => lesson.CourseId == courseId && lesson.Index == 0);
+			
 		}
 
-		public async Task<double> CalculateMaterialProgressAsync(string lessonId, string materialId, int totalMaterial)
+		public async Task<double> CalculateContentProgressAsync(string lessonId, string contentId, int totalContent)
 		{
-			if (totalMaterial <= 0) return 0;
+			if (totalContent <= 0) return 0;
 
 			// 1. Lấy lesson hiện tại
 			var currentLesson = await _context.Lessons
@@ -90,13 +88,13 @@ namespace EduQuest_Infrastructure.Repository
 			var currentLessonIndex = currentLesson.Index;
 
 			// 2. Lấy index của materialId trong lesson
-			var targetLessonMaterial = await _context.LessonMaterials
+			var targetLessonContent = await _context.LessonContents
 				.AsNoTracking()
-				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.MaterialId == materialId);
+				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.MaterialId == contentId || (lm.LessonId == lessonId && lm.QuizId == contentId) || (lm.LessonId == lessonId && lm.AssignmentId == contentId));
 
-			if (targetLessonMaterial == null) return 0;
+			if (targetLessonContent == null) return 0;
 
-			var targetMaterialIndex = targetLessonMaterial.Index;
+			var targetContentIndex = targetLessonContent.Index;
 
 			// 3. Lấy danh sách lessonId trước bài hiện tại
 			var lessonIdsBefore = await _context.Lessons
@@ -106,15 +104,15 @@ namespace EduQuest_Infrastructure.Repository
 				.ToListAsync();
 
 			// 4. Đếm số material đã hoàn thành
-			var completedMaterialCount = await _context.LessonMaterials
+			var completedMaterialCount = await _context.LessonContents
 				.AsNoTracking()
 				.CountAsync(lm =>
 					lessonIdsBefore.Contains(lm.LessonId) ||
-					(lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
+					(lm.LessonId == lessonId && lm.Index <= targetContentIndex)
 				);
 
 			// 5. Trả về tỉ lệ hoàn thành
-			return (double)completedMaterialCount / totalMaterial;
+			return (double)completedMaterialCount / totalContent;
 		}
         public async Task<double> CalculateAssignmentProgressAsync(string lessonId, string assignmentId, int totalMaterial)
         {
@@ -130,8 +128,8 @@ namespace EduQuest_Infrastructure.Repository
             var currentLessonIndex = currentLesson.Index;
 
             // 2. Lấy index của materialId trong lesson
-            var targetLessonMaterial = await _context.LessonMaterials
-                .AsNoTracking()
+            var targetLessonMaterial = await _context.LessonContents
+				.AsNoTracking()
                 .FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.AssignmentId == assignmentId);
 
             if (targetLessonMaterial == null) return 0;
@@ -146,8 +144,8 @@ namespace EduQuest_Infrastructure.Repository
                 .ToListAsync();
 
             // 4. Đếm số material đã hoàn thành
-            var completedMaterialCount = await _context.LessonMaterials
-                .AsNoTracking()
+            var completedMaterialCount = await _context.LessonContents
+				.AsNoTracking()
                 .CountAsync(lm =>
                     lessonIdsBefore.Contains(lm.LessonId) ||
                     (lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
@@ -170,8 +168,8 @@ namespace EduQuest_Infrastructure.Repository
             var currentLessonIndex = currentLesson.Index;
 
             // 2. Lấy index của materialId trong lesson
-            var targetLessonMaterial = await _context.LessonMaterials
-                .AsNoTracking()
+            var targetLessonMaterial = await _context.LessonContents
+				.AsNoTracking()
                 .FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.AssignmentId == quizId);
 
             if (targetLessonMaterial == null) return 0;
@@ -186,8 +184,8 @@ namespace EduQuest_Infrastructure.Repository
                 .ToListAsync();
 
             // 4. Đếm số material đã hoàn thành
-            var completedMaterialCount = await _context.LessonMaterials
-                .AsNoTracking()
+            var completedMaterialCount = await _context.LessonContents
+				.AsNoTracking()
                 .CountAsync(lm =>
                     lessonIdsBefore.Contains(lm.LessonId) ||
                     (lm.LessonId == lessonId && lm.Index <= targetMaterialIndex)
@@ -201,9 +199,9 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.Lessons.FirstOrDefaultAsync(l => l.CourseId == courseId && l.Index == index);
 		}
 
-		public async Task<double> CalculateMaterialProgressBeforeCurrentAsync(string lessonId, int currentIndex, int totalMaterial)
+		public async Task<double> CalculateContentProgressBeforeCurrentAsync(string lessonId, int currentIndex, int totalContent)
 		{
-			if (totalMaterial <= 0) return 0;
+			if (totalContent <= 0) return 0;
 
 			// 1. Lấy bài học hiện tại
 			var currentLesson = await _context.Lessons
@@ -215,13 +213,13 @@ namespace EduQuest_Infrastructure.Repository
 			var currentLessonIndex = currentLesson.Index;
 
 			// 2. Lấy index của material hiện tại
-			var targetMaterial = await _context.LessonMaterials
+			var targetContent = await _context.LessonContents
 				.AsNoTracking()
 				.FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.Index == currentIndex);
 
-			if (targetMaterial == null) return 0;
+			if (targetContent == null) return 0;
 
-			var targetMaterialIndex = targetMaterial.Index;
+			var targetContentIndex = targetContent.Index;
 
 			// 3. Lấy tất cả lesson trước bài hiện tại
 			var lessonIdsBefore = await _context.Lessons
@@ -231,19 +229,19 @@ namespace EduQuest_Infrastructure.Repository
 				.ToListAsync();
 
 			// 4. Đếm toàn bộ material của các bài học trước
-			var countBeforeLesson = await _context.LessonMaterials
+			var countBeforeLesson = await _context.LessonContents
 				.AsNoTracking()
 				.CountAsync(lm => lessonIdsBefore.Contains(lm.LessonId));
 
 			// 5. Cộng thêm các material trong chính bài hiện tại nhưng có index < material hiện tại
-			var countBeforeInCurrentLesson = await _context.LessonMaterials
+			var countBeforeInCurrentLesson = await _context.LessonContents
 				.AsNoTracking()
-				.CountAsync(lm => lm.LessonId == lessonId && lm.Index < targetMaterialIndex);
+				.CountAsync(lm => lm.LessonId == lessonId && lm.Index < targetContentIndex);
 
-			var completedMaterial = countBeforeLesson + countBeforeInCurrentLesson;
+			var completedContent = countBeforeLesson + countBeforeInCurrentLesson;
 
 			// 6. Tính tỷ lệ
-			return (double)completedMaterial / totalMaterial;
+			return (double)completedContent / totalContent;
 		}
 	}
 }

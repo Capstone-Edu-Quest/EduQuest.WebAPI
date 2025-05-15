@@ -23,7 +23,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly IMaterialRepository _materialRepository;
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
-	private readonly ILessonMaterialRepository _lessonMaterialRepository;
+	private readonly ILessonContentRepository _lessonMaterialRepository;
 
 	public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, 
         ILessonRepository lessonRepository, 
@@ -32,7 +32,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         IUserQuestRepository userQuestRepository, 
         ICourseRepository courseRepository, 
         IUserMetaRepository userMetaRepository, 
-        IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, ILessonMaterialRepository lessonMaterialRepository)
+        IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, ILessonContentRepository lessonMaterialRepository)
 	{
 		_assignmentRepository = assignmentRepository;
 		_lessonRepository = lessonRepository;
@@ -63,9 +63,9 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "lesson");
         }
-        var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonMaterials.Select(x => x.MaterialId).ToList());
+        var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonContents.Select(x => x.MaterialId).ToList());
         //var material = materials.Where(m => m.AssignmentId == request.Attempt.AssignmentId).FirstOrDefault();
-        var lessonMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.AssignmentId == request.Attempt.AssignmentId);
+        var lessonMaterial = lesson.LessonContents.FirstOrDefault(m => m.AssignmentId == request.Attempt.AssignmentId);
         var assignment = await _assignmentRepository.GetById(request.Attempt.AssignmentId);
         if (assignment == null)
         {
@@ -88,12 +88,12 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
 
         var course = await _courseRepository.GetById(lesson.CourseId);
         var learner = course.CourseLearners.FirstOrDefault(l => l.UserId == request.UserId);
-        int maxIndex = lesson.LessonMaterials.Count - 1;
+        int maxIndex = lesson.LessonContents.Count - 1;
         string newLessonId = lesson.Id;
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
-        LessonContent? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
+        LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
         int nextIndex = temp.Index;
-        LessonContent? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Attempt.AssignmentId);
+        LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Attempt.AssignmentId);
 
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
@@ -125,7 +125,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
 
         learner.CurrentLessonId = newLessonId;
         learner.CurrentContentIndex = nextIndex;
-        var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
+        var totalMaterial = await _lessonMaterialRepository.GetTotalContent(course.Id);
         learner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateAssignmentProgressAsync(request.LessonId, request.Attempt.AssignmentId, totalMaterial)) * 100, 2);
         if (learner.ProgressPercentage > 100)
         {

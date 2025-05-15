@@ -18,7 +18,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ICourseRepository _courseRepository;
 		private readonly ILessonRepository _lessonRepository;
-		private readonly ILessonMaterialRepository _lessonMaterialRepository;
+		private readonly ILessonContentRepository _lessonMaterialRepository;
 		private readonly IMaterialRepository _materialRepository;
 		private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IUserQuestRepository _userQuestRepository;
@@ -26,7 +26,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IStudyTimeRepository _studyTimeRepository;
 		private readonly IMediator mediator;
 
-        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonMaterialRepository lessonMaterialRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
+        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonContentRepository lessonMaterialRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
         {
             _userMetaRepository = userMetaRepository;
             _unitOfWork = unitOfWork;
@@ -46,7 +46,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			DateTime now = DateTime.Now;
 			var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
 			//Get material
-			var material = await _materialRepository.GetMataterialQuizAssById(request.Info.MaterialId);
+			var material = await _materialRepository.GetMataterialQuizAssById(request.Info.ContentId);
 			//Get lesson
 			var lesson = await _lessonRepository.GetById(request.Info.LessonId);
 
@@ -64,12 +64,12 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             
             
             var currentLesson = course.Lessons!.Where(l => l.Id == courseLearner.CurrentLessonId).FirstOrDefault();
-			int maxIndex = lesson.LessonMaterials.Count - 1;
+			int maxIndex = lesson.LessonContents.Count - 1;
             string newLessonId = request.Info.LessonId;
 
-            LessonContent? temp = lesson.LessonMaterials.FirstOrDefault(m => m.Index == courseLearner.CurrentContentIndex);
+            LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index == courseLearner.CurrentContentIndex);
             int nextIndex = temp.Index;
-            LessonContent ? processingMaterial = lesson.LessonMaterials.FirstOrDefault(m => m.MaterialId == request.Info.MaterialId);
+            LessonContent ? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Info.ContentId);
             var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
 
 
@@ -101,8 +101,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			}
             courseLearner.CurrentLessonId = newLessonId;
             courseLearner.CurrentContentIndex = nextIndex;
-            var totalMaterial = await _lessonMaterialRepository.GetTotalMaterial(course.Id);
-			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateMaterialProgressAsync(request.Info.LessonId, request.Info.MaterialId, totalMaterial)) * 100, 2);
+            var totalMaterial = await _lessonMaterialRepository.GetTotalContent(course.Id);
+			courseLearner.ProgressPercentage = Math.Round((await _lessonRepository.CalculateContentProgressAsync(request.Info.LessonId, request.Info.ContentId, totalMaterial)) * 100, 2);
             if (courseLearner.ProgressPercentage > 100)
             {
                 courseLearner.ProgressPercentage = 100;
@@ -164,7 +164,6 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     Date = now.ToUniversalTime()
                 });
             }
-
 
             var result = await _unitOfWork.SaveChangesAsync() > 0;
 			return new APIResponse

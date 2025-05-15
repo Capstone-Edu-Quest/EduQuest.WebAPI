@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using EduQuest_Application.DTO.Request.Materials;
-using EduQuest_Application.DTO.Response.UserStatistics;
 using EduQuest_Application.Mappings;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
@@ -16,8 +14,8 @@ public class DetailMaterialResponseDto : IMapFrom<Material>, IMapTo<Material>
 	public double? Duration { get; set; }
 	public VideoTypeDto? Video { get; set; }
 	public string? Content { get; set; } //Document
-	public QuizTypeDto? Quiz { get; set; }
-	public AssignmentTypeDto? Assignment { get; set; }
+	//public QuizTypeDto? Quiz { get; set; }
+	//public AssignmentTypeDto? Assignment { get; set; }
 
 	public void MappingFrom(Profile profile)
     {

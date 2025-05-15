@@ -6,7 +6,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using static EduQuest_Domain.Constants.Constants;
 
-namespace EduQuest_Application.UseCases.LessonContents.Query.GetQuixById
+namespace EduQuest_Application.UseCases.LessonContents.Query.GetQuizById
 {
 	public class GetQuizByIdQueryHandler : IRequestHandler<GetQuizByIdQuery, APIResponse>
 	{

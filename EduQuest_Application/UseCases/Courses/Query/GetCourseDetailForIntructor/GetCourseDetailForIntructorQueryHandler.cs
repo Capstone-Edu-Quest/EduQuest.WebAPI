@@ -62,53 +62,18 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 
             var lessonResponses = new List<LessonCourseResponse>();
 
-			foreach (var lesson in existedCourse.Lessons!)
+			foreach (var lesson in existedCourse.Lessons.OrderBy(x => x.Index))
 			{
 				var lessonInCourse = await _lessonRepository.GetByLessonIdAsync(lesson.Id);
 
-				var materials = new List<MaterialInLessonResponse>();
+				var lessonContents = lessonInCourse.LessonContents
+				.OrderBy(x => x.Index)
+				.ToList();
 
-				var listMaterialId = lessonInCourse.LessonMaterials.OrderBy(x=> x.Index).Select(x => x.MaterialId).Distinct().ToList();
-				var listMaterial = await _materialRepository.GetMaterialsByIds(listMaterialId);
-				var sortedMaterials = listMaterial
-					.OrderBy(m => listMaterialId.IndexOf(m.Id))
+				var contents = lessonContents
+					.Select(content => CourseHelper.MapLessonContentToResponse(content))
+					.Where(response => response != null)
 					.ToList();
-
-				foreach (var material in sortedMaterials)
-				{
-					var currentMaterialResponse = new MaterialInLessonResponse
-					{
-						Id = material.Id,
-						Type = material.Type,
-						Duration = material.Duration,
-						Title = material.Title,
-						Description = material.Description,
-						Version = material.Version,
-					};
-
-					materials.Add(currentMaterialResponse);
-
-					// Nếu có OriginalMaterialId, thì lấy thêm thông tin của Material gốc
-					//if (material.OriginalMaterialId != null)
-					//{
-					//	var originalMaterial = await _materialRepository.GetById(material.OriginalMaterialId);
-
-					//	if (originalMaterial != null)
-					//	{
-					//		var originalMaterialResponse = new MaterialInLessonResponse
-					//		{
-					//			Id = originalMaterial.Id,
-					//			Type = originalMaterial.Type,
-					//			Duration = originalMaterial.Duration,
-					//			Title = originalMaterial.Title,
-					//			Description = originalMaterial.Description,
-					//			Version = originalMaterial.Version,
-					//		};
-
-					//		materials.Add(originalMaterialResponse);
-					//	}
-					//}
-				}
 
 				lessonResponses.Add(new LessonCourseResponse
 				{
@@ -116,9 +81,10 @@ namespace EduQuest_Application.UseCases.Courses.Query.GetCourseDetailForIntructo
 					Index = lesson.Index,
 					Name = lesson.Name,
 					TotalTime = lesson.TotalTime,
-					Materials = materials
+					Contents = contents
 				});
 			}
+
 			courseResponse.ListLesson = lessonResponses.OrderBy(l => l.Index).ToList();
 			courseResponse.ListTag = existedCourse.Tags?.Select(tag => new TagResponse
 			{

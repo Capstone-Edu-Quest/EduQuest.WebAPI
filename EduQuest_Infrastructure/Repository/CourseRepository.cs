@@ -232,10 +232,9 @@ namespace EduQuest_Infrastructure.Repository
 		{
 			return await _context.Courses
 		       .Include(c => c.Lessons.OrderBy(l => l.Index))
-			   .ThenInclude(l => l.LessonMaterials.OrderBy(lm => lm.Index))
+			   .ThenInclude(l => l.LessonContents.OrderBy(lm => lm.Index))
 			   .FirstOrDefaultAsync(c => c.Id == courseId);
 		}
-
 
         public async Task UpdateStatus(string status, string courseId)
         {

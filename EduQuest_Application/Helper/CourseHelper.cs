@@ -1,5 +1,8 @@
 ﻿using EduQuest_Application.DTO.Request.Courses;
+using EduQuest_Application.DTO.Response.Materials;
+using EduQuest_Domain.Entities;
 using System.Text;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Application.Helper
 {
@@ -34,6 +37,46 @@ namespace EduQuest_Application.Helper
 
 			return keyBuilder.ToString();
 		}
+
+		public static ContentInLessonResponse MapLessonContentToResponse(LessonContent content)
+		{
+			if (content.MaterialId != null && content.Material != null)
+			{
+				return new ContentInLessonResponse
+				{
+					Id = content.MaterialId,
+					Type = content.Material.Type,
+					Duration = content.Material.Duration,
+					Title = content.Material.Title,
+					Description = content.Material.Description
+				};
+			}
+			else if (content.QuizId != null && content.Quiz != null)
+			{
+				return new ContentInLessonResponse
+				{
+					Id = content.QuizId,
+					Type = ((int)TypeOfMaterial.Quiz).ToString(),
+					Duration = content.Quiz.TimeLimit,
+					Title = content.Quiz.Title,
+					Description = content.Quiz.Description
+				};
+			}
+			else if (content.AssignmentId != null && content.Assignment != null)
+			{
+				return new ContentInLessonResponse
+				{
+					Id = content.AssignmentId,
+					Type = ((int)TypeOfMaterial.Assignment).ToString(),
+					Duration = content.Assignment.TimeLimit,
+					Title = content.Assignment.Title,
+					Description = content.Assignment.Description
+				};
+			}
+
+			return null;
+		}
+
 
 	}
 }

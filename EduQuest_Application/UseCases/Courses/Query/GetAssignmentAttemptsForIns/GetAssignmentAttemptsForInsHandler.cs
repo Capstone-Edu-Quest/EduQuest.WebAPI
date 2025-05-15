@@ -42,12 +42,12 @@ public class GetAssignmentAttemptsForInsHandler : IRequestHandler<GetAssignmentA
         List<LessonContent> lessonMaterials = new List<LessonContent>();
         foreach( var lesson in lessons)
         {
-            lessonMaterials.AddRange(lesson.LessonMaterials);
+            lessonMaterials.AddRange(lesson.LessonContents);
         }
         List<string> AssignmentIds = new List<string>();
         foreach(var lesson in lessons)
         {
-            List<string> temp = lesson.LessonMaterials.Select(l => l.AssignmentId!).ToList();
+            List<string> temp = lesson.LessonContents.Select(l => l.AssignmentId!).ToList();
             AssignmentIds.AddRange(temp);
         }
         //var materials = await _materialRepository.GetMaterialsByIds(materialIds);

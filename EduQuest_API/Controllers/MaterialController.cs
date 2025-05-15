@@ -51,7 +51,7 @@ namespace EduQuest_API.Controllers
 		[HttpPut("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateMaterial([FromBody] UpdateLearningMaterialRequest request, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> UpdateMaterial([FromBody] UpdateMaterialRequest request, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new UpdateMaterialCommand(userId, request), cancellationToken);
