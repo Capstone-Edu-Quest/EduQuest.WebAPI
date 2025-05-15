@@ -12,9 +12,9 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateAssignment
 	public class UpdateAssignmentCommand : IRequest<APIResponse>
 	{
 		public string UserId { get; set; }
-		public AssignmentRequest Assignment { get; set; }
+		public UpdateAssignmentRequest Assignment { get; set; }
 
-		public UpdateAssignmentCommand(string userId, AssignmentRequest assignment)
+		public UpdateAssignmentCommand(string userId, UpdateAssignmentRequest assignment)
 		{
 			UserId = userId;
 			Assignment = assignment;

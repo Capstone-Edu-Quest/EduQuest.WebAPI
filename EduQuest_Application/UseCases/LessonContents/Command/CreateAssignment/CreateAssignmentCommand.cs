@@ -7,9 +7,9 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.CreateAssignment
 	public class CreateAssignmentCommand : IRequest<APIResponse>
 	{
 		public string UserId { get; set; }
-		public AssignmentRequest Assignment { get; set; }
+		public CreateAssignmentRequest Assignment { get; set; }
 
-		public CreateAssignmentCommand(string userId, AssignmentRequest assignment)
+		public CreateAssignmentCommand(string userId, CreateAssignmentRequest assignment)
 		{
 			UserId = userId;
 			Assignment = assignment;

@@ -3,9 +3,9 @@ using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.DTO.Request.Materials
 {
-	public class AssignmentRequest : IMapFrom<Assignment>, IMapTo<Assignment>
+	public class CreateAssignmentRequest : IMapFrom<Assignment>, IMapTo<Assignment>
 	{
-        public string Id { get; set; }
+        //public string Id { get; set; }
         public string? Title { get; set; }
 		public string? Description { get; set; }
 		public double? TimeLimit { get; set; }

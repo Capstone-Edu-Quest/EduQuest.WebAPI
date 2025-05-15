@@ -11,8 +11,8 @@ namespace EduQuest_Application.DTO.Request.Materials
         public string? Description { get; set; }
         public VideoRequest? Video { get; set; }
 		public string? Content { get; set; } //Document
-        public CreateQuizRequest? Quiz { get; set; }
-        public AssignmentRequest? Assignment { get; set; }
+        //public CreateQuizRequest? Quiz { get; set; }
+        //public AssignmentRequest? Assignment { get; set; }
 
     }
 }
