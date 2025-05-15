@@ -132,7 +132,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
         LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index == learner.CurrentContentIndex);
         int nextIndex = temp.Index;
-        LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Attempt.QuizId);
+        LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.QuizId == request.Attempt.QuizId);
 
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();

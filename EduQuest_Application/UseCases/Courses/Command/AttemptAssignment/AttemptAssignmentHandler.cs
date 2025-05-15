@@ -93,7 +93,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
         LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
         int nextIndex = temp.Index;
-        LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Attempt.AssignmentId);
+        LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.AssignmentId == request.Attempt.AssignmentId);
 
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
