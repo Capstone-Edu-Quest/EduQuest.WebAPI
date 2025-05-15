@@ -23,7 +23,7 @@ namespace EduQuest_API.Controllers
 		}
 
 		//[Authorize]
-		[HttpGet("byId")]
+		[HttpGet("quizById")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetQuizById([FromQuery] string quizId, CancellationToken cancellationToken = default)

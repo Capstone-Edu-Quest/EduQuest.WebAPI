@@ -21,7 +21,7 @@ namespace EduQuest_API.Controllers
 			_mediator = mediator;
 		}
 
-		[HttpGet("byId")]
+		[HttpGet("assignmentById")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> GetAssignmentById([FromQuery] string assignmentId, CancellationToken cancellationToken = default)
@@ -35,7 +35,7 @@ namespace EduQuest_API.Controllers
 		[HttpPost("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateAssignment([FromBody] AssignmentRequest request, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> CreateAssignment([FromBody] CreateAssignmentRequest request, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new CreateAssignmentCommand(userId, request), cancellationToken);
@@ -46,7 +46,7 @@ namespace EduQuest_API.Controllers
 		[HttpPut("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateAssignment([FromBody] AssignmentRequest request, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> UpdateAssignment([FromBody] UpdateAssignmentRequest request, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new UpdateAssignmentCommand(userId, request), cancellationToken);
