@@ -1,16 +1,12 @@
 ﻿using EduQuest_Application.DTO.Request.Materials;
 using EduQuest_Application.Helper;
-using EduQuest_Application.UseCases.LessonContents.Query.GetDetailMaterial;
-using EduQuest_Application.UseCases.Materials.Command.CreateMaterial;
 using EduQuest_Application.UseCases.Materials.Command.DeleteMaterial;
-using EduQuest_Application.UseCases.Materials.Command.UpdateMaterial;
 using EduQuest_Application.UseCases.Materials.Command.UploadImage;
 using EduQuest_Application.UseCases.Materials.Command.UploadVideo;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace EduQuest_API.Controllers
 {
@@ -24,19 +20,6 @@ namespace EduQuest_API.Controllers
 		}
 
 		[Authorize]
-		[HttpPost("")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateMaterial([FromBody] List<CreateMaterialRequest> request, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new CreateLeaningMaterialCommand(userId, request), cancellationToken);
-			return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
-		}
-
-		
-
-		[Authorize]
 		[HttpDelete("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -47,28 +30,9 @@ namespace EduQuest_API.Controllers
 			return Ok(result);
 		}
 
-		[Authorize]
-		[HttpPut("")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateMaterial([FromBody] UpdateMaterialRequest request, CancellationToken cancellationToken = default)
-		{
-			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new UpdateMaterialCommand(userId, request), cancellationToken);
+		
 
-            return (result.Errors != null && result.Errors.StatusResponse != HttpStatusCode.OK) ? BadRequest(result) : Ok(result);
-		}
-
-        [Authorize]
-        [HttpGet("materialById")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetMaterialById([FromQuery] string materialId, CancellationToken cancellationToken = default)
-        {
-            //string userId = User.GetUserIdFromToken().ToString();
-            var result = await _mediator.Send(new GetMaterialByIdQuery(materialId), cancellationToken);
-            return Ok(result);
-        }
+       
 
 		[HttpPost("uploadVideo")]
         [ProducesResponseType(StatusCodes.Status200OK)]

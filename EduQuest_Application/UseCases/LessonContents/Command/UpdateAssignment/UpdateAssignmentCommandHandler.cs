@@ -1,18 +1,12 @@
 ﻿using AutoMapper;
-using EduQuest_Application.UseCases.LessonContents.Command.UpdateQuiz;
-using EduQuest_Domain.Models.Response;
-using EduQuest_Domain.Repository.UnitOfWork;
-using EduQuest_Domain.Repository;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EduQuest_Domain.Entities;
 using EduQuest_Application.Helper;
-using static EduQuest_Domain.Constants.Constants;
+using EduQuest_Domain.Entities;
+using EduQuest_Domain.Models.Response;
+using EduQuest_Domain.Repository;
+using EduQuest_Domain.Repository.UnitOfWork;
+using MediatR;
 using System.Net;
+using static EduQuest_Domain.Constants.Constants;
 
 namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateAssignment
 {
@@ -35,40 +29,40 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateAssignment
 
 		public async Task<APIResponse> Handle(UpdateAssignmentCommand request, CancellationToken cancellationToken)
 		{
-			var isUsed = await _lessonMaterialRepository.IsLessonContentUsed(request.Assignment.Id);
-			if (isUsed)
-			{
-				return GeneralHelper.CreateErrorResponse(
-				HttpStatusCode.BadRequest,
-				MessageCommon.UpdateFailed,
-				MessageError.UsedContent,
-				"name",
-				$"Quiz ID {request.Assignment.Id}"
-			);
-			}
+			//var isUsed = await _lessonMaterialRepository.IsLessonContentUsed(request.Assignment.Id);
+			//if (isUsed)
+			//{
+			//	return GeneralHelper.CreateErrorResponse(
+			//	HttpStatusCode.BadRequest,
+			//	MessageCommon.UpdateFailed,
+			//	MessageError.UsedContent,
+			//	"name",
+			//	$"Quiz ID {request.Assignment.Id}"
+			//);
+			//}
 
-			var assignment = _mapper.Map<Assignment>(request.Assignment);
-			assignment.Id = request.Assignment?.Id ?? Guid.NewGuid().ToString();
+			//var assignment = _mapper.Map<Assignment>(request.Assignment);
+			//assignment.Id = request.Assignment?.Id ?? Guid.NewGuid().ToString();
 
-			await _assignmentRepository.Update(assignment);
-			var result = await _unitOfWork.SaveChangesAsync();
-			if (result > 0)
-			{
-				return GeneralHelper.CreateSuccessResponse(
-					HttpStatusCode.OK,
-					MessageCommon.UpdateSuccesfully,
-					assignment,
-					"name",
-					$"Assignment ID {request.Assignment.Id}"
-				);
-			}
+			//await _assignmentRepository.Update(assignment);
+			//var result = await _unitOfWork.SaveChangesAsync();
+			//if (result > 0)
+			//{
+			//	return GeneralHelper.CreateSuccessResponse(
+			//		HttpStatusCode.OK,
+			//		MessageCommon.UpdateSuccesfully,
+			//		assignment,
+			//		"name",
+			//		$"Assignment ID {request.Assignment.Id}"
+			//	);
+			//}
 
 			return GeneralHelper.CreateErrorResponse(
 				HttpStatusCode.BadRequest,
 				MessageCommon.UpdateFailed,
 				"Saving Failed",
 				"name",
-				$"Assignment ID {request.Assignment.Id}"
+				$"Assignment ID {request.Assignment}"
 			);
 		}
 	}
