@@ -227,8 +227,6 @@ namespace EduQuest_Application.UseCases.Transactions.Command.UpdateTransactionSt
                 await _transactionDetailRepository.UpdateRangeAsync(transactionDetailList);
 				await _quartzService.TransferToInstructor(transactionExisted.Id);
 
-
-                
             }
             else
             {
