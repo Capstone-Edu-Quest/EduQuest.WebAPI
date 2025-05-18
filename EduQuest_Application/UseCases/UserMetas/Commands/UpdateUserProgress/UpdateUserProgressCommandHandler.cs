@@ -69,12 +69,12 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 
             LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index == courseLearner.CurrentContentIndex);
             int nextIndex = temp.Index;
-            LessonContent ? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Info.ContentId);
+            LessonContent ? processingContent = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Info.ContentId || m.QuizId == request.Info.ContentId || m.AssignmentId == request.Info.ContentId);
             var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
 
 
-            var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
-            if ( temp == null ||temp.Index >= processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
+            var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingContent.LessonId).FirstOrDefault();
+            if ( temp == null ||temp.Index > processingContent.Index && temp.LessonId == processingContent.LessonId
                 || currentLesson.Index > processingMaterialLesson.Index)//only happened when re learning courses materials when undon courses
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");

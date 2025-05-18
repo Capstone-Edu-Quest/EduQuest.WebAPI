@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduQuest_Application.DTO.Request.Materials;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -22,8 +23,9 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 		private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
+		private readonly ITagRepository _tagRepository;
 
-		public UpdateLessonContentCommandHandler(IMaterialRepository materialRepository, IAssignmentRepository assignmentRepository, IQuizRepository quizRepository, IQuestionRepository questionRepository, IOptionRepository answerRepository, ILessonContentRepository lessonMaterialRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IMapper mapper)
+		public UpdateLessonContentCommandHandler(IMaterialRepository materialRepository, IAssignmentRepository assignmentRepository, IQuizRepository quizRepository, IQuestionRepository questionRepository, IOptionRepository answerRepository, ILessonContentRepository lessonMaterialRepository, ISystemConfigRepository systemConfigRepository, IUnitOfWork unitOfWork, IMapper mapper, ITagRepository tagRepository)
 		{
 			_materialRepository = materialRepository;
 			_assignmentRepository = assignmentRepository;
@@ -34,6 +36,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 			_systemConfigRepository = systemConfigRepository;
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
+			_tagRepository = tagRepository;
 		}
 
 		public async Task<APIResponse> Handle(UpdateLessonContentCommand request, CancellationToken cancellationToken)
@@ -51,29 +54,39 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 			//material.Title = request.Material.Title;
 			//material.Description = request.Material.Description;
 			object processed = null;
-
+			var listTag = await _tagRepository.GetByIdsAsync(request.LessonContent.TagIds);
 			switch (request.LessonContent.Type)
 			{
 				case (int)TypeOfMaterial.Document:
-					processed = await ProcessDocumentMaterialAsync(request.LessonContent, value, request.UserId);
+					processed = await ProcessDocumentMaterialAsync(request.LessonContent, value, request.UserId, listTag);
 					break;
 
 				case (int)TypeOfMaterial.Quiz:
-					processed = await ProcessQuizMaterialAsync(request.LessonContent, value, request.UserId);
+					processed = await ProcessQuizMaterialAsync(request.LessonContent, value, request.UserId, listTag);
 					break;
 
 				case (int)TypeOfMaterial.Video:
-					processed = ProcessVideoMaterialAsync(request.LessonContent, value, request.UserId);
+					processed = ProcessVideoMaterialAsync(request.LessonContent, value, request.UserId, listTag);
 					break;
 
 				case (int)TypeOfMaterial.Assignment:
-					processed = await ProcessAssignmentMaterialAsync(request.LessonContent, value, request.UserId);
+					processed = await ProcessAssignmentMaterialAsync(request.LessonContent, value, request.UserId, listTag);
 					break;
 
 				default:
 					break;
 			}
-			
+			if(processed == null)
+			{
+				return GeneralHelper.CreateErrorResponse(
+				HttpStatusCode.BadRequest,
+				MessageCommon.UpdateFailed,
+				MessageError.UsedContent,
+				"name",
+				$"Lesson Content"
+			);
+			}
+
 			var result = await _unitOfWork.SaveChangesAsync() > 0;
 
 			return new APIResponse
@@ -94,7 +107,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 			};
 		}
 
-		private async Task<Material> ProcessDocumentMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId)
+		private async Task<Material> ProcessDocumentMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId, List<Tag> tags)
 		{
 			var material = await _materialRepository.GetMataterialQuizAssById(item.Id);
 			material.Title = item.Title;
@@ -102,12 +115,12 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 			material.Content = item.Content;
 			material.Duration = (int)config.Value!;
 			material.UpdatedBy = userId;
-
+			material.Tags = tags;
 			await _materialRepository.Update(material);
 			return material;
 		}
 
-		private async Task<Quiz> ProcessQuizMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId)
+		private async Task<Quiz> ProcessQuizMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId, List<Tag> tags)
 		{
 			var isUsed = await _lessonMaterialRepository.IsLessonContentUsed(item.Id);
 			if (isUsed)
@@ -133,6 +146,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 				quiz.Title = item.Title;
 				quiz.Description = item.Description;
 				quiz.UpdatedBy = userId;
+				quiz.Tags = tags;
 				foreach (var question in quiz.Questions)
 				{
 					question.UpdatedAt = DateTime.Now.ToUniversalTime();
@@ -177,7 +191,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 		}
 
 
-		private async Task<Material> ProcessVideoMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId)
+		private async Task<Material> ProcessVideoMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId, List<Tag> tags)
 		{
 			var material = await _materialRepository.GetMataterialQuizAssById(item.Id);
 			material.Title = item.Title;
@@ -186,6 +200,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 			material.UrlMaterial = item.Video.UrlMaterial;
 			material.Thumbnail = item.Video.Thumbnail;
 			material.UpdatedBy = userId;
+			material.Tags = tags;
 
 			/*if (item.Quiz != null)
 			{
@@ -197,7 +212,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 
 
 
-		private async Task<Assignment> ProcessAssignmentMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId)
+		private async Task<Assignment> ProcessAssignmentMaterialAsync(UpdateLessonContentRequest item, SystemConfig config, string userId, List<Tag> tags)
 		{
 			var isUsed = await _lessonMaterialRepository.IsLessonContentUsed(item.Id);
 			if (isUsed)
@@ -210,6 +225,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonConte
 			assignment.Description = item.Description;
 			assignment.UpdatedBy = userId;
 			assignment.UserId = userId;
+			assignment.Tags = tags;
 
 			await _assignmentRepository.Update(assignment);
 			return assignment;

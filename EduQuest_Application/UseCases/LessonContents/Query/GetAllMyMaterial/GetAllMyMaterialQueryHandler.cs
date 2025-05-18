@@ -24,9 +24,9 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetAllMyMaterial
 
 		public async Task<APIResponse> Handle(GetAllMyMaterialQuery request, CancellationToken cancellationToken)
 		{
-			var listMaterial = await _materialRepository.GetByUserId(request.UserId);
-			var listAssignment = await _assignmentRepository.GetByUserId(request.UserId);
-			var listQuiz = await _quizRepository.GetByUserId(request.UserId);
+			var listMaterial = await _materialRepository.GetByUserId(request.UserId, request.Info);
+			var listAssignment = await _assignmentRepository.GetByUserId(request.UserId, request.Info);
+			var listQuiz = await _quizRepository.GetByUserId(request.UserId, request.Info);
 			var response = new
 			{
 				Videos = new

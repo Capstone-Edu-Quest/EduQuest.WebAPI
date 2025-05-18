@@ -1,5 +1,6 @@
 ﻿using EduQuest_Application.DTO.Request.Revenue;
 using EduQuest_Application.DTO.Response.Revenue;
+using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Enums;
 using EduQuest_Domain.Repository;
@@ -7,6 +8,7 @@ using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using static EduQuest_Domain.Enums.GeneralEnums;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -118,10 +120,28 @@ namespace EduQuest_Infrastructure.Repository
 					.Distinct()
 					.ToList();
 
-			// Truy vấn users
-			var instructors = await _context.Users
+			var instructorList = await _context.Users
 				.Where(u => instructorIds.Contains(u.Id))
-				.ToDictionaryAsync(u => u.Id, u => u.Username);
+				.ToListAsync(); 
+
+			if (!string.IsNullOrWhiteSpace(request.InstructorName))
+			{
+				var instructorName = ContentHelper.ConvertVietnameseToEnglish(request.InstructorName.ToLower());
+
+				instructorList = instructorList
+					.Where(u => ContentHelper.ConvertVietnameseToEnglish(u.Username.ToLower()).Contains(instructorName))
+					.ToList();
+			}
+
+			var instructors = instructorList.ToDictionary(u => u.Id, u => u.Username);
+
+			// Nếu có InstructorName trong request, chỉ lấy details của instructor đó
+			if (!string.IsNullOrWhiteSpace(request.InstructorName))
+			{
+				details = details
+					.Where(d => d.InstructorId != null && instructors.ContainsKey(d.InstructorId))
+					.ToList();
+			}
 
 			// 6. Kết hợp Transaction với TransactionDetail để trả DTO
 			var result = details.Select(detail =>

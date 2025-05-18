@@ -1,4 +1,5 @@
-﻿using EduQuest_Domain.Entities;
+﻿using EduQuest_Application.DTO.Request.Materials;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.Generic;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace EduQuest_Domain.Repository
 	{
 		Task<List<Material>> GetMaterialsByIds(List<string> materialIds);
 		Task<Material> GetMataterialQuizAssById(string materialId);
-		Task<List<Material>> GetByUserId(string userId);
+		Task<List<Material>> GetByUserId(string userId, SearchLessonContent info);
 		Task<Material> GetMaterialWithLesson(string materialId);
 		Task<bool> IsOwnerThisMaterial(string userId, string materialId);
 		Task<List<Material>> GetByUserIdAsync(string userId);
