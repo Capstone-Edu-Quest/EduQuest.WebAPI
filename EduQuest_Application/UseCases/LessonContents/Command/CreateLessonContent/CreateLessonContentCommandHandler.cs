@@ -21,12 +21,9 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLessonContent
         private readonly ISystemConfigRepository _systemConfigRepository;
 		private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+		private readonly ITagRepository _tagRepository;
 
-		public CreateLessonContentCommandHandler(IMaterialRepository materialRepository, 
-			IAssignmentRepository assignmentRepository, 
-			IQuizRepository quizRepository, 
-			ISystemConfigRepository systemConfigRepository, 
-			IMapper mapper, IUnitOfWork unitOfWork)
+		public CreateLessonContentCommandHandler(IMaterialRepository materialRepository, IAssignmentRepository assignmentRepository, IQuizRepository quizRepository, ISystemConfigRepository systemConfigRepository, IMapper mapper, IUnitOfWork unitOfWork, ITagRepository tagRepository)
 		{
 			_materialRepository = materialRepository;
 			_assignmentRepository = assignmentRepository;
@@ -34,6 +31,7 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLessonContent
 			_systemConfigRepository = systemConfigRepository;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
+			_tagRepository = tagRepository;
 		}
 
 		public async Task<APIResponse> Handle(CreateLeaningMaterialCommand request, CancellationToken cancellationToken)
@@ -48,24 +46,29 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLessonContent
 			}
 
 			var listMaterial = new List<Material>();
+			
 			object processed = null;
 			// Loop over materials and process them
 			foreach (var item in request.LessonContent)
 			{
+				var listTag = await _tagRepository.GetByIdsAsync(item.TagIds);
 				processed = await ProcessMaterialAsync(item, request.UserId);
 				if (processed != null)
 				{
 					switch (processed)
 					{
 						case Material material:
+							material.Tags = listTag;
 							listMaterial.Add(material);
 							break;
 
 						case Quiz quiz:
+							quiz.Tags = listTag;
 							await _quizRepository.Add(quiz);
 							break;
 
 						case Assignment assignment:
+							assignment.Tags = listTag;
 							await _assignmentRepository.Add(assignment);
 							break;
 					}
@@ -99,8 +102,6 @@ namespace EduQuest_Application.UseCases.Materials.Command.CreateLessonContent
 
 		private async Task<Object?> ProcessMaterialAsync(CreateLessonContentRequest item, string userId)
 		{
-			
-
 			// Fetch system configuration for material type
 			var type = Enum.GetName (typeof(TypeOfMaterial), item.Type);
 			var value = await _systemConfigRepository.GetByName(type);
