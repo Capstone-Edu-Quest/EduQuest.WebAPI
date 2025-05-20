@@ -106,7 +106,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         var tag = course.Tags.Where(l => l.Type == TagType.Subject.ToString()).FirstOrDefault();
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
-        if (temp == null || temp.Index >= processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
+        if (temp == null || temp.Index > processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
             || currentLesson.Index > processingMaterialLesson.Index)//only happened when re learning courses materials when undon courses
         {
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, "name", "assignment");

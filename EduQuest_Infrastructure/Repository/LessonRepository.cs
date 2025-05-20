@@ -170,7 +170,7 @@ namespace EduQuest_Infrastructure.Repository
             // 2. Lấy index của materialId trong lesson
             var targetLessonMaterial = await _context.LessonContents
 				.AsNoTracking()
-                .FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.AssignmentId == quizId);
+                .FirstOrDefaultAsync(lm => lm.LessonId == lessonId && lm.QuizId == quizId);
 
             if (targetLessonMaterial == null) return 0;
 
