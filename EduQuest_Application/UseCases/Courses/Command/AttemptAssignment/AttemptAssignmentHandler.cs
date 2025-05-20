@@ -1,4 +1,6 @@
-﻿using EduQuest_Application.Abstractions.Redis;
+﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
@@ -7,6 +9,7 @@ using EduQuest_Domain.Repository.UnitOfWork;
 using MediatR;
 using System.Net;
 using static EduQuest_Domain.Constants.Constants;
+using static EduQuest_Domain.Enums.GeneralEnums;
 using static EduQuest_Domain.Enums.QuestEnum;
 
 namespace EduQuest_Application.UseCases.Courses.Command.AttemptAssignment;
@@ -24,6 +27,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
     private readonly IRedisCaching _redis;
     private readonly IStudyTimeRepository _studyTimeRepository;
 	private readonly ILessonContentRepository _lessonMaterialRepository;
+    private readonly IMapper _mapper;
+    private readonly IItemShardRepository _itemShardRepository;
 
 	public AttemptAssignmentHandler(IAssignmentRepository assignmentRepository, 
         ILessonRepository lessonRepository, 
@@ -32,7 +37,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         IUserQuestRepository userQuestRepository, 
         ICourseRepository courseRepository, 
         IUserMetaRepository userMetaRepository, 
-        IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, ILessonContentRepository lessonMaterialRepository)
+        IMaterialRepository materialRepository, IRedisCaching redis, 
+        IStudyTimeRepository studyTimeRepository, ILessonContentRepository lessonMaterialRepository, IMapper mapper, IItemShardRepository itemShardRepository)
 	{
 		_assignmentRepository = assignmentRepository;
 		_lessonRepository = lessonRepository;
@@ -45,10 +51,13 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
 		_redis = redis;
 		_studyTimeRepository = studyTimeRepository;
 		_lessonMaterialRepository = lessonMaterialRepository;
+        _mapper = mapper;
+        _itemShardRepository = itemShardRepository;
 	}
 
 	public async Task<APIResponse> Handle(AttemptAssignmentCommand request, CancellationToken cancellationToken)
     {
+        AssignmentAttemptResponseUser response = new AssignmentAttemptResponseUser();
         int attempNo = await _assignmentAttemptRepository.GetAttemptNo(request.Attempt.AssignmentId, request.LessonId, request.UserId) + 1;
         if (attempNo > 1)
         {
@@ -83,7 +92,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         attempt.AnswerScore = -1;
         attempt.CreatedAt = now.ToUniversalTime();
         await _assignmentAttemptRepository.Add(attempt);
-
+        response = _mapper.Map<AssignmentAttemptResponseUser>(attempt);
 
 
         var course = await _courseRepository.GetById(lesson.CourseId);
@@ -94,13 +103,13 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         LessonContent? temp = lesson.LessonContents.FirstOrDefault(m => m.Index ==  learner.CurrentContentIndex);
         int nextIndex = temp.Index;
         LessonContent? processingMaterial = lesson.LessonContents.FirstOrDefault(m => m.AssignmentId == request.Attempt.AssignmentId);
-
+        var tag = course.Tags.Where(l => l.Type == TagType.Subject.ToString()).FirstOrDefault();
         var currentLesson = course.Lessons!.Where(l => l.Id == learner.CurrentLessonId).FirstOrDefault();
         var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingMaterial.LessonId).FirstOrDefault();
         if (temp == null || temp.Index >= processingMaterial.Index && temp.LessonId == processingMaterial.LessonId
             || currentLesson.Index > processingMaterialLesson.Index)//only happened when re learning courses materials when undon courses
         {
-            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, attempt, "name", "assignment");
+            return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, response, "name", "assignment");
         }
 
 
@@ -110,6 +119,28 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             nextIndex = 0;
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
+            //handle Item shards
+            int addedShards = GeneralHelper.GenerateItemShards(tag);
+            response.ItemShard = addedShards;
+            var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
+            if (item != null)
+            {
+                item.Quantity += addedShards;
+                item.UpdatedAt = DateTime.Now.ToUniversalTime();
+                await _itemShardRepository.Update(item);
+            }
+            else
+            {
+                await _itemShardRepository.Add(new ItemShards
+                {
+                    UserId = request.UserId,
+                    TagId = tag.Id,
+                    Quantity = addedShards,
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
+                });
+            }
+            //
         }
         if (newLesson == null && lessonMaterial.Index == maxIndex)
         {
@@ -117,6 +148,28 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
+            //handle Item shards
+            int addedShards = GeneralHelper.GenerateItemShards(tag);
+            response.ItemShard = addedShards;
+            var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
+            if (item != null)
+            {
+                item.Quantity += addedShards;
+                item.UpdatedAt = DateTime.Now.ToUniversalTime();
+                await _itemShardRepository.Update(item);
+            }
+            else
+            {
+                await _itemShardRepository.Add(new ItemShards
+                {
+                    UserId = request.UserId,
+                    TagId = tag.Id,
+                    Quantity = addedShards,
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
+                });
+            }
+            //
         }
         if (lessonMaterial.Index < maxIndex)
         {
@@ -169,6 +222,6 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
 
         
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.Complete,
-            attempt, "name", "assignment");
+            response, "name", "assignment");
     }
 }

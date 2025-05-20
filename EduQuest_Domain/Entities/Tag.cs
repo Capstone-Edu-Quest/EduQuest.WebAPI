@@ -25,5 +25,7 @@ namespace EduQuest_Domain.Entities
 
 		[JsonIgnore]
         public virtual ICollection<LearningPath> LearningPaths { get; set; }
+		[JsonIgnore]
+		public virtual ICollection<ShopItem> ShopItems { get; set; }
     }
 }

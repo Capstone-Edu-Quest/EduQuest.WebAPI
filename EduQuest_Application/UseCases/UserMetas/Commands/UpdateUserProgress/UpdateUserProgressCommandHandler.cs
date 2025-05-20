@@ -1,4 +1,6 @@
-﻿using EduQuest_Application.Abstractions.Redis;
+﻿using AutoMapper;
+using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.DTO.Response.Courses;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
@@ -25,8 +27,11 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 		private readonly IRedisCaching _redis;
 		private readonly IStudyTimeRepository _studyTimeRepository;
 		private readonly IMediator mediator;
+        private readonly IMapper _mapper;
+        private readonly IItemShardRepository _itemShardRepository;
 
-        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonContentRepository lessonMaterialRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator)
+        public UpdateUserProgressCommandHandler(IUserMetaRepository userMetaRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, ILessonRepository lessonRepository, ILessonContentRepository lessonMaterialRepository, IMaterialRepository materialRepository, ISystemConfigRepository systemConfigRepository, IUserQuestRepository userQuestRepository, 
+            IRedisCaching redis, IStudyTimeRepository studyTimeRepository, IMediator mediator, IMapper mapper, IItemShardRepository itemShardRepository)
         {
             _userMetaRepository = userMetaRepository;
             _unitOfWork = unitOfWork;
@@ -39,6 +44,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             _redis = redis;
             _studyTimeRepository = studyTimeRepository;
             this.mediator = mediator;
+            _mapper = mapper;
+            _itemShardRepository = itemShardRepository;
         }
 
         public async Task<APIResponse> Handle(UpdateUserProgressCommand request, CancellationToken cancellationToken)
@@ -59,7 +66,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			}
             if(courseLearner.TotalTime.Value >= course.CourseStatistic.TotalTime.Value)
             {
-                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, courseLearner, "name", "user progess");
+                return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully, 
+                    _mapper.Map<CourseLearnerResponse>(courseLearner), "name", "user progess");
             }
             
             
@@ -72,6 +80,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             LessonContent ? processingContent = lesson.LessonContents.FirstOrDefault(m => m.MaterialId == request.Info.ContentId || m.QuizId == request.Info.ContentId || m.AssignmentId == request.Info.ContentId);
             var newLesson = course.Lessons!.Where(l => l.Index == lesson.Index + 1).FirstOrDefault();
 
+            var response = _mapper.Map<CourseLearnerResponse>(courseLearner);
+            var tag = course.Tags.Where(l => l.Type == TagType.Subject.ToString()).FirstOrDefault();
 
             var processingMaterialLesson = course.Lessons!.Where(l => l.Id == processingContent.LessonId).FirstOrDefault();
             if ( temp == null ||temp.Index > processingContent.Index && temp.LessonId == processingContent.LessonId
@@ -88,14 +98,61 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				{
                     newLessonId = newLesson.Id;
                     nextIndex = 0;
+                    //handle Item shards
+                    int addedShards = GeneralHelper.GenerateItemShards(tag);
+                    response.ItemShard = addedShards;
+                    var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
+                    if(item != null)
+                    {
+                        item.Quantity += addedShards;
+                        item.UpdatedAt = DateTime.Now.ToUniversalTime();
+                        await _itemShardRepository.Update(item);
+                    }
+                    else
+                    {
+                        await _itemShardRepository.Add(new ItemShards
+                        {
+                            UserId = request.UserId,
+                            TagId = tag.Id,
+                            Quantity = addedShards,
+                            Id = Guid.NewGuid().ToString(),
+                            CreatedAt = DateTime.Now.ToUniversalTime(),
+                        });
+                    }
+                    //
                 }
 				if(newLesson == null)
 				{
 					await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE, 1);
                     await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
+                    await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
+                    await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
+                    //handle Item shards
+                    int addedShards = GeneralHelper.GenerateItemShards(tag);
+                    response.ItemShard = addedShards;
+                    var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
+                    if (item != null)
+                    {
+                        item.Quantity += addedShards;
+                        item.UpdatedAt = DateTime.Now.ToUniversalTime();
+                        await _itemShardRepository.Update(item);
+                    }
+                    else
+                    {
+                        await _itemShardRepository.Add(new ItemShards
+                        {
+                            UserId = request.UserId,
+                            TagId = tag.Id,
+                            Quantity = addedShards,
+                            Id = Guid.NewGuid().ToString(),
+                            CreatedAt = DateTime.Now.ToUniversalTime(),
+                        });
+                    }
+                    //
                 }
 
-            }else if(temp != null && temp.Index < maxIndex)
+            }
+            else if(temp != null && temp.Index < maxIndex)
 			{
                 nextIndex += 1;
 			}
@@ -169,7 +226,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 			return new APIResponse
 			{
 				IsError = !result,
-				Payload = result ? courseLearner : null,
+				Payload = result ? response : null,
 				Errors = result ? null : new ErrorResponse
 				{
 					StatusResponse = HttpStatusCode.BadRequest,
