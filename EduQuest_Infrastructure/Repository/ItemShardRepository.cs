@@ -20,4 +20,9 @@ public class ItemShardRepository : GenericRepository<ItemShards>, IItemShardRepo
     {
         return await _context.ItemShards.Where(i => i.TagId == tagId && i.UserId == userId).FirstOrDefaultAsync();
     }
+    public async Task<List<ItemShards>?> GetItemShardsByUserId(string userId)
+    {
+       var result = await _context.ItemShards.Where(i => i.UserId == userId).ToListAsync();
+        return result;
+    }
 }

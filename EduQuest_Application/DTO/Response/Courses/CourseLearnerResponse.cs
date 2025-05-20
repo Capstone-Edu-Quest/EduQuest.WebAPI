@@ -19,4 +19,5 @@ public class CourseLearnerResponse : IMapFrom<CourseLearner>
     public double? TotalTime { get; set; }
     public double? ProgressPercentage { get; set; }
     public int? ItemShard { get; set; } = null;
+    public Dictionary<string, int>? ItemShards { get; set; }
 }
