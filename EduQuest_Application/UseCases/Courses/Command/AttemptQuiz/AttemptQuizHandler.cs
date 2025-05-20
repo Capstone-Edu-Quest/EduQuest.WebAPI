@@ -153,13 +153,13 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
             //handle Item shards
-           
             int addedShards = GeneralHelper.GenerateItemShards(tag);
             response.ItemShard = addedShards;
             var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
             if (item != null)
             {
                 item.Quantity += addedShards;
+                item.UpdatedAt = DateTime.Now.ToUniversalTime();
                 await _itemShardRepository.Update(item);
             }
             else
@@ -169,7 +169,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                     UserId = request.UserId,
                     TagId = tag.Id,
                     Quantity = addedShards,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
                 });
             }
             //
@@ -187,6 +188,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             if (item != null)
             {
                 item.Quantity += addedShards;
+                item.UpdatedAt = DateTime.Now.ToUniversalTime();
                 await _itemShardRepository.Update(item);
             }
             else
@@ -196,7 +198,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                     UserId = request.UserId,
                     TagId = tag.Id,
                     Quantity = addedShards,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
                 });
             }
             //

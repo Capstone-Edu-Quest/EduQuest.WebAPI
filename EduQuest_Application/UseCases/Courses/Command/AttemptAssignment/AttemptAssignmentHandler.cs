@@ -126,6 +126,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             if (item != null)
             {
                 item.Quantity += addedShards;
+                item.UpdatedAt = DateTime.Now.ToUniversalTime();
                 await _itemShardRepository.Update(item);
             }
             else
@@ -135,7 +136,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
                     UserId = request.UserId,
                     TagId = tag.Id,
                     Quantity = addedShards,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
                 });
             }
             //
@@ -153,6 +155,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             if (item != null)
             {
                 item.Quantity += addedShards;
+                item.UpdatedAt = DateTime.Now.ToUniversalTime();
                 await _itemShardRepository.Update(item);
             }
             else
@@ -162,7 +165,8 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
                     UserId = request.UserId,
                     TagId = tag.Id,
                     Quantity = addedShards,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = DateTime.Now.ToUniversalTime(),
                 });
             }
             //

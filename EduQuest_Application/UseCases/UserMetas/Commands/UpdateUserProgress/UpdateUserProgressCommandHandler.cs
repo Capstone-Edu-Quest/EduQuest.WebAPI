@@ -105,6 +105,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     if(item != null)
                     {
                         item.Quantity += addedShards;
+                        item.UpdatedAt = DateTime.Now.ToUniversalTime();
                         await _itemShardRepository.Update(item);
                     }
                     else
@@ -114,7 +115,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                             UserId = request.UserId,
                             TagId = tag.Id,
                             Quantity = addedShards,
-                            Id = Guid.NewGuid().ToString()
+                            Id = Guid.NewGuid().ToString(),
+                            CreatedAt = DateTime.Now.ToUniversalTime(),
                         });
                     }
                     //
@@ -126,7 +128,26 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE, 1);
                     await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
                     //handle Item shards
-                    response.ItemShard = GeneralHelper.GenerateItemShards(tag);
+                    int addedShards = GeneralHelper.GenerateItemShards(tag);
+                    response.ItemShard = addedShards;
+                    var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
+                    if (item != null)
+                    {
+                        item.Quantity += addedShards;
+                        item.UpdatedAt = DateTime.Now.ToUniversalTime();
+                        await _itemShardRepository.Update(item);
+                    }
+                    else
+                    {
+                        await _itemShardRepository.Add(new ItemShards
+                        {
+                            UserId = request.UserId,
+                            TagId = tag.Id,
+                            Quantity = addedShards,
+                            Id = Guid.NewGuid().ToString(),
+                            CreatedAt = DateTime.Now.ToUniversalTime(),
+                        });
+                    }
                     //
                 }
 
