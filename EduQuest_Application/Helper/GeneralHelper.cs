@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text.Json;
 using System.Text;
+using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.Helper;
 
@@ -95,5 +96,15 @@ public class GeneralHelper
             }
         }
         return result;
+    }
+
+
+    public static int GenerateItemShards(Tag? courseTag)
+    {
+        if(courseTag == null)
+        {
+            return 0;
+        }
+        return 5;
     }
 }
