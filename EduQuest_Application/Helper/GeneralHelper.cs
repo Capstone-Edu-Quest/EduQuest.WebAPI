@@ -8,6 +8,7 @@ namespace EduQuest_Application.Helper;
 
 public class GeneralHelper
 {
+    private static Random random = new Random();
     public static APIResponse CreateErrorResponse(HttpStatusCode statusCode, string message, 
         string messageError, string key, string value)
     {
@@ -105,6 +106,7 @@ public class GeneralHelper
         {
             return 0;
         }
-        return 5;
+        int shardRandom = random.Next(1, 5);
+        return shardRandom;
     }
 }

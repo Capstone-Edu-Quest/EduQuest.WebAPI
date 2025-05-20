@@ -32,7 +32,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
     private readonly IItemShardRepository _itemShardRepository;
     public AttemptQuizHandler(IQuizRepository quizRepository, ILessonRepository lessonRepository, IQuizAttemptRepository quizAttemptRepository,
         IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository,
-        ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository, 
+        ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository,
         ILessonContentRepository lessonMaterialRepository, IItemShardRepository itemShardRepository)
     {
         _quizRepository = quizRepository;
@@ -62,7 +62,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                 MessageCommon.NotFound, "name", "lesson");
         }
         var materials = await _materialRepository.GetMaterialsByIds(lesson.LessonContents.Select(x => x.MaterialId).ToList());
-       
+
         var lessonMaterial = lesson.LessonContents.FirstOrDefault(m => m.QuizId == request.Attempt.QuizId);
         var quiz = await _quizRepository.GetQuizById(request.Attempt.QuizId);
         if (lessonMaterial == null || quiz == null)
@@ -255,6 +255,18 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
 
 
         response.isPassed = true;
+
+        var userItemShards = await _itemShardRepository.GetItemShardsByUserId(request.UserId);
+        Dictionary<string, int> shards = new Dictionary<string, int>();
+        if (userItemShards != null)
+        {
+            foreach (var shard in userItemShards)
+            {
+                shards.Add(shard.Tags.Name, shard.Quantity);
+            }
+            response.ItemShards = shards;
+        }
+
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
             response, "name", "quiz");
     }

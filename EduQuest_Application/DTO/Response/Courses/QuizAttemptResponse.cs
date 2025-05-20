@@ -18,4 +18,5 @@ public class QuizAttemptResponse : IMapFrom<QuizAttempt>
     public DateTime? SubmitAt { get; set; }
     public bool isPassed {  get; set; } = false;
     public int? ItemShard { get; set; } = null;
+    public Dictionary<string, int>? ItemShards { get; set; }
 }
