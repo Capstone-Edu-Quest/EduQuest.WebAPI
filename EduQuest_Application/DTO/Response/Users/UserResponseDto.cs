@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EduQuest_Application.DTO.Response.ItemShard;
 using EduQuest_Application.DTO.Response.Mascot;
 using EduQuest_Application.DTO.Response.Tags;
 using EduQuest_Application.DTO.Response.UserStatistics;
@@ -20,6 +21,7 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
     public bool isPro { get; set; }
+    public List<ItemShardsDto> itemShards { get; set; }
     public List<UserTagDto> Tags { get; set; }
     public UserStatisticDto statistic { get; set; }
     public List<string> mascotItem { get; set; }

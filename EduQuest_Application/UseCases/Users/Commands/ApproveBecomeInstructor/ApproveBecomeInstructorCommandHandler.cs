@@ -48,17 +48,17 @@ public class ApproveBecomeInstructorCommandHandler : IRequestHandler<ApproveBeco
 
       
 
-        await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
-        {
-            userId = user.Id,
-            Receiver = user.Id,
-            Content = message,
-            Url = "/become-instructor",
-            Values = new Dictionary<string, string>
-            {
-                { "name", "" },
-            }
-        });
+        //await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+        //{
+        //    userId = user.Id,
+        //    Receiver = user.Id,
+        //    Content = message,
+        //    Url = "/become-instructor",
+        //    Values = new Dictionary<string, string>
+        //    {
+        //        { "name", "" },
+        //    }
+        //});
 
         
         return GeneralHelper.CreateSuccessResponse(
