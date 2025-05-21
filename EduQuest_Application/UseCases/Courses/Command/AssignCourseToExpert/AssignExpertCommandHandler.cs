@@ -44,17 +44,17 @@ public class AssignExpertCommandHandler : IRequestHandler<AssignExpertCommand, A
         await _courseRepository.Update(existCourse);
         await _unitOfWork.SaveChangesAsync();
 
-        await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
-        {
-            userId = existUser.Id,
-            Receiver = existUser.Id,
-            Content = NotificationMessage.A_STAFF_HAS_ASSIGN_COURSE_TO_YOU,
-            Url = "/courses-manage/approval",
-            Values = new Dictionary<string, string>
-            {
-                { "course", existCourse.Title },
-            }
-        });
+        //await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+        //{
+        //    userId = existUser.Id,
+        //    Receiver = existUser.Id,
+        //    Content = NotificationMessage.A_STAFF_HAS_ASSIGN_COURSE_TO_YOU,
+        //    Url = "/courses-manage/approval",
+        //    Values = new Dictionary<string, string>
+        //    {
+        //        { "course", existCourse.Title },
+        //    }
+        //});
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AssignExpert, existUser, "name", request.AssignTo);
     }
 }

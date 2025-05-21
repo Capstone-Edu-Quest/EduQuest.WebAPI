@@ -76,17 +76,17 @@ public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, APIR
 
 			if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
-                {
-                    userId = courseStatistic.CreatedBy,
-                    Receiver = courseStatistic.CreatedBy,
-                    Content = NotificationMessage.YOUR_COURSE_WAS_RATED,
-                    Url = $"/my-courses/{courseStatistic.Id}",
-                    Values = new Dictionary<string, string>
-                    {
-                        { "name", user.Username },
-                    }
-                });
+                //await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+                //{
+                //    userId = courseStatistic.CreatedBy,
+                //    Receiver = courseStatistic.CreatedBy,
+                //    Content = NotificationMessage.YOUR_COURSE_WAS_RATED,
+                //    Url = $"/my-courses/{courseStatistic.Id}",
+                //    Values = new Dictionary<string, string>
+                //    {
+                //        { "name", user.Username },
+                //    }
+                //});
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.CreateSuccesfully,
                     _mapper.Map<FeedbackResponse>(newFeedback), Key, value);
             }

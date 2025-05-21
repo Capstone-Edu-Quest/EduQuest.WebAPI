@@ -82,17 +82,17 @@ public class ApproveCourseCommandHandler : IRequestHandler<ApproveCourseCommand,
 
         await _courseRepository.Update(existingCourse);
         var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
-        {
-            userId = existingCourse.CreatedBy,
-            Receiver = existingCourse.CreatedBy,
-            Content = message,
-            Url = $"/my-courses/{existingCourse.Id}",
-            Values = new Dictionary<string, string>
-            {
-                { "course", existingCourse.Title },
-            }
-        });
+        //await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+        //{
+        //    userId = existingCourse.CreatedBy,
+        //    Receiver = existingCourse.CreatedBy,
+        //    Content = message,
+        //    Url = $"/my-courses/{existingCourse.Id}",
+        //    Values = new Dictionary<string, string>
+        //    {
+        //        { "course", existingCourse.Title },
+        //    }
+        //});
         return new APIResponse
         {
             IsError = false,

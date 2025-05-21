@@ -28,7 +28,8 @@ public class CreateShopItemCommandHandler : IRequestHandler<CreateShopItemComman
         {
             Id = Guid.NewGuid().ToString(),
             Name = item.Name,
-            Price = item.Price
+            Price = item.Price,
+            TagId = item.TagId
         }).ToList();
 
         await _shopItemRepository.CreateRangeAsync(newShopItems);

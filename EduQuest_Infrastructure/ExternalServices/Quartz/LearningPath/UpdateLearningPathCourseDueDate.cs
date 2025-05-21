@@ -39,19 +39,19 @@ public class UpdateLearningPathCourseDueDate : IJob
             
             foreach (var item in overdue)
             {
-                await _fireBaseRealtimeService.PushNotificationAsync(
-                              new NotificationDto
-                              {
-                                  userId = item.UserId,
-                                  Content = NotificationMessage.LEARNING_PATH_OVERDUE,
-                                  Receiver = item.UserId,
-                                  Url = "",
-                                  Values = new Dictionary<string, string>
-                                  {
-                                        { "learning_path", item.LearningPath.Name }
-                                  }
-                              }
-                          );
+                //await _fireBaseRealtimeService.PushNotificationAsync(
+                //              new NotificationDto
+                //              {
+                //                  userId = item.UserId,
+                //                  Content = NotificationMessage.LEARNING_PATH_OVERDUE,
+                //                  Receiver = item.UserId,
+                //                  Url = "",
+                //                  Values = new Dictionary<string, string>
+                //                  {
+                //                        { "learning_path", item.LearningPath.Name }
+                //                  }
+                //              }
+                //          );
                 var user = item.User;
                 await _emailService.SendEmailWarningLearningPathOverDueAsync(
                     "LEARNING PATH OVERDUE WARNING EMAIL", user.Email!, item.LearningPath.Name, item.LearningPathId,

@@ -32,15 +32,15 @@ public class SubmitCourseCommandHandler : IRequestHandler<SubmitCourseCommand, A
         if (result.Status == GeneralEnums.StatusCourse.Draft.ToString())
         {
             await _courseRepository.UpdateStatus(GeneralEnums.StatusCourse.Pending.ToString(), request.courseId);
-            await _notifcation.PushNotificationAsync(
-                new NotificationDto
-                {
-                    userId = result.CreatedBy,
-                    Content = NotificationMessage.SUBMIT_COURSE_SUCCESSFULLY,
-                    Receiver = result.CreatedBy,
-                    Url = "/my-courses",
-                }
-             );
+            //await _notifcation.PushNotificationAsync(
+            //    new NotificationDto
+            //    {
+            //        userId = result.CreatedBy,
+            //        Content = NotificationMessage.SUBMIT_COURSE_SUCCESSFULLY,
+            //        Receiver = result.CreatedBy,
+            //        Url = "/my-courses",
+            //    }
+            // );
             return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.SubmitSuccessfully, null, "name", result.Title);
         }
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateFailed, null, "name", result.Title);
