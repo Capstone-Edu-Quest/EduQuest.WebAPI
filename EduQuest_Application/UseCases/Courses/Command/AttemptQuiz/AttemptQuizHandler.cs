@@ -154,7 +154,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
             //handle Item shards
             int addedShards = GeneralHelper.GenerateItemShards(tag);
-            response.ItemShard = addedShards;
+            response.AddedItemShard = addedShards;
             var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
             if (item != null)
             {
@@ -183,7 +183,7 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
             //handle Item shards
             int addedShards = GeneralHelper.GenerateItemShards(tag);
-            response.ItemShard = addedShards;
+            response.AddedItemShard = addedShards;
             var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
             if (item != null)
             {

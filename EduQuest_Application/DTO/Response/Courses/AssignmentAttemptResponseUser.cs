@@ -22,6 +22,6 @@ public class AssignmentAttemptResponseUser : IMapFrom<AssignmentAttempt>
     public string? UpdatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public int? ItemShard { get; set; } = null;
+    public int? AddedItemShard { get; set; } = null;
     public Dictionary<string, int>? ItemShards { get; set; }
 }
