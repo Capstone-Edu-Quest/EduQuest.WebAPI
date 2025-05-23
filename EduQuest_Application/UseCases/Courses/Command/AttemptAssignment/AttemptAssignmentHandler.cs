@@ -121,7 +121,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
             //handle Item shards
             int addedShards = GeneralHelper.GenerateItemShards(tag);
-            response.ItemShard = addedShards;
+            response.AddedItemShard = addedShards;
             var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
             if (item != null)
             {
@@ -150,7 +150,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.COURSE_TIME, 1);
             //handle Item shards
             int addedShards = GeneralHelper.GenerateItemShards(tag);
-            response.ItemShard = addedShards;
+            response.AddedItemShard = addedShards;
             var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
             if (item != null)
             {

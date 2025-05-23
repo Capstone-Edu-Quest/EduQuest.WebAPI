@@ -100,7 +100,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     nextIndex = 0;
                     //handle Item shards
                     int addedShards = GeneralHelper.GenerateItemShards(tag);
-                    response.ItemShard = addedShards;
+                    response.AddedItemShard = addedShards;
                     var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
                     if (item != null)
                     {
@@ -129,7 +129,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.STAGE_TIME, 1);
                     //handle Item shards
                     int addedShards = GeneralHelper.GenerateItemShards(tag);
-                    response.ItemShard = addedShards;
+                    response.AddedItemShard = addedShards;
                     var item = await _itemShardRepository.GetItemShardsByTagId(tag!.Id, request.UserId);
                     if (item != null)
                     {
