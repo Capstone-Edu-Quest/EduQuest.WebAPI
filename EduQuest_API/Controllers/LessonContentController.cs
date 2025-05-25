@@ -25,7 +25,7 @@ namespace EduQuest_API.Controllers
 		[HttpGet("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetAllMaterial([FromQuery] SearchLessonContent info, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> GetAllLessonCotent([FromQuery] SearchLessonContent info, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetAllMyMaterialQuery(userId, info), cancellationToken);
@@ -47,7 +47,7 @@ namespace EduQuest_API.Controllers
 		[HttpPut("")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> UpdateMaterial([FromBody] UpdateLessonContentRequest request, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> UpdateLessonContent([FromBody] UpdateLessonContentRequest request, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new UpdateLessonContentCommand(userId, request), cancellationToken);
