@@ -383,7 +383,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             var meta = user.UserMeta;
             var currentExp = meta.Exp;
             int maxLevel = await _levelRepository.GetMaxLevelNumber();
-            while (currentExp > 250)
+            while (currentExp > 1)
             {
                 var currentLevel = await _levelRepository.GetByLevelNum(meta.Level.Value);
                 if (currentLevel == null)
