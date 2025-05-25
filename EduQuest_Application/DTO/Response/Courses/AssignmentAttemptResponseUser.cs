@@ -24,4 +24,5 @@ public class AssignmentAttemptResponseUser : IMapFrom<AssignmentAttempt>
     public DateTime? DeletedAt { get; set; }
     public int? AddedItemShard { get; set; } = null;
     public Dictionary<string, int>? ItemShards { get; set; }
+    public LevelUpNotiModel LevelInfo { get; set; } = new LevelUpNotiModel();
 }

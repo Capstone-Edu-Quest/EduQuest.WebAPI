@@ -109,4 +109,10 @@ public class GeneralHelper
         int shardRandom = random.Next(1, 5);
         return shardRandom;
     }
+
+    public static int GenerateExpEarned(double? learningTime)
+    {
+        if(learningTime == null) { return 0; }
+        return (int)Math.Ceiling((double)learningTime! * 2);
+    }
 }

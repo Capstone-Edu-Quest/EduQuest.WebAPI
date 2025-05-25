@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Azure;
 using EduQuest_Application.Abstractions.Redis;
+using EduQuest_Application.DTO.Response;
+using EduQuest_Application.DTO.Response.Coupons;
 using EduQuest_Application.DTO.Response.Courses;
+using EduQuest_Application.DTO.Response.Quests;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Response;
@@ -30,10 +33,12 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
     private readonly IStudyTimeRepository _studyTimeRepository;
     private readonly ILessonContentRepository _lessonMaterialRepository;
     private readonly IItemShardRepository _itemShardRepository;
+    private readonly ILevelRepository _levelRepository;
+    private readonly ICouponRepository _couponRepository;
     public AttemptQuizHandler(IQuizRepository quizRepository, ILessonRepository lessonRepository, IQuizAttemptRepository quizAttemptRepository,
         IMapper mapper, IUnitOfWork unitOfWork, IUserMetaRepository userMetaRepository, IUserQuestRepository userQuestRepository,
         ICourseRepository courseRepository, IMaterialRepository materialRepository, IRedisCaching redis, IStudyTimeRepository studyTimeRepository,
-        ILessonContentRepository lessonMaterialRepository, IItemShardRepository itemShardRepository)
+        ILessonContentRepository lessonMaterialRepository, IItemShardRepository itemShardRepository, ILevelRepository levelRepository, ICouponRepository couponRepository)
     {
         _quizRepository = quizRepository;
         _lessonRepository = lessonRepository;
@@ -48,6 +53,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         _studyTimeRepository = studyTimeRepository;
         _lessonMaterialRepository = lessonMaterialRepository;
         _itemShardRepository = itemShardRepository;
+        _levelRepository = levelRepository;
+        _couponRepository = couponRepository;
     }
 
     public async Task<APIResponse> Handle(AttemptQuizCommand request, CancellationToken cancellationToken)
@@ -225,6 +232,16 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         }
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
         userMeta.TotalStudyTime += request.Attempt.TotalTime;
+        if (userMeta.LastLearningDay == null)
+        {
+            userMeta.LastLearningDay = DateTime.Now.ToUniversalTime();
+        }
+
+        DateTime lastLearningDay = userMeta.LastLearningDay.Value.Date;
+
+        userMeta.CurrentStreak = (lastLearningDay == DateTime.UtcNow.Date.AddDays(-1)) ? userMeta.CurrentStreak + 1 : 1;
+        userMeta.LastLearningDay = DateTime.Now.ToUniversalTime();
+        userMeta.LongestStreak = Math.Max((byte)userMeta.LongestStreak!, (byte)userMeta.CurrentStreak!);
         await _userMetaRepository.Update(userMeta);
 
         var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
@@ -251,11 +268,17 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Attempt.TotalTime);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Attempt.TotalTime);
+
+
+        LevelUpNotiModel levelup = await HandlerLevelUp(userMeta.User, new ClaimRewardResponse());
+        int addedExp = GeneralHelper.GenerateExpEarned(request.Attempt.TotalTime);
+        userMeta.Exp += addedExp;
+        levelup.ExpAdded = addedExp;
         await _unitOfWork.SaveChangesAsync();
 
 
         response.isPassed = true;
-
+        response.LevelInfo = levelup;
         var userItemShards = await _itemShardRepository.GetItemShardsByUserId(request.UserId);
         Dictionary<string, int> shards = new Dictionary<string, int>();
         if (userItemShards != null)
@@ -270,4 +293,153 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
         return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.Complete,
             response, "name", "quiz");
     }
+
+
+    #region handle level up
+    private int[] GetRewardType(string input)
+    {
+        int[] result = input.Split(',').Select(int.Parse).ToArray();
+        return result;
+    }
+    private async Task HandleReward(int rewardType, User user, string[] rewardValue, int arrayIndex,
+   ClaimRewardResponse response)
+    {
+        DateTime now = DateTime.Now;
+
+
+        if (arrayIndex < 0 || arrayIndex >= rewardValue.Length)
+        {
+            throw new IndexOutOfRangeException("Invalid array index.");
+        }
+        double? BoostValue = null;
+        if (user.Boosters != null)
+        {
+            var booster = user.Boosters
+           .Where(b => b.DueDate >= now)
+           .OrderByDescending(b => b.BoostValue)
+           .FirstOrDefault();
+            BoostValue = booster?.BoostValue;
+        }
+        switch (rewardType)
+        {
+            case (int)RewardType.Gold:
+                if (int.TryParse(rewardValue[arrayIndex], out int addedGold))
+                {
+                    user.UserMeta.Gold += BoostValue != null ? Convert.ToInt32(addedGold * BoostValue / 100) : addedGold;
+                }
+                break;
+
+            case (int)RewardType.Exp:
+                if (int.TryParse(rewardValue[arrayIndex], out int addedExp))
+                {
+                    user.UserMeta.Exp += BoostValue != null ? Convert.ToInt32(addedExp * BoostValue / 100) : addedExp;
+                }
+                break;
+
+            case (int)RewardType.Item:
+
+                if (user.MascotItem != null)
+                {
+                    user.MascotItem.Add(new Mascot
+                    {
+                        UserId = user.Id,
+                        ShopItemId = rewardValue[arrayIndex],
+                        CreatedAt = now.ToUniversalTime(),
+                        IsEquipped = false,
+                    });
+                }
+                else
+                {
+                    user.MascotItem = new List<Mascot> {new Mascot
+                    {
+                        UserId = user.Id,
+                        ShopItemId = rewardValue[arrayIndex],
+                        CreatedAt = now.ToUniversalTime(),
+                        IsEquipped = false,
+                    }
+                };
+                }
+
+                break;
+
+            case (int)RewardType.Coupon:
+                string code;
+                do
+                {
+                    code = CodeGenerator.GenerateRandomCouponCode();
+                } while (await _couponRepository.ExistByCode(code));
+                EduQuest_Domain.Entities.Coupon coupon = new EduQuest_Domain.Entities.Coupon
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedAt = now.ToUniversalTime(),
+                    Discount = decimal.TryParse(rewardValue[arrayIndex], out decimal discount) ? discount : 0,
+                    Description = $"{discount}% coupon for level up.",
+                    Code = code,
+                    StartTime = now.ToUniversalTime(),
+                    ExpireTime = now.AddDays(90).ToUniversalTime(),
+                    AllowUsagePerUser = 1,
+                    Limit = 1,
+                    Usage = 0,
+                    CreatedBy = user.Id,
+                };
+                response.Coupon.Add(_mapper.Map<RewardCoupon>(coupon));
+                await _couponRepository.Add(coupon);
+                break;
+
+            case (int)RewardType.Booster:
+                if (double.TryParse(rewardValue[arrayIndex], out double booster))
+                {
+                    user.Boosters.Add(new Booster
+                    {
+                        BoostValue = booster,
+                        DueDate = now.AddDays(7).ToUniversalTime()
+                    });
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+    private async Task<LevelUpNotiModel> HandlerLevelUp(User user, ClaimRewardResponse response)
+    {
+        LevelUpNotiModel levelUpNotiModel = new LevelUpNotiModel();
+        var meta = user.UserMeta;
+        var currentExp = meta.Exp;
+        int maxLevel = await _levelRepository.GetMaxLevelNumber();
+        while (currentExp > 250)
+        {
+            var currentLevel = await _levelRepository.GetByLevelNum(meta.Level.Value);
+            if (currentLevel == null)
+            {
+                meta.Level = maxLevel;
+                break;
+            }
+            if (currentExp >= currentLevel.Exp)
+            {
+                if (currentLevel.Level <= maxLevel)
+                {
+                    int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
+                    for (int i = 0; i < rewardType.Length; i++)
+                    {
+                        await HandleReward(rewardType[i], user, currentLevel.RewardValues!.Split(','), i, response);
+                    }
+                    meta.Level++;
+                    meta.Exp -= currentLevel.Exp;
+                    currentExp -= currentLevel.Exp;
+                    levelUpNotiModel.NewLevel = meta.Level;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        return levelUpNotiModel;
+    }
+    #endregion
 }
