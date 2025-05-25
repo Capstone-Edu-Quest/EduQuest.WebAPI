@@ -5,12 +5,10 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 {
 	public class GetLessonContentByIdQuery : IRequest<APIResponse>
 	{
-        public int Type { get; set; }
         public string LessonContentId { get; set; }
 
-		public GetLessonContentByIdQuery(int type, string lessonContentId)
+		public GetLessonContentByIdQuery(string lessonContentId)
 		{
-			Type = type;
 			LessonContentId = lessonContentId;
 		}
 	}

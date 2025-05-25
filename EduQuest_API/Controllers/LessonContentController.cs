@@ -58,10 +58,10 @@ namespace EduQuest_API.Controllers
 		[HttpGet("byId")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> GetLessonContentById([FromQuery] int type, string lessonContentId, CancellationToken cancellationToken = default)
+		public async Task<IActionResult> GetLessonContentById([FromQuery] string lessonContentId, CancellationToken cancellationToken = default)
 		{
 			//string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new GetLessonContentByIdQuery(type, lessonContentId), cancellationToken);
+			var result = await _mediator.Send(new GetLessonContentByIdQuery(lessonContentId), cancellationToken);
 			return Ok(result);
 		}
 	}

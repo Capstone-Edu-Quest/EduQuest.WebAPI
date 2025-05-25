@@ -4,11 +4,8 @@ using EduQuest_Domain.Repository;
 using EduQuest_Infrastructure.Persistence;
 using EduQuest_Infrastructure.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Nest;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Infrastructure.Repository
 {
@@ -73,6 +70,30 @@ namespace EduQuest_Infrastructure.Repository
 				.AnyAsync(lm => lm.Lesson.Course.Status == GeneralEnums.StatusCourse.Public.ToString());
 
 			return isUsed;
+		}
+
+		public async Task<TypeOfMaterial?> GetMaterialTypeByIdAsync(string lesonContentId)
+		{
+			var content = await _context.LessonContents
+			.Where(x => x.MaterialId == lesonContentId || x.AssignmentId == lesonContentId || x.QuizId == lesonContentId)
+			.FirstOrDefaultAsync();
+			if (content == null) return null;
+
+			if (content.MaterialId == lesonContentId)
+			{
+				
+				return TypeOfMaterial.Document; 
+			}
+			if (content.AssignmentId == lesonContentId)
+			{
+				return TypeOfMaterial.Assignment;
+			}
+			if (content.QuizId == lesonContentId)
+			{
+				return TypeOfMaterial.Quiz;
+			}
+
+			return null;
 		}
 	}
 }
