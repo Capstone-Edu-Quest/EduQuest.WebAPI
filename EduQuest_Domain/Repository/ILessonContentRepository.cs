@@ -1,6 +1,7 @@
 ﻿
 using EduQuest_Domain.Entities;
 using EduQuest_Domain.Repository.Generic;
+using static EduQuest_Domain.Enums.GeneralEnums;
 
 namespace EduQuest_Domain.Repository
 {
@@ -13,5 +14,6 @@ namespace EduQuest_Domain.Repository
 		Task<int> GetTotalContent(string courseId);
 		//Task<List<LessonContent>> GetLessonMaterialByMaterialId(string materialId);
 		Task<bool> IsLessonContentUsed(string contentId);
+		Task<TypeOfMaterial?> GetMaterialTypeByIdAsync(string lesonContentId);
 	}
 }

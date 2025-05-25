@@ -17,22 +17,25 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 		private readonly IMaterialRepository _materialRepository;
 		private readonly IQuizRepository _quizRepository;
 		private readonly IAssignmentRepository _assignmentRepository;
+		private readonly ILessonContentRepository _lessonContentRepository;
 		private readonly IMapper _mapper;
 
-		public GetLessonContentByIdQueryHandler(IMaterialRepository materialRepository, IQuizRepository quizRepository, IAssignmentRepository assignmentRepository, IMapper mapper)
+		public GetLessonContentByIdQueryHandler(IMaterialRepository materialRepository, IQuizRepository quizRepository, IAssignmentRepository assignmentRepository, ILessonContentRepository lessonContentRepository, IMapper mapper)
 		{
 			_materialRepository = materialRepository;
 			_quizRepository = quizRepository;
 			_assignmentRepository = assignmentRepository;
+			_lessonContentRepository = lessonContentRepository;
 			_mapper = mapper;
 		}
 
 		public async Task<APIResponse> Handle(GetLessonContentByIdQuery request, CancellationToken cancellationToken)
 		{
-			switch (request.Type)
+			var type = await _lessonContentRepository.GetMaterialTypeByIdAsync(request.LessonContentId);
+			switch (type)
 			{
-				case (int)GeneralEnums.TypeOfMaterial.Document:
-				case (int)GeneralEnums.TypeOfMaterial.Video:
+				case GeneralEnums.TypeOfMaterial.Document:
+				case GeneralEnums.TypeOfMaterial.Video:
 					Material material = await _materialRepository.GetById(request.LessonContentId);
 					if (material == null)
 					{
@@ -42,7 +45,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 					return GeneralHelper.CreateSuccessResponse(
 					HttpStatusCode.OK, MessageCommon.GetSuccesfully, materialResponse, "name", "Material"
 				);
-				case (int)GeneralEnums.TypeOfMaterial.Quiz:
+				case GeneralEnums.TypeOfMaterial.Quiz:
 					Quiz quiz = await _quizRepository.GetById(request.LessonContentId);
 					if (quiz == null)
 					{
@@ -52,7 +55,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 					return GeneralHelper.CreateSuccessResponse(
 					HttpStatusCode.OK, MessageCommon.GetSuccesfully, quizResponse, "name", "Quiz"
 				);
-				case (int)GeneralEnums.TypeOfMaterial.Assignment:
+				case GeneralEnums.TypeOfMaterial.Assignment:
 					Assignment assignment = await _assignmentRepository.GetById(request.LessonContentId);
 					if (assignment == null)
 					{
