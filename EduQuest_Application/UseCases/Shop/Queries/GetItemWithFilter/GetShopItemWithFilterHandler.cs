@@ -21,7 +21,7 @@ public class GetShopItemWithFilterHandler : IRequestHandler<GetShopItemWithFilte
 
     public async Task<APIResponse> Handle(GetShopItemWithFilter request, CancellationToken cancellationToken)
     {
-        var existItems = await _shopItemRepository.GetItemWithFilter(request.Name);
+        var existItems = await _shopItemRepository.GetItemWithFilter(request.Name, request.IsGold);
         var result = mapper.Map<IEnumerable<ShopItemFilterResponseDto>>(existItems);
         return Helper.GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, result, "name", "shop items");
     }
