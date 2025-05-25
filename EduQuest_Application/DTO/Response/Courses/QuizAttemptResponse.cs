@@ -19,4 +19,5 @@ public class QuizAttemptResponse : IMapFrom<QuizAttempt>
     public bool isPassed {  get; set; } = false;
     public int? AddedItemShard { get; set; } = null;
     public Dictionary<string, int>? ItemShards { get; set; }
+    public LevelUpNotiModel LevelInfo { get; set; } = new LevelUpNotiModel();
 }
