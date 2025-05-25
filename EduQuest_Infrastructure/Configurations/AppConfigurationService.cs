@@ -204,7 +204,7 @@ namespace EduQuest_Infrastructure
 			services.AddScoped<IInstructorCertificate, InstructorCertificateRepository>();
 			services.AddScoped<IEnrollerRepository, EnrollerRepository>();
 			services.AddScoped<IUserTagRepository, UserTagRepository>();
-
+			services.AddScoped<IItemShardRepository, ItemShardRepository>();
 
             services.AddSingleton(provider =>
 			{

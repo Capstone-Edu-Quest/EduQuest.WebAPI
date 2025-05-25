@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace EduQuest_Application.DTO.Response.Courses;
 
-public class QuizAttemptResponse : IMapFrom<QuizAttempt>
+public class CourseLearnerResponse : IMapFrom<CourseLearner>
 {
-    public int CorrectAnswers { get; set; }
-    public int IncorrectAnswers { get; set; }
-    public double Percentage { get; set; }
-    public int AttemptNo { get; set; }
-    public int TotalTime { get; set; }
-    public DateTime? SubmitAt { get; set; }
-    public bool isPassed {  get; set; } = false;
+    public string Id { get; set; }
+    public string UserId { get; set; }
+    public string CourseId { get; set; }
+    public bool IsActive { get; set; }
+    public string? CurrentLessonId { get; set; }
+    public int CurrentContentIndex { get; set; } = 0;
+    public double? TotalTime { get; set; }
+    public double? ProgressPercentage { get; set; }
     public int? AddedItemShard { get; set; } = null;
     public Dictionary<string, int>? ItemShards { get; set; }
     public LevelUpNotiModel LevelInfo { get; set; } = new LevelUpNotiModel();

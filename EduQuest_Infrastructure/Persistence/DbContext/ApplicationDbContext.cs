@@ -58,6 +58,7 @@ namespace EduQuest_Infrastructure.Persistence
         public virtual DbSet<AssignmentPeerReview> AssignmentPeerReviews { get; set; } = null!;
         public virtual DbSet<UserTag> UserTags { get; set; } = null!;
         public virtual DbSet<Enroller> Enrollers { get; set; } = null!;
+        public virtual DbSet<ItemShards> ItemShards { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

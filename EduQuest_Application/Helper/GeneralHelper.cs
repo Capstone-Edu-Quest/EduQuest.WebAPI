@@ -2,11 +2,13 @@
 using System.Net;
 using System.Text.Json;
 using System.Text;
+using EduQuest_Domain.Entities;
 
 namespace EduQuest_Application.Helper;
 
 public class GeneralHelper
 {
+    private static Random random = new Random();
     public static APIResponse CreateErrorResponse(HttpStatusCode statusCode, string message, 
         string messageError, string key, string value)
     {
@@ -95,5 +97,22 @@ public class GeneralHelper
             }
         }
         return result;
+    }
+
+
+    public static int GenerateItemShards(Tag? courseTag)
+    {
+        if(courseTag == null)
+        {
+            return 0;
+        }
+        int shardRandom = random.Next(1, 5);
+        return shardRandom;
+    }
+
+    public static int GenerateExpEarned(double? learningTime)
+    {
+        if(learningTime == null) { return 0; }
+        return (int)Math.Ceiling((double)learningTime! * 2);
     }
 }

@@ -42,7 +42,8 @@ public class UpdateShopItemCommandHandler : IRequestHandler<UpdateShopItemComman
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = item.Name,
-                Price = item.Price
+                Price = item.Price,
+                TagId = item.TagId
             }).ToList();
 
         if (newShopItems.Any())

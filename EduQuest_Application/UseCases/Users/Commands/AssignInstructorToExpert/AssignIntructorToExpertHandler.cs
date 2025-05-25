@@ -43,17 +43,17 @@ public class AssignIntructorToExpertHandler : IRequestHandler<AssignIntructorToE
         existUser.AssignToExpertId = request.AssignTo;
         await _userRepository.Update(existUser);
         await _unitOfWork.SaveChangesAsync();
-        await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
-        {
-            userId = existExpert.Id,
-            Receiver = existExpert.Id,
-            Content = NotificationMessage.A_STAFF_HAS_ASSIGN_INSTRUCTOR_TO_YOU,
-            Url = "/approve-instructor",
-            Values = new Dictionary<string, string>
-            {
-                { "name", existUser.Username },
-            }
-        });
+        //await _fireBaseRealtimeService.PushNotificationAsync(new NotificationDto
+        //{
+        //    userId = existExpert.Id,
+        //    Receiver = existExpert.Id,
+        //    Content = NotificationMessage.A_STAFF_HAS_ASSIGN_INSTRUCTOR_TO_YOU,
+        //    Url = "/approve-instructor",
+        //    Values = new Dictionary<string, string>
+        //    {
+        //        { "name", existUser.Username },
+        //    }
+        //});
         return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.AssignExpert, existUser, "name", request.AssignTo);
 
     }

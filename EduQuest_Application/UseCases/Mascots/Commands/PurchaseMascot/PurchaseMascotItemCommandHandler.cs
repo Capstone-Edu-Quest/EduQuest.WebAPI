@@ -80,31 +80,31 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
         var userdetail = await _userStatisticRepository.GetByUserId(request.UserId);
         if (userdetail.Gold < shopItem.Price)
         {
-            await _notifcation.PushNotificationAsync(
-                new NotificationDto
-                {
-                    userId = request.UserId,
-                    Content = NotificationMessage.NOT_ENOUGH_GOLD,
-                    Receiver = request.UserId,
-                    Url = BaseUrl.ShopItemUrl,
-                }
-             );
+            //await _notifcation.PushNotificationAsync(
+            //    new NotificationDto
+            //    {
+            //        userId = request.UserId,
+            //        Content = NotificationMessage.NOT_ENOUGH_GOLD,
+            //        Receiver = request.UserId,
+            //        Url = BaseUrl.ShopItemUrl,
+            //    }
+            // );
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotEnoughGold, MessageCommon.NotEnoughGold, "name", "item");
         }
         userdetail.Gold -= (int)shopItem.Price;
-        await _notifcation.PushNotificationAsync(
-                new NotificationDto
-                {
-                    userId = request.UserId,
-                    Content = NotificationMessage.PURCHASE_ITEM_SUCCESSFULLY,
-                    Receiver = request.UserId,
-                    Url = BaseUrl.ShopItemUrl,
-                    Values = new Dictionary<string, string>
-                    {
-                        { "item", shopItem.Name }
-                    }
-                }
-             );
+        //await _notifcation.PushNotificationAsync(
+        //        new NotificationDto
+        //        {
+        //            userId = request.UserId,
+        //            Content = NotificationMessage.PURCHASE_ITEM_SUCCESSFULLY,
+        //            Receiver = request.UserId,
+        //            Url = BaseUrl.ShopItemUrl,
+        //            Values = new Dictionary<string, string>
+        //            {
+        //                { "item", shopItem.Name }
+        //            }
+        //        }
+        //     );
 
         await _mascotInventoryRepository.Add(mascotInventory);
         await _userStatisticRepository.Update(userdetail);

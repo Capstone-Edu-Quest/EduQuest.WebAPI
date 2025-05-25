@@ -8,9 +8,11 @@ namespace EduQuest_Domain.Entities
 	{
         public string Name { get; set; }
         public double Price { get; set; }
-
+        public string? TagId { get; set; }
         [JsonIgnore]
         public virtual ICollection<Mascot>? MascotItems { get; set; }
+        [JsonIgnore]
+        public virtual Tag Tag { get; set; }
     }
 
 }

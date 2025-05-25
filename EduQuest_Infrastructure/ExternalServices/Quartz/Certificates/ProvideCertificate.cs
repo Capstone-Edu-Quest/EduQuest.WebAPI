@@ -64,19 +64,19 @@ internal class ProvideCertificate : IJob
 
             //send notification after completed course
             var courseName = await _courseRepository.GetById(entry.CourseId);
-            await _fireBaseRealtimeService.PushNotificationAsync(
-                              new NotificationDto
-                              {
-                                  userId = entry.UserId,
-                                  Content = NotificationMessage.COMPLETED_COURSE_SUCCESSFULLY,
-                                  Receiver = entry.UserId,
-                                  Url = $"/c/{certId}",
-                                  Values = new Dictionary<string, string>
-                                  {
-                                        { "certificate", courseName.Title}
-                                  }
-                              }
-                          );
+            //await _fireBaseRealtimeService.PushNotificationAsync(
+            //                  new NotificationDto
+            //                  {
+            //                      userId = entry.UserId,
+            //                      Content = NotificationMessage.COMPLETED_COURSE_SUCCESSFULLY,
+            //                      Receiver = entry.UserId,
+            //                      Url = $"/c/{certId}",
+            //                      Values = new Dictionary<string, string>
+            //                      {
+            //                            { "certificate", courseName.Title}
+            //                      }
+            //                  }
+            //              );
 
 
 
