@@ -95,5 +95,10 @@ namespace EduQuest_Infrastructure.Repository
 
 			return null;
 		}
+
+		//public async Task<LessonContent> GetByLessonIdAndContentId(string lessonId, string contentId)
+		//{
+		//	return await _context.LessonContents.FirstOrDefaultAsync(x => x.LessonId == lessonId && x.MaterialId == contentId || (x.LessonId == lessonId && x.QuizId == contentId) || )
+		//}
 	}
 }
