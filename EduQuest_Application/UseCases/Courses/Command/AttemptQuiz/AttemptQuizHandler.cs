@@ -415,29 +415,26 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                 meta.Level = maxLevel;
                 break;
             }
-            if (currentExp >= currentLevel.Exp)
+            if (currentExp < currentLevel.Exp)
+                break;
+
+            if (currentLevel.Level < maxLevel)
             {
-                if (currentLevel.Level <= maxLevel)
+                int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
+                for (int i = 0; i < rewardType.Length; i++)
                 {
-                    int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
-                    for (int i = 0; i < rewardType.Length; i++)
-                    {
-                        await HandleReward(rewardType[i], user, currentLevel.RewardValues!.Split(','), i, response);
-                    }
-                    meta.Level++;
-                    meta.Exp -= currentLevel.Exp;
-                    currentExp -= currentLevel.Exp;
-                    levelUpNotiModel.NewLevel = meta.Level;
+                    await HandleReward(rewardType[i], user, currentLevel.RewardValues!.Split(','), i, response);
                 }
-                else
-                {
-                    break;
-                }
+                meta.Level++;
+                meta.Exp -= currentLevel.Exp;
+                currentExp -= currentLevel.Exp;
+                levelUpNotiModel.NewLevel = meta.Level;
             }
             else
             {
                 break;
             }
+
         }
         return levelUpNotiModel;
     }

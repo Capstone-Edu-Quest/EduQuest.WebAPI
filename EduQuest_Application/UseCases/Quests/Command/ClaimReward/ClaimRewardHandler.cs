@@ -299,7 +299,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
             }
             if (currentExp >= currentLevel.Exp)
             {
-                if (currentLevel.Level <= maxLevel)
+                if (currentLevel.Level < maxLevel)
                 {
                     int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
                     for (int i = 0; i < rewardType.Length; i++)
