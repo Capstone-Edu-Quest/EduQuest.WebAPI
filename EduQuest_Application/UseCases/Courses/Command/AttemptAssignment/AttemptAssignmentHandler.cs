@@ -237,9 +237,10 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Attempt.TotalTime);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Attempt.TotalTime);
 
-        LevelUpNotiModel levelup = await HandlerLevelUp(userMeta.User, new ClaimRewardResponse());
+        
         int addedExp = GeneralHelper.GenerateExpEarned(request.Attempt.TotalTime);
         userMeta.Exp += addedExp;
+        LevelUpNotiModel levelup = await HandlerLevelUp(userMeta.User, new ClaimRewardResponse());
         levelup.ExpAdded = addedExp;
         await _unitOfWork.SaveChangesAsync();
         response.LevelInfo = levelup;

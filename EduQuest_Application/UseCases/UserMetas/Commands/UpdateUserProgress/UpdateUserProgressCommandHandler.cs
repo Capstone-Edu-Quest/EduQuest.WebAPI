@@ -205,7 +205,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             userMeta.CurrentStreak = (lastLearningDay == DateTime.UtcNow.Date.AddDays(-1)) ? userMeta.CurrentStreak + 1 : 1;
             userMeta.LastLearningDay = DateTime.Now.ToUniversalTime();
             userMeta.LongestStreak = Math.Max((byte)userMeta.LongestStreak!, (byte)userMeta.CurrentStreak!);
-            LevelUpNotiModel levelup = await HandlerLevelUp(user, new ClaimRewardResponse());
+            
 
             if (request.Info.Time != null)
             {
@@ -226,7 +226,9 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				userMeta.TotalStudyTime += request.Info.Time;
                 int addedExp = GeneralHelper.GenerateExpEarned(request.Info.Time);
                 userMeta.Exp += addedExp;
+                LevelUpNotiModel levelup = await HandlerLevelUp(user, new ClaimRewardResponse());
                 levelup.ExpAdded = addedExp;
+                response.LevelInfo = levelup;
                 await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Info.Time.Value);
                 await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Info.Time.Value);
@@ -257,7 +259,9 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
 				}
 
 				userMeta.Exp += addedExp;
+                LevelUpNotiModel levelup = await HandlerLevelUp(user, new ClaimRewardResponse());
                 levelup.ExpAdded = addedExp;
+                response.LevelInfo = levelup;
                 await _redis.AddToSortedSetAsync("leaderboard:season1", request.UserId, userMeta.TotalStudyTime.Value);
 				int durationTime = 0;
 
@@ -344,7 +348,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                 }
                 response.ItemShards = shards;
             }
-            response.LevelInfo = levelup;
+            
             return new APIResponse
             {
                 IsError = !result,
