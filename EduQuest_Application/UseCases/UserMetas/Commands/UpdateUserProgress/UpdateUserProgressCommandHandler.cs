@@ -73,7 +73,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             {
                 return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageLearner.NotLearner, $"Not Found", "name", $"Not Found in Course ID {lesson.CourseId}");
             }
-            if (courseLearner.TotalTime.Value >= course.CourseStatistic.TotalTime.Value)
+            if (courseLearner.ProgressPercentage >= 100 || courseLearner.TotalTime.Value >= course.CourseStatistic.TotalTime.Value)
             {
                 return GeneralHelper.CreateSuccessResponse(HttpStatusCode.OK, MessageCommon.UpdateSuccesfully,
                     _mapper.Map<CourseLearnerResponse>(courseLearner), "name", "user progess");
@@ -184,7 +184,7 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
             userMeta.LastLearningDay = DateTime.Now.ToUniversalTime();
             userMeta.LongestStreak = Math.Max((byte)userMeta.LongestStreak!, (byte)userMeta.CurrentStreak!);
             LevelUpNotiModel levelup = await HandlerLevelUp(user, new ClaimRewardResponse());
-            
+
             if (request.Info.Time != null)
             {
                 courseLearner.TotalTime += material.Duration;
@@ -391,29 +391,26 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     meta.Level = maxLevel;
                     break;
                 }
-                if (currentExp >= currentLevel.Exp)
+                if (currentExp < currentLevel.Exp)
+                    break;
+
+                if (currentLevel.Level < maxLevel)
                 {
-                    if (currentLevel.Level <= maxLevel)
+                    int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
+                    for (int i = 0; i < rewardType.Length; i++)
                     {
-                        int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
-                        for (int i = 0; i < rewardType.Length; i++)
-                        {
-                            await HandleReward(rewardType[i], user, currentLevel.RewardValues!.Split(','), i, response);
-                        }
-                        meta.Level++;
-                        meta.Exp -= currentLevel.Exp;
-                        currentExp -= currentLevel.Exp;
-                        levelUpNotiModel.NewLevel = meta.Level;
+                        await HandleReward(rewardType[i], user, currentLevel.RewardValues!.Split(','), i, response);
                     }
-                    else
-                    {
-                        break;
-                    }
+                    meta.Level++;
+                    meta.Exp -= currentLevel.Exp;
+                    currentExp -= currentLevel.Exp;
+                    levelUpNotiModel.NewLevel = meta.Level;
                 }
                 else
                 {
                     break;
                 }
+
             }
             return levelUpNotiModel;
         }
