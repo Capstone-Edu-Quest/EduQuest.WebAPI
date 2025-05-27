@@ -29,7 +29,7 @@ public class CreateShopItemCommandHandler : IRequestHandler<CreateShopItemComman
             Id = Guid.NewGuid().ToString(),
             Name = item.Name,
             Price = item.Price,
-            TagId = item.TagId
+            TagId = item.TagId != null ? item.TagId : null
         }).ToList();
 
         await _shopItemRepository.CreateRangeAsync(newShopItems);

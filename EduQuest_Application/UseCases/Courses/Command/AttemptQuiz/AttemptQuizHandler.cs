@@ -430,6 +430,8 @@ public class AttemptQuizHandler : IRequestHandler<AttemptQuizCommand, APIRespons
                 meta.Exp -= currentLevel.Exp;
                 currentExp -= currentLevel.Exp;
                 levelUpNotiModel.NewLevel = meta.Level;
+                var level = await _levelRepository.GetByLevelNum(meta.Level.Value);
+                levelUpNotiModel.NewLevelMaxExp = level != null ? level.Exp : null;
             }
             else
             {
