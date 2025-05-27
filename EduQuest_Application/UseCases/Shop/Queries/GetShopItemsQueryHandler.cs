@@ -37,6 +37,8 @@ public class GetShopItemsQueryHandler : IRequestHandler<GetShopItemsQuery, APIRe
             Id = item.Id,
             Name = item.Name,
             Price = item.Price,
+            TagId = item.TagId != null ? item.TagId : null,
+            TagName = item.Tag != null? item.Tag.Name : null,
             IsOwned = ownedItemIds.Contains(item.Id) 
         }).ToList();
 
