@@ -335,8 +335,8 @@ namespace EduQuest_Application.UseCases.UserMetas.Commands.UpdateUserProgress
                     Date = now.ToUniversalTime()
                 });
             }
-
-            var result = await _unitOfWork.SaveChangesAsync() > 0;
+            courseLearner.UpdatedAt = DateTime.Now.ToUniversalTime();
+			var result = await _unitOfWork.SaveChangesAsync() > 0;
 
             var userItemShards = await _itemShardRepository.GetItemShardsByUserId(request.UserId);
             Dictionary<string, int> shards = new Dictionary<string, int>();
