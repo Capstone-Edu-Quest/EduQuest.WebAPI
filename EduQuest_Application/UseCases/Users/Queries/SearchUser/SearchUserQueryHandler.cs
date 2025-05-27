@@ -103,18 +103,19 @@ public class UserSearchResultDto : IMapFrom<User>, IMapTo<User>
     public int TotalCourses { get; set; }
     public int TotalLearners { get; set; }
     public int TotalReviews { get; set; }
-    public List<ItemShardsDto> ItemShards { get; set; }
+    public Dictionary<string, int> ItemShards { get; set; } = new();
     public List<UserTagDto> Tags { get; set; }
 
     public void MappingFrom(Profile profile)
     {
         profile.CreateMap<User, UserSearchResultDto>()
-            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
-                src.UserTags.Select(ut => new UserTagDto
-                {
-                    TagId = ut.Tag.Id,
-                    TagName = ut.Tag.Name
-                })
+            .ForMember(dest => dest.ItemShards,
+            opt => opt.MapFrom(src =>
+                src.ItemShards               
+                   .GroupBy(i => i.Tags.Name) 
+                   .ToDictionary(
+                       g => g.Key,            
+                       g => g.Sum(i => i.Quantity))  
             ));
     }
 }

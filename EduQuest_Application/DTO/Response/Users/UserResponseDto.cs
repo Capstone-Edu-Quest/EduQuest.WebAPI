@@ -21,8 +21,9 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
     public string AvatarUrl { get; set; }
     public string RoleId { get; set; }
     public bool isPro { get; set; }
-    public List<ItemShardsDto> itemShards { get; set; }
+    //public List<ItemShardsDto> itemShards { get; set; }
     public List<UserTagDto> Tags { get; set; }
+    public Dictionary<string, int> ItemShards { get; set; } = new();
     public UserStatisticDto statistic { get; set; }
     public List<string> mascotItem { get; set; }
     public List<string> equippedItems { get; set; }
@@ -39,17 +40,15 @@ public class UserResponseDto : IMapFrom<User>, IMapTo<User>
                 .Select(s => s.ShopItemId)
                 .ToList()
             ))
-            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"))
-            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
-                src.UserTags
-                    .Where(ut => ut.Tag != null) 
-                    .Select(ut => new UserTagDto
-                    {
-                        TagId = ut.Tag!.Id,
-                        TagName = ut.Tag.Name
-                    })
-            ));
-
+            .ForMember(dest => dest.ItemShards,
+            opt => opt.MapFrom(src =>
+                src.ItemShards
+                   .GroupBy(i => i.Tags.Name)
+                   .ToDictionary(
+                       g => g.Key,
+                       g => g.Sum(i => i.Quantity))
+            ))
+            .ForMember(dest => dest.isPro, opt => opt.MapFrom(src => src.Package != null && src.Package.ToLower() == "pro"));
 
         profile.CreateMap<PagedList<User>, PagedList<UserResponseDto>>().ReverseMap();
     }
