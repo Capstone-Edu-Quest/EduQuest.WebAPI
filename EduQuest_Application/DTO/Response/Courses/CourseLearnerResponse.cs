@@ -20,4 +20,5 @@ public class CourseLearnerResponse : IMapFrom<CourseLearner>
     public double? ProgressPercentage { get; set; }
     public int? AddedItemShard { get; set; } = null;
     public Dictionary<string, int>? ItemShards { get; set; }
+    public LevelUpNotiModel LevelInfo { get; set; } = new LevelUpNotiModel();
 }

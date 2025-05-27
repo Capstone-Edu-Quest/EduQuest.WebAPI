@@ -289,7 +289,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
         var meta = user.UserMeta;
         var currentExp = meta.Exp;
         int maxLevel = await _levelRepository.GetMaxLevelNumber();
-        while (currentExp > 250)
+        while (currentExp > 1)
         {
             var currentLevel = await _levelRepository.GetByLevelNum(meta.Level.Value);
             if (currentLevel == null)
@@ -299,7 +299,7 @@ public class ClaimRewardHandler : IRequestHandler<ClaimRewardCommand, APIRespons
             }
             if (currentExp >= currentLevel.Exp)
             {
-                if (currentLevel.Level <= maxLevel)
+                if (currentLevel.Level < maxLevel)
                 {
                     int[] rewardType = GetRewardType(currentLevel.RewardTypes!);
                     for (int i = 0; i < rewardType.Length; i++)
