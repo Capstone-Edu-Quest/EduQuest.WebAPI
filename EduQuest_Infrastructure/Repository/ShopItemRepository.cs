@@ -40,9 +40,16 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
         if (!name.IsNullOrEmpty()) {
             query = query.Where(a => a.Name.Equals(name));
         }
-        if (isGold.HasValue && isGold == true)
+        if (isGold.HasValue)
         {
-            query = query.Where(a => a.TagId == null);
+            if (isGold.Value)
+            {
+                query = query.Where(a => a.TagId == null); 
+            }
+            else
+            {
+                query = query.Where(a => a.TagId != null);
+            }
         }
         return await query.ToListAsync();
     }
