@@ -21,8 +21,11 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFireBaseRealtimeService _notifcation;
+    private readonly IItemShardRepository _itemShardRepository;
 
-    public PurchaseMascotItemCommandHandler(IShopItemRepository shopItemRepository, IMascotInventoryRepository mascotInventoryRepository, IUserMetaRepository userStatisticRepository, IMapper mapper, IUnitOfWork unitOfWork, IFireBaseRealtimeService notifcation)
+    public PurchaseMascotItemCommandHandler(IShopItemRepository shopItemRepository, IMascotInventoryRepository mascotInventoryRepository, 
+        IUserMetaRepository userStatisticRepository, IMapper mapper, IUnitOfWork unitOfWork, 
+        IFireBaseRealtimeService notifcation, IItemShardRepository itemShardRepository)
     {
         _shopItemRepository = shopItemRepository;
         _mascotInventoryRepository = mascotInventoryRepository;
@@ -30,6 +33,7 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _notifcation = notifcation;
+        _itemShardRepository = itemShardRepository;
     }
 
     public async Task<APIResponse> Handle(PurchaseMascotItemCommand request, CancellationToken cancellationToken)
@@ -77,54 +81,89 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
             IsEquipped = false
         };
 
-        var userdetail = await _userStatisticRepository.GetByUserId(request.UserId);
-        if (userdetail.Gold < shopItem.Price)
+        
+        if (shopItem.Tag == null)
         {
-            //await _notifcation.PushNotificationAsync(
-            //    new NotificationDto
-            //    {
-            //        userId = request.UserId,
-            //        Content = NotificationMessage.NOT_ENOUGH_GOLD,
-            //        Receiver = request.UserId,
-            //        Url = BaseUrl.ShopItemUrl,
-            //    }
-            // );
-            return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotEnoughGold, MessageCommon.NotEnoughGold, "name", "item");
-        }
-        userdetail.Gold -= (int)shopItem.Price;
-        //await _notifcation.PushNotificationAsync(
-        //        new NotificationDto
-        //        {
-        //            userId = request.UserId,
-        //            Content = NotificationMessage.PURCHASE_ITEM_SUCCESSFULLY,
-        //            Receiver = request.UserId,
-        //            Url = BaseUrl.ShopItemUrl,
-        //            Values = new Dictionary<string, string>
-        //            {
-        //                { "item", shopItem.Name }
-        //            }
-        //        }
-        //     );
-
-        await _mascotInventoryRepository.Add(mascotInventory);
-        await _userStatisticRepository.Update(userdetail);
-        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
-
-        var result = _mapper.Map<UserMascotDto>(mascotInventory);
-        return new APIResponse
-        {
-            IsError = !saveResult,
-            Payload = saveResult ? result : null,
-            Errors = saveResult ? null : new ErrorResponse
+            var userdetail = await _userStatisticRepository.GetByUserId(request.UserId);
+            if (userdetail.Gold < shopItem.Price)
             {
-                StatusResponse = HttpStatusCode.BadRequest,
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Message = MessageCommon.SavingFailed,
-            },
-            Message = new MessageResponse 
-            { 
-                content = saveResult ? MessageCommon.PurchaseItemSuccessfully : MessageCommon.SavingFailed
+                /*await _notifcation.PushNotificationAsync(
+                    new NotificationDto
+                    {
+                        userId = request.UserId,
+                        Content = NotificationMessage.NOT_ENOUGH_GOLD,
+                        Receiver = request.UserId,
+                        Url = BaseUrl.ShopItemUrl,
+                    }
+                 );*/
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotEnoughGold, MessageCommon.NotEnoughGold, "name", "item");
             }
-        };
+            userdetail.Gold -= (int)shopItem.Price;
+            /*await _notifcation.PushNotificationAsync(
+                    new NotificationDto
+                    {
+                        userId = request.UserId,
+                        Content = NotificationMessage.PURCHASE_ITEM_SUCCESSFULLY,
+                        Receiver = request.UserId,
+                        Url = BaseUrl.ShopItemUrl,
+                        Values = new Dictionary<string, string>
+                        {
+                            { "item", shopItem.Name }
+                        }
+                    }
+                 );*/
+
+            await _mascotInventoryRepository.Add(mascotInventory);
+            await _userStatisticRepository.Update(userdetail);
+            var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+
+            var result = _mapper.Map<UserMascotDto>(mascotInventory);
+            return new APIResponse
+            {
+                IsError = !saveResult,
+                Payload = saveResult ? result : null,
+                Errors = saveResult ? null : new ErrorResponse
+                {
+                    StatusResponse = HttpStatusCode.BadRequest,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = MessageCommon.SavingFailed,
+                },
+                Message = new MessageResponse
+                {
+                    content = saveResult ? MessageCommon.PurchaseItemSuccessfully : MessageCommon.SavingFailed
+                }
+            };
+        }
+        else
+        {
+            var tag = shopItem.Tag!;
+            var shards = await _itemShardRepository.GetItemShardsByTagId(tag.Id, request.UserId);
+            int price = (int)shopItem.Price;
+            if(shards == null || shards.Quantity < price)
+            {
+                return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotEnoughGold, MessageCommon.NotEnoughGold, "name", "item");
+            }
+            shards.Quantity -= price;
+            await _mascotInventoryRepository.Add(mascotInventory);
+            await _itemShardRepository.Update(shards);
+            var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+
+            var result = _mapper.Map<UserMascotDto>(mascotInventory);
+            return new APIResponse
+            {
+                IsError = !saveResult,
+                Payload = saveResult ? result : null,
+                Errors = saveResult ? null : new ErrorResponse
+                {
+                    StatusResponse = HttpStatusCode.BadRequest,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = MessageCommon.SavingFailed,
+                },
+                Message = new MessageResponse
+                {
+                    content = saveResult ? MessageCommon.PurchaseItemSuccessfully : MessageCommon.SavingFailed
+                }
+            };
+        }
     }
 }
