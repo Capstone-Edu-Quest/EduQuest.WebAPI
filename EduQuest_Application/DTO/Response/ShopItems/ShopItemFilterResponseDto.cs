@@ -16,7 +16,7 @@ public class ShopItemFilterResponseDto : IMapFrom<ShopItem>, IMapTo<ShopItem>
 
     public void MappingFrom(Profile profile)
     {
-        profile.CreateMap<Tag, ShopTagDto>();
+        //profile.CreateMap<Tag, ShopTagDto>();
 
         profile.CreateMap<ShopItem, ShopItemFilterResponseDto>()
             .ForMember(dest => dest.Tag, opt => opt.MapFrom(src => src.Tag));
@@ -24,8 +24,17 @@ public class ShopItemFilterResponseDto : IMapFrom<ShopItem>, IMapTo<ShopItem>
     }
 }
 
-public class ShopTagDto
+public class ShopTagDto : IMapFrom<Tag>, IMapTo<Tag>
 {
     public string TagId { get; set; }
     public string TagName { get; set; }
+
+    public void MappingFrom(Profile profile)
+    {
+
+        profile.CreateMap<Tag, ShopTagDto>()
+            .ForMember(dest => dest.TagId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.TagName, opt => opt.MapFrom(src => src.Name));
+
+    }
 }
