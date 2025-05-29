@@ -6,5 +6,5 @@ namespace EduQuest_Application.UseCases.Shop.Queries.GetItemWithFilterl;
 public class GetShopItemWithFilter : IRequest<APIResponse>
 {
     public string? Name { get; set; }
-    public bool IsGold { get; set; }
+    public bool? IsGold { get; set; }
 }
