@@ -34,15 +34,22 @@ public class ShopItemRepository : GenericRepository<ShopItem>, IShopItemReposito
         return await _context.ShopItems.AsNoTracking().Where(a => a.Name.Equals(name)).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<ShopItem?>> GetItemWithFilter(string name, bool isGold)
+    public async Task<IEnumerable<ShopItem?>> GetItemWithFilter(string name, bool? isGold)
     {
         var query = _context.ShopItems.AsQueryable().AsNoTracking();
         if (!name.IsNullOrEmpty()) {
             query = query.Where(a => a.Name.Equals(name));
         }
-        if (!isGold)
+        if (isGold.HasValue)
         {
-            query = query.Where(a => a.TagId == null);
+            if (isGold.Value)
+            {
+                query = query.Where(a => a.TagId == null); 
+            }
+            else
+            {
+                query = query.Where(a => a.TagId != null);
+            }
         }
         return await query.ToListAsync();
     }
