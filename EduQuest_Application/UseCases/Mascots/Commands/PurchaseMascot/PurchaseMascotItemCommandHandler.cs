@@ -3,6 +3,7 @@ using EduQuest_Application.Abstractions.Firebase;
 using EduQuest_Application.DTO.Response.Mascot;
 using EduQuest_Application.Helper;
 using EduQuest_Domain.Constants;
+using EduQuest_Domain.Entities;
 using EduQuest_Domain.Models.Notification;
 using EduQuest_Domain.Models.Response;
 using EduQuest_Domain.Repository;
@@ -80,11 +81,11 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
             ShopItemId = shopItem.Name,
             IsEquipped = false
         };
+        var userdetail = await _userStatisticRepository.GetByUserId(request.UserId);
 
-        
         if (shopItem.Tag == null)
         {
-            var userdetail = await _userStatisticRepository.GetByUserId(request.UserId);
+            
             if (userdetail.Gold < shopItem.Price)
             {
                 /*await _notifcation.PushNotificationAsync(
@@ -117,6 +118,12 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
             await _userStatisticRepository.Update(userdetail);
             var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
 
+            mascotInventory.User = new User
+            {
+                UserMeta = userdetail,
+                ItemShards = await _itemShardRepository.GetItemShardsByUserId(request.UserId) 
+            };
+
             var result = _mapper.Map<UserMascotDto>(mascotInventory);
             return new APIResponse
             {
@@ -147,6 +154,12 @@ public class PurchaseMascotItemCommandHandler : IRequestHandler<PurchaseMascotIt
             await _mascotInventoryRepository.Add(mascotInventory);
             await _itemShardRepository.Update(shards);
             var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+
+            mascotInventory.User = new User
+            {
+                UserMeta = userdetail,
+                ItemShards = await _itemShardRepository.GetItemShardsByUserId(request.UserId)
+            };
 
             var result = _mapper.Map<UserMascotDto>(mascotInventory);
             return new APIResponse
