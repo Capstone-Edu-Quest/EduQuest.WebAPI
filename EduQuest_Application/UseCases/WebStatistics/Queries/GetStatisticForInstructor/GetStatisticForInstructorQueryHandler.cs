@@ -36,7 +36,7 @@ namespace EduQuest_Application.UseCases.WebStatistics.Queries.GetStatisticForIns
 			var avgReview = (await _courseStatisticRepository.GetTotalLearnerForInstructor(myCourseIds)).avgRating;
 			var totalRevenue = await _transactionDetailRepository.GetTotalRevenueByInstructorId(request.UserId);
 			var topCourseLearner = (await _learnerRepository.GetTopCourseLearner(myCourseIds)).Take(4);
-			var listNotification = await _notifcation.GetNotificationsAsync(request.UserId);
+			//var listNotification = await _notifcation.GetNotificationsAsync(request.UserId);
 
 			var response = new StatisticForInstructor
 			{
@@ -45,7 +45,7 @@ namespace EduQuest_Application.UseCases.WebStatistics.Queries.GetStatisticForIns
 				AverageReviews = avgReview,
 				TotalRevenue = totalRevenue,
 				TopCourses = topCourseLearner.ToList(),
-				Notification = listNotification
+				//Notification = listNotification
 			};
 
 			return GeneralHelper.CreateSuccessResponse(System.Net.HttpStatusCode.OK, MessageCommon.GetSuccesfully, response, "name", $"Statis for User Id {request.UserId}");
