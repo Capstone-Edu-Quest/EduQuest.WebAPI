@@ -6,6 +6,6 @@ namespace EduQuest_Domain.Repository
 {
 	public interface IAssignmentRepository : IGenericRepository<Assignment>
 	{
-		Task<List<Assignment>> GetByUserId(string userId, SearchLessonContent info);
+		Task<List<Assignment>> GetByUserId(string userId, SearchLessonContent? info);
 	}
 }

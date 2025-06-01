@@ -4,6 +4,7 @@ using EduQuest_Application.UseCases.LessonContents.Command.UpdateLessonContent;
 using EduQuest_Application.UseCases.LessonContents.Query.GetAllMyMaterial;
 using EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentById;
 using EduQuest_Application.UseCases.Materials.Command.CreateLessonContent;
+using EduQuest_Application.UseCases.Materials.Command.DeleteMaterial;
 using EduQuest_Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -62,6 +63,17 @@ namespace EduQuest_API.Controllers
 		{
 			//string userId = User.GetUserIdFromToken().ToString();
 			var result = await _mediator.Send(new GetLessonContentByIdQuery(lessonContentId), cancellationToken);
+			return Ok(result);
+		}
+
+		[Authorize]
+		[HttpDelete("")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> DeleteLessonContent([FromQuery] string materialId, CancellationToken cancellationToken = default)
+		{
+			string userId = User.GetUserIdFromToken().ToString();
+			var result = await _mediator.Send(new DeleteLessonContentCommand(materialId, userId), cancellationToken);
 			return Ok(result);
 		}
 	}

@@ -22,22 +22,23 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
-		public async Task<List<Material>> GetByUserId(string userId, SearchLessonContent info)
+		public async Task<List<Material>> GetByUserId(string userId, SearchLessonContent? info)
 		{
 			var query =  _context.Materials.Where(x => x.UserId == userId);
-
-			if (info.TagType != null)
+			if(info != null)
 			{
-				var type = Enum.GetName(typeof(TagType), info.TagType);
-				query = query.Where(x => x.Tags.Any(tag => tag.Type == type));
-			}
+				if (info.TagType != null)
+				{
+					var type = Enum.GetName(typeof(TagType), info.TagType);
+					query = query.Where(x => x.Tags.Any(tag => tag.Type == type));
+				}
 
-			if (info.TagIds != null && info.TagIds.Any())
-			{
-				var tagList = info.TagIds;
-				query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
+				if (info.TagIds != null && info.TagIds.Any())
+				{
+					var tagList = info.TagIds;
+					query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
+				}
 			}
-
 			return await query.ToListAsync();
 		}
 
@@ -51,10 +52,7 @@ namespace EduQuest_Infrastructure.Repository
 			return await _context.Materials.Where(m => materialIds.Contains(m.Id)).ToListAsync();
 		}
 
-		public async Task<Material> GetMaterialWithLesson(string materialId)
-		{
-			return await _context.Materials.Include(x => x.LessonMaterials).FirstOrDefaultAsync(x => x.Id == materialId);
-		}
+		
 
 		public async Task<bool> IsOwnerThisMaterial(string userId, string materialId)
 		{

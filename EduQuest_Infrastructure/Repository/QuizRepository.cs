@@ -17,22 +17,24 @@ namespace EduQuest_Infrastructure.Repository
 			_context = context;
 		}
 
-		public async Task<List<Quiz>> GetByUserId(string userId, SearchLessonContent info)
+		public async Task<List<Quiz>> GetByUserId(string userId, SearchLessonContent? info)
 		{
 			var query =  _context.Quizzes.Where(x => x.UserId == userId);
-
-			if (info.TagType != null)
+			if(info != null)
 			{
-				var type = Enum.GetName(typeof(TagType), info.TagType);
-				query = query.Where(x => x.Tags.Any(tag => tag.Type == type));
-			}
+				if (info.TagType != null)
+				{
+					var type = Enum.GetName(typeof(TagType), info.TagType);
+					query = query.Where(x => x.Tags.Any(tag => tag.Type == type));
+				}
 
-			if (info.TagIds != null && info.TagIds.Any())
-			{
-				var tagList = info.TagIds;
-				query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
+				if (info.TagIds != null && info.TagIds.Any())
+				{
+					var tagList = info.TagIds;
+					query = query.Where(x => x.Tags.Any(tag => tagList.Contains(tag.Id)));
+				}
 			}
-
+			
 			return await query.ToListAsync();
 		}
 

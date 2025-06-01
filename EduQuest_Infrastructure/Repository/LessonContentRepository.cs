@@ -100,5 +100,10 @@ namespace EduQuest_Infrastructure.Repository
 		//{
 		//	return await _context.LessonContents.FirstOrDefaultAsync(x => x.LessonId == lessonId && x.MaterialId == contentId || (x.LessonId == lessonId && x.QuizId == contentId) || )
 		//}
+
+		public async Task<List<LessonContent>> GetLessonContentWithLesson(string lesonContentId)
+		{
+			return await _context.LessonContents.Where(x => x.MaterialId == lesonContentId || x.AssignmentId == lesonContentId || x.QuizId == lesonContentId).ToListAsync();
+		}
 	}
 }
