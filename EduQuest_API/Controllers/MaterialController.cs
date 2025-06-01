@@ -26,7 +26,7 @@ namespace EduQuest_API.Controllers
 		public async Task<IActionResult> DeleteMaterial([FromQuery] string materialId, CancellationToken cancellationToken = default)
 		{
 			string userId = User.GetUserIdFromToken().ToString();
-			var result = await _mediator.Send(new DeleteMaterialCommand(materialId, userId), cancellationToken);
+			var result = await _mediator.Send(new DeleteLessonContentCommand(materialId, userId), cancellationToken);
 			return Ok(result);
 		}
 

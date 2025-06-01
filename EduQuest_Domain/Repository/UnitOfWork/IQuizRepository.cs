@@ -7,6 +7,6 @@ namespace EduQuest_Domain.Repository.UnitOfWork
 	public interface IQuizRepository : IGenericRepository<Quiz>
 	{
 		Task<Quiz> GetQuizById(string quizId);
-		Task<List<Quiz>> GetByUserId(string userId, SearchLessonContent info);
+		Task<List<Quiz>> GetByUserId(string userId, SearchLessonContent? info);
 	}
 }

@@ -13,8 +13,8 @@ namespace EduQuest_Domain.Repository
 	{
 		Task<List<Material>> GetMaterialsByIds(List<string> materialIds);
 		Task<Material> GetMataterialQuizAssById(string materialId);
-		Task<List<Material>> GetByUserId(string userId, SearchLessonContent info);
-		Task<Material> GetMaterialWithLesson(string materialId);
+		Task<List<Material>> GetByUserId(string userId, SearchLessonContent? info);
+		//Task<Material> GetMaterialWithLesson(string materialId);
 		Task<bool> IsOwnerThisMaterial(string userId, string materialId);
 		Task<List<Material>> GetByUserIdAsync(string userId);
 		Task<Material> GetMaterialIncludeQuizAssignment(string materialId);
