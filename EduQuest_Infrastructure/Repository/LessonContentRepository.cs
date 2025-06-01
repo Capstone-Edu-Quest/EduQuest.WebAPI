@@ -72,29 +72,41 @@ namespace EduQuest_Infrastructure.Repository
 			return isUsed;
 		}
 
-		public async Task<TypeOfMaterial?> GetMaterialTypeByIdAsync(string lesonContentId)
+		public async Task<TypeOfMaterial?> GetMaterialTypeByIdAsync(string lessonContentId)
 		{
 			var content = await _context.LessonContents
-			.Where(x => x.MaterialId == lesonContentId || x.AssignmentId == lesonContentId || x.QuizId == lesonContentId)
-			.FirstOrDefaultAsync();
-			if (content == null) return null;
+				.Where(x => x.MaterialId == lessonContentId || x.AssignmentId == lessonContentId || x.QuizId == lessonContentId)
+				.FirstOrDefaultAsync();
 
-			if (content.MaterialId == lesonContentId)
+			if (content != null)
 			{
-				
-				return TypeOfMaterial.Document; 
+				if (content.MaterialId == lessonContentId)
+					return TypeOfMaterial.Document;
+
+				if (content.AssignmentId == lessonContentId)
+					return TypeOfMaterial.Assignment;
+
+				if (content.QuizId == lessonContentId)
+					return TypeOfMaterial.Quiz;
 			}
-			if (content.AssignmentId == lesonContentId)
+			else
 			{
-				return TypeOfMaterial.Assignment;
-			}
-			if (content.QuizId == lesonContentId)
-			{
-				return TypeOfMaterial.Quiz;
+				bool isInMaterial = await _context.Materials.AnyAsync(m => m.Id == lessonContentId);
+				if (isInMaterial)
+					return TypeOfMaterial.Document;
+
+				bool isInAssignment = await _context.Assignments.AnyAsync(a => a.Id == lessonContentId);
+				if (isInAssignment)
+					return TypeOfMaterial.Assignment;
+
+				bool isInQuiz = await _context.Quizzes.AnyAsync(q => q.Id == lessonContentId);
+				if (isInQuiz)
+					return TypeOfMaterial.Quiz;
 			}
 
 			return null;
 		}
+
 
 		//public async Task<LessonContent> GetByLessonIdAndContentId(string lessonId, string contentId)
 		//{
