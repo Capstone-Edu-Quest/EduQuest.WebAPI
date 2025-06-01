@@ -7,7 +7,7 @@ public class LevelDto
 {
     public string? Id { get; set; }
     public int Level { get; set; }
-    [Range(250, 250000, ErrorMessage ="exp ranged from 250 to 250000")]
+    [Range(10, 250000, ErrorMessage ="exp ranged from 10 to 250000")]
     public int Exp { get; set; }
     public object[] RewardType { get; set; }
     public object[] RewardValue { get; set; }
