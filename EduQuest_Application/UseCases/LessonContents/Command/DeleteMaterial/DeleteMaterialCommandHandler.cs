@@ -48,6 +48,9 @@ namespace EduQuest_Application.UseCases.Materials.Command.DeleteMaterial
 				if(!hasPublicCourse)
 				{
 					await DeleteByLessonContentId(request.UserId, request.MaterialId);
+				} else
+				{
+					return GeneralHelper.CreateErrorResponse(HttpStatusCode.BadRequest, MessageError.UsedContent, MessageError.UsedContent, "name", "Lesson Content");
 				}
 			} else
 			{
