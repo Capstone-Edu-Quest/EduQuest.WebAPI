@@ -135,7 +135,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 					if (content.MaterialId != null)
 					{
 						materialResponse.Id = content.MaterialId;
-						materialResponse.Type = ((int)TypeOfMaterial.Video).ToString(); // Hoặc lấy từ entity nếu có
+						materialResponse.Type = content.Material.Type; // Hoặc lấy từ entity nếu có
 						materialResponse.Duration = content.Material?.Duration;
 						materialResponse.Title = content.Material?.Title;
 						materialResponse.Description = content.Material?.Description;
@@ -143,7 +143,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 					else if (content.QuizId != null)
 					{
 						materialResponse.Id = content.QuizId;
-						materialResponse.Type = ((int)TypeOfMaterial.Quiz).ToString();
+						materialResponse.Type = TypeOfMaterial.Quiz.ToString();
 						materialResponse.Duration = content.Quiz?.TimeLimit;
 						materialResponse.Title = content.Quiz?.Title;
 						materialResponse.Description = content.Quiz?.Description;
@@ -151,7 +151,7 @@ namespace EduQuest_Application.UseCases.Courses.Queries.GetCourseById
 					else if (content.AssignmentId != null)
 					{
 						materialResponse.Id = content.AssignmentId;
-						materialResponse.Type = ((int)TypeOfMaterial.Assignment).ToString();
+						materialResponse.Type = TypeOfMaterial.Assignment.ToString();
 						materialResponse.Duration = content.Assignment?.TimeLimit;
 						materialResponse.Title = content.Assignment?.Title;
 						materialResponse.Description = content.Assignment?.Description;
