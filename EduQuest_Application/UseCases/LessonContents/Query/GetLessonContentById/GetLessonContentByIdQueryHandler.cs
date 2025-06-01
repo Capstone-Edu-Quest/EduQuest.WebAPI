@@ -32,6 +32,7 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 		public async Task<APIResponse> Handle(GetLessonContentByIdQuery request, CancellationToken cancellationToken)
 		{
 			var type = await _lessonContentRepository.GetMaterialTypeByIdAsync(request.LessonContentId);
+			var Response = new DetailMaterialResponseDto();
 			switch (type)
 			{
 				case GeneralEnums.TypeOfMaterial.Document:
@@ -41,9 +42,9 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 					{
 						return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Material ID {request.LessonContentId}");
 					}
-					var materialResponse = _mapper.Map<DetailMaterialResponseDto>(material);
+					Response = _mapper.Map<DetailMaterialResponseDto>(material);
 					return GeneralHelper.CreateSuccessResponse(
-					HttpStatusCode.OK, MessageCommon.GetSuccesfully, materialResponse, "name", "Material"
+					HttpStatusCode.OK, MessageCommon.GetSuccesfully, Response, "name", "Material"
 				);
 				case GeneralEnums.TypeOfMaterial.Quiz:
 					Quiz quiz = await _quizRepository.GetById(request.LessonContentId);
@@ -52,8 +53,14 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 						return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Quiz ID {request.LessonContentId}");
 					}
 					var quizResponse = _mapper.Map<QuizTypeDto>(quiz);
+					Response.Id = quiz.Id;
+					Response.Type = GeneralEnums.TypeOfMaterial.Quiz.ToString();
+					Response.Title = quiz.Title;
+					Response.Description = quiz.Description;
+					Response.Duration = quiz.TimeLimit;
+					Response.Quiz = quizResponse;
 					return GeneralHelper.CreateSuccessResponse(
-					HttpStatusCode.OK, MessageCommon.GetSuccesfully, quizResponse, "name", "Quiz"
+					HttpStatusCode.OK, MessageCommon.GetSuccesfully, Response, "name", "Quiz"
 				);
 				case GeneralEnums.TypeOfMaterial.Assignment:
 					Assignment assignment = await _assignmentRepository.GetById(request.LessonContentId);
@@ -62,8 +69,14 @@ namespace EduQuest_Application.UseCases.LessonContents.Query.GetLessonContentByI
 						return GeneralHelper.CreateErrorResponse(System.Net.HttpStatusCode.NotFound, MessageCommon.NotFound, MessageCommon.NotFound, "name", $"Assignment ID {request.LessonContentId}");
 					}
 					var assignmentResponse = _mapper.Map<AssignmentTypeDto>(assignment);
+					Response.Id = assignment.Id;
+					Response.Type = GeneralEnums.TypeOfMaterial.Assignment.ToString();
+					Response.Title = assignment.Title;
+					Response.Description = assignment.Description;
+					Response.Duration = assignment.TimeLimit;
+					Response.Assignment = assignmentResponse;
 					return GeneralHelper.CreateSuccessResponse(
-					HttpStatusCode.OK, MessageCommon.GetSuccesfully, assignmentResponse, "name", "Assignment"
+					HttpStatusCode.OK, MessageCommon.GetSuccesfully, Response, "name", "Assignment"
 				);
 				default:
 					return GeneralHelper.CreateSuccessResponse(
