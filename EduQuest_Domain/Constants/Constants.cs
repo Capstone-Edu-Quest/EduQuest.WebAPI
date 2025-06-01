@@ -190,7 +190,7 @@
 
 			public const string CourseExist = "ALREADY_IN_COURSE";
 
-			public const string UsedContent = "CANNOT UPDATE USED CONTENT";
+			public const string UsedContent = "CANNOT UPDATE OR DELETE USED CONTENT";
 			public const string Over30Percentage = "CANNOT UPDATE MORE THAN 30% DIFFERENCE FROM OLD MATERIAL";
 		}
 		#endregion
