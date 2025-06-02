@@ -89,13 +89,14 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             return GeneralHelper.CreateErrorResponse(HttpStatusCode.NotFound, MessageCommon.NotFound,
                 MessageCommon.NotFound, "name", "assignment");
         }
+        double TotalTimte = request.Attempt.TotalTime > 0 ? request.Attempt.TotalTime : 1;
         AssignmentAttempt attempt = new AssignmentAttempt();
         attempt.Id = Guid.NewGuid().ToString();
         attempt.AttemptNo = attempNo;
         attempt.AssignmentId = request.Attempt.AssignmentId;
         attempt.UserId = request.UserId;
         attempt.AnswerContent = request.Attempt.AnswerContent;
-        attempt.ToTalTime = request.Attempt.TotalTime;
+        attempt.ToTalTime = TotalTimte;
         attempt.LessonId = request.LessonId;
         attempt.AnswerScore = -1;
         attempt.CreatedAt = now.ToUniversalTime();
@@ -194,7 +195,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         }
 
         var userMeta = await _userMetaRepository.GetByUserId(request.UserId);
-        userMeta.TotalStudyTime += request.Attempt.TotalTime;
+        userMeta.TotalStudyTime += TotalTimte;
         if (userMeta.LastLearningDay == null)
         {
             userMeta.LastLearningDay = DateTime.Now.ToUniversalTime();
@@ -216,7 +217,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         var studyTime = await _studyTimeRepository.GetByDate(now, request.UserId);
         if (studyTime != null)
         {
-            studyTime.StudyTimes += request.Attempt.TotalTime;
+            studyTime.StudyTimes += TotalTimte;
             await _studyTimeRepository.Update(studyTime);
         }
         else
@@ -225,7 +226,7 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.UserId,
-                StudyTimes = request.Attempt.TotalTime,
+                StudyTimes = TotalTimte,
                 Date = now.ToUniversalTime()
             });
         }
@@ -234,11 +235,11 @@ public class AttemptAssignmentHandler : IRequestHandler<AttemptAssignmentCommand
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.MATERIAL_TIME, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ, 1);
         await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.QUIZ_TIME, 1);
-        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, request.Attempt.TotalTime);
-        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, request.Attempt.TotalTime);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME, TotalTimte);
+        await _userQuestRepository.UpdateUserQuestsProgress(request.UserId, QuestType.LEARNING_TIME_TIME, TotalTimte);
 
         
-        int addedExp = GeneralHelper.GenerateExpEarned(request.Attempt.TotalTime);
+        int addedExp = GeneralHelper.GenerateExpEarned(TotalTimte);
         userMeta.Exp += addedExp;
         LevelUpNotiModel levelup = await HandlerLevelUp(userMeta.User, new ClaimRewardResponse());
         levelup.ExpAdded = addedExp;
